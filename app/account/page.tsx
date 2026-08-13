@@ -214,7 +214,6 @@ function AccountContent() {
             ))}
           </div>
           <div style={{ color: '#555570', fontSize: '0.75rem', marginTop: '8px' }}>
-            (TEST MODE - NO PAYMENT REQUIRED YET)
           </div>
         </div>
         <div>

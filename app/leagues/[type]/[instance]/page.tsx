@@ -21,7 +21,7 @@ export default function LeagueInstancePage() {
   const instance = params.instance as string
   const { user, loading } = useAuth()
   const router = useRouter()
-
+const [hasDrafted, setHasDrafted] = useState(false)
   const [league, setLeague] = useState<League | null>(null)
   const [isMember, setIsMember] = useState(false)
   const [memberTier, setMemberTier] = useState<string | null>(null)
@@ -51,6 +51,13 @@ export default function LeagueInstancePage() {
           .eq('league_id', leagueData.id)
 
         setMemberCount(count)
+
+        const { count: pickCount } = await supabase
+  .from('draft_picks')
+  .select('*', { count: 'exact', head: true })
+  .eq('league_id', leagueData.id)
+
+setHasDrafted((pickCount ?? 0) > 0)
 
         if (user) {
           const { data: profileData } = await supabase
@@ -92,22 +99,33 @@ export default function LeagueInstancePage() {
   }
 
   const confirmJoin = async () => {
-    if (!user || !league) return
-    setJoining(true)
-    setJoinMessage('')
+  if (!user || !league) return
+  setJoining(true)
+  setJoinMessage('')
 
-    if (league.max_members) {
-      const { count } = await supabase
-        .from('league_members')
-        .select('*', { count: 'exact', head: true })
-        .eq('league_id', league.id)
+  if (league.max_members) {
+    const { count } = await supabase
+      .from('league_members')
+      .select('*', { count: 'exact', head: true })
+      .eq('league_id', league.id)
 
-      if (count !== null && count >= league.max_members) {
-        setJoinMessage('This league is full... Island hop to find another!')
-        setJoining(false)
-        return
-      }
+    if (count !== null && count >= league.max_members) {
+      setJoinMessage('This league is full... Island hop to find another!')
+      setJoining(false)
+      return
     }
+  }
+
+  const { count: pickCount } = await supabase
+    .from('draft_picks')
+    .select('*', { count: 'exact', head: true })
+    .eq('league_id', league.id)
+
+  if (pickCount && pickCount > 0) {
+    setJoinMessage('This league has already drafted — registration is closed.')
+    setJoining(false)
+    return
+  }
 
     const { data: profile } = await supabase
       .from('profiles')
@@ -404,20 +422,41 @@ export default function LeagueInstancePage() {
                 </div>
               </div>
             ) : (
-              <button onClick={handleClimbAboard} style={{
-                backgroundColor: '#f0b429',
-                color: '#0a0a0f',
-                padding: '14px 32px',
-                borderRadius: '8px',
-                border: 'none',
-                fontWeight: 'bold',
-                fontSize: '1rem',
-                letterSpacing: '1.2px',
-                cursor: 'pointer'
-              }}>
-                {`Continue as ${tierLabels[myTier] ?? myTier}`}
-              </button>
-            )}
+  hasDrafted ? (
+<div style={{
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '14px',
+  backgroundColor: '#1a1a2e',
+  color: '#555570',
+  padding: '14px 32px',
+  borderRadius: '8px',
+  border: '1px solid #2a2a3e',
+  fontWeight: 'bold',
+  fontSize: '1rem'
+}}>
+  <span style={{ fontSize: '2rem' }}>🔒</span>
+  <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
+    <span>See you next time!</span>
+    <span>Registration&apos;s closed.</span>
+  </div>
+</div>
+  ) : (
+    <button onClick={handleClimbAboard} style={{
+      backgroundColor: '#f0b429',
+      color: '#0a0a0f',
+      padding: '14px 32px',
+      borderRadius: '8px',
+      border: 'none',
+      fontWeight: 'bold',
+      fontSize: '1rem',
+      letterSpacing: '1.2px',
+      cursor: 'pointer'
+    }}>
+      {`Continue as ${tierLabels[myTier] ?? myTier}`}
+    </button>
+  )
+)}
           </div>
 
         </div>
