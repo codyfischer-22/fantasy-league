@@ -22,7 +22,7 @@ export default function SignUp() {
     setMessage('')
 
     if (!agreedToTerms) {
-      setMessage('You must agree to the Terms to sign up.')
+      setMessage('You must agree to the Terms & Conditions to sign up.')
       return
     }
 
@@ -228,7 +228,7 @@ export default function SignUp() {
            <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
   I agree to the{' '}
   <a href="/terms" target="_blank" style={{ color: '#f0b429' }}>Terms & Conditions</a>
-  {' '}and understand there are no refunds.
+  {' '} and Privacy Policy.
 </span>
           </label>
 

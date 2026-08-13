@@ -1,7 +1,6 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
-
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
@@ -13,6 +12,7 @@ type Profile = {
   email: string
   tier: string
   display_name: string | null
+  is_global_admin: boolean
 }
 
 function AccountContent() {
@@ -25,53 +25,46 @@ function AccountContent() {
   const [saving, setSaving] = useState(false)
   const [saveMessage, setSaveMessage] = useState('')
   const [upgrading, setUpgrading] = useState<string | null>(null)
-
+  const [isGlobalAdmin, setIsGlobalAdmin] = useState(false)
   const searchParams = useSearchParams()
-const highlightTier = searchParams.get('tier')
+  const highlightTier = searchParams.get('tier')
 
-const handleStripeCheckout = async (tier: string) => {
-  if (!user) return
-
-  const res = await fetch('/api/checkout', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ tier, userId: user.id, email: user.email }),
-  })
-
-  const data = await res.json()
-
-  if (data.url) {
-    window.location.href = data.url
-  } else {
-    alert('Something went wrong starting checkout. Please try again.')
+  const handleStripeCheckout = async (tier: string) => {
+    if (!user) return
+    const res = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tier, userId: user.id, email: user.email }),
+    })
+    const data = await res.json()
+    if (data.url) {
+      window.location.href = data.url
+    } else {
+      alert('Something went wrong starting checkout. Please try again.')
+    }
   }
-}
 
-const handleUpgrade = async (tier: string) => {
-  if (!user) return
-  setUpgrading(tier)
-
-  const { error } = await upgradeTier(user.id, tier)
-
-  setUpgrading(null)
-
-  if (!error) {
-    setProfile((prev) => prev ? { ...prev, tier } : prev)
-  } else {
-    console.error('Upgrade error:', error)
+  const handleUpgrade = async (tier: string) => {
+    if (!user) return
+    setUpgrading(tier)
+    const { error } = await upgradeTier(user.id, tier)
+    setUpgrading(null)
+    if (!error) {
+      setProfile((prev) => prev ? { ...prev, tier } : prev)
+    } else {
+      console.error('Upgrade error:', error)
+    }
   }
-}
 
   useEffect(() => {
     if (!loading && !user) {
       router.push('/login')
       return
     }
-
     if (user) {
       supabase
         .from('profiles')
-        .select('email, tier, display_name')
+        .select('email, tier, display_name, is_global_admin')
         .eq('user_id', user.id)
         .single()
         .then(({ data, error }) => {
@@ -81,6 +74,7 @@ const handleUpgrade = async (tier: string) => {
           if (!error) {
             setProfile(data)
             setNameInput(data.display_name ?? '')
+            setIsGlobalAdmin(data.is_global_admin ?? false)
           }
           setProfileLoading(false)
         })
@@ -91,14 +85,11 @@ const handleUpgrade = async (tier: string) => {
     if (!user) return
     setSaving(true)
     setSaveMessage('')
-
     const { error } = await supabase
       .from('profiles')
       .update({ display_name: nameInput })
       .eq('user_id', user.id)
-
     setSaving(false)
-
     if (error) {
       setSaveMessage('Something went wrong — try again.')
       console.error('Update error:', error)
@@ -164,28 +155,25 @@ const handleUpgrade = async (tier: string) => {
         borderRadius: '12px',
         padding: '40px'
       }}>
- <button onClick={() => router.back()} style={{
-  background: 'none',
-  border: 'none',
-  color: '#a0a0b0',
-  fontSize: '0.85rem',
-  cursor: 'pointer',
-  padding: 0,
-  marginBottom: '16px',
-  fontFamily: 'inherit'
-}}>
-  ← Back
-</button>
-
-<h1 style={{ color: '#f0b429', fontSize: '2rem', marginBottom: '24px' }}>
-  My Account
-</h1>
-
+        <button onClick={() => router.back()} style={{
+          background: 'none',
+          border: 'none',
+          color: '#a0a0b0',
+          fontSize: '0.85rem',
+          cursor: 'pointer',
+          padding: 0,
+          marginBottom: '16px',
+          fontFamily: 'inherit'
+        }}>
+          ← Back
+        </button>
+        <h1 style={{ color: '#f0b429', fontSize: '2rem', marginBottom: '24px' }}>
+          My Account
+        </h1>
         <div style={{ marginBottom: '16px' }}>
           <div style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '4px' }}>Email</div>
           <div style={{ fontSize: '1.1rem' }}>{profile.email}</div>
         </div>
-
         <div style={{ marginBottom: '16px' }}>
           <div style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '4px' }}>Current Tier</div>
           <div style={{
@@ -200,40 +188,37 @@ const handleUpgrade = async (tier: string) => {
             {tierLabels[profile.tier] ?? profile.tier}
           </div>
         </div>
-
         <div style={{ marginBottom: '16px' }}>
-  <div style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '8px' }}>Change Tier</div>
-  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-{['stowaway', 'castaway', 'crewchief', 'teamprincipal'].map((t) => (
-  <button
-    key={t}
-    onClick={() => (t === 'stowaway' ? handleUpgrade(t) : handleStripeCheckout(t))}
-  disabled={upgrading !== null || profile.tier === t}
-  style={{
-    backgroundColor: profile.tier === t ? '#f0b429' : 'transparent',
-    color: profile.tier === t ? '#0a0a0f' : '#f0b429',
-    border: '1px solid #f0b429',
-    padding: '8px 14px',
-    borderRadius: '6px',
-    fontSize: '0.85rem',
-    fontWeight: 'bold',
-    cursor: profile.tier === t ? 'default' : 'pointer',
-    opacity: upgrading !== null && upgrading !== t ? 0.5 : 1,
-    boxShadow: highlightTier === t ? '0 0 0 3px rgba(240, 180, 41, 0.5)' : 'none'
-  }}
->
-  {upgrading === t ? '...' : (tierLabels[t] ?? t)}
-</button>
-    ))}
-  </div>
-  <div style={{ color: '#555570', fontSize: '0.75rem', marginTop: '8px' }}>
-    (TEST MODE - NO PAYMENT REQUIRED YET)
-  </div>
-</div>
-
+          <div style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '8px' }}>Change Tier</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+            {['stowaway', 'castaway', 'crewchief', 'teamprincipal'].map((t) => (
+              <button
+                key={t}
+                onClick={() => (isGlobalAdmin || t === 'stowaway' ? handleUpgrade(t) : handleStripeCheckout(t))}
+                disabled={upgrading !== null || profile.tier === t}
+                style={{
+                  backgroundColor: profile.tier === t ? '#f0b429' : 'transparent',
+                  color: profile.tier === t ? '#0a0a0f' : '#f0b429',
+                  border: '1px solid #f0b429',
+                  padding: '8px 14px',
+                  borderRadius: '6px',
+                  fontSize: '0.85rem',
+                  fontWeight: 'bold',
+                  cursor: profile.tier === t ? 'default' : 'pointer',
+                  opacity: upgrading !== null && upgrading !== t ? 0.5 : 1,
+                  boxShadow: highlightTier === t ? '0 0 0 3px rgba(240, 180, 41, 0.5)' : 'none'
+                }}
+              >
+                {upgrading === t ? '...' : (tierLabels[t] ?? t)}
+              </button>
+            ))}
+          </div>
+          <div style={{ color: '#555570', fontSize: '0.75rem', marginTop: '8px' }}>
+            (TEST MODE - NO PAYMENT REQUIRED YET)
+          </div>
+        </div>
         <div>
           <div style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '4px' }}>Display Name</div>
-
           {editing ? (
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
               <input
@@ -301,7 +286,6 @@ const handleUpgrade = async (tier: string) => {
               </button>
             </div>
           )}
-
           {saveMessage && (
             <div style={{ color: '#a0a0b0', fontSize: '0.85rem', marginTop: '8px' }}>
               {saveMessage}
