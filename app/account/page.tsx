@@ -7,6 +7,7 @@ import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { upgradeTier } from '@/lib/upgradeTier'
+import { Suspense } from 'react'
 
 type Profile = {
   email: string
@@ -14,7 +15,7 @@ type Profile = {
   display_name: string | null
 }
 
-export default function Account() {
+function AccountContent() {
   const { user, loading } = useAuth()
   const router = useRouter()
   const [profile, setProfile] = useState<Profile | null>(null)
@@ -309,5 +310,13 @@ const handleUpgrade = async (tier: string) => {
         </div>
       </div>
     </main>
+  )
+}
+
+export default function Account() {
+  return (
+    <Suspense fallback={<div style={{ backgroundColor: '#0a0a0f', minHeight: '100vh' }} />}>
+      <AccountContent />
+    </Suspense>
   )
 }
