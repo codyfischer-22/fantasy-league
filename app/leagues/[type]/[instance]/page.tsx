@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
-import React from 'react'
 
 type League = {
   id: number
@@ -21,7 +20,8 @@ export default function LeagueInstancePage() {
   const instance = params.instance as string
   const { user, loading } = useAuth()
   const router = useRouter()
-const [hasDrafted, setHasDrafted] = useState(false)
+
+  const [hasDrafted, setHasDrafted] = useState(false)
   const [league, setLeague] = useState<League | null>(null)
   const [isMember, setIsMember] = useState(false)
   const [memberTier, setMemberTier] = useState<string | null>(null)
@@ -33,6 +33,12 @@ const [hasDrafted, setHasDrafted] = useState(false)
   const [leaving, setLeaving] = useState(false)
   const [myTier, setMyTier] = useState('stowaway')
 
+  useEffect(() => {
+  if (type === 'potb-demo') {
+    router.push('/leagues/potb-demo/sample-league')
+  }
+}, [type])
+  
   useEffect(() => {
     async function loadLeague() {
       const { data: leagueData } = await supabase
@@ -53,11 +59,10 @@ const [hasDrafted, setHasDrafted] = useState(false)
         setMemberCount(count)
 
         const { count: pickCount } = await supabase
-  .from('draft_picks')
-  .select('*', { count: 'exact', head: true })
-  .eq('league_id', leagueData.id)
-
-setHasDrafted((pickCount ?? 0) > 0)
+          .from('draft_picks')
+          .select('*', { count: 'exact', head: true })
+          .eq('league_id', leagueData.id)
+        setHasDrafted((pickCount ?? 0) > 0)
 
         if (user) {
           const { data: profileData } = await supabase
@@ -99,33 +104,33 @@ setHasDrafted((pickCount ?? 0) > 0)
   }
 
   const confirmJoin = async () => {
-  if (!user || !league) return
-  setJoining(true)
-  setJoinMessage('')
+    if (!user || !league) return
+    setJoining(true)
+    setJoinMessage('')
 
-  if (league.max_members) {
-    const { count } = await supabase
-      .from('league_members')
+    if (league.max_members) {
+      const { count } = await supabase
+        .from('league_members')
+        .select('*', { count: 'exact', head: true })
+        .eq('league_id', league.id)
+
+      if (count !== null && count >= league.max_members) {
+        setJoinMessage('This league is full... Island hop to find another!')
+        setJoining(false)
+        return
+      }
+    }
+
+    const { count: pickCount } = await supabase
+      .from('draft_picks')
       .select('*', { count: 'exact', head: true })
       .eq('league_id', league.id)
 
-    if (count !== null && count >= league.max_members) {
-      setJoinMessage('This league is full... Island hop to find another!')
+    if (pickCount && pickCount > 0) {
+      setJoinMessage('This league has already drafted — registration is closed.')
       setJoining(false)
       return
     }
-  }
-
-  const { count: pickCount } = await supabase
-    .from('draft_picks')
-    .select('*', { count: 'exact', head: true })
-    .eq('league_id', league.id)
-
-  if (pickCount && pickCount > 0) {
-    setJoinMessage('This league has already drafted — registration is closed.')
-    setJoining(false)
-    return
-  }
 
     const { data: profile } = await supabase
       .from('profiles')
@@ -219,19 +224,32 @@ setHasDrafted((pickCount ?? 0) > 0)
         gap: '16px'
       }}>
         <p>Sorry, that league doesn&apos;t exist yet. Try again or ask our team with questions!</p>
-        <a href={`/leagues/${type}`} style={{ color: '#f0b429' }}>← Back to League Hub</a>
+        <a href={`/leagues/${type}`} style={{
+  color: '#a0a0b0',
+  fontSize: '0.85rem',
+  textDecoration: 'none',
+  display: 'inline-block',
+  marginBottom: '24px'
+}}>
+  ← Back to Politics on the Beach
+</a>
       </main>
     )
   }
 
-  const subPages = [
-    { label: 'Leaderboard', emoji: '🏆', href: `/leagues/${type}/${instance}/leaderboard` },
-    { label: 'Scoring Log', emoji: '🧮', href: `/leagues/${type}/scoring-log?from=${instance}` },
-    { label: 'Analytics', emoji: '📈', href: `/leagues/${type}/${instance}/analytics` },
-    { label: 'League Roster', emoji: '👥', href: `/leagues/${type}/${instance}/roster` },
-    { label: 'Trade Portal', emoji: '🔄' },
-    { label: 'League Chat', emoji: '💬' },
-    { label: 'Draft Log', emoji: '📜', href: `/leagues/${type}/${instance}/draft-log` },
+  const toolGroups = [
+    {
+      label: 'Standings, Draft & Community Tools:',
+      items: [
+        { label: 'Leaderboard', emoji: '🏆', href: `/leagues/${type}/${instance}/leaderboard` },
+        { label: 'Scoring Log', emoji: '🧮', href: `/leagues/${type}/scoring-log?from=${instance}` },
+        { label: 'Analytics', emoji: '📈', href: `/leagues/${type}/${instance}/analytics` },
+        { label: 'League Roster', emoji: '👥', href: `/leagues/${type}/${instance}/roster` },
+        { label: 'Draft Log', emoji: '📜', href: `/leagues/${type}/${instance}/draft-log` },
+        { label: 'Trade Portal (Building)', emoji: '🔄' },
+        { label: 'League Chat (Building)', emoji: '💬' },
+      ],
+    },
   ]
 
   return (
@@ -244,119 +262,87 @@ setHasDrafted((pickCount ?? 0) > 0)
     }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
 
-        <a href={`/leagues/${type}`} style={{
-          color: '#a0a0b0',
-          fontSize: '0.85rem',
-          textDecoration: 'none',
-          display: 'inline-block',
-          marginBottom: '24px'
-        }}>
-          ← Back to Politics on the Beach
-        </a>
+       <a href={type === 'potb-demo' ? '/' : `/leagues/${type}`} style={{
+  color: '#a0a0b0',
+  fontSize: '0.85rem',
+  textDecoration: 'none',
+  display: 'inline-block',
+  marginBottom: '24px'
+}}>
+  {type === 'potb-demo' ? '← Back to Trekkon Fantasy Leagues' : '← Back to Politics on the Beach'}
+</a>
 
-        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-
-          <h1 style={{ color: '#f0b429', fontSize: '2.5rem', marginBottom: '0px' }}>
-            {league.name}
-          </h1>
-
-          <p style={{ color: '#a0a0b0', fontSize: '.9rem', marginBottom: '48px' }}>
-            {league.max_members
-              ? `${memberCount ?? '...'} / ${league.max_members} members`
-              : `${memberCount ?? '...'} members`}
-          </p>
-
-          <div style={{ marginBottom: '24px' }}>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              flexWrap: 'wrap',
-              gap: '12px',
-              marginBottom: '12px'
-            }}>
-              {subPages.slice(0, 4).map((page) =>
-                page.href
-                  ? React.createElement(
-                      'a',
-                      {
-                        key: page.label,
-                        href: page.href,
-                        className: 'subpage-link',
-                        style: {
-                          color: '#ffffff',
-                          fontSize: '1rem',
-                          fontWeight: 'bold',
-                          textDecoration: 'none',
-                          cursor: 'pointer'
-                        }
-                      },
-                      page.emoji + ' ' + page.label
-                    )
-                  : React.createElement(
-                      'span',
-                      {
-                        key: page.label,
-                        className: 'subpage-link',
-                        style: {
-                          color: '#ffffff',
-                          fontSize: '1rem',
-                          fontWeight: 'bold',
-                          cursor: 'default'
-                        }
-                      },
-                      page.emoji + ' ' + page.label
-                    )
-              )}
-            </div>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              flexWrap: 'wrap',
-              gap: '12px'
-            }}>
-              {subPages.slice(4).map((page) =>
-                page.href
-                  ? React.createElement(
-                      'a',
-                      {
-                        key: page.label,
-                        href: page.href,
-                        className: 'subpage-link',
-                        style: {
-                          color: '#ffffff',
-                          fontSize: '1rem',
-                          fontWeight: 'bold',
-                          textDecoration: 'none',
-                          cursor: 'pointer'
-                        }
-                      },
-                      page.emoji + ' ' + page.label
-                    )
-                  : React.createElement(
-                      'span',
-                      {
-                        key: page.label,
-                        className: 'subpage-link',
-                        style: {
-                          color: '#ffffff',
-                          fontSize: '1rem',
-                          fontWeight: 'bold',
-                          cursor: 'default'
-                        }
-                      },
-                      page.emoji + ' ' + page.label
-                    )
-              )}
-            </div>
-          </div>
+        <div style={{ textAlign: 'left', marginBottom: '12px' }}>
 
           <div style={{
-            border: 'none',
-            borderRadius: '10px',
-            padding: '26px',
-            maxWidth: '450px',
-            margin: '0 auto'
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '50px'
           }}>
+          <h1 style={{ fontSize: '2.5rem', margin: 0 }}>
+  {type === 'potb-demo' && league.name.includes('Demo!') ? (
+    <>
+      <span style={{ color: '#f0b429' }}>{league.name.replace('Demo!', '').trim()}</span>{' '}
+      <span style={{ color: '#ffffff' }}>Demo!</span>
+    </>
+  ) : (
+    <span style={{ color: '#f0b429' }}>{league.name}</span>
+  )}
+</h1>
+            <p style={{ color: '#555570', fontSize: '1.75rem', margin: 0 }}>
+              {league.max_members
+                ? `${memberCount ?? '...'} / ${league.max_members}`
+                : `${memberCount ?? '...'} members`}
+            </p>
+          </div>
+
+          <div style={{ margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '24px' }}>
+            {toolGroups.map((group) => (
+              <div key={group.label}>
+                <div  style={{ color: '#a0a0b0', fontSize: '1rem', marginBottom: '20px' }}>
+                  {group.label}
+                </div>
+               <div className="tool-grid" style={{
+  maxWidth: `${group.items.length * 140}px`
+}}>
+                  {group.items.map((page) => {
+                    const content = (
+                      <>
+                        <div style={{ fontSize: '2.5rem', marginBottom: '4px' }}>{page.emoji}</div>
+                        <div style={{ fontSize: '1rem' }}>{page.label}</div>
+                      </>
+                    )
+
+                    const cardStyle = {
+                      borderRadius: '10px',
+                      padding: '0px 0px',
+                      textAlign: 'center' as const,
+                      textDecoration: 'none',
+                      color: page.href ? '#ffffff' : '#555570',
+                    }
+
+                    return page.href ? (
+                      <a key={page.label} href={page.href} className="subpage-card" style={cardStyle}>
+                        {content}
+                      </a>
+                    ) : (
+                      <div key={page.label} className="subpage-card" style={cardStyle}>
+                        {content}
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+
+        <div style={{
+  border: 'none',
+  borderRadius: '10px',
+  padding: '26px 0',
+  maxWidth: '600px'
+}}>
             {isMember ? (
               <div>
                 <p style={{
@@ -364,45 +350,43 @@ setHasDrafted((pickCount ?? 0) > 0)
                   fontSize: '1.5rem',
                   fontWeight: 'bold',
                   marginBottom: '12px',
-                   whiteSpace: 'nowrap'
+                  marginTop: '8px',
+                  whiteSpace: 'nowrap'
                 }}>
                   You&apos;re in the league, {tierLabels[memberTier ?? ''] ?? memberTier}!
                 </p>
-
-                <div style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  justifyContent: 'center',
-                  gap: '12px'
-                }}>
+         <div style={{
+  display: 'flex',
+  flexWrap: 'wrap',
+  justifyContent: 'flex-start',
+  gap: '12px'
+}}>
                   <a href={`/leagues/${type}/${instance}/rankings`} className="btn" style={{
                     display: 'inline-block',
                     backgroundColor: 'transparent',
                     border: '1px solid #f0b429',
                     color: '#ffffff',
-                    padding: '10px 22px',
+                    padding: '10px 16px',
                     borderRadius: '6px',
                     textDecoration: 'none',
                     fontWeight: 'bold',
                     fontSize: '0.9rem'
                   }}>
-                    Submit Draft Rankings →
+                    Submit Draft Rankings
                   </a>
-
-                 <a href="/account" className="btn" style={{
-  display: 'inline-block',
-  backgroundColor: 'transparent',
-  color: '#f0b429',
-  border: '1px solid #f0b429',
-  padding: '10px 22px',
-  borderRadius: '6px',
-  textDecoration: 'none',
-  fontWeight: 'bold',
-  fontSize: '0.9rem',
-}}>
-  {memberTier === 'teamprincipal' ? 'Manage Membership →' : 'Upgrade Membership →'}
-</a>
-
+                  <a href="/account" className="btn" style={{
+                    display: 'inline-block',
+                    backgroundColor: 'transparent',
+                    color: '#f0b429',
+                    border: '1px solid #f0b429',
+                    padding: '10px 16px',
+                    borderRadius: '6px',
+                    textDecoration: 'none',
+                    fontWeight: 'bold',
+                    fontSize: '0.9rem',
+                  }}>
+                    {memberTier === 'teamprincipal' ? 'Manage Membership' : 'Upgrade Membership'}
+                  </a>
                   <button
                     onClick={handleLeave}
                     disabled={leaving}
@@ -411,7 +395,7 @@ setHasDrafted((pickCount ?? 0) > 0)
                       backgroundColor: 'transparent',
                       color: '#ff6b6b',
                       border: '1px solid #ff6b6b',
-                      padding: '10px 22px',
+                      padding: '10px 16px',
                       borderRadius: '6px',
                       fontWeight: 'bold',
                       fontSize: '0.9rem',
@@ -423,41 +407,41 @@ setHasDrafted((pickCount ?? 0) > 0)
                 </div>
               </div>
             ) : (
-  hasDrafted ? (
-<div style={{
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: '14px',
-  backgroundColor: '#1a1a2e',
-  color: '#555570',
-  padding: '14px 32px',
-  borderRadius: '8px',
-  border: '1px solid #2a2a3e',
-  fontWeight: 'bold',
-  fontSize: '1rem'
-}}>
-  <span style={{ fontSize: '2rem' }}>🔒</span>
-  <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
-    <span>See you next time!</span>
-    <span>Registration&apos;s closed.</span>
-  </div>
-</div>
-  ) : (
-    <button onClick={handleClimbAboard} style={{
-      backgroundColor: '#f0b429',
-      color: '#0a0a0f',
-      padding: '14px 32px',
-      borderRadius: '8px',
-      border: 'none',
-      fontWeight: 'bold',
-      fontSize: '1rem',
-      letterSpacing: '1.2px',
-      cursor: 'pointer'
-    }}>
-      {`Continue as ${tierLabels[myTier] ?? myTier}`}
-    </button>
-  )
-)}
+              hasDrafted ? (
+                <div style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '14px',
+                  backgroundColor: '#1a1a2e',
+                  color: '#555570',
+                  padding: '14px 32px',
+                  borderRadius: '8px',
+                  border: '1px solid #2a2a3e',
+                  fontWeight: 'bold',
+                  fontSize: '1rem'
+                }}>
+                  <span style={{ fontSize: '2rem' }}>🔒</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
+                    <span>See you next time!</span>
+                    <span>Registration&apos;s closed.</span>
+                  </div>
+                </div>
+              ) : (
+                <button onClick={handleClimbAboard} style={{
+                  backgroundColor: '#f0b429',
+                  color: '#0a0a0f',
+                  padding: '14px 32px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  fontWeight: 'bold',
+                  fontSize: '1rem',
+                  letterSpacing: '1.2px',
+                  cursor: 'pointer'
+                }}>
+                  {`Continue as ${tierLabels[myTier] ?? myTier}`}
+                </button>
+              )
+            )}
           </div>
 
         </div>
@@ -488,7 +472,6 @@ setHasDrafted((pickCount ?? 0) > 0)
               Upgrade to Castaway, Crew Chief, or Team Principal to make the most of your
               fantasy league experience in community!
             </p>
-
             {joinMessage ? (
               <p style={{ color: '#f0b429', fontWeight: 'bold' }}>{joinMessage}</p>
             ) : (

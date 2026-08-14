@@ -100,7 +100,7 @@ export default function TermsPage() {
             Membership fees pay for access to bonus app features (hosting tools, analytics, chat,
             etc.) and not entry into any contest for money. All leagues are played for standings,
             bragging rights, and fun; they can be played on equal terms with or without a paid 
-            membership tier.
+            membership tier. You may not copy, resell, sublicense, or use Trekkon Fantasy League&apos; software, design, or systems to build a competing product or service.
           </p>
 
           <h2 style={{ color: '#f0b429', fontSize: '1.0rem', marginTop: '12px', marginBottom: '0px' }}>
@@ -134,9 +134,9 @@ the right to remove any message, mute, suspend, or permanently ban accounts foun
 </h2>
 <p>
   All original content on Trekkon Fantasy Leagues—including our branding, league names,
-  logos, site design, written rules, and scoring systems—is owned by Tregon Fantasy
+  logos, site design, written rules, and scoring systems—is owned by Trekkon Fantasy
   Leagues and may not be copied, reproduced, or used to create a competing product without
-  permission. As noted above, Trekkon Fantasy Leagues is an unofficial, fan-created platform.
+  permission. No league hosts should be making money off of the league hosting content and software we have built and published. As noted above, Trekkon Fantasy Leagues is an unofficial, fan-created platform.
 We do not claim ownership of Survivor, NASCAR, F1, or any other underlying television property,
  and nothing in these terms grants you the player any rights to that content either.
 </p>

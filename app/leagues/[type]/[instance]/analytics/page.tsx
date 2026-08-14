@@ -136,45 +136,49 @@ export default function AnalyticsPage() {
   const [valueSearch, setValueSearch] = useState('')
 
   useEffect(() => {
-    async function loadData() {
-      if (!user) {
-        setAccess('denied')
-        return
-      }
+  async function loadData() {
+  const { data: league } = await supabase
+    .from('leagues')
+    .select('id, league_type')
+    .eq('league_type', type)
+    .eq('slug', instance)
+    .single()
 
-      const { data: league } = await supabase
-        .from('leagues')
-        .select('id, league_type')
-        .eq('league_type', type)
-        .eq('slug', instance)
-        .single()
+  if (!league) {
+    setAccess('denied')
+    return
+  }
 
-      if (!league) {
-        setAccess('denied')
-        return
-      }
+  const isDemoLeague = type === 'potb-demo'
 
-      const { data: membership } = await supabase
-        .from('league_members')
-        .select('tier_at_join')
-        .eq('league_id', league.id)
-        .eq('user_id', user.id)
-        .maybeSingle()
+  if (!isDemoLeague) {
+    if (!user) {
+      setAccess('denied')
+      return
+    }
 
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('tier')
-        .eq('user_id', user.id)
-        .single()
+    const { data: membership } = await supabase
+      .from('league_members')
+      .select('tier_at_join')
+      .eq('league_id', league.id)
+      .eq('user_id', user.id)
+      .maybeSingle()
 
-      const tier = profile?.tier ?? membership?.tier_at_join ?? 'stowaway'
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('tier')
+      .eq('user_id', user.id)
+      .single()
 
-      if (!membership || tier === 'stowaway') {
-        setAccess('denied')
-        return
-      }
+    const tier = profile?.tier ?? membership?.tier_at_join ?? 'stowaway'
 
-      setAccess('granted')
+    if (!membership || tier === 'stowaway') {
+      setAccess('denied')
+      return
+    }
+  }
+
+  setAccess('granted')
 
       const { data: picks } = await supabase
         .from('draft_picks')
@@ -400,7 +404,7 @@ export default function AnalyticsPage() {
         <p style={{ maxWidth: '400px', textAlign: 'center' }}>
           Upgrade your membership to unlock full-season analytics and track every player and castaway&apos;s journey week by week.
         </p>
-        <a href="/account" style={{
+        <a href="/account" className="btn" style={{
           backgroundColor: '#f0b429',
           color: '#0a0a0f',
           padding: '12px 28px',
@@ -571,6 +575,16 @@ export default function AnalyticsPage() {
           }}
         />
 
+            <p className="mobile-rotate-hint" style={{
+  color: '#555570',
+  fontSize: '1rem',
+  textAlign: 'center',
+  marginBottom: '26px',
+  marginTop: '10px',
+}}>
+  Rotate 📱 for a better view!
+</p>
+
         {playerChartData.length > 0 && (
           <div style={{
             backgroundColor: '#1a1a2e',
@@ -657,6 +671,16 @@ export default function AnalyticsPage() {
             fontSize: '0.9rem'
           }}
         />
+
+            <p className="mobile-rotate-hint" style={{
+color: '#555570',
+  fontSize: '1rem',
+  textAlign: 'center',
+  marginBottom: '26px',
+  marginTop: '10px',
+}}>
+   Rotate 📱 for a better view!
+</p>
 
         {chartData.length === 0 ? (
           <p style={{ color: '#555570' }}>No scoring data yet — check back once episodes have been scored.</p>

@@ -455,7 +455,7 @@ Red Lights Out →
           Got an idea for a fantasy league we should build next? Send us your concept and help shape
           the future of Trekkon Fantasy Leagues.
         </p>
-        <a href="mailto:codyray.fischer@gmail.com" className="btn" style={{
+        <a href="/contact" className="btn" style={{
           backgroundColor: '#f0b429',
           color: '#0a0a0f',
           padding: '14px 32px',

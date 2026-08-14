@@ -283,18 +283,32 @@ export default function ScoringAdminPage() {
           />
         </div>
 
-        <div style={{ overflowX: 'auto' }}>
+       <div style={{ overflowX: 'auto', overflowY: 'auto', maxHeight: '70vh' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
             <thead>
-              <tr style={{ borderBottom: '2px solid #f0b429' }}>
-                <th style={{ padding: '8px', textAlign: 'left', position: 'sticky', left: 0, backgroundColor: '#0a0a0f' }}>Castaway</th>
-                {categories.map((cat) => (
-                  <th key={cat.key} style={{
-                    padding: '6px 4px',
-                    color: '#f0b429',
-                    minWidth: '70px',
-                    verticalAlign: 'bottom'
-                  }}>
+  <tr>
+<th style={{
+  padding: '8px',
+  textAlign: 'left',
+  position: 'sticky',
+  top: 0,
+  left: 0,
+  backgroundColor: '#0a0a0f',
+  boxShadow: 'inset 0 -2px 0 #f0b429',
+  zIndex: 4
+}}>Castaway</th>
+    {categories.map((cat) => (
+      <th key={cat.key} style={{
+        padding: '6px 4px',
+        color: '#f0b429',
+        minWidth: '70px',
+        verticalAlign: 'bottom',
+        position: 'sticky',
+        top: 0,
+        backgroundColor: '#0a0a0f',
+        boxShadow: 'inset 0 -2px 0 #f0b429',
+        zIndex: 2
+      }}>
                     <div style={{
                       display: 'flex',
                       flexDirection: 'column',
@@ -309,15 +323,42 @@ export default function ScoringAdminPage() {
                     </div>
                   </th>
                 ))}
-                <th style={{ padding: '6px 4px', color: '#ff6b6b', minWidth: '100px' }}>Manual Adj.</th>
+           <th style={{
+  padding: '6px 4px',
+  color: '#ff6b6b',
+  width: '150px',
+  verticalAlign: 'bottom',
+  position: 'sticky',
+  top: 0,
+  backgroundColor: '#0a0a0f',
+  boxShadow: 'inset 0 -2px 0 #f0b429',
+  zIndex: 2
+}}>
+  <div style={{
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
+    height: '100%',
+    minHeight: '48px'
+  }}>
+    Manual Adj.
+  </div>
+</th>
               </tr>
             </thead>
             <tbody>
               {castaways.map((castaway) => (
                 <tr key={castaway.id} style={{ borderBottom: '1px solid #2a2a3e' }}>
-                  <td style={{ padding: '8px', fontWeight: 'bold', position: 'sticky', left: 0, backgroundColor: '#0a0a0f' }}>
-                    {castaway.name}
-                  </td>
+              <td style={{
+  padding: '8px',
+  fontWeight: 'bold',
+  position: 'sticky',
+  left: 0,
+  backgroundColor: '#0a0a0f',
+  zIndex: 1
+}}>
+  {castaway.name}
+</td>
                   {categories.map((cat) => (
                     <td key={cat.key} style={{ padding: '6px 4px', textAlign: 'center' }}>
                       {cat.allowCount ? (
@@ -345,10 +386,10 @@ export default function ScoringAdminPage() {
                       )}
                     </td>
                   ))}
-                  <td style={{ padding: '6px 4px' }}>
+                  <td style={{ padding: '6px 4px', width: '150px' }}>
                     <input
                       type="number"
-                      placeholder="pts"
+                      placeholder="Pts."
                       value={manualAdjust[castaway.id]?.points ?? ''}
                       onChange={(e) => setManualField(castaway.id, 'points', e.target.value)}
                       style={{
@@ -363,7 +404,7 @@ export default function ScoringAdminPage() {
                     />
                     <input
                       type="text"
-                      placeholder="note"
+                      placeholder="Note"
                       value={manualAdjust[castaway.id]?.notes ?? ''}
                       onChange={(e) => setManualField(castaway.id, 'notes', e.target.value)}
                       style={{

@@ -6,7 +6,6 @@ import { supabase } from '@/lib/supabase'
 export default function SignUp() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [displayName, setDisplayName] = useState('')
@@ -17,12 +16,29 @@ export default function SignUp() {
   const [loading, setLoading] = useState(false)
   const [signedUp, setSignedUp] = useState(false)
 
+  const calculateAge = (dob: string) => {
+    const birthDate = new Date(dob)
+    const today = new Date()
+    let age = today.getFullYear() - birthDate.getFullYear()
+    const monthDiff = today.getMonth() - birthDate.getMonth()
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--
+    }
+    return age
+  }
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
     setMessage('')
 
     if (!agreedToTerms) {
       setMessage('You must agree to the Terms & Conditions to sign up.')
+      return
+    }
+
+    const age = calculateAge(dob)
+    if (age < 18) {
+      setMessage('You must be at least 18 years old to create an account.')
       return
     }
 
@@ -123,7 +139,6 @@ export default function SignUp() {
           <h1 style={{ color: '#f0b429', fontSize: '1.8rem', marginBottom: '24px', textAlign: 'center' }}>
             Create Your Account
           </h1>
-
           <label style={labelStyle}>Email</label>
           <input
             type="email"
@@ -132,37 +147,15 @@ export default function SignUp() {
             required
             style={inputStyle}
           />
-
           <label style={labelStyle}>Password</label>
-          <div style={{ position: 'relative', marginBottom: '16px' }}>
-            <input
-              type={showPassword ? 'text' : 'password'}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6}
-              style={{ ...inputStyle, marginBottom: 0, paddingRight: '40px' }}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              style={{
-                position: 'absolute',
-                right: '10px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: '#f0b429',
-                fontSize: '1.1rem',
-                padding: 0
-              }}
-            >
-              {showPassword ? '🌒' : '☀️'}
-            </button>
-          </div>
-
+       <input
+  type="password"
+  value={password}
+  onChange={(e) => setPassword(e.target.value)}
+  required
+  minLength={6}
+  style={inputStyle}
+/>
           <div style={{ display: 'flex', gap: '12px' }}>
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>First Name</label>
@@ -186,9 +179,8 @@ export default function SignUp() {
             </div>
           </div>
           <p style={{ color: '#555570', fontSize: '0.75rem', marginTop: '-10px', marginBottom: '16px' }}>
-            Don't worry; other players will only see display name.
+            Don&apos;t worry; other players will only see display name.
           </p>
-
           <label style={labelStyle}>Display Name</label>
           <input
             type="text"
@@ -200,7 +192,6 @@ export default function SignUp() {
           <p style={{ color: '#555570', fontSize: '0.75rem', marginTop: '-10px', marginBottom: '16px' }}>
             This is what other players will see.
           </p>
-
           <label style={labelStyle}>Date of Birth</label>
           <input
             type="date"
@@ -209,7 +200,6 @@ export default function SignUp() {
             required
             style={inputStyle}
           />
-
           <label style={labelStyle}>How&apos;d you hear about us? (optional)</label>
           <input
             type="text"
@@ -217,7 +207,6 @@ export default function SignUp() {
             onChange={(e) => setHeardAboutUs(e.target.value)}
             style={inputStyle}
           />
-
           <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '20px', cursor: 'pointer' }}>
             <input
               type="checkbox"
@@ -225,13 +214,12 @@ export default function SignUp() {
               onChange={(e) => setAgreedToTerms(e.target.checked)}
               style={{ marginTop: '3px' }}
             />
-           <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
-  I agree to the{' '}
-  <a href="/terms" target="_blank" style={{ color: '#f0b429' }}>Terms & Conditions</a>
-  {' '} and Privacy Policy.
-</span>
+            <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
+              I agree to the{' '}
+              <a href="/terms" target="_blank" style={{ color: '#f0b429' }}>Terms & Conditions</a>
+              {' '} and Privacy Policy.
+            </span>
           </label>
-
           <button
             type="submit"
             disabled={loading}
@@ -249,13 +237,11 @@ export default function SignUp() {
           >
             {loading ? 'Creating Account...' : 'Sign Up'}
           </button>
-
           {message && (
             <p style={{ color: '#ff6b6b', fontSize: '0.85rem', marginTop: '16px', textAlign: 'center' }}>
               {message}
             </p>
           )}
-
           <p style={{ color: '#a0a0b0', fontSize: '0.85rem', marginTop: '16px', textAlign: 'center' }}>
             Already have an account?{' '}
             <a href="/login" style={{ color: '#f0b429', fontWeight: 'bold', textDecoration: 'none' }}>

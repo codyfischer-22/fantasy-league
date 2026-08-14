@@ -4,6 +4,7 @@ import React from 'react'
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { useRouter } from 'next/navigation'
 
 type League = {
   id: number
@@ -16,7 +17,7 @@ type League = {
 export default function LeagueHubPage() {
   const params = useParams()
   const type = params.type as string
-
+const router = useRouter()
   const [instances, setInstances] = useState<League[]>([])
   const [pageLoading, setPageLoading] = useState(true)
 
@@ -151,9 +152,11 @@ export default function LeagueHubPage() {
             flexDirection: 'column',
             justifyContent: 'center'
           }}>
+
             <h2 style={{ color: '#f0b429', fontSize: '1.7rem', marginBottom: '8px' }}>
-              📜 Rules & Scoring
-            </h2>
+              📜 Rules & Scoring <span className="demo-arrow">→</span>
+</h2>
+            
             <p style={{ color: '#a0a0b0', fontSize: '1rem', lineHeight: '1.5' }}>
               See the official point breakdown for challenges, idols, tribal councils, and the end game.
             </p>
@@ -171,8 +174,8 @@ export default function LeagueHubPage() {
             justifyContent: 'center'
           }}>
             <h2 style={{ color: '#f0b429', fontSize: '1.7rem', marginBottom: '8px' }}>
-              📋 Drafting & Trading
-            </h2>
+              📋 Drafting & Trading <span className="demo-arrow">→</span>
+</h2>
             <p style={{ color: '#a0a0b0', fontSize: '1rem', lineHeight: '1.5' }}>
               Study up on on draft windows, snake order, selection length, trade rules, etc.
             </p>
@@ -194,26 +197,27 @@ export default function LeagueHubPage() {
               {instances.length === 0 ? (
                 <p style={{ color: '#555570', fontSize: '0.9rem' }}>No public leagues available yet.</p>
               ) : (
-                instances.map(function (instance) {
-                  return React.createElement(
-                    'a',
-                    {
-                      key: instance.id,
-                      href: '/leagues/' + type + '/' + instance.slug,
-                      style: {
-                        backgroundColor: '#12121a',
-                        border: '0px solid #f0b429',
-                        borderRadius: '8px',
-                        padding: '14px 18px',
-                        textDecoration: 'none',
-                        color: '#ffffff',
-                        fontSize: '0.95rem',
-                        display: 'block'
-                      }
-                    },
-                    instance.name + ' →'
-                  )
-                })
+              instances.map(function (instance) {
+  return React.createElement(
+    'a',
+    {
+      key: instance.id,
+      href: '/leagues/' + type + '/' + instance.slug,
+      style: {
+        backgroundColor: '#12121a',
+        border: '0px solid #f0b429',
+        borderRadius: '8px',
+        padding: '14px 18px',
+        textDecoration: 'none',
+        color: '#ffffff',
+        fontSize: '0.95rem',
+        display: 'block'
+      }
+    },
+    instance.name + ' ',
+    React.createElement('span', { className: 'demo-arrow' }, '→')
+  )
+})
               )}
             </div>
           </div>
@@ -231,10 +235,10 @@ export default function LeagueHubPage() {
               🔒 Private Leagues
             </h2>
             <p style={{ color: '#555570', fontSize: '0.9rem', marginBottom: '12px' }}>
-              Coming Soon — Hosted by Crew Chiefs and Team Principals for their own private groups.
+              Coming soon! Hosted by Crew Chiefs and Team Principals for their own private groups.
             </p>
             <p className="create-league-link" style={{ color: '#555570', fontSize: '0.85rem', fontWeight: 'bold', cursor: 'default' }}>
-              Create a League → (Coming Soon)
+              Create a League → (Coming soon!)
             </p>
           </div>
 
@@ -251,9 +255,9 @@ export default function LeagueHubPage() {
           color: '#ffffff',
           marginBottom: '20px'
         }}>
-          <h2 style={{ color: '#f0b429', fontSize: '1.7rem', marginBottom: '0px' }}>
-             🎪 Demo League
-          </h2>
+          <h2 style={{ color: '#f0b429', fontSize: '1.7rem', marginBottom: '16px' }}>
+             🎪 Demo League <span className="demo-arrow">→</span>
+</h2>
           <p style={{ color: '#a0a0b0', fontSize: '1rem', lineHeight: '1.5' }}>
               See a &quot;real&quot; league in action to get a feel for how your league will look.
             </p>

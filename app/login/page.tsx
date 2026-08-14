@@ -10,27 +10,57 @@ export default function Login() {
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const [showForgotPassword, setShowForgotPassword] = useState(false)
+const [resetEmail, setResetEmail] = useState('')
+const [resetMessage, setResetMessage] = useState('')
+const [resetLoading, setResetLoading] = useState(false)
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setMessage('')
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-
-    setLoading(false)
-
-    if (error) {
-      setMessage(error.message)
-    } else {
-      router.push('/')
-    }
+  const handleResetPassword = async () => {
+  if (!resetEmail) {
+    setResetMessage('Please enter your email address.')
+    return
   }
 
-  return (
+  setResetLoading(true)
+  setResetMessage('')
+
+  const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+    redirectTo: `${window.location.origin}/reset-password`,
+  })
+
+  setResetLoading(false)
+
+  if (error) {
+    setResetMessage(error.message)
+  } else {
+    setResetMessage('Check your email for a password reset link!')
+  }
+}
+
+const handleLogin = async (e: React.FormEvent) => {
+  e.preventDefault()
+  setLoading(true)
+  setMessage('')
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  })
+
+  setLoading(false)
+
+  if (error) {
+    if (error.message === 'Invalid login credentials') {
+      setMessage('Invalid email or password. Please try again.')
+    } else {
+      setMessage(error.message)
+    }
+  } else {
+    router.push('/')
+  }
+}
+
+return (
     <main style={{
       backgroundColor: '#0a0a0f',
       minHeight: '100vh',
@@ -71,7 +101,7 @@ export default function Login() {
           }}
         />
 
-        <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '6px' }}>
+        <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '0px' }}>
           Password
         </label>
         <input
@@ -82,13 +112,76 @@ export default function Login() {
           style={{
             width: '100%',
             padding: '10px',
-            marginBottom: '24px',
+            marginBottom: '4px',
             borderRadius: '6px',
             border: '1px solid #2a2a3e',
             backgroundColor: '#12121a',
             color: '#ffffff'
           }}
         />
+
+<button
+  type="button"
+  onClick={() => setShowForgotPassword(!showForgotPassword)}
+  style={{
+    background: 'none',
+    border: 'none',
+    color: '#555570',
+    fontSize: '0.8rem',
+    cursor: 'pointer',
+    padding: 0,
+    marginBottom: '20px',
+    fontFamily: 'inherit'
+  }}
+>
+  Forgot your password?
+</button>
+
+{showForgotPassword && (
+  <div style={{
+    marginBottom: '20px',
+    textAlign: 'left',
+  }}>
+    <input
+      type="email"
+      placeholder="Enter Email for Reset Password"
+      value={resetEmail}
+      onChange={(e) => setResetEmail(e.target.value)}
+      style={{
+        width: '100%',
+        padding: '8px 10px',
+        marginBottom: '10px',
+        borderRadius: '6px',
+        border: '1px solid #2a2a3e',
+        backgroundColor: '#1a1a2e',
+        color: '#ffffff',
+        fontSize: '0.8rem'
+      }}
+    />
+    <button
+      type="button"
+      onClick={handleResetPassword}
+      disabled={resetLoading}
+      style={{
+        backgroundColor: '#f0b429',
+        color: '#0a0a0f',
+        border: 'none',
+        padding: '8px 16px',
+        borderRadius: '6px',
+        fontSize: '0.85rem',
+        fontWeight: 'bold',
+        cursor: resetLoading ? 'not-allowed' : 'pointer'
+      }}
+    >
+      {resetLoading ? 'Sending...' : 'Send Link'}
+    </button>
+    {resetMessage && (
+      <p style={{ color: '#a0a0b0', fontSize: '0.8rem', marginTop: '10px' }}>
+        {resetMessage}
+      </p>
+    )}
+  </div>
+)}
 
         <button
           type="submit"

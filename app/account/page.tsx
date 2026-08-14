@@ -29,6 +29,33 @@ function AccountContent() {
   const searchParams = useSearchParams()
   const highlightTier = searchParams.get('tier')
   const [cancelMessage, setCancelMessage] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [changingPassword, setChangingPassword] = useState(false)
+  const [passwordMessage, setPasswordMessage] = useState('')
+  const [showPasswordFields, setShowPasswordFields] = useState(false)
+
+  const handleChangePassword = async () => {
+    setPasswordMessage('')
+    if (newPassword.length < 6) {
+      setPasswordMessage('Password must be at least 6 characters.')
+      return
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordMessage('Passwords do not match.')
+      return
+    }
+    setChangingPassword(true)
+    const { error } = await supabase.auth.updateUser({ password: newPassword })
+    setChangingPassword(false)
+    if (error) {
+      setPasswordMessage(error.message)
+    } else {
+      setPasswordMessage('Password updated successfully!')
+      setNewPassword('')
+      setConfirmPassword('')
+    }
+  }
 
   const handleStripeCheckout = async (tier: string) => {
     if (!user) return
@@ -45,32 +72,27 @@ function AccountContent() {
     }
   }
 
-const handleCancelSubscription = async () => {
-  if (!user) return
-
-  const confirmed = window.confirm(
-    'Are you sure you want to downgrade? Doing so will cause you to lose membership perks at the end of your paid period. Your current membership tier will remain active until then.'
-  )
-  if (!confirmed) return
-
-  setUpgrading('stowaway')
-  setCancelMessage('')
-
-  const res = await fetch('/api/cancel-subscription', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId: user.id }),
-  })
-
-  const data = await res.json()
-  setUpgrading(null)
-
-  if (data.success) {
-    setCancelMessage(`Your subscription will end and automatically downgrade to the free tier on ${data.periodEnd}. You\u2019ll keep your current access until then.`)
-  } else {
-    setCancelMessage(data.error || 'Something went wrong. Please try again.')
+  const handleCancelSubscription = async () => {
+    if (!user) return
+    const confirmed = window.confirm(
+      'Are you sure you want to downgrade? Doing so will cause you to lose membership perks at the end of your paid period. Your current membership tier will remain active until then.'
+    )
+    if (!confirmed) return
+    setUpgrading('stowaway')
+    setCancelMessage('')
+    const res = await fetch('/api/cancel-subscription', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: user.id }),
+    })
+    const data = await res.json()
+    setUpgrading(null)
+    if (data.success) {
+      setCancelMessage(`Your subscription will end and automatically downgrade to the free tier on ${data.periodEnd}. You\u2019ll keep your current access until then.`)
+    } else {
+      setCancelMessage(data.error || 'Something went wrong. Please try again.')
+    }
   }
-}
 
   const handleUpgrade = async (tier: string) => {
     if (!user) return
@@ -222,15 +244,16 @@ const handleCancelSubscription = async () => {
             {['stowaway', 'castaway', 'crewchief', 'teamprincipal'].map((t) => (
               <button
                 key={t}
-onClick={() => {
-  if (isGlobalAdmin) {
-    handleUpgrade(t)
-  } else if (t === 'stowaway') {
-    handleCancelSubscription()
-  } else {
-    handleStripeCheckout(t)
-  }
-}}                disabled={upgrading !== null || profile.tier === t}
+                onClick={() => {
+                  if (isGlobalAdmin) {
+                    handleUpgrade(t)
+                  } else if (t === 'stowaway') {
+                    handleCancelSubscription()
+                  } else {
+                    handleStripeCheckout(t)
+                  }
+                }}
+                disabled={upgrading !== null || profile.tier === t}
                 style={{
                   backgroundColor: profile.tier === t ? '#f0b429' : 'transparent',
                   color: profile.tier === t ? '#0a0a0f' : '#f0b429',
@@ -248,15 +271,11 @@ onClick={() => {
               </button>
             ))}
           </div>
-
-{cancelMessage && (
-  <div style={{ color: '#f0b429', fontSize: '0.85rem', marginTop: '8px', fontWeight: 'bold' }}>
-    {cancelMessage}
-  </div>
-)}
-
-          <div style={{ color: '#555570', fontSize: '0.75rem', marginTop: '8px' }}>
-          </div>
+          {cancelMessage && (
+            <div style={{ color: '#a0a0b0', fontSize: '0.8rem', marginTop: '8px' }}>
+              {cancelMessage}
+            </div>
+          )}
         </div>
         <div>
           <div style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '4px' }}>Display Name</div>
@@ -309,22 +328,106 @@ onClick={() => {
               </button>
             </div>
           ) : (
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-              <div style={{ fontSize: '1.1rem' }}>{profile.display_name || 'Not set'}</div>
-              <button
-                onClick={() => setEditing(true)}
-                style={{
-                  backgroundColor: 'transparent',
-                  color: '#f0b429',
-                  border: '1px solid #f0b429',
-                  padding: '4px 12px',
-                  borderRadius: '6px',
-                  fontSize: '0.8rem',
-                  cursor: 'pointer'
-                }}
-              >
-                Edit
-              </button>
+           
+           
+           
+           
+           
+           
+           
+           
+          <div>
+  <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+    <div style={{ fontSize: '1.1rem' }}>{profile.display_name || 'Not set'}</div>
+    <button
+      onClick={() => setEditing(true)}
+      style={{
+        backgroundColor: 'transparent',
+        color: '#f0b429',
+        border: '1px solid #f0b429',
+        padding: '4px 12px',
+        borderRadius: '6px',
+        fontSize: '0.8rem',
+        cursor: 'pointer'
+      }}
+    >
+      Edit
+    </button>
+    <button
+      onClick={() => setShowPasswordFields(!showPasswordFields)}
+      style={{
+        backgroundColor: 'transparent',
+        color: '#f0b429',
+        border: '1px solid #f0b429',
+        padding: '4px 12px',
+        borderRadius: '6px',
+        fontSize: '0.8rem',
+        cursor: 'pointer'
+      }}
+    >
+      {showPasswordFields ? 'Cancel' : 'Change Password'}
+    </button>
+  </div>
+
+  {showPasswordFields && (
+    <div style={{ marginTop: '12px', textAlign: 'left' }}>
+
+                  <input
+                    type="Password"
+                    placeholder="New Password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '8px 10px',
+                      marginBottom: '8px',
+                      borderRadius: '6px',
+                      border: '1px solid #2a2a3e',
+                      backgroundColor: '#12121a',
+                      color: '#ffffff',
+                      fontSize: '0.9rem'
+                    }}
+                  />
+                  <input
+                    type="password"
+                    placeholder="Confirm New Password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '8px 10px',
+                      marginBottom: '10px',
+                      borderRadius: '6px',
+                      border: '1px solid #2a2a3e',
+                      backgroundColor: '#12121a',
+                      color: '#ffffff',
+                      fontSize: '0.9rem'
+                    }}
+                  />
+                  <button
+                    onClick={handleChangePassword}
+                    disabled={changingPassword}
+                    style={{
+                      backgroundColor: '#f0b429',
+                      color: '#0a0a0f',
+                      border: 'none',
+                      padding: '8px 16px',
+                      borderRadius: '6px',
+                      fontSize: '0.85rem',
+                      fontWeight: 'bold',
+                      cursor: changingPassword ? 'not-allowed' : 'pointer'
+                    }}
+                  >
+                    {changingPassword ? 'Updating...' : 'Update Password'}
+                  </button>
+                </div>
+              )}
+
+              {passwordMessage && (
+                <div style={{ color: '#a0a0b0', fontSize: '0.8rem', marginTop: '8px' }}>
+                  {passwordMessage}
+                </div>
+              )}
             </div>
           )}
           {saveMessage && (

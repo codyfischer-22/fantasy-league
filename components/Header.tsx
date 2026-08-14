@@ -15,7 +15,7 @@ type Notification = {
 export default function Header() {
   const { user, loading } = useAuth()
   const router = useRouter()
-
+  const [showExtrasModal, setShowExtrasModal] = useState(false)
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [showNotifications, setShowNotifications] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
@@ -26,17 +26,14 @@ export default function Header() {
         setNotifications([])
         return
       }
-
       const { data } = await supabase
         .from('notifications')
         .select('id, message, link, is_read')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(10)
-
       setNotifications(data ?? [])
     }
-
     loadNotifications()
   }, [user])
 
@@ -46,16 +43,13 @@ export default function Header() {
         setIsAdmin(false)
         return
       }
-
       const { data } = await supabase
         .from('profiles')
         .select('is_global_admin')
         .eq('user_id', user.id)
         .single()
-
       setIsAdmin(data?.is_global_admin ?? false)
     }
-
     checkAdmin()
   }, [user])
 
@@ -82,7 +76,8 @@ export default function Header() {
     <header style={{
       backgroundColor: '#12121a',
       borderBottom: '2px solid #f0b429',
-      padding: '20px 40px',
+      padding: '16px 20px',
+      flexWrap: 'wrap',
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center'
@@ -106,19 +101,33 @@ export default function Header() {
           Gather Buddies. Draft Teams. Make History.
         </p>
       </a>
-      <nav style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+
+      <nav style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center' }}>
         <a href="/#tiers" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Pricing</a>
         <a href="/leagues-overview" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.2rem' }}>Leagues</a>
-        <a href="mailto:codyray.fischer@gmail.com" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Contact</a>
-        <a style={{ color: '#302e2b', textDecoration: 'none', fontSize: '1.1rem' }}>Extras</a>
+        <a href="/contact" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Contact</a>
 
-        {isAdmin && (
-          <a href="/admin/scoring" className="btn" style={{ color: '#ff6b6b', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 'bold' }}>
-            ⚙️
-          </a>
-        )}
-
-        {user && (
+        <button
+          onClick={() => setShowExtrasModal(true)}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: '#f0b429',
+            textDecoration: 'none',
+            fontSize: '1.1rem',
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+            padding: 0
+          }}
+        >
+          Extras
+        </button>
+  
+        {loading ? null : user ? (
+          <>
+            <a href="/account" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Account</a>
+           
+               {user && (
           <div style={{ position: 'relative' }}>
             <button
               onClick={() => setShowNotifications(!showNotifications)}
@@ -199,7 +208,8 @@ export default function Header() {
                           e.stopPropagation()
                           deleteNotification(n.id)
                         }}
-                        className="btn" style={{
+                        className="btn"
+                        style={{
                           position: 'absolute',
                           top: '6px',
                           right: '6px',
@@ -221,9 +231,11 @@ export default function Header() {
           </div>
         )}
 
-        {loading ? null : user ? (
-          <>
-            <a href="/account" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>My Account</a>
+  {isAdmin && (
+          <a href="/admin/scoring" className="btn" style={{ color: '#ff6b6b', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 'bold' }}>
+            ⚙️
+          </a>
+        )}
             <button onClick={handleSignOut} style={{
               backgroundColor: 'transparent',
               color: '#f0b429',
@@ -247,6 +259,46 @@ export default function Header() {
           }}>Sign In</a>
         )}
       </nav>
+
+      {showExtrasModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.7)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 100
+        }}>
+          <div style={{
+            backgroundColor: '#1a1a2e',
+            border: '1px solid #f0b429',
+            borderRadius: '12px',
+            padding: '32px',
+            maxWidth: '380px',
+            textAlign: 'center'
+          }}>
+            <h3 style={{ color: '#f0b429', fontSize: '2rem', textAlign: 'left', marginBottom: '12px' }}>
+              🔧 Coming soon!
+            </h3>
+            <p style={{ color: '#a0a0b0', fontSize: '1rem', textAlign: 'left', marginBottom: '24px', lineHeight: '1.6' }}>
+              Stay tuned for extra features like regular blog posts, special offers, and more!
+            </p>
+            <button onClick={() => setShowExtrasModal(false)} style={{
+              backgroundColor: '#f0b429',
+              color: '#0a0a0f',
+              padding: '10px 28px',
+              borderRadius: '6px',
+              border: 'none',
+              fontWeight: 'bold',
+              fontSize: '0.9rem',
+              cursor: 'pointer'
+            }}>
+              Got it!
+            </button>
+          </div>
+        </div>
+      )}
     </header>
   )
 }

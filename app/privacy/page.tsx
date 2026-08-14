@@ -73,7 +73,7 @@ export default function PrivacyPage() {
             5. Your Choices
           </h2>
           <p>
-            You can update your display name at any time from your My Account page. To request
+            You can update your display name at any time from your Account page. To request
             deletion of your account and associated data, contact us using the contact link.
           </p>
 
@@ -81,7 +81,7 @@ export default function PrivacyPage() {
             6. Changes to This Policy
           </h2>
           <p>
-            We may update this Privacy Policy from time to time. Continued use of Tregon
+            We may update this Privacy Policy from time to time. Continued use of Trekkon
             Fantasy Leagues after changes are posted means you accept the updated policy.
           </p>
 
