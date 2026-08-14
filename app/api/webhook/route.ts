@@ -25,18 +25,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
 
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object as Stripe.Checkout.Session
-    const userId = session.client_reference_id
-    const tier = session.metadata?.tier
+ if (event.type === 'checkout.session.completed') {
+  const session = event.data.object as Stripe.Checkout.Session
+  const userId = session.client_reference_id
+  const tier = session.metadata?.tier
+  const customerId = session.customer as string
 
-    if (userId && tier) {
-      await supabaseAdmin
-        .from('profiles')
-        .update({ tier })
-        .eq('user_id', userId)
-    }
+  if (userId && tier) {
+    await supabaseAdmin
+      .from('profiles')
+      .update({ tier, stripe_customer_id: customerId })
+      .eq('user_id', userId)
   }
+}
 
   if (event.type === 'customer.subscription.deleted') {
     const subscription = event.data.object as Stripe.Subscription

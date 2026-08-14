@@ -46,9 +46,10 @@ export default function Home() {
   margin: '0 auto 32px auto',
   lineHeight: '1.7'
 }}>
-  We inspire couch potatoes around the country to cheer on and team up with reality television stars, racers, and athletes in the hopes they'll get out there and take on the world themselves.
+  <span style={{ fontStyle: 'italic' }}>Trekkon</span> is derived from the biblical <span style={{ fontStyle: 'italic' }}>"τρέχω,"</span> to race or run, and <span style={{ fontStyle: 'italic' }}>"ἀγών,"</span> a gathering place for games, competitions, or battles.
+We inspire players to cheer on and team up with reality television stars and drivers in the hopes they&apos;ll race out and conquer their own battles!
 </p>
-        <a href="#leagues" style={{
+        <a href="#leagues" className="btn" style={{
           backgroundColor: '#f0b429',
           color: '#0a0a0f',
           padding: '14px 32px',
@@ -114,8 +115,8 @@ export default function Home() {
               <li>✅ Join 1 Public League</li>
               <li>✅ Private League Access</li>
               <li>✅ Basic Leaderboards</li>
-      <li>✅ Extend Trade Offers</li>
-              <li>❌ No Public Group Chat</li>
+      <li>✅ Trade Portal Access</li>
+              <li>❌ No Public Chat</li>
               <li>❌ No Analytics</li>
               <li>❌ No League Hosting</li>
               <li>❌ No Settings Controls</li>
@@ -142,8 +143,8 @@ export default function Home() {
               <li>✅ Multiple Public Leagues</li>
               <li>✅ Private League Access</li>
               <li>✅ Basic Leaderboards</li>
-              <li>✅ Extend Trade Offers</li>
-              <li>✅ Public Group Chat</li>
+              <li>✅ Trade Portal Access</li>
+              <li>✅ Public League Chat</li>
               <li>✅ Tracking Analytics</li>
               <li>❌ No League Hosting</li>
               <li>❌ No Settings Controls</li>
@@ -169,10 +170,10 @@ export default function Home() {
               <li>✅ Multiple Public Leagues</li>
               <li>✅ Private League Access</li>
               <li>✅ Basic Leaderboards</li>
-                 <li>✅ Extend Trade Offers</li>
-                 <li>✅ Public Group Chat</li>
+                 <li>✅ Trade Portal Access</li>
+                 <li>✅ Public League Chat</li>
               <li>✅ Tracking Analytics</li>
-              <li>✅ Host 3-6 Player Leagues</li>
+              <li>✅ Host 8-Player League</li>
               <li>✅ Custom League Settings</li>
               
             </ul>
@@ -215,10 +216,10 @@ export default function Home() {
            <li>✅ Multiple Public Leagues</li>
               <li>✅ Private League Access</li>
               <li>✅ Basic Leaderboards</li>
-                 <li>✅ Extend Trade Offers</li>
-                 <li>✅ Public Group Chat</li>
+                 <li>✅ Trade Portal Access</li>
+                 <li>✅ Public League Chat</li>
               <li>✅ Tracking Analytics</li>
-              <li>⭐ Host 7-18 Player Leagues</li>
+              <li>⭐ Host 3 18-Player Leagues</li>
               <li>✅ Custom League Settings</li>
               
             </ul>
@@ -452,9 +453,9 @@ Red Lights Out →
           lineHeight: '1.7'
         }}>
           Got an idea for a fantasy league we should build next? Send us your concept and help shape
-          the future of Fischer Fantasy Leagues.
+          the future of Trekkon Fantasy Leagues.
         </p>
-        <a href="mailto:codyray.fischer@gmail.com" style={{
+        <a href="mailto:codyray.fischer@gmail.com" className="btn" style={{
           backgroundColor: '#f0b429',
           color: '#0a0a0f',
           padding: '14px 32px',

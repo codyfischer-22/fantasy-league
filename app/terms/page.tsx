@@ -18,7 +18,7 @@ export default function TermsPage() {
           display: 'inline-block',
           marginBottom: '24px'
         }}>
-          ← Back to Fischer Fantasy Leagues
+          ← Back to Trekkon Fantasy Leagues
         </a>
 
         <h1 style={{ color: '#f0b429', fontSize: '2.25rem', marginBottom: '-2px' }}>
@@ -34,7 +34,7 @@ export default function TermsPage() {
             1. What This Is
           </h2>
           <p>
-            Fischer Fantasy Leagues is an independent, fan-run fantasy leagues platform. It is not
+            Trekkon Fantasy Leagues is an independent, fan-run fantasy leagues platform. It is not
             affiliated with, endorsed by, or connected to Survivor, NASCAR, F1, or any official television
             network, sports league, or production company. All league content is created by fans
             for the enjoyment of fans. 
@@ -72,7 +72,7 @@ export default function TermsPage() {
           <p>
             All payments are final. This includes situations where a players' private league host fails to
             perform their hosting duties (e.g. running a draft, entering scores, or managing league).
-            Fischer Fantasy Leagues is not responsible for issuing refunds in cases of league host withdrawal 
+            Trekkon Fantasy Leagues is not responsible for issuing refunds in cases of league host withdrawal 
             or negligence. We are merely providing an opportunity for users to privately host fantasy leagues 
             for friends and family, but cannot guarantee any one league will run to completion without its 
             dedicated paid tier host. Before joining a private league, you commit to and are responsible for
@@ -96,7 +96,7 @@ export default function TermsPage() {
             6. No Cash Prizes, No Gambling
           </h2>
           <p>
-            Fischer Fantasy Leagues does not offer cash prizes or monetary winnings of any kind.
+            Trekkon Fantasy Leagues does not offer cash prizes or monetary winnings of any kind.
             Membership fees pay for access to bonus app features (hosting tools, analytics, chat,
             etc.) and not entry into any contest for money. All leagues are played for standings,
             bragging rights, and fun; they can be played on equal terms with or without a paid 
@@ -107,11 +107,11 @@ export default function TermsPage() {
             7. Draft & Scoring Decisions
           </h2>
           <p>
-            Final league scoring is determined by Fischer Fantasy Leagues Administration based on 
+            Final league scoring is determined by Trekkon Fantasy Leagues Administration based on 
             real-world episode or sporting events. Administrators will do their best to adhere to the 
             spirit and letter of the rules published for each respective league. Questions about a
             specific ruling (which will inevitably arise given the unpredictable nature of sports and 
-            reality television) are welcome via the Fischer Fantasy Leagues contact page, but appeals 
+            reality television) are welcome via the Trekkon Fantasy Leagues contact page, but appeals 
             are not guaranteed to change a result. That is to say all scoring decisions are final unless
             administrator decide of their own volition to change the original decision.
           </p>
@@ -123,7 +123,7 @@ export default function TermsPage() {
   League chats and other community features are meant to be fun, welcoming spaces for
   fellow players and fans. Harassment, bullying, hate speech, threats, spam, or targeted 
   personal attacks against other players or league contestants will not be tolerated. 
-  This applies to both public and private league chats. Fischer Fantasy Leagues reserves
+  This applies to both public and private league chats. Trekkon Fantasy Leagues reserves
 the right to remove any message, mute, suspend, or permanently ban accounts found abusing
  chat features. This may occur at our sole discretion and without notice or refund. Repeated
   or severe violations may result in immediate action up to account termination.
@@ -133,10 +133,10 @@ the right to remove any message, mute, suspend, or permanently ban accounts foun
   9. Intellectual Property
 </h2>
 <p>
-  All original content on Fischer Fantasy Leagues—including our branding, league names,
-  logos, site design, written rules, and scoring systems—is owned by Fischer Fantasy
+  All original content on Trekkon Fantasy Leagues—including our branding, league names,
+  logos, site design, written rules, and scoring systems—is owned by Tregon Fantasy
   Leagues and may not be copied, reproduced, or used to create a competing product without
-  permission. As noted above, Fischer Fantasy Leagues is an unofficial, fan-created platform.
+  permission. As noted above, Trekkon Fantasy Leagues is an unofficial, fan-created platform.
 We do not claim ownership of Survivor, NASCAR, F1, or any other underlying television property,
  and nothing in these terms grants you the player any rights to that content either.
 </p>
@@ -155,14 +155,14 @@ We do not claim ownership of Survivor, NASCAR, F1, or any other underlying telev
           </h2>
           <p>
             These terms may be updated from time to time as our platform grows. Continued use of
-            Fischer Fantasy Leagues after changes are posted means you accept the updated terms.
+            Trekkon Fantasy Leagues after changes are posted means you accept the updated terms.
           </p>
 
           <h2 style={{ color: '#f0b429', fontSize: '1.0rem', marginTop: '12px', marginBottom: '0px' }}>
   12. Disclaimer of Liability
 </h2>
 <p>
-  Fischer Fantasy Leagues is provided &quot;as is&quot; without warranties of any kind. We
+  Trekkon Fantasy Leagues is provided &quot;as is&quot; without warranties of any kind. We
   do our best to keep the platform running smoothly, but we are not liable for lost draft
   picks, missed deadlines, scoring errors, downtime, data loss, or any other issue arising
   from your use of the site. We will, of course, do everything in our power to solve problems

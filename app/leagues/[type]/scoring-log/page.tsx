@@ -131,7 +131,7 @@ export default function ScoringLogPage() {
           <span style={{ color: '#ffffff' }}>Scoring Log</span>
         </h1>
         <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '32px' }}>
-          Every scoring event, episode by episode — full transparency on how points were awarded.
+          Every scoring event, episode by episode, with full transparency how points were awarded:
         </p>
 
         {episodes.length === 0 ? (

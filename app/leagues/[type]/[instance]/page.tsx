@@ -363,7 +363,8 @@ setHasDrafted((pickCount ?? 0) > 0)
                   color: '#f0b429',
                   fontSize: '1.5rem',
                   fontWeight: 'bold',
-                  marginBottom: '12px'
+                  marginBottom: '12px',
+                   whiteSpace: 'nowrap'
                 }}>
                   You&apos;re in the league, {tierLabels[memberTier ?? ''] ?? memberTier}!
                 </p>
@@ -374,7 +375,7 @@ setHasDrafted((pickCount ?? 0) > 0)
                   justifyContent: 'center',
                   gap: '12px'
                 }}>
-                  <a href={`/leagues/${type}/${instance}/rankings`} style={{
+                  <a href={`/leagues/${type}/${instance}/rankings`} className="btn" style={{
                     display: 'inline-block',
                     backgroundColor: 'transparent',
                     border: '1px solid #f0b429',
@@ -388,19 +389,19 @@ setHasDrafted((pickCount ?? 0) > 0)
                     Submit Draft Rankings →
                   </a>
 
-                  <a href="/account" style={{
-                    display: 'inline-block',
-                    backgroundColor: 'transparent',
-                    color: '#f0b429',
-                    border: '1px solid #f0b429',
-                    padding: '10px 22px',
-                    borderRadius: '6px',
-                    textDecoration: 'none',
-                    fontWeight: 'bold',
-                    fontSize: '0.9rem'
-                  }}>
-                    Upgrade Membership →
-                  </a>
+                 <a href="/account" className="btn" style={{
+  display: 'inline-block',
+  backgroundColor: 'transparent',
+  color: '#f0b429',
+  border: '1px solid #f0b429',
+  padding: '10px 22px',
+  borderRadius: '6px',
+  textDecoration: 'none',
+  fontWeight: 'bold',
+  fontSize: '0.9rem',
+}}>
+  {memberTier === 'teamprincipal' ? 'Manage Membership →' : 'Upgrade Membership →'}
+</a>
 
                   <button
                     onClick={handleLeave}

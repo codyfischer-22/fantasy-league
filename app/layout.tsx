@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Fischer Fantasy Leagues",
-  description: "Your fantasy league platform",
+  title: "Trekkon Fantasy Leagues",
+  description: "Your Fantasy League Platform",
   icons: {
     icon: "/favicon.svg",
   },

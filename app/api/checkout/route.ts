@@ -3,9 +3,9 @@ import { stripe } from '@/lib/stripe'
 import { supabase } from '@/lib/supabase'
 
 const priceMap: Record<string, string> = {
-  castaway: 'price_1U3pGw1AFZttfqaY27sXiUYo',
-  crewchief: 'price_1U3pIS1AFZttfqaY9tcHRryA',
-  teamprincipal: 'price_1U3pJW1AFZttfqaYsOceAZJD',
+  castaway: 'price_1U3sBW1iDc94BxsyaNCyLUgT',
+  crewchief: 'price_1U3sBX1iDc94Bxsydih4bcjC',
+  teamprincipal: 'price_1U3sBV1iDc94BxsyXPdP0UCH',
 }
 
 export async function POST(req: NextRequest) {

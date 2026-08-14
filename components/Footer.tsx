@@ -9,10 +9,10 @@ export default function Footer() {
       fontSize: '1.0rem'
     }}>
       <p style={{ marginBottom: '8px' }}>
-        🔱 <span style={{ color: '#f0b429', fontWeight: 'bold' }}>Fischer Fantasy Leagues</span> — All Rights Reserved
+        ⚜️ <span style={{ color: '#f0b429', fontWeight: 'bold' }}>Trekkon Fantasy Leagues</span> — All Rights Reserved
       </p>
       <p style={{ fontSize: '.9em', color: '#555570', marginBottom: '0px' }}>
-        Fischer Fantasy Leagues is an independent, fan-run platform not affiliated with,
+        Trekkon Fantasy Leagues is an independent, fan-run platform not affiliated with,
         endorsed by, or connected to any official sports organization or television network.
       </p>
       <p style={{

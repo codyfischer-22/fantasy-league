@@ -18,7 +18,7 @@ const rulesContent: Record<string, {
   'politics-on-the-beach': {
     leagueName: 'Politics on the Beach',
     intro: [
-      'Fischer Fantasy Leagues is all about keeping our leagues simple and players\u2019 viewing experience pure. We do not want to, as a wise soul before television wrote, "murder to dissect" trying to annotate every worm eaten, tear shed, and blindside planned. Leave the tabulations to us, then, and focus on restocking your watch party\u2019s bean dip, enjoying the island politics, and "Thursday Morning Quarterbacking" in the group chat.',
+      'Trekkon Fantasy Leagues is all about keeping our leagues simple and players\u2019 viewing experience pure. We do not want to, as a wise soul before television wrote, "murder to dissect" trying to annotate every worm eaten, tear shed, and blindside planned. Leave the tabulations to us, then, and focus on restocking your watch party\u2019s bean dip, enjoying the island politics, and "Thursday Morning Quarterbacking" in the group chat.',
       'When our beloved franchise throws us twists and turns – looking at you Billie Eilish – please trust our team will do our best to arbitrate according to both the letter and spirit of the law.',
     ],
     sections: [

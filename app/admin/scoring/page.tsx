@@ -22,20 +22,20 @@ const categories: CategoryDef[] = [
   { key: 'team_immunity_safety', label: 'Immunity Safety (Team)', points: 5 },
   { key: 'team_immunity_win', label: 'Immunity Win (Team)', points: 8 },
   { key: 'individual_immunity_win', label: 'Immunity Win (Individual)', points: 15 },
-  { key: 'idol_found', label: 'Acquire Idol', points: 10 },
+  { key: 'idol_found', label: 'Idol Found', points: 10 },
   { key: 'successful_idol_play', label: 'Successful Idol Play', points: 15 },
-  { key: 'idol_in_pocket', label: 'Idol-in-Pocket Boot', points: -20 },
+  { key: 'idol_in_pocket', label: 'Left with Idol in Pocket', points: -20 },
   { key: 'first_off_starter_tribe', label: 'First Off Starter Tribe', points: -10 },
-  { key: 'first_boot', label: 'First Vote Boot', points: -10 },
+  { key: 'first_boot', label: 'First Boot (Voted Off)', points: -10 },
   { key: 'votes_against', label: 'Votes Against', points: -2, allowCount: true },
-  { key: 'survived_tribal_cycle', label: 'Survive Tribal Cycle', points: 5 },
-  { key: 'make_merge', label: 'Make the Merge', points: 10 },
-  { key: 'make_final_tribal', label: 'Make Final Tribal', points: 20 },
-  { key: 'sole_survivor', label: 'Win Sole Survivor', points: 25 },
+  { key: 'survived_tribal_cycle', label: 'Survived Tribal Cycle', points: 5 },
+  { key: 'make_merge', label: 'Made the Merge', points: 10 },
+  { key: 'make_final_tribal', label: 'Made Final Tribal', points: 20 },
+  { key: 'sole_survivor', label: 'Won Sole Survivor', points: 25 },
   { key: 'zero_vote_finalist', label: '0-Vote Finalist', points: -10 },
 ]
 
-type RowState = Record<string, number> // category key -> count (0 = not selected)
+type RowState = Record<string, number>
 
 export default function ScoringAdminPage() {
   const { user, loading } = useAuth()
@@ -43,12 +43,23 @@ export default function ScoringAdminPage() {
 
   const [isAdmin, setIsAdmin] = useState(false)
   const [checking, setChecking] = useState(true)
+  const [selectedLeagueType, setSelectedLeagueType] = useState('politics-on-the-beach')
   const [castaways, setCastaways] = useState<Castaway[]>([])
   const [episodeNumber, setEpisodeNumber] = useState('')
   const [rows, setRows] = useState<Record<number, RowState>>({})
   const [manualAdjust, setManualAdjust] = useState<Record<number, { points: string; notes: string }>>({})
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
+
+  const loadCastaways = async (leagueType: string) => {
+    const { data: castawayList } = await supabase
+      .from('castaways')
+      .select('id, name, status')
+      .eq('league_type', leagueType)
+      .order('id')
+
+    setCastaways(castawayList ?? [])
+  }
 
   useEffect(() => {
     async function checkAdmin() {
@@ -65,14 +76,7 @@ export default function ScoringAdminPage() {
 
       if (profile?.is_global_admin) {
         setIsAdmin(true)
-
-        const { data: castawayList } = await supabase
-          .from('castaways')
-          .select('id, name, status')
-          .eq('league_type', 'politics-on-the-beach')
-          .order('id')
-
-        setCastaways(castawayList ?? [])
+        await loadCastaways(selectedLeagueType)
       }
 
       setChecking(false)
@@ -129,8 +133,8 @@ export default function ScoringAdminPage() {
         const count = rowState[cat.key] ?? 0
         if (count > 0) {
           entries.push({
-            league_type: 'politics-on-the-beach',
-            season: 'Survivor 51',
+            league_type: selectedLeagueType,
+            season: selectedLeagueType === 'politics-on-the-beach' ? 'Survivor 51' : 'Demo Season',
             episode_number: parseInt(episodeNumber),
             castaway_id: castaway.id,
             category: cat.key,
@@ -144,8 +148,8 @@ export default function ScoringAdminPage() {
       const manual = manualAdjust[castaway.id]
       if (manual && manual.points && parseInt(manual.points) !== 0) {
         entries.push({
-          league_type: 'politics-on-the-beach',
-          season: 'Survivor 51',
+          league_type: selectedLeagueType,
+          season: selectedLeagueType === 'politics-on-the-beach' ? 'Survivor 51' : 'Demo Season',
           episode_number: parseInt(episodeNumber),
           castaway_id: castaway.id,
           category: 'manual_adjustment',
@@ -162,52 +166,52 @@ export default function ScoringAdminPage() {
       return
     }
 
-await supabase
-  .from('episode_scores')
-  .delete()
-  .eq('league_type', 'politics-on-the-beach')
-  .eq('episode_number', parseInt(episodeNumber))
+    await supabase
+      .from('episode_scores')
+      .delete()
+      .eq('league_type', selectedLeagueType)
+      .eq('episode_number', parseInt(episodeNumber))
 
-const { error } = await supabase.from('episode_scores').insert(entries)
+    const { error } = await supabase.from('episode_scores').insert(entries)
 
-if (error) {
-  setSaving(false)
-  setMessage('Something went wrong saving. ' + error.message)
-  return
-}
+    if (error) {
+      setMessage('Something went wrong saving. ' + error.message)
+      setSaving(false)
+      return
+    }
 
-const { data: allLeagues } = await supabase
-  .from('leagues')
-  .select('id')
-  .eq('league_type', 'politics-on-the-beach')
+    const { data: allLeagues } = await supabase
+      .from('leagues')
+      .select('id')
+      .eq('league_type', selectedLeagueType)
 
-const leagueIds = (allLeagues ?? []).map((l) => l.id)
+    const leagueIds = (allLeagues ?? []).map((l) => l.id)
 
-const { data: allMembers } = await supabase
-  .from('league_members')
-  .select('user_id')
-  .in('league_id', leagueIds)
+    const { data: allMembers } = await supabase
+      .from('league_members')
+      .select('user_id')
+      .in('league_id', leagueIds)
 
-const uniqueUserIds = [...new Set((allMembers ?? []).map((m) => m.user_id))]
+    const uniqueUserIds = [...new Set((allMembers ?? []).map((m) => m.user_id))]
 
-if (uniqueUserIds.length > 0) {
-  const { error: notifError } = await supabase.from('notifications').insert(
-    uniqueUserIds.map((uid) => ({
-      user_id: uid,
-      message: `🧮 Episode ${episodeNumber} scores are in! Click here to see how you did!`,
-      link: `/leagues/politics-on-the-beach/scoring-log`,
-    }))
-  )
+    if (uniqueUserIds.length > 0) {
+      const { error: notifError } = await supabase.from('notifications').insert(
+        uniqueUserIds.map((uid) => ({
+          user_id: uid,
+          message: `It's official! Your draft results for Episode ${episodeNumber} are live! Check your roster.`,
+          link: `/leagues/${selectedLeagueType}/scoring-log`,
+        }))
+      )
 
-  if (notifError) {
-    console.error('Notification error:', notifError)
-  }
-}
+      if (notifError) {
+        console.error('Notification error:', notifError)
+      }
+    }
 
-setSaving(false)
-setMessage(`Saved ${entries.length} scoring events for Episode ${episodeNumber}!`)
-setRows({})
-setManualAdjust({})
+    setSaving(false)
+    setMessage(`Saved ${entries.length} scoring events for Episode ${episodeNumber}!`)
+    setRows({})
+    setManualAdjust({})
   }
 
   if (loading || checking) {
@@ -221,7 +225,7 @@ setManualAdjust({})
   if (!user || !isAdmin) {
     return (
       <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0a0b0', fontFamily: 'Georgia, serif' }}>
-        <p>Access Reserved for Administrators</p>
+        <p>Access denied.</p>
       </main>
     )
   }
@@ -230,10 +234,35 @@ setManualAdjust({})
     <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
 
-     <h1 style={{ fontSize: '2rem', marginBottom: '16px' }}>
-  🏝️ <span style={{ color: '#f0b429' }}>Season 51</span>{' '}
-  <span style={{ color: '#ffffff' }}>Episode Scoring Guide</span>
-</h1>
+        <h1 style={{ fontSize: '2rem', marginBottom: '16px' }}>
+          🧮 <span style={{ color: '#f0b429' }}>Politics on the Beach</span>{' '}
+          <span style={{ color: '#ffffff' }}>ESG</span>
+        </h1>
+
+        <div style={{ marginBottom: '24px' }}>
+          <label style={{ color: '#a0a0b0', fontSize: '0.85rem', display: 'block', marginBottom: '6px' }}>
+            League
+          </label>
+          <select
+            value={selectedLeagueType}
+            onChange={(e) => {
+              setSelectedLeagueType(e.target.value)
+              loadCastaways(e.target.value)
+              setRows({})
+              setManualAdjust({})
+            }}
+            style={{
+              padding: '8px 12px',
+              borderRadius: '6px',
+              border: '1px solid #2a2a3e',
+              backgroundColor: '#12121a',
+              color: '#ffffff'
+            }}
+          >
+            <option value="politics-on-the-beach">Politics on the Beach (Real Season)</option>
+            <option value="potb-demo">Sample League (Demo)</option>
+          </select>
+        </div>
 
         <div style={{ marginBottom: '24px' }}>
           <label style={{ color: '#a0a0b0', fontSize: '0.85rem', display: 'block', marginBottom: '6px' }}>
@@ -258,27 +287,27 @@ setManualAdjust({})
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
             <thead>
               <tr style={{ borderBottom: '2px solid #f0b429' }}>
-                <th style={{ padding: '8px', textAlign: 'left', position: 'sticky', left: 0, backgroundColor: '#0a0a0f' }}>Season 51 Castaway</th>
+                <th style={{ padding: '8px', textAlign: 'left', position: 'sticky', left: 0, backgroundColor: '#0a0a0f' }}>Castaway</th>
                 {categories.map((cat) => (
-        <th key={cat.key} style={{
-  padding: '6px 4px',
-  color: '#f0b429',
-  minWidth: '70px',
-  verticalAlign: 'bottom'
-}}>
-  <div style={{
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-    height: '100%',
-    minHeight: '48px'
-  }}>
-    <div>{cat.label}</div>
-    <div style={{ color: '#ffffff', marginTop: '4px' }}>
-      {cat.points > 0 ? '+' : ''}{cat.points}
-    </div>
-  </div>
-</th>
+                  <th key={cat.key} style={{
+                    padding: '6px 4px',
+                    color: '#f0b429',
+                    minWidth: '70px',
+                    verticalAlign: 'bottom'
+                  }}>
+                    <div style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'flex-end',
+                      height: '100%',
+                      minHeight: '48px'
+                    }}>
+                      <div>{cat.label}</div>
+                      <div style={{ color: '#ffffff', marginTop: '4px' }}>
+                        {cat.points > 0 ? '+' : ''}{cat.points}
+                      </div>
+                    </div>
+                  </th>
                 ))}
                 <th style={{ padding: '6px 4px', color: '#ff6b6b', minWidth: '100px' }}>Manual Adj.</th>
               </tr>
@@ -319,7 +348,7 @@ setManualAdjust({})
                   <td style={{ padding: '6px 4px' }}>
                     <input
                       type="number"
-                      placeholder="Pts."
+                      placeholder="pts"
                       value={manualAdjust[castaway.id]?.points ?? ''}
                       onChange={(e) => setManualField(castaway.id, 'points', e.target.value)}
                       style={{
@@ -334,7 +363,7 @@ setManualAdjust({})
                     />
                     <input
                       type="text"
-                      placeholder="Note"
+                      placeholder="note"
                       value={manualAdjust[castaway.id]?.notes ?? ''}
                       onChange={(e) => setManualField(castaway.id, 'notes', e.target.value)}
                       style={{
@@ -356,6 +385,7 @@ setManualAdjust({})
         <button
           onClick={handleSave}
           disabled={saving}
+          className="btn-gold"
           style={{
             marginTop: '24px',
             backgroundColor: '#f0b429',

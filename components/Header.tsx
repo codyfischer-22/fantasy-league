@@ -95,7 +95,7 @@ export default function Header() {
           letterSpacing: '2px',
           fontWeight: 'bold'
         }}>
-          🔱 FISCHER FANTASY LEAGUES
+          ⚜️ Trekkon Fantasy Leagues
         </h1>
         <p style={{
           color: '#a0a0b0',
@@ -107,13 +107,13 @@ export default function Header() {
         </p>
       </a>
       <nav style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-        <a href="/#tiers" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Pricing</a>
-        <a href="/leagues-overview" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.2rem' }}>Leagues</a>
-        <a href="mailto:codyray.fischer@gmail.com" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Contact</a>
+        <a href="/#tiers" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Pricing</a>
+        <a href="/leagues-overview" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.2rem' }}>Leagues</a>
+        <a href="mailto:codyray.fischer@gmail.com" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Contact</a>
         <a style={{ color: '#302e2b', textDecoration: 'none', fontSize: '1.1rem' }}>Extras</a>
 
         {isAdmin && (
-          <a href="/admin/scoring" style={{ color: '#ff6b6b', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 'bold' }}>
+          <a href="/admin/scoring" className="btn" style={{ color: '#ff6b6b', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 'bold' }}>
             ⚙️
           </a>
         )}
@@ -199,7 +199,7 @@ export default function Header() {
                           e.stopPropagation()
                           deleteNotification(n.id)
                         }}
-                        style={{
+                        className="btn" style={{
                           position: 'absolute',
                           top: '6px',
                           right: '6px',
@@ -223,7 +223,7 @@ export default function Header() {
 
         {loading ? null : user ? (
           <>
-            <a href="/account" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>My Account</a>
+            <a href="/account" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>My Account</a>
             <button onClick={handleSignOut} style={{
               backgroundColor: 'transparent',
               color: '#f0b429',
@@ -236,7 +236,7 @@ export default function Header() {
             }}>Sign Out</button>
           </>
         ) : (
-          <a href="/login" style={{
+          <a href="/login" className="btn" style={{
             backgroundColor: '#f0b429',
             color: '#0a0a0f',
             padding: '8px 16px',

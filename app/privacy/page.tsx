@@ -18,7 +18,7 @@ export default function PrivacyPage() {
           display: 'inline-block',
           marginBottom: '24px'
         }}>
-          ← Back to Fischer Fantasy Leagues
+          ← Back to Trekkon Fantasy Leagues
         </a>
 
         <h1 style={{ color: '#f0b429', fontSize: '2.25rem', marginBottom: '-2px' }}>
@@ -38,7 +38,7 @@ export default function PrivacyPage() {
             display name, and date of birth. Your first and last name are kept private and
             never shown to other players; only your display name is public. If you subscribe
             to a paid tier, payment information is processed securely by Stripe; we never see
-            or store your full card number. Fischer Fantasy Leagues has no access to username
+            or store your full card number. Trekkon Fantasy Leagues has no access to username
             passwords.
           </p>
 
@@ -58,7 +58,7 @@ export default function PrivacyPage() {
           <p>
             Your account data is stored securely with Supabase, our database and authentication
             provider. Payment information is handled entirely by Stripe under their own security
-            standards; Fischer Fantasy Leagues never stores your raw payment details.
+            standards; Trekkon Fantasy Leagues never stores your raw payment details.
           </p>
 
           <h2 style={{ color: '#f0b429', fontSize: '1.0rem', marginTop: '10px', marginBottom: '4px' }}>
@@ -81,7 +81,7 @@ export default function PrivacyPage() {
             6. Changes to This Policy
           </h2>
           <p>
-            We may update this Privacy Policy from time to time. Continued use of Fischer
+            We may update this Privacy Policy from time to time. Continued use of Tregon
             Fantasy Leagues after changes are posted means you accept the updated policy.
           </p>
 

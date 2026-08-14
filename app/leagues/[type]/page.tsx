@@ -68,7 +68,7 @@ export default function LeagueHubPage() {
           display: 'inline-block',
           marginBottom: '24px'
         }}>
-          ← Back to Fischer Fantasy Leagues
+          ← Back to Trekkon Fantasy Leagues
         </a>
 
         <div style={{ textAlign: 'left', marginBottom: '48px', maxWidth: '900px', marginLeft: 'auto', marginRight: 'auto' }}>
@@ -119,7 +119,7 @@ export default function LeagueHubPage() {
             lineHeight: '1.2',
             marginBottom: '28px'
           }}>
-            Each &apos;tribe&apos; drafts 4 real-life castaways with the top 3 point-scorers counted toward season totals.
+            Each tribe drafts 4 real-life castaways with the top 3 point-scorers counted toward season totals.
           </p>
 
           <p style={{
@@ -218,27 +218,46 @@ export default function LeagueHubPage() {
             </div>
           </div>
 
- <div style={{
-  backgroundColor: '#1a1a2e',
-  border: '3px solid #f0b429',
-  borderRadius: '12px',
-  padding: '24px',
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'flex-start'
-}}>
-  <h2 style={{ color: '#f0b429', fontSize: '1.7rem', marginBottom: '16px' }}>
-    🔒 Private Leagues
-  </h2>
-  <p style={{ color: '#555570', fontSize: '0.9rem', marginBottom: '12px' }}>
-    Coming Soon — Hosted by Crew Chiefs and Team Principals for their own private groups.
-  </p>
-<p className="create-league-link" style={{ color: '#555570', fontSize: '0.85rem', fontWeight: 'bold', cursor: 'default' }}>
-  Create a League → (Coming Soon)
-</p>
-</div>
+          <div style={{
+            backgroundColor: '#1a1a2e',
+            border: '3px solid #f0b429',
+            borderRadius: '12px',
+            padding: '24px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'flex-start'
+          }}>
+            <h2 style={{ color: '#f0b429', fontSize: '1.7rem', marginBottom: '16px' }}>
+              🔒 Private Leagues
+            </h2>
+            <p style={{ color: '#555570', fontSize: '0.9rem', marginBottom: '12px' }}>
+              Coming Soon — Hosted by Crew Chiefs and Team Principals for their own private groups.
+            </p>
+            <p className="create-league-link" style={{ color: '#555570', fontSize: '0.85rem', fontWeight: 'bold', cursor: 'default' }}>
+              Create a League → (Coming Soon)
+            </p>
+          </div>
 
         </div>
+
+        <a href="/leagues/potb-demo/sample-league" style={{
+          display: 'block',
+          backgroundColor: '#1a1a2e',
+          border: '3px solid #f0b429',
+          borderRadius: '12px',
+          padding: '24px',
+          textDecoration: 'none',
+          
+          color: '#ffffff',
+          marginBottom: '20px'
+        }}>
+          <h2 style={{ color: '#f0b429', fontSize: '1.7rem', marginBottom: '0px' }}>
+             🎪 Demo League
+          </h2>
+          <p style={{ color: '#a0a0b0', fontSize: '1rem', lineHeight: '1.5' }}>
+              See a &quot;real&quot; league in action to get a feel for how your league will look.
+            </p>
+        </a>
 
       </div>
     </main>

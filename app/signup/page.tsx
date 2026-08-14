@@ -98,7 +98,7 @@ export default function SignUp() {
             We&apos;ve sent a confirmation link to <strong style={{ color: '#ffffff' }}>{email}</strong>.
             Click the link in that email to activate your account; then come back and sign in.
           </p>
-          <a href="/login" style={{
+          <a href="/login" className="btn" style={{
             display: 'inline-block',
             backgroundColor: '#f0b429',
             color: '#0a0a0f',

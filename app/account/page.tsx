@@ -28,6 +28,7 @@ function AccountContent() {
   const [isGlobalAdmin, setIsGlobalAdmin] = useState(false)
   const searchParams = useSearchParams()
   const highlightTier = searchParams.get('tier')
+  const [cancelMessage, setCancelMessage] = useState('')
 
   const handleStripeCheckout = async (tier: string) => {
     if (!user) return
@@ -43,6 +44,33 @@ function AccountContent() {
       alert('Something went wrong starting checkout. Please try again.')
     }
   }
+
+const handleCancelSubscription = async () => {
+  if (!user) return
+
+  const confirmed = window.confirm(
+    'Are you sure you want to downgrade? Doing so will cause you to lose membership perks at the end of your paid period. Your current membership tier will remain active until then.'
+  )
+  if (!confirmed) return
+
+  setUpgrading('stowaway')
+  setCancelMessage('')
+
+  const res = await fetch('/api/cancel-subscription', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId: user.id }),
+  })
+
+  const data = await res.json()
+  setUpgrading(null)
+
+  if (data.success) {
+    setCancelMessage(`Your subscription will end and automatically downgrade to the free tier on ${data.periodEnd}. You\u2019ll keep your current access until then.`)
+  } else {
+    setCancelMessage(data.error || 'Something went wrong. Please try again.')
+  }
+}
 
   const handleUpgrade = async (tier: string) => {
     if (!user) return
@@ -194,8 +222,15 @@ function AccountContent() {
             {['stowaway', 'castaway', 'crewchief', 'teamprincipal'].map((t) => (
               <button
                 key={t}
-                onClick={() => (isGlobalAdmin || t === 'stowaway' ? handleUpgrade(t) : handleStripeCheckout(t))}
-                disabled={upgrading !== null || profile.tier === t}
+onClick={() => {
+  if (isGlobalAdmin) {
+    handleUpgrade(t)
+  } else if (t === 'stowaway') {
+    handleCancelSubscription()
+  } else {
+    handleStripeCheckout(t)
+  }
+}}                disabled={upgrading !== null || profile.tier === t}
                 style={{
                   backgroundColor: profile.tier === t ? '#f0b429' : 'transparent',
                   color: profile.tier === t ? '#0a0a0f' : '#f0b429',
@@ -213,6 +248,13 @@ function AccountContent() {
               </button>
             ))}
           </div>
+
+{cancelMessage && (
+  <div style={{ color: '#f0b429', fontSize: '0.85rem', marginTop: '8px', fontWeight: 'bold' }}>
+    {cancelMessage}
+  </div>
+)}
+
           <div style={{ color: '#555570', fontSize: '0.75rem', marginTop: '8px' }}>
           </div>
         </div>
