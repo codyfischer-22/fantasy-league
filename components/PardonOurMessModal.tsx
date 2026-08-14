@@ -35,6 +35,7 @@ export default function PardonOurMessModal() {
         borderRadius: '12px',
         padding: '32px',
         maxWidth: '400px',
+        width: '90%',
         textAlign: 'left'
       }}>
         <h3 style={{ color: '#f0b429', fontSize: '2rem', marginBottom: '12px' }}>

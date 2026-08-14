@@ -147,6 +147,7 @@ const leagueTypes = [
       <a
         key={lt.slug}
         href={`/leagues/${lt.slug}`}
+        className="btn"
         style={{
           backgroundColor: '#1a1a2e',
           border: `1px solid ${lt.color}`,
@@ -162,6 +163,27 @@ const leagueTypes = [
       </a>
     )
   )}
+</div>
+
+<h2 style={{ color: '#f0b429', fontSize: '1.2rem', marginTop: '32px', marginBottom: '16px' }}>
+  View a Demo League
+</h2>
+<div className="btn" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+  <a
+    href="/leagues/potb-demo/sample-league"
+    style={{
+      backgroundColor: '#1a1a2e',
+      border: '1px solid #f0b429',
+      borderRadius: '10px',
+      padding: '16px 22px',
+      textDecoration: 'none',
+      color: '#ffffff',
+      fontWeight: 'bold',
+      fontSize: '0.95rem'
+    }}
+    >
+    🎪 Demo League →
+  </a>
 </div>
 
 {showComingSoon && (

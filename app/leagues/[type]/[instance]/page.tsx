@@ -146,15 +146,22 @@ export default function LeagueInstancePage() {
 
     setJoining(false)
 
-    if (error) {
-      setJoinMessage(error.message)
-    } else {
-      setJoinMessage('Welcome aboard!')
-      setIsMember(true)
-      setMemberTier(profile?.tier ?? 'stowaway')
-      setMemberCount((prev) => (prev ?? 0) + 1)
-      setTimeout(() => setShowJoinModal(false), 3000)
-    }
+if (error) {
+  setJoinMessage(error.message)
+} else {
+  setJoinMessage('Welcome aboard!')
+  setIsMember(true)
+  setMemberTier(profile?.tier ?? 'stowaway')
+  setMemberCount((prev) => (prev ?? 0) + 1)
+
+  await supabase.from('notifications').insert({
+    user_id: user.id,
+    message: `You've joined ${league.name}! Check out your league to get started.`,
+    link: `/leagues/${type}/${instance}`,
+  })
+
+  setTimeout(() => setShowJoinModal(false), 3000)
+}
   }
 
   const handleLeave = async () => {
