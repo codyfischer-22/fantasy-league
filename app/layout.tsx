@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/lib/AuthContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import PardonOurMessModal from "@/components/PardonOurMessModal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +37,7 @@ export default function RootLayout({
 <body className="min-h-full flex flex-col">
   <AuthProvider>
     <Header />
+     <PardonOurMessModal />
     <div style={{ flex: 1 }}>
       {children}
     </div>

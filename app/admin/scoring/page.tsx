@@ -236,7 +236,7 @@ export default function ScoringAdminPage() {
 
         <h1 style={{ fontSize: '2rem', marginBottom: '16px' }}>
           🧮 <span style={{ color: '#f0b429' }}>Politics on the Beach</span>{' '}
-          <span style={{ color: '#ffffff' }}>ESG</span>
+          <span style={{ color: '#ffffff' }}>Episode Scoring Guide</span>
         </h1>
 
         <div style={{ marginBottom: '24px' }}>
