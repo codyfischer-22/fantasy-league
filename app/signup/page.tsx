@@ -27,46 +27,58 @@ export default function SignUp() {
     return age
   }
 
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setMessage('')
+const handleSignUp = async (e: React.FormEvent) => {
+  e.preventDefault()
+  setMessage('')
 
-    if (!agreedToTerms) {
-      setMessage('You must agree to the Terms & Conditions to sign up.')
-      return
-    }
-
-    const age = calculateAge(dob)
-    if (age < 18) {
-      setMessage('You must be at least 18 years old to create an account.')
-      return
-    }
-
-    setLoading(true)
-
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          first_name: firstName,
-          last_name: lastName,
-          display_name: displayName,
-          date_of_birth: dob,
-          agreed_to_terms: agreedToTerms,
-          heard_about_us: heardAboutUs,
-        },
-      },
-    })
-
-    setLoading(false)
-
-    if (error) {
-      setMessage(error.message)
-    } else {
-      setSignedUp(true)
-    }
+  if (!agreedToTerms) {
+    setMessage('You must agree to the Terms & Conditions to sign up.')
+    return
   }
+
+  const age = calculateAge(dob)
+  if (age < 18) {
+    setMessage('You must be at least 18 years old to create an account.')
+    return
+  }
+
+  setLoading(true)
+
+  const { data: existing } = await supabase
+    .from('profiles')
+    .select('id')
+    .ilike('display_name', displayName)
+    .maybeSingle()
+
+  if (existing) {
+    setMessage('Please choose an original display name.')
+    setLoading(false)
+    return
+  }
+
+  const { error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        first_name: firstName,
+        last_name: lastName,
+        display_name: displayName,
+        date_of_birth: dob,
+        agreed_to_terms: agreedToTerms,
+        heard_about_us: heardAboutUs,
+      },
+    },
+  })
+
+  setLoading(false)
+
+  if (error) {
+    setMessage(error.message)
+  } else {
+    setSignedUp(true)
+  }
+}
 
   const inputStyle = {
     width: '100%',
@@ -251,5 +263,4 @@ export default function SignUp() {
         </form>
       )}
     </main>
-  )
-}
+  )}

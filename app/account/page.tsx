@@ -131,24 +131,37 @@ function AccountContent() {
     }
   }, [user, loading, router])
 
-  const handleSave = async () => {
-    if (!user) return
-    setSaving(true)
-    setSaveMessage('')
-    const { error } = await supabase
-      .from('profiles')
-      .update({ display_name: nameInput })
-      .eq('user_id', user.id)
-    setSaving(false)
-    if (error) {
+
+
+
+const handleSave = async () => {
+  if (!user) return
+  setSaving(true)
+  setSaveMessage('')
+
+  const { error } = await supabase
+    .from('profiles')
+    .update({ display_name: nameInput })
+    .eq('user_id', user.id)
+
+  setSaving(false)
+
+  if (error) {
+    if (error.code === '23505') {
+      setSaveMessage('That display name is already taken. Please choose another.')
+    } else {
       setSaveMessage('Something went wrong — try again.')
       console.error('Update error:', error)
-    } else {
-      setProfile((prev) => prev ? { ...prev, display_name: nameInput } : prev)
-      setEditing(false)
-      setSaveMessage('Saved!')
     }
+  } else {
+    setProfile((prev) => prev ? { ...prev, display_name: nameInput } : prev)
+    setEditing(false)
+    setSaveMessage('Saved!')
   }
+}
+
+
+
 
   if (loading || profileLoading) {
     return (

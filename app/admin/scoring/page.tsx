@@ -9,6 +9,7 @@ type Castaway = {
   id: number
   name: string
   status: string
+  eliminated_episode: number | null
 }
 
 type CategoryDef = {
@@ -51,15 +52,51 @@ export default function ScoringAdminPage() {
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
 
-  const loadCastaways = async (leagueType: string) => {
-    const { data: castawayList } = await supabase
+const toggleEliminated = async (castaway: Castaway) => {
+  if (castaway.status === 'eliminated') {
+    const { error } = await supabase
       .from('castaways')
-      .select('id, name, status')
-      .eq('league_type', leagueType)
-      .order('id')
+      .update({ status: 'active', eliminated_episode: null })
+      .eq('id', castaway.id)
 
-    setCastaways(castawayList ?? [])
+    if (error) {
+      setMessage('Something went wrong toggling vote-out status.')
+    } else {
+      await loadCastaways(selectedLeagueType)
+      setMessage('Castaway status toggled successfully.')
+    }
+  } else {
+    if (!episodeNumber) {
+      setMessage('Enter an voting cycle number so we know when they were voted out.')
+      return
+    }
+
+  const { error } = await supabase
+    .from('castaways')
+    .update({
+      status: 'eliminated',
+      eliminated_episode: parseInt(episodeNumber),
+    })
+    .eq('id', castaway.id)
+
+  if (error) {
+    setMessage('Something went wrong marking them eliminated.')
+  } else {
+    await loadCastaways(selectedLeagueType)
+    setMessage('Castaway marked as voted out.')
   }
+}
+}
+
+  const loadCastaways = async (leagueType: string) => {
+  const { data: castawayList } = await supabase
+    .from('castaways')
+    .select('id, name, status, eliminated_episode')
+    .eq('league_type', leagueType)
+    .order('id')
+
+  setCastaways(castawayList ?? [])
+}
 
   useEffect(() => {
     async function checkAdmin() {
@@ -109,7 +146,7 @@ export default function ScoringAdminPage() {
 
   const handleSave = async () => {
     if (!episodeNumber) {
-      setMessage('Enter an episode number first.')
+      setMessage('Enter a voting cycle number first.')
       return
     }
 
@@ -259,17 +296,18 @@ export default function ScoringAdminPage() {
               color: '#ffffff'
             }}
           >
-            <option value="politics-on-the-beach">Politics on the Beach (Real Season)</option>
-            <option value="potb-demo">Sample League (Demo)</option>
+            <option value="politics-on-the-beach">Politics on the Beach (Season 51)</option>
+            <option value="potb-demo">Demo (Sample)</option>
           </select>
         </div>
 
         <div style={{ marginBottom: '24px' }}>
           <label style={{ color: '#a0a0b0', fontSize: '0.85rem', display: 'block', marginBottom: '6px' }}>
-            Episode Number
+            Voting Cycle
           </label>
           <input
             type="number"
+            min="1"
             value={episodeNumber}
             onChange={(e) => setEpisodeNumber(e.target.value)}
             style={{
@@ -347,17 +385,47 @@ export default function ScoringAdminPage() {
               </tr>
             </thead>
             <tbody>
-              {castaways.map((castaway) => (
-                <tr key={castaway.id} style={{ borderBottom: '1px solid #2a2a3e' }}>
-              <td style={{
+              {castaways.map((castaway) => {
+  const isEliminatedThisEpisode =
+    castaway.status === 'eliminated' &&
+    castaway.eliminated_episode !== null &&
+    parseInt(episodeNumber || '0') > castaway.eliminated_episode
+
+  return (
+    <tr key={castaway.id} style={{ borderBottom: '1px solid #2a2a3e', opacity: isEliminatedThisEpisode ? 0.3 : 1 }}>
+                
+  <td style={{
   padding: '8px',
   fontWeight: 'bold',
   position: 'sticky',
   left: 0,
   backgroundColor: '#0a0a0f',
-  zIndex: 1
+  zIndex: 1,
+  color: isEliminatedThisEpisode ? '#555570' : '#ffffff'
 }}>
-  {castaway.name}
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+    <span>{castaway.name}</span>
+    <div style={{ display: 'flex', alignItems: 'center', marginLeft: '12px'}}>
+      {castaway.status === 'eliminated' && (
+        <span style={{ color: '#ff6b6b', fontSize: '0.65rem' }}>
+          {castaway.eliminated_episode}
+        </span>
+      )}
+      <button
+        onClick={() => toggleEliminated(castaway)}
+        style={{
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          fontSize: '1.1rem',
+          padding: 0,
+          lineHeight: 1
+        }}
+      >
+        {castaway.status === 'eliminated' ? '💀' : '🟢'}
+      </button>
+    </div>
+  </div>
 </td>
                   {categories.map((cat) => (
                     <td key={cat.key} style={{ padding: '6px 4px', textAlign: 'center' }}>
@@ -418,7 +486,7 @@ export default function ScoringAdminPage() {
                     />
                   </td>
                 </tr>
-              ))}
+              )})}
             </tbody>
           </table>
         </div>

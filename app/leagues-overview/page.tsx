@@ -184,6 +184,9 @@ const leagueTypes = [
     >
     🎪 Demo League →
   </a>
+   <p style={{ color: '#555570', fontSize: '1rem', marginBottom: '24px' }}>
+          First to message with historic season (one guess) gets free upgrade for Season 51!
+        </p>
 </div>
 
 {showComingSoon && (

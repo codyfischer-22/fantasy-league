@@ -103,6 +103,12 @@ export default function LeagueInstancePage() {
     setShowJoinModal(true)
   }
 
+
+
+
+
+
+
   const confirmJoin = async () => {
     if (!user || !league) return
     setJoining(true)
@@ -121,22 +127,52 @@ export default function LeagueInstancePage() {
       }
     }
 
+    const { data: profile } = await supabase
+  .from('profiles')
+  .select('tier')
+  .eq('user_id', user.id)
+  .single()
+
+const currentTier = profile?.tier ?? 'stowaway'
+
+const { data: memberships } = await supabase
+  .from('league_members')
+  .select('league_id')
+  .eq('user_id', user.id)
+
+const memberLeagueIds = (memberships ?? []).map((m) => m.league_id)
+
+let publicLeagueCount = 0
+if (memberLeagueIds.length > 0) {
+  const { count } = await supabase
+    .from('leagues')
+    .select('*', { count: 'exact', head: true })
+    .in('id', memberLeagueIds)
+    .eq('is_private', false)
+  publicLeagueCount = count ?? 0
+}
+const maxAllowed = currentTier === 'stowaway' ? 1 : 3
+
+if (!league.is_private && publicLeagueCount >= maxAllowed) {
+  setJoinMessage(
+    currentTier === 'stowaway'
+      ? 'Stowaways can only join 1 public league. Upgrade to Castaway+ to join up to 3!'
+      : "You've reached the max of 3 public leagues for your tier."
+  )
+  setJoining(false)
+  return
+}
+
     const { count: pickCount } = await supabase
       .from('draft_picks')
       .select('*', { count: 'exact', head: true })
       .eq('league_id', league.id)
 
     if (pickCount && pickCount > 0) {
-      setJoinMessage('This league has already drafted — registration is closed.')
+      setJoinMessage('This league has already drafted. Registration is closed.')
       setJoining(false)
       return
     }
-
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('tier')
-      .eq('user_id', user.id)
-      .single()
 
     const { error } = await supabase.from('league_members').insert({
       user_id: user.id,
@@ -479,43 +515,60 @@ if (error) {
               Upgrade to Castaway, Crew Chief, or Team Principal to make the most of your
               fantasy league experience in community!
             </p>
-            {joinMessage ? (
-              <p style={{ color: '#f0b429', fontWeight: 'bold' }}>{joinMessage}</p>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <button onClick={() => router.push('/account')} style={{
-                  backgroundColor: '#f0b429',
-                  color: '#0a0a0f',
-                  padding: '12px',
-                  borderRadius: '6px',
-                  border: 'none',
-                  fontWeight: 'bold',
-                  cursor: 'pointer'
-                }}>
-                  Upgrade
-                </button>
-                <button onClick={confirmJoin} disabled={joining} style={{
-                  backgroundColor: 'transparent',
-                  color: '#a0a0b0',
-                  padding: '12px',
-                  borderRadius: '6px',
-                  border: '1px solid #2a2a3e',
-                  cursor: joining ? 'not-allowed' : 'pointer'
-                }}>
-                  {joining ? 'Joining...' : `Continue as ${tierLabels[myTier] ?? myTier}`}
-                </button>
-                <button onClick={() => setShowJoinModal(false)} style={{
-                  backgroundColor: 'transparent',
-                  color: '#555570',
-                  padding: '8px',
-                  border: 'none',
-                  fontSize: '0.85rem',
-                  cursor: 'pointer'
-                }}>
-                  Cancel
-                </button>
-              </div>
-            )}
+           {joinMessage ? (
+  <div>
+    <p style={{ color: '#f0b429', fontWeight: 'bold', marginBottom: '16px' }}>{joinMessage}</p>
+    <button
+      onClick={() => setShowJoinModal(false)}
+      style={{
+        backgroundColor: '#f0b429',
+        color: '#0a0a0f',
+        padding: '10px 24px',
+        borderRadius: '6px',
+        border: 'none',
+        fontWeight: 'bold',
+        fontSize: '0.9rem',
+        cursor: 'pointer'
+      }}
+    >
+      Got it!
+    </button>
+  </div>
+) : (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+    <button onClick={() => router.push('/account')} style={{
+      backgroundColor: '#f0b429',
+      color: '#0a0a0f',
+      padding: '12px',
+      borderRadius: '6px',
+      border: 'none',
+      fontWeight: 'bold',
+      cursor: 'pointer'
+    }}>
+      Upgrade
+    </button>
+    <button onClick={confirmJoin} disabled={joining} style={{
+      backgroundColor: 'transparent',
+      color: '#a0a0b0',
+      padding: '12px',
+      borderRadius: '6px',
+      border: '1px solid #2a2a3e',
+      cursor: joining ? 'not-allowed' : 'pointer'
+    }}>
+      {joining ? 'Joining...' : `Continue as ${tierLabels[myTier] ?? myTier}`}
+    </button>
+    <button onClick={() => setShowJoinModal(false)} style={{
+      backgroundColor: 'transparent',
+      color: '#555570',
+      padding: '8px',
+      border: 'none',
+      fontSize: '0.85rem',
+      cursor: 'pointer'
+    }}>
+      Cancel
+    </button>
+  </div>
+)}
           </div>
         </div>
       )}

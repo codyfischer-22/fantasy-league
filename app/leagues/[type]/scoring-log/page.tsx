@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { useAuth } from '@/lib/AuthContext'
 
 const categoryLabels: Record<string, string> = {
   team_immunity_safety: 'Immunity Safety (Team)',
@@ -40,12 +41,29 @@ export default function ScoringLogPage() {
   const type = params.type as string
   const searchParams = useSearchParams()
   const fromInstance = searchParams.get('from')
-
+  const [leagueName, setLeagueName] = useState<string | null>(null)
   const [episodes, setEpisodes] = useState<EpisodeGroup[]>([])
   const [pageLoading, setPageLoading] = useState(true)
+  const { user, loading: authLoading } = useAuth()
 
-  useEffect(() => {
-    async function loadLog() {
+ useEffect(() => {
+  async function loadLog() {
+  if (!user && type !== 'potb-demo') {
+    setPageLoading(false)
+    return
+  }
+
+    if (fromInstance) {
+      const { data: league } = await supabase
+        .from('leagues')
+        .select('name')
+        .eq('league_type', type)
+        .eq('slug', fromInstance)
+        .single()
+
+      setLeagueName(league?.name ?? null)
+    }
+
       const { data: scores } = await supabase
         .from('episode_scores')
         .select('episode_number, castaway_id, category, points, count, notes')
@@ -88,7 +106,7 @@ export default function ScoringLogPage() {
     }
 
     loadLog()
-  }, [type])
+  }, [type, fromInstance, user])
 
   if (pageLoading) {
     return (
@@ -106,6 +124,38 @@ export default function ScoringLogPage() {
     )
   }
 
+  if (!authLoading && !user && type !== 'potb-demo') {
+  return (
+    <main style={{
+      backgroundColor: '#0a0a0f',
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: '#a0a0b0',
+      fontFamily: 'Georgia, serif',
+      gap: '16px',
+      padding: '40px'
+    }}>
+      <div style={{ fontSize: '2.5rem' }}>🔒</div>
+      <h1 style={{ color: '#f0b429', fontSize: '1.6rem' }}>Scoring Log requires an account to view.</h1>
+      <p style={{ maxWidth: '400px', textAlign: 'center' }}>
+        Sign up for free to see episode-by-episode scoring breakdowns for this league.
+      </p>
+      <a href="/signup" style={{
+        backgroundColor: '#f0b429',
+        color: '#0a0a0f',
+        padding: '12px 28px',
+        borderRadius: '8px',
+        textDecoration: 'none',
+        fontWeight: 'bold'
+      }}>
+        Create Free Account →
+      </a>
+    </main>
+    )}
+
   return (
     <main style={{
       backgroundColor: '#0a0a0f',
@@ -116,15 +166,16 @@ export default function ScoringLogPage() {
     }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
 
-        <a href={fromInstance ? `/leagues/${type}/${fromInstance}` : `/leagues/${type}`} style={{
-          color: '#a0a0b0',
-          fontSize: '0.85rem',
-          textDecoration: 'none',
-          display: 'inline-block',
-          marginBottom: '24px'
-        }}>
-          {fromInstance ? '← Back to League' : '← Back to Politics on the Beach'}
-        </a>
+       <a href={fromInstance ? `/leagues/${type}/${fromInstance}` : `/leagues/${type}`} style={{
+  color: '#a0a0b0',
+  fontSize: '0.85rem',
+  textDecoration: 'none',
+  display: 'inline-block',
+  marginBottom: '24px'
+}}>
+  {fromInstance ? `← Back to ${leagueName ?? 'League'}` : '← Back to Politics on the Beach'}
+</a>
+        
 
         <h1 style={{ fontSize: '2.25rem', marginBottom: '8px' }}>
           🧮 <span style={{ color: '#f0b429' }}>Episode</span>{' '}
