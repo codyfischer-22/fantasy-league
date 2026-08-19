@@ -118,13 +118,16 @@ export default function LeagueInstancePage() {
   'european-rocket-ships': 'European Rockets',
 }
   
-  const handleClimbAboard = () => {
-    if (!user) {
-      router.push('/login')
-      return
-    }
-    setShowJoinModal(true)
+const handleClimbAboard = () => {
+  if (!user) {
+    router.push('/login')
+    return
   }
+  setShowJoinModal(true)
+  if (myTier !== 'stowaway') {
+    confirmJoin()
+  }
+}
 
   const confirmJoin = async () => {
     if (!user || !league) return
@@ -632,7 +635,7 @@ export default function LeagueInstancePage() {
                   letterSpacing: '1.2px',
                   cursor: 'pointer'
                 }}>
-                  {`Continue as ${tierLabels[myTier] ?? myTier}`}
+                  {`Join as ${tierLabels[myTier] ?? myTier}`}
                 </button>
               )
             )}
