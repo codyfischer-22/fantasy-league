@@ -117,32 +117,31 @@ if (leagueData.is_frozen) {
     }
   }
 
-  const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
-    if (!league) return
+const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
+  if (!league) return
+  const confirmed = window.confirm(`Are you sure you want to remove ${playerName} from this league? There is no guarantee they'll be able to re-join without losing league data.`)
+  if (!confirmed) return
 
-    const confirmed = window.confirm(`Are you sure you want to remove ${playerName} from this league? There is no guarantee they'll be able to re-join without losing league data.`)
-    if (!confirmed) return
+  await supabase.from('notifications').insert({
+    user_id: playerUserId,
+    message: `You've been removed from ${league.name} by the host. Reach out to your host personally with any questions.`,
+    link: `/leagues-overview`,
+  })
 
-    await supabase
-      .from('draft_rankings')
-      .delete()
-      .eq('league_id', league.id)
-      .eq('user_id', playerUserId)
+  await supabase
+    .from('draft_rankings')
+    .delete()
+    .eq('league_id', league.id)
+    .eq('user_id', playerUserId)
 
-    await supabase
-      .from('league_members')
-      .delete()
-      .eq('league_id', league.id)
-      .eq('user_id', playerUserId)
+  await supabase
+    .from('league_members')
+    .delete()
+    .eq('league_id', league.id)
+    .eq('user_id', playerUserId)
 
-    await supabase.from('notifications').insert({
-      user_id: playerUserId,
-      message: `You've been removed from ${league.name} by the host. Reach out to your host personally with any questions.`,
-      link: `/leagues-overview`,
-    })
-
-    setMembers((prev) => prev.filter((m) => m.user_id !== playerUserId))
-  }
+  setMembers((prev) => prev.filter((m) => m.user_id !== playerUserId))
+}
 
   const handleCancelLeague = async () => {
     if (!user || !league) return

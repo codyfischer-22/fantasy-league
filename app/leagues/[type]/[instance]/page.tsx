@@ -37,7 +37,6 @@ export default function LeagueInstancePage() {
   const [myTier, setMyTier] = useState('stowaway')
   const [isHost, setIsHost] = useState(false)
   const [maxMembers, setMaxMembers] = useState<number | null>(null)
-  const [members, setMembers] = useState<{ user_id: string; display_name: string }[]>([])
 
   useEffect(() => {
     if (type === 'potb-demo') {
@@ -66,28 +65,6 @@ export default function LeagueInstancePage() {
           .select('*', { count: 'exact', head: true })
           .eq('league_id', leagueData.id)
         setMemberCount(count)
-
-        if (leagueData.is_private) {
-          const { data: memberRows } = await supabase
-            .from('league_members')
-            .select('user_id')
-            .eq('league_id', leagueData.id)
-
-          if (memberRows && memberRows.length > 0) {
-            const memberIds = memberRows.map((m) => m.user_id)
-            const { data: profiles } = await supabase
-              .from('profiles')
-              .select('user_id, display_name')
-              .in('user_id', memberIds)
-
-            setMembers(
-              (profiles ?? []).map((p) => ({
-                user_id: p.user_id,
-                display_name: p.display_name || 'Unnamed Player',
-              }))
-            )
-          }
-        }
 
         if (leagueData.is_private && leagueData.host_user_id) {
           const { data: hostProfile } = await supabase
@@ -263,55 +240,6 @@ export default function LeagueInstancePage() {
       setIsMember(false)
       setMemberCount((prev) => (prev !== null ? prev - 1 : prev))
     }
-  }
-
-  const handleCancelLeague = async () => {
-    if (!user || !league) return
-
-    const confirmed = window.confirm(
-      'Are you sure you want to permanently cancel/delete this league?'
-    )
-    if (!confirmed) return
-
-    await supabase.from('draft_picks').delete().eq('league_id', league.id)
-    await supabase.from('draft_rankings').delete().eq('league_id', league.id)
-    await supabase.from('league_members').delete().eq('league_id', league.id)
-
-    const { error } = await supabase.from('leagues').delete().eq('id', league.id)
-
-    if (error) {
-      alert('Something went wrong canceling this league. Please try again.')
-    } else {
-      router.push(`/leagues/${type}`)
-    }
-  }
-
-  const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
-    if (!league) return
-
-    const confirmed = window.confirm(`Remove ${playerName} from this league?`)
-    if (!confirmed) return
-
-    await supabase
-      .from('draft_rankings')
-      .delete()
-      .eq('league_id', league.id)
-      .eq('user_id', playerUserId)
-
-    await supabase
-      .from('league_members')
-      .delete()
-      .eq('league_id', league.id)
-      .eq('user_id', playerUserId)
-
-    await supabase.from('notifications').insert({
-      user_id: playerUserId,
-      message: `You've been removed from ${league.name} by the host.`,
-      link: `/leagues-overview`,
-    })
-
-    setMembers((prev) => prev.filter((m) => m.user_id !== playerUserId))
-    setMemberCount((prev) => (prev !== null ? prev - 1 : prev))
   }
 
   const tierLabels: Record<string, string> = {
