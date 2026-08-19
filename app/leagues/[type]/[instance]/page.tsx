@@ -69,7 +69,7 @@ export default function LeagueInstancePage() {
         if (leagueData.is_private && leagueData.host_user_id) {
           const { data: hostProfile } = await supabase
             .from('profiles')
-            .select('tier')
+            .select('tier, display_name')
             .eq('user_id', leagueData.host_user_id)
             .single()
           const cap = hostProfile?.tier === 'teamprincipal' ? 18 : 8
@@ -85,7 +85,7 @@ export default function LeagueInstancePage() {
         if (user) {
           const { data: profileData } = await supabase
             .from('profiles')
-            .select('tier')
+            .select('tier, display_name')
             .eq('user_id', user.id)
             .single()
           setMyTier(profileData?.tier ?? 'stowaway')
@@ -140,7 +140,7 @@ export default function LeagueInstancePage() {
 
     const { data: profile } = await supabase
       .from('profiles')
-      .select('tier')
+      .select('tier, display_name')
       .eq('user_id', user.id)
       .single()
 
@@ -206,6 +206,29 @@ export default function LeagueInstancePage() {
         link: `/leagues/${type}/${instance}`,
       })
 
+  if (league.is_private && league.host_user_id) {
+  await supabase.from('notifications').insert({
+    user_id: league.host_user_id,
+    message: `${profile?.display_name || 'A new Player'} has joined ${league.name}.`,
+    link: `/leagues/${type}/${instance}`,
+  })
+} else if (!league.is_private) {
+  const { data: admins } = await supabase
+    .from('profiles')
+    .select('user_id')
+    .eq('is_global_admin', true)
+
+  if (admins && admins.length > 0) {
+    await supabase.from('notifications').insert(
+      admins.map((a) => ({
+        user_id: a.user_id,
+       message: `${profile?.display_name || 'A new Player'} has joined ${league.name}.`,
+        link: `/leagues/${type}/${instance}`,
+      }))
+    )
+  }
+}
+
       setTimeout(() => setShowJoinModal(false), 3000)
     }
   }
@@ -219,6 +242,14 @@ export default function LeagueInstancePage() {
   const confirmed = window.confirm('Are you sure you want to leave this league?')
     if (!confirmed) return
     setLeaving(true)
+
+     const { data: myProfile } = await supabase
+      .from('profiles')
+      .select('display_name')
+      .eq('user_id', user.id)
+      .single()
+
+    const leavingName = myProfile?.display_name || 'A Player'
 
     await supabase
       .from('draft_rankings')
@@ -234,11 +265,33 @@ export default function LeagueInstancePage() {
 
     setLeaving(false)
 
-    if (error) {
+        if (error) {
       alert('Something went wrong leaving the league. Please try again.')
     } else {
       setIsMember(false)
       setMemberCount((prev) => (prev !== null ? prev - 1 : prev))
+
+      if (league.is_private && league.host_user_id) {
+        await supabase.from('notifications').insert({
+          user_id: league.host_user_id,
+         message: `${leavingName} has left ${league.name}.`,
+          link: `/leagues/${type}/${instance}`,
+        })
+      } else if (!league.is_private) {
+        const { data: admins } = await supabase
+          .from('profiles')
+          .select('user_id')
+          .eq('is_global_admin', true)
+        if (admins && admins.length > 0) {
+          await supabase.from('notifications').insert(
+            admins.map((a) => ({
+              user_id: a.user_id,
+              message: `${leavingName} has left ${league.name}.`,
+              link: `/leagues/${type}/${instance}`,
+            }))
+          )
+        }
+      }
     }
   }
 

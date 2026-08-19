@@ -79,7 +79,7 @@ if (league.is_frozen) {
 
       const { data: myProfile } = await supabase
         .from('profiles')
-        .select('tier')
+        .select('tier, display_name')
         .eq('user_id', user.id)
         .single()
 
@@ -94,6 +94,14 @@ if (league.is_frozen) {
         setMessage('Something went wrong joining this league. Please try again.')
         return
       }
+
+      if (league.host_user_id) {
+  await supabase.from('notifications').insert({
+    user_id: league.host_user_id,
+    message: `${myProfile?.display_name || 'A new Player'} has joined ${league.name}.`,
+    link: `/leagues/${type}/${league.slug}`,
+  })
+}
 
       localStorage.removeItem('pendingInvitePath')
       router.push(`/leagues/${type}/${league.slug}`)

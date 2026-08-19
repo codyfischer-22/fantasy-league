@@ -160,7 +160,7 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
     await supabase.from('notifications').insert(
       allMembers.map((m) => ({
         user_id: m.user_id,
-        message: `${league.name} has been canceled by the host and no longer exists.`,
+        message: `${league.name} has been taken off track by the host and no longer exists. Reach out to your host personally with any questions.`,
         link: `/leagues-overview`,
       }))
     )

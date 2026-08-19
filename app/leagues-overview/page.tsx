@@ -165,7 +165,7 @@ useEffect(() => {
       </h2>
       {hostedLeagues.length === 0 ? (
         <p style={{ color: '#555570' }}>
-          You&apos;re not hosting any leagues yet.
+          You&apos;re not hosting any leagues yet. To create your first league: League Type (left) → League Resources → 🔒 Private Leagues → "Create Private League."
         </p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
