@@ -301,7 +301,7 @@ const handleSave = async () => {
           marginBottom: '16px',
           fontFamily: 'inherit'
         }}>
-          ← Back
+          ← Back to Previous Page
         </button>
         <h1 style={{ color: '#f0b429', fontSize: '2rem', marginBottom: '24px' }}>
           My Account

@@ -183,9 +183,10 @@ export default function RosterPage() {
           ← Back to {leagueName || 'League'}
         </a>
 
-        <h1 style={{ color: '#f0b429', fontSize: '2.25rem', marginBottom: '32px' }}>
-          👥 League Roster
-        </h1>
+<h1 style={{ fontSize: '2.25rem', marginBottom: '32px' }}>
+  <span style={{ color: '#f0b429' }}>👥 League</span>{' '}
+  <span style={{ color: '#ffffff' }}>Roster</span>
+</h1>
 
         {roster.length === 0 ? (
           <p style={{ color: '#555570' }}>No players have joined this league yet.</p>

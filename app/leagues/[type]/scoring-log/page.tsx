@@ -186,7 +186,7 @@ export default function ScoringLogPage() {
           display: 'inline-block',
           marginBottom: '24px'
         }}>
-          {fromInstance ? `← Back to ${leagueName ?? 'League'}` : '← Back to Politics on the Beach'}
+          {fromInstance ? `← Back to ${leagueName ?? 'League'}` : '← Back to 🌴 Politics on the Beach'}
         </a>
 
         <h1 style={{ fontSize: '2.25rem', marginBottom: '8px' }}>
@@ -196,6 +196,7 @@ export default function ScoringLogPage() {
         <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '32px' }}>
           Every scoring event, episode by episode, with full transparency how points were awarded:
         </p>
+
         {episodes.length === 0 ? (
           <p style={{ color: '#555570' }}>No episodes have been scored yet.</p>
         ) : (

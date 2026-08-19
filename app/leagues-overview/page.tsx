@@ -101,7 +101,7 @@ useEffect(() => {
     }}>
       <div style={{ maxWidth: '700px', margin: '0 auto' }}>
 
-        <h1 style={{ color: '#f0b429', fontSize: '2.25rem', marginBottom: '32px' }}>
+        <h1 style={{ color: '#f0b429', fontSize: '2.25rem', marginBottom: '20px' }}>
           🏆 Trekkon Fantasy Leagues
         </h1>
 

@@ -112,6 +112,12 @@ export default function LeagueInstancePage() {
     }
   }, [type, instance, user, loading])
 
+  const leagueTypeLabels: Record<string, string> = {
+  'politics-on-the-beach': 'Politics on the Beach',
+  'americans-turning-left': "'Muricans Turn Left",
+  'european-rocket-ships': 'European Rockets',
+}
+  
   const handleClimbAboard = () => {
     if (!user) {
       router.push('/login')
@@ -339,7 +345,7 @@ export default function LeagueInstancePage() {
           display: 'inline-block',
           marginBottom: '24px'
         }}>
-          ← Back to Politics on the Beach
+          ← Back to 🌴 Politics on the Beach
         </a>
       </main>
     )
@@ -369,15 +375,19 @@ export default function LeagueInstancePage() {
       padding: '60px 40px'
     }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-        <a href={type === 'potb-demo' ? '/' : `/leagues/${type}`} style={{
-          color: '#a0a0b0',
-          fontSize: '0.85rem',
-          textDecoration: 'none',
-          display: 'inline-block',
-          marginBottom: '24px'
-        }}>
-          {type === 'potb-demo' ? '← Back to Trekkon Fantasy Leagues' : '← Back to Politics on the Beach'}
-        </a>
+<button onClick={() => router.back()} style={{
+  background: 'none',
+  border: 'none',
+  color: '#a0a0b0',
+  fontSize: '0.85rem',
+  cursor: 'pointer',
+  padding: 0,
+  marginBottom: '24px',
+  fontFamily: 'inherit',
+  display: 'inline-block'
+}}>
+  ← Back to Previous Page
+</button>
 
         <div style={{ textAlign: 'left', marginBottom: '12px' }}>
           <div style={{

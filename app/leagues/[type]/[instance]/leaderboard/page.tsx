@@ -202,7 +202,7 @@ if (isFrozen) {
         </a>
 
 <h1 style={{ fontSize: '2.25rem', marginBottom: '0px' }}>
-  <span style={{ color: '#f0b429' }}>{leagueName}</span>{' '}
+  <span style={{ color: '#f0b429' }}> 🏆 League</span>{' '}
   <span style={{ color: '#ffffff' }}>Leaderboard</span>
 </h1>
 <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '32px' }}>

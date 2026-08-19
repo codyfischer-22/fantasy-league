@@ -83,7 +83,7 @@ export default function DraftPage() {
         gap: '16px'
       }}>
         <p>Draft & trade info for this league isn&apos;t posted yet.</p>
-        <a href={`/leagues/${type}`} style={{ color: '#f0b429' }}>← Back to League Hub</a>
+        <a href={`/leagues/${type}`} style={{ color: '#f0b429' }}>← Back to 🌴 Politics on the Beach</a>
       </main>
     )
   }
@@ -105,7 +105,7 @@ export default function DraftPage() {
           display: 'inline-block',
           marginBottom: '24px'
         }}>
-          ← Back to {content.leagueName}
+          ← Back to 🌴 {content.leagueName}
         </a>
 
         <h1 style={{ fontSize: '2.25rem', marginBottom: '10px' }}>
