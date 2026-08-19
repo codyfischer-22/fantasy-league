@@ -144,25 +144,38 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
 }
 
   const handleCancelLeague = async () => {
-    if (!user || !league) return
+  if (!user || !league) return
+  const confirmed = window.confirm(
+    'Are you sure you want to permanently cancel/delete this league? This cannot be undone and data will not be archived.'
+  )
+  if (!confirmed) return
 
-    const confirmed = window.confirm(
-      'Are you sure you want to permanently cancel/delete this league? This cannot be undone and data will not be archived.'
+  const { data: allMembers } = await supabase
+    .from('league_members')
+    .select('user_id')
+    .eq('league_id', league.id)
+    .neq('user_id', user.id)
+
+  if (allMembers && allMembers.length > 0) {
+    await supabase.from('notifications').insert(
+      allMembers.map((m) => ({
+        user_id: m.user_id,
+        message: `${league.name} has been canceled by the host and no longer exists.`,
+        link: `/leagues-overview`,
+      }))
     )
-    if (!confirmed) return
-
-    await supabase.from('draft_picks').delete().eq('league_id', league.id)
-    await supabase.from('draft_rankings').delete().eq('league_id', league.id)
-    await supabase.from('league_members').delete().eq('league_id', league.id)
-
-    const { error } = await supabase.from('leagues').delete().eq('id', league.id)
-
-    if (error) {
-      alert('Something went wrong canceling this league. Please try again.')
-    } else {
-      router.push(`/leagues/${type}`)
-    }
   }
+
+  await supabase.from('draft_picks').delete().eq('league_id', league.id)
+  await supabase.from('draft_rankings').delete().eq('league_id', league.id)
+  await supabase.from('league_members').delete().eq('league_id', league.id)
+  const { error } = await supabase.from('leagues').delete().eq('id', league.id)
+  if (error) {
+    alert('Something went wrong canceling this league. Please try again.')
+  } else {
+    router.push(`/leagues/${type}`)
+  }
+}
 
   const labelStyle = { display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '6px' }
   const inputStyle = {
