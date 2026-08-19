@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
+import { useRouter } from 'next/navigation'
 
 export default function SignUp() {
   const [email, setEmail] = useState('')
@@ -15,6 +16,7 @@ export default function SignUp() {
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const [signedUp, setSignedUp] = useState(false)
+  const router = useRouter()
 
   const calculateAge = (dob: string) => {
     const birthDate = new Date(dob)
@@ -56,28 +58,38 @@ const handleSignUp = async (e: React.FormEvent) => {
     return
   }
 
-  const { error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        first_name: firstName,
-        last_name: lastName,
-        display_name: displayName,
-        date_of_birth: dob,
-        agreed_to_terms: agreedToTerms,
-        heard_about_us: heardAboutUs,
-      },
+const pendingInvite = localStorage.getItem('pendingInvitePath')
+
+const { error } = await supabase.auth.signUp({
+  email,
+  password,
+  options: {
+    data: {
+      first_name: firstName,
+      last_name: lastName,
+      display_name: displayName,
+      date_of_birth: dob,
+      agreed_to_terms: agreedToTerms,
+      heard_about_us: heardAboutUs,
     },
-  })
+    emailRedirectTo: pendingInvite
+      ? `${window.location.origin}${pendingInvite}`
+      : `${window.location.origin}/login`,
+  },
+})
 
   setLoading(false)
 
-  if (error) {
-    setMessage(error.message)
+if (error) {
+  setMessage(error.message)
+} else {
+  const pendingInvite = localStorage.getItem('pendingInvitePath')
+  if (pendingInvite) {
+    router.push(pendingInvite)
   } else {
     setSignedUp(true)
   }
+}
 }
 
   const inputStyle = {

@@ -126,7 +126,7 @@ export default function ContactPage() {
           <option value="Suggest a New League">Suggest a New League</option>
         </select>
 
-        <label style={labelStyle}>Message</label>
+        <label style={labelStyle}>Message:</label>
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}

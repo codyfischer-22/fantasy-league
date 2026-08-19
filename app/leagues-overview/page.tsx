@@ -8,52 +8,72 @@ type JoinedLeague = {
   name: string
   type: string
   slug: string
+  host_user_id?: string | null
 }
-
 
 export default function LeaguesOverviewPage() {
   const { user, loading } = useAuth()
-
+  const [hostedLeagues, setHostedLeagues] = useState<JoinedLeague[]>([])
   const [joinedLeagues, setJoinedLeagues] = useState<JoinedLeague[]>([])
   const [pageLoading, setPageLoading] = useState(true)
   const [showComingSoon, setShowComingSoon] = useState(false)
-const leagueTypes = [
+  const [userTier, setUserTier] = useState<string | null>(null)
+  const leagueTypes = [
   { name: 'Politics on the Beach', slug: 'politics-on-the-beach', emoji: '🏝️', color: '#f0b429', comingSoon: false },
   { name: "'Muricans Turn Left", slug: 'americans-turning-left', emoji: '🚗', color: 'rgb(245, 255, 156)', comingSoon: true },
   { name: 'European Rockets', slug: 'european-rocket-ships', emoji: '🏎️', color: '#f0b429', comingSoon: true },
-]
+  ]
 
   useEffect(() => {
-    async function loadJoinedLeagues() {
-      if (!user) {
-        setPageLoading(false)
-        return
-      }
+  async function loadUserTier() {
+    if (!user) {
+      setUserTier(null)
+      return
+    }
+    const { data } = await supabase
+      .from('profiles')
+      .select('tier')
+      .eq('user_id', user.id)
+      .single()
+    setUserTier(data?.tier ?? 'stowaway')
+  }
+  loadUserTier()
+}, [user])
 
-      const { data: memberships } = await supabase
-        .from('league_members')
-        .select('league_id')
-        .eq('user_id', user.id)
-
-      if (memberships && memberships.length > 0) {
-        const leagueIds = memberships.map((m) => m.league_id)
-        const { data: leagues } = await supabase
-          .from('leagues')
-          .select('name, league_type, slug')
-          .in('id', leagueIds)
-
-        setJoinedLeagues(
-          (leagues ?? []).map((l) => ({ name: l.name, type: l.league_type, slug: l.slug }))
-        )
-      }
-
+useEffect(() => {
+  async function loadJoinedLeagues() {
+    if (!user) {
       setPageLoading(false)
+      return
     }
+    const { data: memberships } = await supabase
+      .from('league_members')
+      .select('league_id')
+      .eq('user_id', user.id)
 
-    if (!loading) {
-      loadJoinedLeagues()
+    if (memberships && memberships.length > 0) {
+      const leagueIds = memberships.map((m) => m.league_id)
+      const { data: leagues } = await supabase
+        .from('leagues')
+        .select('name, league_type, slug, host_user_id')
+        .in('id', leagueIds)
+
+      const allLeagues = (leagues ?? []).map((l) => ({
+        name: l.name,
+        type: l.league_type,
+        slug: l.slug,
+        host_user_id: l.host_user_id,
+      }))
+
+      setHostedLeagues(allLeagues.filter((l) => l.host_user_id === user.id))
+      setJoinedLeagues(allLeagues.filter((l) => l.host_user_id !== user.id))
     }
-  }, [user, loading])
+    setPageLoading(false)
+  }
+  if (!loading) {
+    loadJoinedLeagues()
+  }
+}, [user, loading])
 
   if (loading || pageLoading) {
     return (
@@ -82,111 +102,195 @@ const leagueTypes = [
       <div style={{ maxWidth: '700px', margin: '0 auto' }}>
 
         <h1 style={{ color: '#f0b429', fontSize: '2.25rem', marginBottom: '32px' }}>
-          🏆 Leagues
+          🏆 Trekkon Fantasy Leagues
         </h1>
 
-        {user && (
-          <>
-            <h2 style={{ color: '#f0b429', fontSize: '1.2rem', marginBottom: '16px' }}>
-              Your Leagues
-            </h2>
-            {joinedLeagues.length === 0 ? (
-              <p style={{ color: '#555570', marginBottom: '32px' }}>
-                You haven&apos;t joined any leagues yet.
-              </p>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '32px' }}>
-                {joinedLeagues.map((league) => (
-                  <a
-                    key={league.slug}
-                    href={`/leagues/${league.type}/${league.slug}`}
-                    style={{
-                      backgroundColor: '#1a1a2e',
-                      border: '1px solid #f0b429',
-                      borderRadius: '10px',
-                      padding: '16px 22px',
-                      textDecoration: 'none',
-                      color: '#ffffff',
-                      fontWeight: 'bold',
-                      fontSize: '0.95rem'
-                    }}
-                  >
-                    {league.name} →
-                  </a>
-                ))}
-              </div>
-            )}
-          </>
-        )}
+<div className="leagues-grid">
 
-        <h2 style={{ color: '#f0b429', fontSize: '1.2rem', marginBottom: '16px' }}>
-         Our Current League Selection
-        </h2>
+  {/* TOP LEFT — Types of Leagues */}
+  <div>
+    <h2 style={{ color: '#f0b429', fontSize: '1.2rem', marginBottom: '8px' }}>
+      Types of Leagues
+    </h2>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      {leagueTypes.map((lt) =>
+        lt.comingSoon ? (
+          <button
+            key={lt.slug}
+            onClick={() => setShowComingSoon(true)}
+            style={{
+              backgroundColor: '#1a1a2e',
+              border: `1px solid ${lt.color}`,
+              borderRadius: '10px',
+              padding: '16px 22px',
+              textAlign: 'left',
+              color: '#ffffff',
+              fontWeight: 'bold',
+              fontSize: '0.95rem',
+              cursor: 'pointer',
+              width: '100%'
+            }}
+          >
+            {lt.emoji} {lt.name} →
+          </button>
+        ) : (
+          <a
+            key={lt.slug}
+            href={`/leagues/${lt.slug}`}
+            className="btn"
+            style={{
+              backgroundColor: '#1a1a2e',
+              border: `1px solid ${lt.color}`,
+              borderRadius: '10px',
+              padding: '16px 22px',
+              textDecoration: 'none',
+              color: '#ffffff',
+              fontWeight: 'bold',
+              fontSize: '0.95rem'
+            }}
+          >
+            {lt.emoji} {lt.name} →
+          </a>
+        )
+      )}
+    </div>
+  </div>
+
+  {/* TOP RIGHT — Leagues You Host (Crew Chief+) or Your Leagues (everyone else) */}
+<div>
+  {user && (userTier === 'crewchief' || userTier === 'teamprincipal') ? (
+    <>
+      <h2 style={{ color: '#f0b429', fontSize: '1.2rem', marginBottom: '8px' }}>
+        Leagues You Host
+      </h2>
+      {hostedLeagues.length === 0 ? (
+        <p style={{ color: '#555570' }}>
+          You&apos;re not hosting any leagues yet.
+        </p>
+      ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-  {leagueTypes.map((lt) =>
-    lt.comingSoon ? (
-      <button
-        key={lt.slug}
-        onClick={() => setShowComingSoon(true)}
-        style={{
-          backgroundColor: '#1a1a2e',
-          border: `1px solid ${lt.color}`,
-          borderRadius: '10px',
-          padding: '16px 22px',
-          textAlign: 'left',
-          color: '#ffffff',
-          fontWeight: 'bold',
-          fontSize: '0.95rem',
-          cursor: 'pointer',
-          width: '100%'
-        }}
-      >
-        {lt.emoji} {lt.name} →
-      </button>
-    ) : (
+          {hostedLeagues.map((league) => (
+            <a
+              key={league.slug}
+              href={`/leagues/${league.type}/${league.slug}`}
+              style={{
+                backgroundColor: '#1a1a2e',
+                border: '1px solid #f0b429',
+                borderRadius: '10px',
+                padding: '16px 22px',
+                textDecoration: 'none',
+                color: '#ffffff',
+                fontWeight: 'bold',
+                fontSize: '0.95rem'
+              }}
+            >
+              {league.name} →
+            </a>
+          ))}
+        </div>
+      )}
+    </>
+  ) : user ? (
+    <>
+      <h2 style={{ color: '#f0b429', fontSize: '1.2rem', marginBottom: '8px' }}>
+        Your Leagues
+      </h2>
+      {joinedLeagues.length === 0 ? (
+        <p style={{ color: '#555570' }}>
+          You haven&apos;t joined any leagues yet.
+        </p>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {joinedLeagues.map((league) => (
+            <a
+              key={league.slug}
+              href={`/leagues/${league.type}/${league.slug}`}
+              style={{
+                backgroundColor: '#1a1a2e',
+                border: '1px solid #f0b429',
+                borderRadius: '10px',
+                padding: '16px 22px',
+                textDecoration: 'none',
+                color: '#ffffff',
+                fontWeight: 'bold',
+                fontSize: '0.95rem'
+              }}
+            >
+              {league.name} →
+            </a>
+          ))}
+        </div>
+      )}
+    </>
+  ) : null}
+</div>
+
+
+  {/* BOTTOM LEFT — Demo League */}
+  <div>
+    <h2 style={{ color: '#f0b429', fontSize: '1.2rem', marginBottom: '8px' }}>
+      View a Demo League
+    </h2>
+    <div className="btn" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
       <a
-        key={lt.slug}
-        href={`/leagues/${lt.slug}`}
-        className="btn"
-        style={{
-          backgroundColor: '#1a1a2e',
-          border: `1px solid ${lt.color}`,
-          borderRadius: '10px',
-          padding: '16px 22px',
-          textDecoration: 'none',
-          color: '#ffffff',
-          fontWeight: 'bold',
-          fontSize: '0.95rem'
-        }}
-      >
-        {lt.emoji} {lt.name} →
-      </a>
-    )
+  href="/leagues/potb-demo/sample-league"
+  style={{
+    backgroundColor: '#1a1a2e',
+    border: '1px solid #f0b429',
+    borderRadius: '10px',
+    padding: '16px 22px',
+    textDecoration: 'none',
+    color: '#ffffff',
+    fontWeight: 'bold',
+    fontSize: '0.95rem'
+  }}
+>
+  <div>🎪 Politics on the Beach Demo →</div>
+  <div style={{ color: '#555570', fontWeight: 'normal', fontSize: '0.8rem', marginTop: '0px' }}>
+    Can you guess what season this represents?!
+  </div>
+</a>
+    </div>
+  </div>
+
+{/* BOTTOM RIGHT — Your Leagues (shown here for Crew Chief+ hosts, since "Leagues You Host" already occupies the top-right slot for them) */}
+<div>
+  {user && (userTier === 'crewchief' || userTier === 'teamprincipal') && (
+    <>
+      <h2 style={{ color: '#f0b429', fontSize: '1.2rem', marginBottom: '8px' }}>
+        Your Leagues
+      </h2>
+      {joinedLeagues.length === 0 ? (
+        <p style={{ color: '#555570' }}>
+          You haven&apos;t joined any leagues yet.
+        </p>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {joinedLeagues.map((league) => (
+            <a
+              key={league.slug}
+              href={`/leagues/${league.type}/${league.slug}`}
+              style={{
+                backgroundColor: '#1a1a2e',
+                border: '1px solid #f0b429',
+                borderRadius: '10px',
+                padding: '16px 22px',
+                textDecoration: 'none',
+                color: '#ffffff',
+                fontWeight: 'bold',
+                fontSize: '0.95rem'
+              }}
+            >
+              {league.name} →
+            </a>
+          ))}
+        </div>
+      )}
+    </>
   )}
 </div>
 
-<h2 style={{ color: '#f0b429', fontSize: '1.2rem', marginTop: '32px', marginBottom: '16px' }}>
-  View a Demo League
-</h2>
-<div className="btn" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-  <a
-    href="/leagues/potb-demo/sample-league"
-    style={{
-      backgroundColor: '#1a1a2e',
-      border: '1px solid #f0b429',
-      borderRadius: '10px',
-      padding: '16px 22px',
-      textDecoration: 'none',
-      color: '#ffffff',
-      fontWeight: 'bold',
-      fontSize: '0.95rem'
-    }}
-    >
-    🎪 Demo League →
-  </a>
-   <p style={{ color: '#555570', fontSize: '1rem', marginBottom: '24px' }}>
-          First to message with historic season (one guess) gets free upgrade for Season 51!
-        </p>
+
 </div>
 
 {showComingSoon && (

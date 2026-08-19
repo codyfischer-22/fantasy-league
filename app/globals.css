@@ -137,3 +137,35 @@ a:hover .demo-arrow {
 html, body {
   background-color: #0a0a0f;
 }
+
+.tier-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.tier-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 600px) {
+  .tier-grid {
+    grid-template-columns: 1fr;
+    max-width: 190px;
+    margin: 0 auto;
+  }
+}
+
+.leagues-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 600px) {
+  .leagues-grid {
+    grid-template-columns: 1fr;
+  }
+}

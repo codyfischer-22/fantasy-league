@@ -53,12 +53,16 @@ const handleLogin = async (e: React.FormEvent) => {
     if (error.message === 'Invalid login credentials') {
       setMessage('Invalid email or password. Please try again.')
     } else {
-      setMessage(error.message)
-    }
+    setMessage(error.message)
+  }
+} else {
+  const pendingInvite = localStorage.getItem('pendingInvitePath')
+  if (pendingInvite) {
+    router.push(pendingInvite)
   } else {
     router.push('/')
   }
-}
+}}
 
 return (
     <main style={{

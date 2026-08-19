@@ -235,7 +235,7 @@ const toggleEliminated = async (castaway: Castaway) => {
       const { error: notifError } = await supabase.from('notifications').insert(
         uniqueUserIds.map((uid) => ({
           user_id: uid,
-          message: `It's official! Your draft results for Episode ${episodeNumber} are live! Check your roster.`,
+          message: `It's official! Tallies for Episode ${episodeNumber} are live! Check your roster.`,
           link: `/leagues/${selectedLeagueType}/scoring-log`,
         }))
       )

@@ -12,6 +12,9 @@ type League = {
   league_type: string
   is_private: boolean
   max_members: number | null
+  host_user_id?: string | null
+  invite_token?: string | null
+  is_frozen?: boolean | null
 }
 
 export default function LeagueInstancePage() {
@@ -32,13 +35,16 @@ export default function LeagueInstancePage() {
   const [memberCount, setMemberCount] = useState<number | null>(null)
   const [leaving, setLeaving] = useState(false)
   const [myTier, setMyTier] = useState('stowaway')
+  const [isHost, setIsHost] = useState(false)
+  const [maxMembers, setMaxMembers] = useState<number | null>(null)
+  const [members, setMembers] = useState<{ user_id: string; display_name: string }[]>([])
 
   useEffect(() => {
-  if (type === 'potb-demo') {
-    router.push('/leagues/potb-demo/sample-league')
-  }
-}, [type])
-  
+    if (type === 'potb-demo') {
+      router.push('/leagues/potb-demo/sample-league')
+    }
+  }, [type])
+
   useEffect(() => {
     async function loadLeague() {
       const { data: leagueData } = await supabase
@@ -50,13 +56,48 @@ export default function LeagueInstancePage() {
 
       setLeague(leagueData)
 
+      if (leagueData && user && leagueData.host_user_id === user.id) {
+        setIsHost(true)
+      }
+
       if (leagueData) {
         const { count } = await supabase
           .from('league_members')
           .select('*', { count: 'exact', head: true })
           .eq('league_id', leagueData.id)
-
         setMemberCount(count)
+
+        if (leagueData.is_private) {
+          const { data: memberRows } = await supabase
+            .from('league_members')
+            .select('user_id')
+            .eq('league_id', leagueData.id)
+
+          if (memberRows && memberRows.length > 0) {
+            const memberIds = memberRows.map((m) => m.user_id)
+            const { data: profiles } = await supabase
+              .from('profiles')
+              .select('user_id, display_name')
+              .in('user_id', memberIds)
+
+            setMembers(
+              (profiles ?? []).map((p) => ({
+                user_id: p.user_id,
+                display_name: p.display_name || 'Unnamed Player',
+              }))
+            )
+          }
+        }
+
+        if (leagueData.is_private && leagueData.host_user_id) {
+          const { data: hostProfile } = await supabase
+            .from('profiles')
+            .select('tier')
+            .eq('user_id', leagueData.host_user_id)
+            .single()
+          const cap = hostProfile?.tier === 'teamprincipal' ? 18 : 8
+          setMaxMembers(cap)
+        }
 
         const { count: pickCount } = await supabase
           .from('draft_picks')
@@ -70,7 +111,6 @@ export default function LeagueInstancePage() {
             .select('tier')
             .eq('user_id', user.id)
             .single()
-
           setMyTier(profileData?.tier ?? 'stowaway')
 
           const { data: memberData } = await supabase
@@ -103,12 +143,6 @@ export default function LeagueInstancePage() {
     setShowJoinModal(true)
   }
 
-
-
-
-
-
-
   const confirmJoin = async () => {
     if (!user || !league) return
     setJoining(true)
@@ -128,40 +162,39 @@ export default function LeagueInstancePage() {
     }
 
     const { data: profile } = await supabase
-  .from('profiles')
-  .select('tier')
-  .eq('user_id', user.id)
-  .single()
+      .from('profiles')
+      .select('tier')
+      .eq('user_id', user.id)
+      .single()
 
-const currentTier = profile?.tier ?? 'stowaway'
+    const currentTier = profile?.tier ?? 'stowaway'
 
-const { data: memberships } = await supabase
-  .from('league_members')
-  .select('league_id')
-  .eq('user_id', user.id)
+    const { data: memberships } = await supabase
+      .from('league_members')
+      .select('league_id')
+      .eq('user_id', user.id)
 
-const memberLeagueIds = (memberships ?? []).map((m) => m.league_id)
+    const memberLeagueIds = (memberships ?? []).map((m) => m.league_id)
+    let publicLeagueCount = 0
+    if (memberLeagueIds.length > 0) {
+      const { count } = await supabase
+        .from('leagues')
+        .select('*', { count: 'exact', head: true })
+        .in('id', memberLeagueIds)
+        .eq('is_private', false)
+      publicLeagueCount = count ?? 0
+    }
 
-let publicLeagueCount = 0
-if (memberLeagueIds.length > 0) {
-  const { count } = await supabase
-    .from('leagues')
-    .select('*', { count: 'exact', head: true })
-    .in('id', memberLeagueIds)
-    .eq('is_private', false)
-  publicLeagueCount = count ?? 0
-}
-const maxAllowed = currentTier === 'stowaway' ? 1 : 3
-
-if (!league.is_private && publicLeagueCount >= maxAllowed) {
-  setJoinMessage(
-    currentTier === 'stowaway'
-      ? 'Stowaways can only join 1 public league. Upgrade to Castaway+ to join up to 3!'
-      : "You've reached the max of 3 public leagues for your tier."
-  )
-  setJoining(false)
-  return
-}
+    const maxAllowed = currentTier === 'stowaway' ? 1 : 3
+    if (!league.is_private && publicLeagueCount >= maxAllowed) {
+      setJoinMessage(
+        currentTier === 'stowaway'
+          ? 'Stowaways can only join 1 public league. Upgrade to Castaway+ to join up to 3!'
+          : "You've reached the max of 3 public leagues for your tier."
+      )
+      setJoining(false)
+      return
+    }
 
     const { count: pickCount } = await supabase
       .from('draft_picks')
@@ -182,30 +215,32 @@ if (!league.is_private && publicLeagueCount >= maxAllowed) {
 
     setJoining(false)
 
-if (error) {
-  setJoinMessage(error.message)
-} else {
-  setJoinMessage('Welcome aboard!')
-  setIsMember(true)
-  setMemberTier(profile?.tier ?? 'stowaway')
-  setMemberCount((prev) => (prev ?? 0) + 1)
+    if (error) {
+      setJoinMessage(error.message)
+    } else {
+      setJoinMessage('Welcome aboard!')
+      setIsMember(true)
+      setMemberTier(profile?.tier ?? 'stowaway')
+      setMemberCount((prev) => (prev ?? 0) + 1)
 
-  await supabase.from('notifications').insert({
-    user_id: user.id,
-    message: `You've joined ${league.name}! Check out your league to get started.`,
-    link: `/leagues/${type}/${instance}`,
-  })
+      await supabase.from('notifications').insert({
+        user_id: user.id,
+        message: `You've joined ${league.name}! Check out your league to get started.`,
+        link: `/leagues/${type}/${instance}`,
+      })
 
-  setTimeout(() => setShowJoinModal(false), 3000)
-}
+      setTimeout(() => setShowJoinModal(false), 3000)
+    }
   }
 
   const handleLeave = async () => {
-    if (!user || !league) return
-
-    const confirmed = window.confirm('Are you sure you want to leave this league?')
+  if (!user || !league) return
+  if (isHost) {
+    alert('As the host, use "Scrap League" in your League Settings to remove this league.')
+    return
+  }
+  const confirmed = window.confirm('Are you sure you want to leave this league?')
     if (!confirmed) return
-
     setLeaving(true)
 
     await supabase
@@ -228,6 +263,55 @@ if (error) {
       setIsMember(false)
       setMemberCount((prev) => (prev !== null ? prev - 1 : prev))
     }
+  }
+
+  const handleCancelLeague = async () => {
+    if (!user || !league) return
+
+    const confirmed = window.confirm(
+      'Are you sure you want to permanently cancel/delete this league?'
+    )
+    if (!confirmed) return
+
+    await supabase.from('draft_picks').delete().eq('league_id', league.id)
+    await supabase.from('draft_rankings').delete().eq('league_id', league.id)
+    await supabase.from('league_members').delete().eq('league_id', league.id)
+
+    const { error } = await supabase.from('leagues').delete().eq('id', league.id)
+
+    if (error) {
+      alert('Something went wrong canceling this league. Please try again.')
+    } else {
+      router.push(`/leagues/${type}`)
+    }
+  }
+
+  const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
+    if (!league) return
+
+    const confirmed = window.confirm(`Remove ${playerName} from this league?`)
+    if (!confirmed) return
+
+    await supabase
+      .from('draft_rankings')
+      .delete()
+      .eq('league_id', league.id)
+      .eq('user_id', playerUserId)
+
+    await supabase
+      .from('league_members')
+      .delete()
+      .eq('league_id', league.id)
+      .eq('user_id', playerUserId)
+
+    await supabase.from('notifications').insert({
+      user_id: playerUserId,
+      message: `You've been removed from ${league.name} by the host.`,
+      link: `/leagues-overview`,
+    })
+
+    setMembers((prev) => prev.filter((m) => m.user_id !== playerUserId))
+    setMemberCount((prev) => (prev !== null ? prev - 1 : prev))
   }
 
   const tierLabels: Record<string, string> = {
@@ -268,14 +352,14 @@ if (error) {
       }}>
         <p>Sorry, that league doesn&apos;t exist yet. Try again or ask our team with questions!</p>
         <a href={`/leagues/${type}`} style={{
-  color: '#a0a0b0',
-  fontSize: '0.85rem',
-  textDecoration: 'none',
-  display: 'inline-block',
-  marginBottom: '24px'
-}}>
-  ← Back to Politics on the Beach
-</a>
+          color: '#a0a0b0',
+          fontSize: '0.85rem',
+          textDecoration: 'none',
+          display: 'inline-block',
+          marginBottom: '24px'
+        }}>
+          ← Back to Politics on the Beach
+        </a>
       </main>
     )
   }
@@ -304,51 +388,127 @@ if (error) {
       padding: '60px 40px'
     }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-
-       <a href={type === 'potb-demo' ? '/' : `/leagues/${type}`} style={{
-  color: '#a0a0b0',
-  fontSize: '0.85rem',
-  textDecoration: 'none',
-  display: 'inline-block',
-  marginBottom: '24px'
-}}>
-  {type === 'potb-demo' ? '← Back to Trekkon Fantasy Leagues' : '← Back to Politics on the Beach'}
-</a>
+        <a href={type === 'potb-demo' ? '/' : `/leagues/${type}`} style={{
+          color: '#a0a0b0',
+          fontSize: '0.85rem',
+          textDecoration: 'none',
+          display: 'inline-block',
+          marginBottom: '24px'
+        }}>
+          {type === 'potb-demo' ? '← Back to Trekkon Fantasy Leagues' : '← Back to Politics on the Beach'}
+        </a>
 
         <div style={{ textAlign: 'left', marginBottom: '12px' }}>
-
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            marginBottom: '50px'
+            marginBottom: '8px'
           }}>
-          <h1 style={{ fontSize: '2.5rem', margin: 0 }}>
-  {type === 'potb-demo' && league.name.includes('Demo!') ? (
-    <>
-      <span style={{ color: '#f0b429' }}>{league.name.replace('Demo!', '').trim()}</span>{' '}
-      <span style={{ color: '#ffffff' }}>Demo!</span>
-    </>
-  ) : (
-    <span style={{ color: '#f0b429' }}>{league.name}</span>
-  )}
-</h1>
+            <h1 style={{ fontSize: '2.5rem', margin: 0 }}>
+              {type === 'potb-demo' && league.name.includes('Demo!') ? (
+                <>
+                  <span style={{ color: '#f0b429' }}>{league.name.replace('Demo!', '').trim()}</span>{' '}
+                  <span style={{ color: '#ffffff' }}>Demo!</span>
+                </>
+              ) : (
+                <span style={{ color: '#f0b429' }}>{league.name}</span>
+              )}
+            </h1>
             <p style={{ color: '#555570', fontSize: '1.75rem', margin: 0 }}>
-              {league.max_members
+              {league.is_private && maxMembers
+                ? `${memberCount ?? '...'} / ${maxMembers}`
+                : league.max_members
                 ? `${memberCount ?? '...'} / ${league.max_members}`
-                : `${memberCount ?? '...'} members`}
+                : `${memberCount ?? '...'} Members`}
             </p>
           </div>
+
+{league.is_frozen && (
+  <div style={{
+    backgroundColor: '#2a1a1a',
+    border: '1px solid #ff6b6b',
+    borderRadius: '10px',
+    padding: '14px 20px',
+    marginBottom: '16px'
+  }}>
+    <p style={{ color: '#ff6b6b', fontWeight: 'bold', fontSize: '0.9rem' }}>
+      🚩 This league is currently in pit lane as the host&apos;s membership dropped below Crew Chief. Racing will resume once they re-upgrade. 
+    </p>
+  </div>
+)}
+
+          {isHost && league.is_private && (
+            <div style={{
+              backgroundColor: '#1a1a2e',
+              border: '1px solid #f0b429',
+              borderRadius: '10px',
+              padding: '16px 20px',
+              marginBottom: '24px'
+            }}>
+              <p style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '8px' }}>
+                Share to invite players into <strong>this</strong> private league (anyone with link can join):
+              </p>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <input
+                  readOnly
+                  value={`${window.location.origin}/leagues/${type}/join/${league.invite_token}`}
+                  style={{
+                    flex: 1,
+                    padding: '8px 10px',
+                    borderRadius: '6px',
+                    border: '1px solid #2a2a3e',
+                    backgroundColor: '#12121a',
+                    color: '#ffffff',
+                    fontSize: '0.85rem'
+                  }}
+                />
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(`${window.location.origin}/leagues/${type}/join/${league.invite_token}`)
+                  }}
+                  style={{
+                    backgroundColor: '#f0b429',
+                    color: '#0a0a0f',
+                    border: 'none',
+                    padding: '8px 16px',
+                    borderRadius: '6px',
+                    fontWeight: 'bold',
+                    fontSize: '0.85rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Copy
+                </button>
+              </div>
+
+              <div style={{ marginTop: '-4px', paddingTop: '16px'}}>
+                <a
+                  href={`/leagues/${type}/${instance}/host-settings`}
+                  className="btn"
+                  style={{
+                    display: 'inline-block',
+                    color: '#f0b429',
+                    fontSize: '0.85rem',
+                    fontWeight: 'bold',
+                    textDecoration: 'none',
+                    marginRight: '16px'
+                  }}
+                >
+                  ⚙️ League Settings <span className="demo-arrow">→</span>
+                </a>
+                
+              </div>
+            </div>
+          )}
 
           <div style={{ margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '24px' }}>
             {toolGroups.map((group) => (
               <div key={group.label}>
-                <div  style={{ color: '#a0a0b0', fontSize: '1rem', marginBottom: '20px' }}>
+                <div style={{ color: '#a0a0b0', fontSize: '1rem', marginBottom: '20px' }}>
                   {group.label}
                 </div>
-               <div className="tool-grid" style={{
-  maxWidth: `${group.items.length * 140}px`
-}}>
+                <div className="tool-grid" style={{ maxWidth: `${group.items.length * 140}px` }}>
                   {group.items.map((page) => {
                     const content = (
                       <>
@@ -356,7 +516,6 @@ if (error) {
                         <div style={{ fontSize: '1rem' }}>{page.label}</div>
                       </>
                     )
-
                     const cardStyle = {
                       borderRadius: '10px',
                       padding: '0px 0px',
@@ -364,7 +523,6 @@ if (error) {
                       textDecoration: 'none',
                       color: page.href ? '#ffffff' : '#555570',
                     }
-
                     return page.href ? (
                       <a key={page.label} href={page.href} className="subpage-card" style={cardStyle}>
                         {content}
@@ -380,12 +538,12 @@ if (error) {
             ))}
           </div>
 
-        <div style={{
-  border: 'none',
-  borderRadius: '10px',
-  padding: '26px 0',
-  maxWidth: '600px'
-}}>
+          <div style={{
+            border: 'none',
+            borderRadius: '10px',
+            padding: '0px',
+            maxWidth: '600px'
+          }}>
             {isMember ? (
               <div>
                 <p style={{
@@ -398,12 +556,12 @@ if (error) {
                 }}>
                   You&apos;re in the league, {tierLabels[memberTier ?? ''] ?? memberTier}!
                 </p>
-         <div style={{
-  display: 'flex',
-  flexWrap: 'wrap',
-  justifyContent: 'flex-start',
-  gap: '12px'
-}}>
+                <div style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  justifyContent: 'flex-start',
+                  gap: '12px'
+                }}>
                   <a href={`/leagues/${type}/${instance}/rankings`} className="btn" style={{
                     display: 'inline-block',
                     backgroundColor: 'transparent',
@@ -430,23 +588,25 @@ if (error) {
                   }}>
                     {memberTier === 'teamprincipal' ? 'Manage Membership' : 'Upgrade Membership'}
                   </a>
-                  <button
-                    onClick={handleLeave}
-                    disabled={leaving}
-                    style={{
-                      display: 'inline-block',
-                      backgroundColor: 'transparent',
-                      color: '#ff6b6b',
-                      border: '1px solid #ff6b6b',
-                      padding: '10px 16px',
-                      borderRadius: '6px',
-                      fontWeight: 'bold',
-                      fontSize: '0.9rem',
-                      cursor: leaving ? 'not-allowed' : 'pointer'
-                    }}
-                  >
-                    {leaving ? 'Leaving...' : 'Leave League'}
-                  </button>
+{!isHost && (
+  <button
+    onClick={handleLeave}
+    disabled={leaving}
+    style={{
+      display: 'inline-block',
+      backgroundColor: 'transparent',
+      color: '#ff6b6b',
+      border: '1px solid #ff6b6b',
+      padding: '10px 16px',
+      borderRadius: '6px',
+      fontWeight: 'bold',
+      fontSize: '0.9rem',
+      cursor: leaving ? 'not-allowed' : 'pointer'
+    }}
+  >
+    {leaving ? 'Leaving...' : 'Leave League'}
+  </button>
+)}
                 </div>
               </div>
             ) : (
@@ -486,7 +646,6 @@ if (error) {
               )
             )}
           </div>
-
         </div>
       </div>
 
@@ -515,60 +674,60 @@ if (error) {
               Upgrade to Castaway, Crew Chief, or Team Principal to make the most of your
               fantasy league experience in community!
             </p>
-           {joinMessage ? (
-  <div>
-    <p style={{ color: '#f0b429', fontWeight: 'bold', marginBottom: '16px' }}>{joinMessage}</p>
-    <button
-      onClick={() => setShowJoinModal(false)}
-      style={{
-        backgroundColor: '#f0b429',
-        color: '#0a0a0f',
-        padding: '10px 24px',
-        borderRadius: '6px',
-        border: 'none',
-        fontWeight: 'bold',
-        fontSize: '0.9rem',
-        cursor: 'pointer'
-      }}
-    >
-      Got it!
-    </button>
-  </div>
-) : (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-    <button onClick={() => router.push('/account')} style={{
-      backgroundColor: '#f0b429',
-      color: '#0a0a0f',
-      padding: '12px',
-      borderRadius: '6px',
-      border: 'none',
-      fontWeight: 'bold',
-      cursor: 'pointer'
-    }}>
-      Upgrade
-    </button>
-    <button onClick={confirmJoin} disabled={joining} style={{
-      backgroundColor: 'transparent',
-      color: '#a0a0b0',
-      padding: '12px',
-      borderRadius: '6px',
-      border: '1px solid #2a2a3e',
-      cursor: joining ? 'not-allowed' : 'pointer'
-    }}>
-      {joining ? 'Joining...' : `Continue as ${tierLabels[myTier] ?? myTier}`}
-    </button>
-    <button onClick={() => setShowJoinModal(false)} style={{
-      backgroundColor: 'transparent',
-      color: '#555570',
-      padding: '8px',
-      border: 'none',
-      fontSize: '0.85rem',
-      cursor: 'pointer'
-    }}>
-      Cancel
-    </button>
-  </div>
-)}
+            {joinMessage ? (
+              <div>
+                <p style={{ color: '#f0b429', fontWeight: 'bold', marginBottom: '16px' }}>{joinMessage}</p>
+                <button
+                  onClick={() => setShowJoinModal(false)}
+                  style={{
+                    backgroundColor: '#f0b429',
+                    color: '#0a0a0f',
+                    padding: '10px 24px',
+                    borderRadius: '6px',
+                    border: 'none',
+                    fontWeight: 'bold',
+                    fontSize: '0.9rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Got it!
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <button onClick={() => router.push('/account')} style={{
+                  backgroundColor: '#f0b429',
+                  color: '#0a0a0f',
+                  padding: '12px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  fontWeight: 'bold',
+                  cursor: 'pointer'
+                }}>
+                  Upgrade
+                </button>
+                <button onClick={confirmJoin} disabled={joining} style={{
+                  backgroundColor: 'transparent',
+                  color: '#a0a0b0',
+                  padding: '12px',
+                  borderRadius: '6px',
+                  border: '1px solid #2a2a3e',
+                  cursor: joining ? 'not-allowed' : 'pointer'
+                }}>
+                  {joining ? 'Joining...' : `Continue as ${tierLabels[myTier] ?? myTier}`}
+                </button>
+                <button onClick={() => setShowJoinModal(false)} style={{
+                  backgroundColor: 'transparent',
+                  color: '#555570',
+                  padding: '8px',
+                  border: 'none',
+                  fontSize: '0.85rem',
+                  cursor: 'pointer'
+                }}>
+                  Cancel
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

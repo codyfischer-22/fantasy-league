@@ -135,20 +135,22 @@ export default function AnalyticsPage() {
   const [valueReport, setValueReport] = useState<PlayerValue[]>([])
   const [valueSearch, setValueSearch] = useState('')
 
+  const [leagueName, setLeagueName] = useState<string | null>(null)
+  const [isFrozen, setIsFrozen] = useState(false)
+
   useEffect(() => {
   async function loadData() {
-  const { data: league } = await supabase
-    .from('leagues')
-    .select('id, league_type')
-    .eq('league_type', type)
-    .eq('slug', instance)
-    .single()
-
-  if (!league) {
-    setAccess('denied')
-    return
-  }
-
+const { data: league } = await supabase
+  .from('leagues')
+  .select('id, league_type, name, is_frozen')
+  .eq('league_type', type)
+  .eq('slug', instance)
+  .single()
+if (!league) {
+  setAccess('denied')
+  return
+}
+setIsFrozen(league.is_frozen ?? false)
   const isDemoLeague = type === 'potb-demo'
 
   if (!isDemoLeague) {
@@ -179,6 +181,8 @@ export default function AnalyticsPage() {
   }
 
   setAccess('granted')
+setLeagueName(league.name)
+
 
       const { data: picks } = await supabase
         .from('draft_picks')
@@ -418,15 +422,37 @@ export default function AnalyticsPage() {
     )
   }
 
+  if (isFrozen) {
+  return (
+    <main style={{
+      backgroundColor: '#0a0a0f',
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: '#a0a0b0',
+      fontFamily: 'Georgia, serif',
+      gap: '16px',
+      padding: '40px'
+    }}>
+      <p style={{ maxWidth: '400px', textAlign: 'center' }}>
+        🚩 This league is no longer receiving updates as the host&apos;s membership dropped below Crew Chief.
+      </p>
+      <a href={`/leagues/${type}/${instance}`} style={{ color: '#f0b429' }}>← Back to League</a>
+    </main>
+  )
+}
+
   return (
     <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
       <div style={{ maxWidth: '900px', margin: '0 auto' }}>
 
-        <a href={`/leagues/${type}/${instance}`} style={{
-          color: '#a0a0b0', fontSize: '0.85rem', textDecoration: 'none', display: 'inline-block', marginBottom: '24px'
-        }}>
-          ← Back to League
-        </a>
+     <a href={`/leagues/${type}/${instance}`} style={{
+  color: '#a0a0b0', fontSize: '0.85rem', textDecoration: 'none', display: 'inline-block', marginBottom: '24px'
+}}>
+  ← Back to {leagueName ?? 'League'}
+</a>
 
         <h1 style={{ fontSize: '2.25rem', marginBottom: '2px' }}>
           📈 <span style={{ color: '#f0b429' }}>Season 51</span>{' '}

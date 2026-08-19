@@ -94,17 +94,90 @@ function AccountContent() {
     }
   }
 
-  const handleUpgrade = async (tier: string) => {
-    if (!user) return
-    setUpgrading(tier)
-    const { error } = await upgradeTier(user.id, tier)
-    setUpgrading(null)
-    if (!error) {
-      setProfile((prev) => prev ? { ...prev, tier } : prev)
-    } else {
-      console.error('Upgrade error:', error)
+const handleUpgrade = async (tier: string) => {
+  if (!user) return
+  setUpgrading(tier)
+  const { error } = await upgradeTier(user.id, tier)
+  setUpgrading(null)
+
+  if (!error) {
+    setProfile((prev) => prev ? { ...prev, tier } : prev)
+
+    if (tier === 'stowaway' || tier === 'castaway') {
+      // Freeze any private leagues this person hosts
+      const { data: hostedLeagues } = await supabase
+        .from('leagues')
+        .select('id, name, league_type, slug')
+        .eq('host_user_id', user.id)
+        .eq('is_private', true)
+        .eq('is_frozen', false)
+
+      if (hostedLeagues && hostedLeagues.length > 0) {
+        const leagueIds = hostedLeagues.map((l) => l.id)
+
+        await supabase
+          .from('leagues')
+          .update({ is_frozen: true })
+          .in('id', leagueIds)
+
+        for (const league of hostedLeagues) {
+          const { data: members } = await supabase
+            .from('league_members')
+            .select('user_id')
+            .eq('league_id', league.id)
+
+          if (members && members.length > 0) {
+            await supabase.from('notifications').insert(
+              members.map((m) => ({
+                user_id: m.user_id,
+                message: `🚩 ${league.name} has been sent to the pit lane as the host's membership dropped below Crew Chief. Racing will resume if they re-upgrade.`,
+                link: `/leagues/${league.league_type}/${league.slug}`,
+              }))
+            )
+          }
+        }
+      }
     }
+
+    if (tier === 'crewchief' || tier === 'teamprincipal') {
+      // Unfreeze any private leagues this person hosts
+      const { data: hostedFrozenLeagues } = await supabase
+        .from('leagues')
+        .select('id, name, league_type, slug')
+        .eq('host_user_id', user.id)
+        .eq('is_private', true)
+        .eq('is_frozen', true)
+
+      if (hostedFrozenLeagues && hostedFrozenLeagues.length > 0) {
+        const leagueIds = hostedFrozenLeagues.map((l) => l.id)
+
+        await supabase
+          .from('leagues')
+          .update({ is_frozen: false })
+          .in('id', leagueIds)
+
+        for (const league of hostedFrozenLeagues) {
+          const { data: members } = await supabase
+            .from('league_members')
+            .select('user_id')
+            .eq('league_id', league.id)
+
+          if (members && members.length > 0) {
+            await supabase.from('notifications').insert(
+              members.map((m) => ({
+                user_id: m.user_id,
+                message: `🚗 ${league.name} is back out onto the track! The host is back to full activity.`,
+                link: `/leagues/${league.league_type}/${league.slug}`,
+              }))
+            )
+          }
+        }
+      }
+    }
+  } else {
+    console.error('Upgrade error:', error)
   }
+}
 
   useEffect(() => {
     if (!loading && !user) {
@@ -150,7 +223,7 @@ const handleSave = async () => {
     if (error.code === '23505') {
       setSaveMessage('That display name is already taken. Please choose another.')
     } else {
-      setSaveMessage('Something went wrong — try again.')
+      setSaveMessage('Something went wrong. Please try again.')
       console.error('Update error:', error)
     }
   } else {

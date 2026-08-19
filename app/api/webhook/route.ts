@@ -54,3 +54,36 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ received: true })
 }
+
+// Freeze any private leagues this person hosts, since they've dropped below Crew Chief
+const { data: hostedLeagues } = await supabase
+  .from('leagues')
+  .select('id, name, league_type, slug')
+  .eq('host_user_id', userId)
+  .eq('is_private', true)
+
+if (hostedLeagues && hostedLeagues.length > 0) {
+  const leagueIds = hostedLeagues.map((l) => l.id)
+
+  await supabase
+    .from('leagues')
+    .update({ is_frozen: true })
+    .in('id', leagueIds)
+
+  for (const league of hostedLeagues) {
+    const { data: members } = await supabase
+      .from('league_members')
+      .select('user_id')
+      .eq('league_id', league.id)
+
+    if (members && members.length > 0) {
+      await supabase.from('notifications').insert(
+        members.map((m) => ({
+          user_id: m.user_id,
+          message: `${league.name} has been frozen because the host's membership dropped below Crew Chief. Racing will resume if they re-upgrade.`,
+          link: `/leagues/${league.league_type}/${league.slug}`,
+        }))
+      )
+    }
+  }
+}

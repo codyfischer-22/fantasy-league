@@ -26,22 +26,22 @@ export default function LeaderboardPage() {
   const [standings, setStandings] = useState<PlayerStanding[]>([])
   const [pageLoading, setPageLoading] = useState(true)
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
+  const [isFrozen, setIsFrozen] = useState(false)
 
   useEffect(() => {
     async function loadLeaderboard() {
-      const { data: league } = await supabase
-        .from('leagues')
-        .select('id, name, league_type')
-        .eq('league_type', type)
-        .eq('slug', instance)
-        .single()
-
-      if (!league) {
-        setPageLoading(false)
-        return
-      }
-
-      setLeagueName(league.name)
+     const { data: league } = await supabase
+  .from('leagues')
+  .select('id, name, league_type, is_frozen')
+  .eq('league_type', type)
+  .eq('slug', instance)
+  .single()
+if (!league) {
+  setPageLoading(false)
+  return
+}
+setLeagueName(league.name)
+setIsFrozen(league.is_frozen ?? false)
 
       const { data: members } = await supabase
         .from('league_members')
@@ -142,6 +142,44 @@ export default function LeaderboardPage() {
       </main>
     )
   }
+
+  if (pageLoading) {
+  return (
+    <main style={{
+      backgroundColor: '#0a0a0f',
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: '#a0a0b0',
+      fontFamily: 'Georgia, serif'
+    }}>
+      Loading...
+    </main>
+  )
+}
+
+if (isFrozen) {
+  return (
+    <main style={{
+      backgroundColor: '#0a0a0f',
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: '#a0a0b0',
+      fontFamily: 'Georgia, serif',
+      gap: '16px',
+      padding: '40px'
+    }}>
+      <p style={{ maxWidth: '400px', textAlign: 'center' }}>
+        🚩 This league is no longer receiving updates as the host&apos;s membership dropped below Crew Chief.
+      </p>
+      <a href={`/leagues/${type}/${instance}`} style={{ color: '#f0b429' }}>← Back to League</a>
+    </main>
+  )
+}
 
   return (
     <main style={{
