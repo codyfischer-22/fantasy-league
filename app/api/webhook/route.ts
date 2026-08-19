@@ -39,51 +39,57 @@ export async function POST(req: NextRequest) {
   }
 }
 
-  if (event.type === 'customer.subscription.deleted') {
-    const subscription = event.data.object as Stripe.Subscription
-    const customerId = subscription.customer as string
+if (event.type === 'customer.subscription.deleted') {
+  const subscription = event.data.object as Stripe.Subscription
+  const customerId = subscription.customer as string
+  const customer = await stripe.customers.retrieve(customerId)
+  if (!customer.deleted && customer.email) {
+    const { data: profileData } = await supabaseAdmin
+      .from('profiles')
+      .select('user_id')
+      .eq('email', customer.email)
+      .single()
 
-    const customer = await stripe.customers.retrieve(customerId)
-    if (!customer.deleted && customer.email) {
-      await supabaseAdmin
-        .from('profiles')
-        .update({ tier: 'stowaway' })
-        .eq('email', customer.email)
+    await supabaseAdmin
+      .from('profiles')
+      .update({ tier: 'stowaway' })
+      .eq('email', customer.email)
+
+    if (profileData?.user_id) {
+      const { data: hostedLeagues } = await supabaseAdmin
+        .from('leagues')
+        .select('id, name, league_type, slug')
+        .eq('host_user_id', profileData.user_id)
+        .eq('is_private', true)
+
+      if (hostedLeagues && hostedLeagues.length > 0) {
+        const leagueIds = hostedLeagues.map((l: { id: number }) => l.id)
+
+        await supabaseAdmin
+          .from('leagues')
+          .update({ is_frozen: true })
+          .in('id', leagueIds)
+
+        for (const league of hostedLeagues) {
+          const { data: members } = await supabaseAdmin
+            .from('league_members')
+            .select('user_id')
+            .eq('league_id', league.id)
+
+          if (members && members.length > 0) {
+            await supabaseAdmin.from('notifications').insert(
+              members.map((m: { user_id: string }) => ({
+                user_id: m.user_id,
+                message: `${league.name} has been frozen because the host's membership dropped below Crew Chief. Activity will resume if they re-upgrade.`,
+                link: `/leagues/${league.league_type}/${league.slug}`,
+              }))
+            )
+          }
+        }
+      }
     }
   }
-
-  return NextResponse.json({ received: true })
 }
 
-// Freeze any private leagues this person hosts, since they've dropped below Crew Chief
-const { data: hostedLeagues } = await supabase
-  .from('leagues')
-  .select('id, name, league_type, slug')
-  .eq('host_user_id', userId)
-  .eq('is_private', true)
-
-if (hostedLeagues && hostedLeagues.length > 0) {
-  const leagueIds = hostedLeagues.map((l) => l.id)
-
-  await supabase
-    .from('leagues')
-    .update({ is_frozen: true })
-    .in('id', leagueIds)
-
-  for (const league of hostedLeagues) {
-    const { data: members } = await supabase
-      .from('league_members')
-      .select('user_id')
-      .eq('league_id', league.id)
-
-    if (members && members.length > 0) {
-      await supabase.from('notifications').insert(
-        members.map((m) => ({
-          user_id: m.user_id,
-          message: `${league.name} has been frozen because the host's membership dropped below Crew Chief. Racing will resume if they re-upgrade.`,
-          link: `/leagues/${league.league_type}/${league.slug}`,
-        }))
-      )
-    }
-  }
+  return NextResponse.json({ received: true })
 }
