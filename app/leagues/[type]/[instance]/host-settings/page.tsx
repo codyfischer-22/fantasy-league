@@ -17,7 +17,6 @@ export default function LeagueSettingsPage() {
   const [isHost, setIsHost] = useState(false)
 
   const [pickTimerSeconds, setPickTimerSeconds] = useState('')
-  const [requireAdminApproval, setRequireAdminApproval] = useState(false)
   const [draftOrderMethod, setDraftOrderMethod] = useState('random')
   const [guaranteeFullCoverage, setGuaranteeFullCoverage] = useState(false)
   const [missedPickBehavior, setMissedPickBehavior] = useState('bump_to_back')
@@ -25,7 +24,8 @@ export default function LeagueSettingsPage() {
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
   const [showMembers, setShowMembers] = useState(false)
-  const [members, setMembers] = useState<{ user_id: string; display_name: string }[]>([])
+const [members, setMembers] = useState<{ user_id: string; display_name: string }[]>([])
+const [customOrder, setCustomOrder] = useState<string[]>([])
 
   useEffect(() => {
     async function loadLeague() {
@@ -59,7 +59,6 @@ if (leagueData.is_frozen) {
       setLeague(leagueData)
       setIsHost(true)
       setPickTimerSeconds(leagueData.pick_timer_seconds ? String(leagueData.pick_timer_seconds) : '')
-      setRequireAdminApproval(leagueData.require_admin_approval ?? false)
       setDraftOrderMethod(leagueData.draft_order_method ?? 'random')
       setGuaranteeFullCoverage(leagueData.guarantee_full_coverage ?? false)
       setMissedPickBehavior(leagueData.missed_pick_behavior ?? 'bump_to_back')
@@ -82,6 +81,10 @@ if (leagueData.is_frozen) {
             display_name: p.display_name || 'Unnamed Player',
           }))
         )
+        const savedOrder: string[] = leagueData.custom_draft_order ?? []
+const stillValidOrder = savedOrder.filter((id) => memberIds.includes(id))
+const missingFromOrder = memberIds.filter((id) => !stillValidOrder.includes(id))
+setCustomOrder([...stillValidOrder, ...missingFromOrder])
       }
 
       setPageLoading(false)
@@ -97,16 +100,16 @@ if (leagueData.is_frozen) {
     setSaving(true)
     setMessage('')
 
-    const { error } = await supabase
-      .from('leagues')
-      .update({
-        pick_timer_seconds: pickTimerSeconds ? parseInt(pickTimerSeconds) : null,
-        require_admin_approval: requireAdminApproval,
-        draft_order_method: draftOrderMethod,
-        guarantee_full_coverage: guaranteeFullCoverage,
-        missed_pick_behavior: missedPickBehavior,
-      })
-      .eq('id', league.id)
+   const { error } = await supabase
+  .from('leagues')
+  .update({
+    pick_timer_seconds: pickTimerSeconds ? parseInt(pickTimerSeconds) : null,
+    draft_order_method: draftOrderMethod,
+    guarantee_full_coverage: guaranteeFullCoverage,
+    missed_pick_behavior: missedPickBehavior,
+    custom_draft_order: draftOrderMethod === 'host_set' ? customOrder : null,
+  })
+  .eq('id', league.id)
 
     setSaving(false)
 
@@ -243,12 +246,69 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
           <option value="host_set">Manually Set Order</option>
         </select>
 
-        <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '16px', cursor: 'pointer' }}>
-          <input type="checkbox" checked={requireAdminApproval} onChange={(e) => setRequireAdminApproval(e.target.checked)} style={{ marginTop: '3px' }} />
-          <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
-            <strong>OPTIONAL:</strong> Require host approval for every pick.
-          </span>
-        </label>
+        {draftOrderMethod === 'host_set' && (
+  <div style={{ marginBottom: '24px' }}>
+    <label style={labelStyle}>Set Pick Order</label>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+      {customOrder.map((userId, index) => {
+        const memberName = members.find((m) => m.user_id === userId)?.display_name ?? 'Unknown'
+        return (
+          <div key={userId} style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            backgroundColor: '#12121a',
+            border: '1px solid #2a2a3e',
+            borderRadius: '6px',
+            padding: '8px 12px'
+          }}>
+            <span style={{ fontSize: '0.9rem' }}>{index + 1}) {memberName}</span>
+            <div style={{ display: 'flex', gap: '6px' }}>
+              <button
+                type="button"
+                disabled={index === 0}
+                onClick={() => {
+                  const newOrder = [...customOrder]
+                  ;[newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]]
+                  setCustomOrder(newOrder)
+                }}
+                style={{
+                  background: 'none',
+                  border: '1px solid #f0b429',
+                  color: index === 0 ? '#555570' : '#f0b429',
+                  borderRadius: '4px',
+                  padding: '2px 8px',
+                  cursor: index === 0 ? 'not-allowed' : 'pointer'
+                }}
+              >
+                ↑
+              </button>
+              <button
+                type="button"
+                disabled={index === customOrder.length - 1}
+                onClick={() => {
+                  const newOrder = [...customOrder]
+                  ;[newOrder[index], newOrder[index + 1]] = [newOrder[index + 1], newOrder[index]]
+                  setCustomOrder(newOrder)
+                }}
+                style={{
+                  background: 'none',
+                  border: '1px solid #f0b429',
+                  color: index === customOrder.length - 1 ? '#555570' : '#f0b429',
+                  borderRadius: '4px',
+                  padding: '2px 8px',
+                  cursor: index === customOrder.length - 1 ? 'not-allowed' : 'pointer'
+                }}
+              >
+                ↓
+              </button>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  </div>
+)}
 
         <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '24px', cursor: 'pointer' }}>
           <input type="checkbox" checked={guaranteeFullCoverage} onChange={(e) => setGuaranteeFullCoverage(e.target.checked)} style={{ marginTop: '3px' }} />

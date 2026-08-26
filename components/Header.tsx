@@ -3,7 +3,7 @@
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 
 type Notification = {
   id: number
@@ -20,22 +20,44 @@ export default function Header() {
   const [showNotifications, setShowNotifications] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
 
-  useEffect(() => {
-    async function loadNotifications() {
-      if (!user) {
-        setNotifications([])
-        return
-      }
-      const { data } = await supabase
-        .from('notifications')
-        .select('id, message, link, is_read')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(10)
-      setNotifications(data ?? [])
+const previousUnreadCountRef = useRef<number | null>(null)
+const dingAudioRef = useRef<HTMLAudioElement | null>(null)
+
+useEffect(() => {
+  dingAudioRef.current = new Audio('/sounds/notification-ding.mp3')
+}, [])
+
+useEffect(() => {
+  async function loadNotifications() {
+    if (!user) {
+      setNotifications([])
+      return
     }
-    loadNotifications()
-  }, [user])
+    const { data } = await supabase
+      .from('notifications')
+      .select('id, message, link, is_read')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(10)
+
+    const freshNotifications = data ?? []
+    setNotifications(freshNotifications)
+
+    const freshUnreadCount = freshNotifications.filter((n) => !n.is_read).length
+if (
+  previousUnreadCountRef.current !== null &&
+  freshUnreadCount > previousUnreadCountRef.current
+) {
+  dingAudioRef.current?.play().catch(() => {})
+}
+
+previousUnreadCountRef.current = freshUnreadCount
+  }
+
+  loadNotifications()
+  const pollInterval = setInterval(loadNotifications, 8000)
+  return () => clearInterval(pollInterval)
+}, [user])
 
   useEffect(() => {
     async function checkAdmin() {

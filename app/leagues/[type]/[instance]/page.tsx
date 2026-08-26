@@ -15,6 +15,10 @@ type League = {
   host_user_id?: string | null
   invite_token?: string | null
   is_frozen?: boolean | null
+  draft_status?: string | null
+  pick_timer_seconds?: number | null
+  draft_order_method?: string | null
+  custom_draft_order?: string[] | null
 }
 
 export default function LeagueInstancePage() {
@@ -112,6 +116,84 @@ export default function LeagueInstancePage() {
     }
   }, [type, instance, user, loading])
 
+const handleStartDraft = async () => {
+  if (!user || !league) return
+
+  const { count: memberCount } = await supabase
+    .from('league_members')
+    .select('*', { count: 'exact', head: true })
+    .eq('league_id', league.id)
+
+  if (memberCount !== null && memberCount < 3) {
+    alert(`You need at least 3 players to start the draft.`)
+    return
+  }
+
+  const confirmed = window.confirm(
+    'The draft window for Politics on the Beach runs September 16-20 (7 PM CT). League hosts are responsible for communicating draft start times (any where in that window), selection time limits, consequences of missing picks, etc.\n\nAre you sure you want to start your draft?\n\nClicking "OK" will immediately start the selection timer for the first player up.\n\nNote: All players should be actively engaged in your draft window (whether it lasts 60 minutes or 2 days).'
+  )
+  if (!confirmed) return
+
+  const { data: members } = await supabase
+    .from('league_members')
+    .select('user_id')
+    .eq('league_id', league.id)
+
+  if (!members || members.length === 0) return
+
+let orderedMembers = [...members]
+if (league.draft_order_method === 'host_set' && league.custom_draft_order) {
+  orderedMembers = league.custom_draft_order
+    .map((userId: string) => members.find((m) => m.user_id === userId))
+    .filter((m): m is { user_id: string; display_name: string } => m !== undefined)
+} else {
+  orderedMembers = orderedMembers.sort(() => Math.random() - 0.5)
+}
+
+const turnOrderRows = orderedMembers.map((m, index) => ({
+  league_id: league.id,
+  user_id: m.user_id,
+  position: index + 1,
+}))
+const { error: turnOrderError } = await supabase
+  .from('draft_turn_order')
+  .insert(turnOrderRows)
+if (turnOrderError) {
+  alert('Something went wrong setting up the draft order. Please try again.')
+  return
+}
+
+const baseOrder = orderedMembers.map((m) => m.user_id)
+const totalRounds = 4
+const fullSequence: string[] = []
+for (let round = 1; round <= totalRounds; round++) {
+  const roundOrder = round % 2 === 1 ? baseOrder : [...baseOrder].reverse()
+  fullSequence.push(...roundOrder)
+}
+
+const pickTimerMs = league.pick_timer_seconds ? league.pick_timer_seconds * 1000 : null
+const deadline = pickTimerMs ? new Date(Date.now() + pickTimerMs).toISOString() : null
+await supabase
+  .from('leagues')
+  .update({
+    draft_status: 'in_progress',
+    current_pick_number: 1,
+    pick_deadline: deadline,
+    draft_order: fullSequence,
+  })
+  .eq('id', league.id)
+
+  await supabase.from('notifications').insert(
+    orderedMembers.map((m) => ({
+      user_id: m.user_id,
+      message: `The draft for ${league.name} has started! That&apos;s right, silly season is upon us. Click this notification to head to the draft room and make your pick.`,
+      link: `/leagues/${type}/${instance}/draft-room`,
+    }))
+  )
+
+  router.push(`/leagues/${type}/${instance}/draft-room`)
+}
+
   const leagueTypeLabels: Record<string, string> = {
   'politics-on-the-beach': 'Politics on the Beach',
   'americans-turning-left': "'Muricans Turn Left",
@@ -129,23 +211,33 @@ const handleClimbAboard = () => {
   }
 }
 
-  const confirmJoin = async () => {
-    if (!user || !league) return
-    setJoining(true)
-    setJoinMessage('')
+const confirmJoin = async () => {
+  if (!user || !league) return
+  setJoining(true)
+  setJoinMessage('')
 
-    if (league.max_members) {
-      const { count } = await supabase
-        .from('league_members')
-        .select('*', { count: 'exact', head: true })
-        .eq('league_id', league.id)
+  let effectiveCap: number | null = league.max_members
 
-      if (count !== null && count >= league.max_members) {
-        setJoinMessage('This league is full... Island hop to find another!')
-        setJoining(false)
-        return
-      }
+  if (league.is_private && league.host_user_id) {
+    const { data: hostProfile } = await supabase
+      .from('profiles')
+      .select('tier')
+      .eq('user_id', league.host_user_id)
+      .single()
+    effectiveCap = hostProfile?.tier === 'teamprincipal' ? 18 : 8
+  }
+
+  if (effectiveCap) {
+    const { count } = await supabase
+      .from('league_members')
+      .select('*', { count: 'exact', head: true })
+      .eq('league_id', league.id)
+    if (count !== null && count >= effectiveCap) {
+      setJoinMessage('This league is full. Island hop to find another!')
+      setJoining(false)
+      return
     }
+  }
 
     const { data: profile } = await supabase
       .from('profiles')
@@ -354,20 +446,21 @@ const handleClimbAboard = () => {
     )
   }
 
-  const toolGroups = [
-    {
-      label: 'Standings, Draft & Community Tools:',
-      items: [
-        { label: 'Leaderboard', emoji: '🏆', href: `/leagues/${type}/${instance}/leaderboard` },
-        { label: 'Scoring Log', emoji: '🧮', href: `/leagues/${type}/scoring-log?from=${instance}` },
-        { label: 'Analytics', emoji: '📈', href: `/leagues/${type}/${instance}/analytics` },
-        { label: 'League Roster', emoji: '👥', href: `/leagues/${type}/${instance}/roster` },
-        { label: 'Draft Log', emoji: '📜', href: `/leagues/${type}/${instance}/draft-log` },
-        { label: 'Trade Portal (Building)', emoji: '🔄' },
-        { label: 'League Chat (Building)', emoji: '💬' },
-      ],
-    },
-  ]
+const toolGroups = [
+  {
+    label: 'Standings, Draft & Community Tools:',
+    items: [
+      { label: 'Leaderboard', emoji: '🏆', href: `/leagues/${type}/${instance}/leaderboard` },
+      { label: 'Scoring Log', emoji: '🧮', href: `/leagues/${type}/scoring-log?from=${instance}` },
+      { label: 'Analytics', emoji: '📈', href: `/leagues/${type}/${instance}/analytics` },
+      { label: 'Rosters', emoji: '👥', href: `/leagues/${type}/${instance}/roster` },
+      { label: 'Draft Room', emoji: '📋', href: `/leagues/${type}/${instance}/draft-room` },
+      { label: 'Draft Log', emoji: '🪵', href: `/leagues/${type}/${instance}/draft-log` },
+      { label: 'Trade Portal', emoji: '🔄' },
+      { label: 'League Chat', emoji: '💬' },
+    ].filter((item) => !(item.label === 'Draft Room' && league.draft_status === 'completed')),
+  },
+]
 
   return (
     <main style={{
@@ -477,39 +570,58 @@ const handleClimbAboard = () => {
               </div>
 
               <div style={{ marginTop: '-4px', paddingTop: '16px'}}>
-                <a
-                  href={`/leagues/${type}/${instance}/host-settings`}
-                  className="btn"
-                  style={{
-                    display: 'inline-block',
-                    color: '#f0b429',
-                    fontSize: '0.85rem',
-                    fontWeight: 'bold',
-                    textDecoration: 'none',
-                    marginRight: '16px'
-                  }}
-                >
-                  ⚙️ League Settings <span className="demo-arrow">→</span>
-                </a>
-                
-              </div>
+  <a
+    href={`/leagues/${type}/${instance}/host-settings`}
+    className="btn"
+    style={{
+      display: 'inline-block',
+      color: '#f0b429',
+      fontSize: '0.85rem',
+      fontWeight: 'bold',
+      textDecoration: 'none',
+      marginRight: '142px'
+    }}
+  >
+    ⚙️ League Settings
+  </a>
+  {league.draft_status !== 'in_progress' && league.draft_status !== 'completed' && (
+    <button
+      onClick={handleStartDraft}
+      className="league-card"
+      style={{
+        backgroundColor: '#068e38',
+        color: '#ffffff',
+        border: '2px solid #ffff',
+        padding: '10px 20px',
+        borderRadius: '6px',
+        fontWeight: 'bold',
+        fontSize: '0.85rem',
+        cursor: 'pointer'
+      }}
+    >
+      Start Draft Procedure
+    </button>
+  )}
+</div>
             </div>
           )}
 
-          <div style={{ margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '24px' }}>
+          <div style={{ margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '36px', marginBottom: '40px' }}>
             {toolGroups.map((group) => (
               <div key={group.label}>
-                <div style={{ color: '#a0a0b0', fontSize: '1rem', marginBottom: '20px' }}>
+                <div style={{ color: '#a0a0b0', fontSize: '1rem', marginBottom: '16px' }}>
                   {group.label}
                 </div>
-                <div className="tool-grid" style={{ maxWidth: `${group.items.length * 140}px` }}>
+                <div className="tool-grid" style={{ maxWidth: '800px' }}>
                   {group.items.map((page) => {
-                    const content = (
-                      <>
-                        <div style={{ fontSize: '2.5rem', marginBottom: '4px' }}>{page.emoji}</div>
-                        <div style={{ fontSize: '1rem' }}>{page.label}</div>
-                      </>
-                    )
+                   const content = (
+  <>
+    <div style={{ fontSize: '2.5rem', marginBottom: '4px' }}>
+      <span className="draft-room-emoji">{page.emoji}</span>
+    </div>
+    <div style={{ fontSize: '1rem', textAlign: 'center' }}>{page.label}</div>
+  </>
+)
                     const cardStyle = {
                       borderRadius: '10px',
                       padding: '0px 0px',
@@ -517,15 +629,23 @@ const handleClimbAboard = () => {
                       textDecoration: 'none',
                       color: page.href ? '#ffffff' : '#555570',
                     }
-                    return page.href ? (
-                      <a key={page.label} href={page.href} className="subpage-card" style={cardStyle}>
-                        {content}
-                      </a>
-                    ) : (
-                      <div key={page.label} className="subpage-card" style={cardStyle}>
-                        {content}
-                      </div>
-                    )
+                  const isDraftRoomTile = page.label === 'Draft Room'
+const shouldPulse = isDraftRoomTile && league.draft_status === 'in_progress'
+
+return page.href ? (
+  <a
+    key={page.label}
+    href={page.href}
+    className={`subpage-card ${shouldPulse ? 'draft-pulse' : ''}`}
+    style={cardStyle}
+  >
+    {content}
+  </a>
+) : (
+  <div key={page.label} className="subpage-card" style={cardStyle}>
+    {content}
+  </div>
+)
                   })}
                 </div>
               </div>
@@ -556,19 +676,21 @@ const handleClimbAboard = () => {
                   justifyContent: 'flex-start',
                   gap: '12px'
                 }}>
-                  <a href={`/leagues/${type}/${instance}/rankings`} className="btn" style={{
-                    display: 'inline-block',
-                    backgroundColor: 'transparent',
-                    border: '1px solid #f0b429',
-                    color: '#ffffff',
-                    padding: '10px 16px',
-                    borderRadius: '6px',
-                    textDecoration: 'none',
-                    fontWeight: 'bold',
-                    fontSize: '0.9rem'
-                  }}>
-                    Submit Draft Rankings
-                  </a>
+              {!league.is_private && (
+  <a href={`/leagues/${type}/${instance}/rankings`} className="btn" style={{
+    display: 'inline-block',
+    backgroundColor: 'transparent',
+    border: '1px solid #f0b429',
+    color: '#ffffff',
+    padding: '10px 16px',
+    borderRadius: '6px',
+    textDecoration: 'none',
+    fontWeight: 'bold',
+    fontSize: '0.9rem'
+  }}>
+    Submit Draft Rankings
+  </a>
+)}
                   <a href="/account" className="btn" style={{
                     display: 'inline-block',
                     backgroundColor: 'transparent',

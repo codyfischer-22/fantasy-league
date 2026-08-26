@@ -9,6 +9,7 @@ type JoinedLeague = {
   type: string
   slug: string
   host_user_id?: string | null
+  draft_status?: string | null
 }
 
 export default function LeaguesOverviewPage() {
@@ -53,17 +54,19 @@ useEffect(() => {
 
     if (memberships && memberships.length > 0) {
       const leagueIds = memberships.map((m) => m.league_id)
-      const { data: leagues } = await supabase
-        .from('leagues')
-        .select('name, league_type, slug, host_user_id')
-        .in('id', leagueIds)
+      
+    const { data: leagues } = await supabase
+  .from('leagues')
+  .select('name, league_type, slug, host_user_id, draft_status')
+  .in('id', leagueIds)
 
-      const allLeagues = (leagues ?? []).map((l) => ({
-        name: l.name,
-        type: l.league_type,
-        slug: l.slug,
-        host_user_id: l.host_user_id,
-      }))
+const allLeagues = (leagues ?? []).map((l) => ({
+  name: l.name,
+  type: l.league_type,
+  slug: l.slug,
+  host_user_id: l.host_user_id,
+  draft_status: l.draft_status,
+}))
 
       setHostedLeagues(allLeagues.filter((l) => l.host_user_id === user.id))
       setJoinedLeagues(allLeagues.filter((l) => l.host_user_id !== user.id))
@@ -171,21 +174,22 @@ useEffect(() => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           {hostedLeagues.map((league) => (
             <a
-              key={league.slug}
-              href={`/leagues/${league.type}/${league.slug}`}
-              style={{
-                backgroundColor: '#1a1a2e',
-                border: '1px solid #f0b429',
-                borderRadius: '10px',
-                padding: '16px 22px',
-                textDecoration: 'none',
-                color: '#ffffff',
-                fontWeight: 'bold',
-                fontSize: '0.95rem'
-              }}
-            >
-              {league.name} →
-            </a>
+  key={league.slug}
+  href={`/leagues/${league.type}/${league.slug}`}
+    className={`btn ${league.draft_status === 'in_progress' ? 'league-live-pulse' : ''}`}
+  style={{
+    backgroundColor: '#1a1a2e',
+    border: '1px solid #f0b429',
+    borderRadius: '10px',
+    padding: '16px 22px',
+    textDecoration: 'none',
+    color: '#ffffff',
+    fontWeight: 'bold',
+    fontSize: '0.95rem'
+  }}
+>
+  {league.name} →
+</a>
           ))}
         </div>
       )}
@@ -203,21 +207,22 @@ useEffect(() => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           {joinedLeagues.map((league) => (
             <a
-              key={league.slug}
-              href={`/leagues/${league.type}/${league.slug}`}
-              style={{
-                backgroundColor: '#1a1a2e',
-                border: '1px solid #f0b429',
-                borderRadius: '10px',
-                padding: '16px 22px',
-                textDecoration: 'none',
-                color: '#ffffff',
-                fontWeight: 'bold',
-                fontSize: '0.95rem'
-              }}
-            >
-              {league.name} →
-            </a>
+  key={league.slug}
+  href={`/leagues/${league.type}/${league.slug}`}
+    className={`btn ${league.draft_status === 'in_progress' ? 'league-live-pulse' : ''}`}
+  style={{
+    backgroundColor: '#1a1a2e',
+    border: '1px solid #f0b429',
+    borderRadius: '10px',
+    padding: '16px 22px',
+    textDecoration: 'none',
+    color: '#ffffff',
+    fontWeight: 'bold',
+    fontSize: '0.95rem'
+  }}
+>
+  {league.name} →
+</a>
           ))}
         </div>
       )}
@@ -268,21 +273,22 @@ useEffect(() => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           {joinedLeagues.map((league) => (
             <a
-              key={league.slug}
-              href={`/leagues/${league.type}/${league.slug}`}
-              style={{
-                backgroundColor: '#1a1a2e',
-                border: '1px solid #f0b429',
-                borderRadius: '10px',
-                padding: '16px 22px',
-                textDecoration: 'none',
-                color: '#ffffff',
-                fontWeight: 'bold',
-                fontSize: '0.95rem'
-              }}
-            >
-              {league.name} →
-            </a>
+  key={league.slug}
+  href={`/leagues/${league.type}/${league.slug}`}
+    className={`btn ${league.draft_status === 'in_progress' ? 'league-live-pulse' : ''}`}
+  style={{
+    backgroundColor: '#1a1a2e',
+    border: '1px solid #f0b429',
+    borderRadius: '10px',
+    padding: '16px 22px',
+    textDecoration: 'none',
+    color: '#ffffff',
+    fontWeight: 'bold',
+    fontSize: '0.95rem'
+  }}
+>
+  {league.name} →
+</a>
           ))}
         </div>
       )}
@@ -311,7 +317,6 @@ useEffect(() => {
       maxWidth: '380px',
       textAlign: 'center'
     }}>
-      <div style={{ fontSize: '2.5rem', marginBottom: '12px' }}>🏁</div>
       <p style={{ color: '#a0a0b0', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '24px' }}>
         We&apos;re sorry! The track is still being paved. Try back soon for our new racing leagues!
       </p>

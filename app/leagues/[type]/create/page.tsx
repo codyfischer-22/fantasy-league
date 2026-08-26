@@ -19,7 +19,6 @@ export default function CreateLeaguePage() {
 
   const [name, setName] = useState('')
   const [pickTimerSeconds, setPickTimerSeconds] = useState('')
-  const [requireAdminApproval, setRequireAdminApproval] = useState(false)
   const [draftOrderMethod, setDraftOrderMethod] = useState('random')
   const [guaranteeFullCoverage, setGuaranteeFullCoverage] = useState(false)
   const [agreedToHostResponsibly, setAgreedToHostResponsibly] = useState(false)
@@ -98,7 +97,6 @@ if (!isAdmin) {
         host_user_id: user.id,
         invite_token: crypto.randomUUID(),
         pick_timer_seconds: pickTimerSeconds ? parseInt(pickTimerSeconds) : null,
-        require_admin_approval: requireAdminApproval,
         draft_order_method: draftOrderMethod,
         guarantee_full_coverage: guaranteeFullCoverage,
         missed_pick_behavior: missedPickBehavior,
@@ -211,18 +209,6 @@ if (!isAdmin) {
           <option value="random">Randomize</option>
           <option value="host_set">Manually Set Order</option>
         </select>
-
-        <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '16px', cursor: 'pointer' }}>
-          <input
-            type="checkbox"
-            checked={requireAdminApproval}
-            onChange={(e) => setRequireAdminApproval(e.target.checked)}
-            style={{ marginTop: '3px' }}
-          />
-         <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
-  <strong>OPTIONAL:</strong> Require host approval for every pick.
-</span>
-        </label>
 
         <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '24px', cursor: 'pointer' }}>
           <input

@@ -6,29 +6,32 @@ import { supabase } from '@/lib/supabase'
 
 type LogEntry = {
   pick_number: number
-  round: number
+  round: number | null
   display_name: string
-  castaway_name: string
+  castaway_name: string | null
   rank_choice: number | null
+  was_auto_assigned: boolean
+  event_type: 'pick' | 'bumped_to_back'
 }
 
 export default function DraftLogPage() {
   const params = useParams()
   const type = params.type as string
   const instance = params.instance as string
-const [draftDate, setDraftDate] = useState<string | null>(null)
+  const [draftDate, setDraftDate] = useState<string | null>(null)
   const [leagueName, setLeagueName] = useState('')
   const [log, setLog] = useState<LogEntry[]>([])
   const [pageLoading, setPageLoading] = useState(true)
+  const [isPrivateLeague, setIsPrivateLeague] = useState(false)
 
   useEffect(() => {
     async function loadLog() {
-      const { data: league } = await supabase
-        .from('leagues')
-        .select('id, name')
-        .eq('league_type', type)
-        .eq('slug', instance)
-        .single()
+   const { data: league } = await supabase
+  .from('leagues')
+  .select('id, name, is_private')
+  .eq('league_type', type)
+  .eq('slug', instance)
+  .single()
 
       if (!league) {
         setPageLoading(false)
@@ -36,16 +39,23 @@ const [draftDate, setDraftDate] = useState<string | null>(null)
       }
 
       setLeagueName(league.name)
+      setIsPrivateLeague(league.is_private ?? false)
 
     const { data: picks } = await supabase
   .from('draft_picks')
-  .select('pick_number, round, user_id, castaway_id, drafted_at')
+  .select('pick_number, round, user_id, castaway_id, drafted_at, was_auto_assigned')
   .eq('league_id', league.id)
   .order('pick_number')
 
-      if (picks && picks.length > 0) {
+    const { data: events } = await supabase
+  .from('draft_events')
+  .select('pick_number, user_id, event_type')
+  .eq('league_id', league.id)
+  .order('pick_number')
 
-if (picks[0].drafted_at) {
+       if ((picks && picks.length > 0) || (events && events.length > 0)) {
+
+if (picks && picks.length > 0 && picks[0].drafted_at) {
   setDraftDate(new Date(picks[0].drafted_at).toLocaleDateString('en-US', {
     month: 'long',
     day: 'numeric',
@@ -53,8 +63,10 @@ if (picks[0].drafted_at) {
   }))
 }
 
-        const userIds = [...new Set(picks.map((p) => p.user_id))]
-        const castawayIds = [...new Set(picks.map((p) => p.castaway_id))]
+              const safePicks = picks ?? []
+        const safeEvents = events ?? []
+        const userIds = [...new Set([...safePicks.map((p) => p.user_id), ...safeEvents.map((e) => e.user_id)])]
+        const castawayIds = [...new Set(safePicks.map((p) => p.castaway_id))]
 
         const { data: profiles } = await supabase
           .from('profiles')
@@ -77,13 +89,27 @@ if (picks[0].drafted_at) {
           (rankings ?? []).map((r) => [`${r.user_id}-${r.castaway_id}`, r.rank_position])
         )
 
-        const entries = picks.map((p) => ({
+             const pickEntries: LogEntry[] = safePicks.map((p) => ({
           pick_number: p.pick_number,
           round: p.round,
           display_name: nameMap.get(p.user_id) ?? 'Unnamed Player',
           castaway_name: castawayMap.get(p.castaway_id) ?? 'Unknown Castaway',
           rank_choice: rankMap.get(`${p.user_id}-${p.castaway_id}`) ?? null,
+          was_auto_assigned: p.was_auto_assigned ?? false,
+          event_type: 'pick',
         }))
+
+        const eventEntries: LogEntry[] = safeEvents.map((e) => ({
+          pick_number: e.pick_number,
+          round: null,
+          display_name: nameMap.get(e.user_id) ?? 'Unnamed Player',
+          castaway_name: null,
+          rank_choice: null,
+          was_auto_assigned: false,
+          event_type: 'bumped_to_back',
+        }))
+
+        const entries = [...pickEntries, ...eventEntries].sort((a, b) => a.pick_number - b.pick_number)
 
         setLog(entries)
       }
@@ -131,7 +157,7 @@ if (picks[0].drafted_at) {
         </a>
 
         <h1 style={{ fontSize: '2.25rem', marginBottom: '4px' }}>
-  📜 <span style={{ color: '#f0b429' }}>League</span>{' '}
+  🪵 <span style={{ color: '#f0b429' }}>League</span>{' '}
   <span style={{ color: '#ffffff' }}>Draft Log</span>
 </h1>
       <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '36px' }}>
@@ -156,15 +182,23 @@ if (picks[0].drafted_at) {
         borderBottom: i < log.length - 1 ? '1px solid #2a2a3e' : 'none'
       }}>
         <div>
-          <div style={{ fontSize: '0.95rem' }}>
+         <div style={{ fontSize: '0.95rem' }}>
             <span style={{ color: '#f0b429', fontWeight: 'bold' }}>#{entry.pick_number}</span>
-            {' '}(Round {entry.round}) — <strong>{entry.display_name}</strong> selected {entry.castaway_name}
+            {entry.event_type === 'bumped_to_back' ? (
+              <> — <strong>{entry.display_name}</strong> missed their pick and was bumped to back of the draft.</>
+            ) : (
+              <>
+                {' '}(Round {entry.round}) — <strong>{entry.display_name}</strong> {entry.was_auto_assigned ? 'missed pick & randomly assigned' : 'selected'} {entry.castaway_name}.
+              </>
+            )}
           </div>
-          <div style={{ color: '#555570', fontSize: '0.8rem', marginTop: '2px' }}>
-            {entry.rank_choice
-              ? `Their #${entry.rank_choice} ranked choice.`
-              : 'Ranking not on record.'}
-          </div>
+{!entry.was_auto_assigned && !isPrivateLeague && (
+  <div style={{ color: '#555570', fontSize: '0.8rem', marginTop: '2px' }}>
+    {entry.rank_choice
+      ? `Their #${entry.rank_choice} ranked choice.`
+      : 'Ranking not on record.'}
+  </div>
+)}
         </div>
       </div>
     ))}

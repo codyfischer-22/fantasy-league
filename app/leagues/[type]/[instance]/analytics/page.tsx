@@ -137,12 +137,13 @@ export default function AnalyticsPage() {
 
   const [leagueName, setLeagueName] = useState<string | null>(null)
   const [isFrozen, setIsFrozen] = useState(false)
+  const [isPrivateLeague, setIsPrivateLeague] = useState(false)
 
   useEffect(() => {
   async function loadData() {
 const { data: league } = await supabase
   .from('leagues')
-  .select('id, league_type, name, is_frozen')
+  .select('id, league_type, name, is_frozen, is_private')
   .eq('league_type', type)
   .eq('slug', instance)
   .single()
@@ -151,6 +152,7 @@ if (!league) {
   return
 }
 setIsFrozen(league.is_frozen ?? false)
+setIsPrivateLeague(league.is_private ?? false)
   const isDemoLeague = type === 'potb-demo'
 
   if (!isDemoLeague) {
@@ -462,19 +464,20 @@ setLeagueName(league.name)
           Paid members get exclusive access to league analytic charts to visual process along the way!
         </p>
 
-        {/* ── DRAFT VALUE REPORT ── */}
-        <h2 style={{ color: '#f0b429', fontSize: '1.5rem', marginBottom: '4px', textAlign: 'left' }}>
-        Draft Value Report
-        </h2>
-        <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '20px', textAlign: 'left' }}>
-          Ready to see your report card for Draft School? Check out how your roster is doing in real life compared to where you drafted them:
-        </p>
-
-        {valueReport.length === 0 ? (
-          <p style={{ color: '#555570', marginBottom: '48px' }}>
-            No draft rankings on record yet. Check back once the draft has run!
-          </p>
-        ) : (
+        {!isPrivateLeague && (
+  <>
+    {/* ── DRAFT VALUE REPORT ── */}
+    <h2 style={{ color: '#f0b429', fontSize: '1.5rem', marginBottom: '4px', textAlign: 'left' }}>
+    Draft Value Report
+    </h2>
+    <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '20px', textAlign: 'left' }}>
+      Ready to see your report card for Draft School? Check out how your roster is doing in real life compared to where you drafted them:
+    </p>
+    {valueReport.length === 0 ? (
+      <p style={{ color: '#555570', marginBottom: '48px' }}>
+        No draft rankings on record yet. Check back once the draft has run!
+      </p>
+    ) : (
           <>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '16px' }}>
               {top5.map((pv, idx) => (
@@ -572,7 +575,8 @@ setLeagueName(league.name)
             )}
           </>
         )}
-
+</>
+        )}
         {/* ── PLAYER STANDINGS ── */}
         <h2 style={{ color: '#f0b429', fontSize: '1.5rem', marginBottom: '4px', textAlign: 'left' }}>
           Player Standings Over Time
@@ -709,7 +713,7 @@ color: '#555570',
 </p>
 
         {chartData.length === 0 ? (
-          <p style={{ color: '#555570' }}>No scoring data yet — check back once episodes have been scored.</p>
+          <p style={{ color: '#555570' }}>No scoring data on record yet. Check back once episodes have been scored!</p>
         ) : (
           <>
             <div style={{

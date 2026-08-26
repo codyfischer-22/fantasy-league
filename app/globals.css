@@ -108,7 +108,7 @@ a:hover .demo-arrow {
 
 .tool-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(8, 1fr);
   gap: 10px;
 }
 
@@ -169,3 +169,55 @@ html, body {
     grid-template-columns: 1fr;
   }
 }
+
+/* Instance page — Draft Room tile emoji bounce */
+@keyframes draftBounceGlow {
+  0%, 100% {
+    transform: scale(1) translateY(0);
+    filter: drop-shadow(0 0 0px rgba(34, 197, 94, 0));
+  }
+  50% {
+    transform: scale(1.5) translateY(-5px);
+    filter: drop-shadow(0 0 20px rgba(34, 197, 94, .8));
+  }
+}
+
+.draft-pulse .draft-room-emoji {
+  display: inline-block;
+  animation: draftBounceGlow 1.5s ease-in-out infinite;
+}
+
+.draft-room-columns {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  margin-bottom: 40px;
+}
+
+@media (max-width: 700px) {
+  .draft-room-columns {
+    flex-direction: column;
+  }
+
+  .draft-room-columns > div {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+  }
+}
+
+/* Leagues overview page — subtle live-league card glow */
+@keyframes leagueLivePulse {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0px rgba(34, 197, 94, 0));
+  }
+  50% {
+    transform: scale(1.02);
+    filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.9));
+  }
+}
+
+.league-live-pulse {
+  animation: leagueLivePulse 1.8s ease-in-out infinite;
+}
+
