@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { upgradeTier } from '@/lib/upgradeTier'
 import { Suspense } from 'react'
+import { containsEmoji } from '@/lib/validation'
 
 type Profile = {
   email: string
@@ -192,8 +193,7 @@ const handleUpgrade = async (tier: string) => {
         .single()
         .then(({ data, error }) => {
           if (error) {
-            console.error('Profile fetch error:', error)
-          }
+console.error('Profile fetch error:', JSON.stringify(error, null, 2))          }
           if (!error) {
             setProfile(data)
             setNameInput(data.display_name ?? '')
@@ -209,8 +209,11 @@ const handleUpgrade = async (tier: string) => {
 
 const handleSave = async () => {
   if (!user) return
+  if (containsEmoji(nameInput)) {
+    setSaveMessage('Display name cannot contain emojis.')
+    return
+  }
   setSaving(true)
-  setSaveMessage('')
 
   const { error } = await supabase
     .from('profiles')
@@ -371,6 +374,7 @@ const handleSave = async () => {
                 type="text"
                 value={nameInput}
                 onChange={(e) => setNameInput(e.target.value)}
+                maxLength={32}
                 style={{
                   flex: 1,
                   padding: '8px 10px',

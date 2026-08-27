@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import { containsEmoji } from '@/lib/validation'
 
 export default function SignUp() {
   const [email, setEmail] = useState('')
@@ -43,6 +44,11 @@ const handleSignUp = async (e: React.FormEvent) => {
     setMessage('You must be at least 18 years old to create an account.')
     return
   }
+
+  if (containsEmoji(displayName)) {
+  setMessage('Display came cannot contain emojis.')
+  return
+}
 
   setLoading(true)
 
@@ -210,6 +216,7 @@ if (error) {
             type="text"
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
+            maxLength={32}
             required
             style={inputStyle}
           />

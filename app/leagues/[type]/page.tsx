@@ -190,7 +190,7 @@ export default function LeagueHubPage() {
                   <li>🥭 Public League Chat</li>
                   <li>🥭 Tracking Analytics</li>
                   <div style={{ fontSize: '1.5rem', color: '#ffffff', textAlign: 'center', fontWeight: 'bold', marginBottom: '0px' }}>
-                    $3.99
+                    $1.99
                   </div>
                 </ul>
               </div>
@@ -213,7 +213,7 @@ export default function LeagueHubPage() {
                   <li>🔧 8-Player Capacity</li>
                   <li>🔧 Customize Settings</li>
                   <div style={{ fontSize: '1.5rem', color: 'rgb(245, 255, 156)', fontWeight: 'bold', textAlign: 'center', marginBottom: '0px' }}>
-                    $9.99
+                    $3.99
                   </div>
                 </ul>
               </div>
@@ -239,7 +239,7 @@ export default function LeagueHubPage() {
                   <li>🚀 Host ≤ 18 Players</li>
                   <li>🚀 Highlighted Chats</li>
                   <div style={{ fontSize: '1.5rem', color: '#f0b429', fontWeight: 'bold', textAlign: 'center', marginBottom: '0px' }}>
-                    $14.99
+                    $6.99
                   </div>
                 </ul>
               </div>

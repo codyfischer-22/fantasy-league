@@ -137,7 +137,7 @@ We inspire players to cheer on and team up with reality television stars and dri
             <div style={{ fontSize: '2rem', marginBottom: '8px' }}>🥭</div>
             <h3 style={{ fontSize: '1.1rem', color: '#ffffff', marginBottom: '8px' }}>Castaway</h3>
             <div style={{ fontSize: '2rem', color: '#ffffff', fontWeight: 'bold', marginBottom: '16px' }}>
-              $3.99
+              $1.99
             </div>
             <ul style={{ color: '#a0a0b0', fontSize: '0.85rem', textAlign: 'left', lineHeight: '2', listStyle: 'none', padding: 0 }}>
               <li>✅ Multiple Public Leagues</li>
@@ -164,7 +164,7 @@ We inspire players to cheer on and team up with reality television stars and dri
             <div style={{ fontSize: '2rem', marginBottom: '8px' }}>🔧</div>
             <h3 style={{ fontSize: '1.1rem', color: 'rgb(245, 255, 156)', marginBottom: '8px' }}>Crew Chief</h3>
             <div style={{ fontSize: '2rem', color: 'rgb(245, 255, 156)', fontWeight: 'bold', marginBottom: '16px' }}>
-              $9.99
+              $3.99
             </div>
             <ul style={{ color: '#a0a0b0', fontSize: '0.85rem', textAlign: 'left', lineHeight: '2', listStyle: 'none', padding: 0 }}>
               <li>✅ Multiple Public Leagues</li>
@@ -210,14 +210,14 @@ We inspire players to cheer on and team up with reality television stars and dri
               Team Principal
             </h3>
             <div style={{ fontSize: '2rem', color: '#f0b429', fontWeight: 'bold', marginBottom: '16px' }}>
-              $14.99
+              $6.99
             </div>
             <ul style={{ color: '#a0a0b0', fontSize: '0.85rem', textAlign: 'left', lineHeight: '2', listStyle: 'none', padding: 0 }}>
            <li>✅ Multiple Public Leagues</li>
               <li>✅ Private League Access</li>
               <li>✅ Basic Leaderboards</li>
                  <li>✅ Trade Portal Access</li>
-                 <li>✅ Public League Chat</li>
+                 <li>⭐ Highlighted in Chat</li>
               <li>✅ Tracking Analytics</li>
               <li>⭐ Host 3 18-Player Leagues</li>
               <li>✅ Custom League Settings</li>

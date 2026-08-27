@@ -221,3 +221,10 @@ html, body {
   animation: leagueLivePulse 1.8s ease-in-out infinite;
 }
 
+@keyframes chatDotPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.chat-unread-dot {
+  animation: chatDotPulse 1.5s ease-in-out infinite;
+}

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
+import { containsEmoji } from '@/lib/validation'
 
 const leagueTypeEmojis: Record<string, string> = {
   'politics-on-the-beach': '🌴',
@@ -46,6 +47,11 @@ const finalName = requiredEmoji ? `${requiredEmoji} ${strippedName}` : strippedN
       setMessage('You must check the required host agreement box to create a league.')
       return
     }
+
+    if (containsEmoji(name)) {
+  setMessage('League name cannot contain emojis.')
+  return
+}
 
     setCreating(true)
     setMessage('')
@@ -171,6 +177,7 @@ if (!isAdmin) {
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          maxLength={32}
           required
           placeholder="(e.g. The Beach Bums)"
           style={inputStyle}

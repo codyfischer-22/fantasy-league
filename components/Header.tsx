@@ -4,6 +4,7 @@ import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useRef } from 'react'
+import ChatPanel from '@/components/ChatPanel'
 
 type Notification = {
   id: number
@@ -19,9 +20,60 @@ export default function Header() {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [showNotifications, setShowNotifications] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
-
 const previousUnreadCountRef = useRef<number | null>(null)
 const dingAudioRef = useRef<HTMLAudioElement | null>(null)
+const [isChatOpen, setIsChatOpen] = useState(false);
+const [hasUnreadChat, setHasUnreadChat] = useState(false)
+
+useEffect(() => {
+  async function checkUnreadChat() {
+    if (!user) {
+      setHasUnreadChat(false)
+      return
+    }
+    const { data: memberRows } = await supabase
+      .from('league_members')
+      .select('league_id')
+      .eq('user_id', user.id)
+    const leagueIds = (memberRows ?? []).map((r) => r.league_id)
+    if (leagueIds.length === 0) {
+      setHasUnreadChat(false)
+      return
+    }
+    const { data: readRows } = await supabase
+      .from('chat_read_status')
+      .select('league_id, last_read_at')
+      .eq('user_id', user.id)
+      .in('league_id', leagueIds)
+    const readMap: Record<number, string> = {}
+    ;(readRows ?? []).forEach((r) => { readMap[r.league_id] = r.last_read_at })
+
+    const { data: msgRows } = await supabase
+      .from('messages')
+      .select('league_id, created_at')
+      .in('league_id', leagueIds)
+      .order('created_at', { ascending: false })
+    const latestByLeague: Record<number, string> = {}
+    ;(msgRows ?? []).forEach((m) => {
+      if (!latestByLeague[m.league_id]) latestByLeague[m.league_id] = m.created_at
+    })
+
+    let anyUnread = false
+    for (const leagueId of leagueIds) {
+      const latest = latestByLeague[leagueId]
+      if (!latest) continue
+      const lastRead = readMap[leagueId]
+      if (!lastRead || new Date(latest) > new Date(lastRead)) {
+        anyUnread = true
+        break
+      }
+    }
+    setHasUnreadChat(anyUnread)
+  }
+  checkUnreadChat()
+  const interval = setInterval(checkUnreadChat, 8000)
+  return () => clearInterval(interval)
+}, [user])
 
 useEffect(() => {
   dingAudioRef.current = new Audio('/sounds/notification-ding.mp3')
@@ -145,14 +197,53 @@ previousUnreadCountRef.current = freshUnreadCount
           Extras
         </button>
   
+
+
+
         {loading ? null : user ? (
           <>
             <a href="/account" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Account</a>
-           
+
+        {user && (
+  <button
+  onClick={() => {
+    setIsChatOpen(!isChatOpen)
+    setShowNotifications(false)
+  }}
+  style={{
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '1.3rem',
+    color: '#f0b429',
+    position: 'relative'
+  }}
+>
+  💬
+  {hasUnreadChat && (
+ <span
+  className="chat-unread-dot"
+  style={{
+    position: 'absolute',
+    top: '-2px',
+    right: '-2px',
+    width: '8px',
+    height: '8px',
+    borderRadius: '50%',
+    backgroundColor: '#f0b429'
+  }}
+/>
+  )}
+</button>
+        )}
+
                {user && (
           <div style={{ position: 'relative' }}>
             <button
-              onClick={() => setShowNotifications(!showNotifications)}
+  onClick={() => {
+    setShowNotifications(!showNotifications)
+    setIsChatOpen(false)
+  }}
               style={{
                 background: 'none',
                 border: 'none',
@@ -246,6 +337,9 @@ previousUnreadCountRef.current = freshUnreadCount
                         ✕
                       </button>
                     </div>
+
+
+
                   ))
                 )}
               </div>
@@ -321,6 +415,11 @@ previousUnreadCountRef.current = freshUnreadCount
           </div>
         </div>
       )}
+
+       {isChatOpen && (
+        <ChatPanel onClose={() => setIsChatOpen(false)} />
+      )}
+
     </header>
   )
 }
