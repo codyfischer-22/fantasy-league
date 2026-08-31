@@ -33,8 +33,8 @@ export default function PardonOurMessModal() {
         backgroundColor: '#1a1a2e',
         border: '1px solid #f0b429',
         borderRadius: '12px',
-        padding: '32px',
-        maxWidth: '400px',
+        padding: '24px',
+        maxWidth: '500px',
         width: '90%',
         textAlign: 'left'
       }}>
@@ -42,25 +42,27 @@ export default function PardonOurMessModal() {
          🚧 Pardon our mess!
         </h3>
         <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '8px', lineHeight: '1.6' }}>
-          As we approach Survivor 51, please know we&apos;re actively polishing the mobile experience and building out additional features.</p>
+          Thanks for patience with our ongoing efforts to improve this site.</p>
         <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '8px', lineHeight: '1.6' }}>
-  We wanted to go live early, letting you sign up and share with friends before the season start.
+  As we approach Survivor 51, please know we&apos;re actively polishing the mobile experience and building out additional features.
 </p>
-<p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '24px', lineHeight: '1.6' }}>
-  Thanks for being here early! Things will continue to improve from here!
+<p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '12px', lineHeight: '1.6' }}>
+  Let us know if there&apos;s something we&apos;re missing!
 </p>
-        <button onClick={handleDismiss} style={{
-          backgroundColor: '#f0b429',
-          color: '#0a0a0f',
-          padding: '10px 28px',
-          borderRadius: '6px',
-          border: 'none',
-          fontWeight: 'bold',
-          fontSize: '0.9rem',
-          cursor: 'pointer'
-        }}>
-          Got it!
-        </button>
+     <button onClick={handleDismiss} style={{
+  backgroundColor: '#f0b429',
+  color: '#0a0a0f',
+  padding: '10px 28px',
+  borderRadius: '6px',
+  border: 'none',
+  fontWeight: 'bold',
+  fontSize: '0.9rem',
+  cursor: 'pointer',
+  display: 'block',    // Converts button to block element
+  margin: '0 auto'     // Centers block element horizontally
+}}>
+  Got it!
+</button>
       </div>
     </div>
   )
