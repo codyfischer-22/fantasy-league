@@ -108,7 +108,7 @@ a:hover .demo-arrow {
 
 .tool-grid {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
   gap: 10px;
 }
 
@@ -136,12 +136,6 @@ a:hover .demo-arrow {
 
 html, body {
   background-color: #0a0a0f;
-}
-
-.tier-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
 }
 
 .tier-grid {
@@ -219,12 +213,4 @@ html, body {
 
 .league-live-pulse {
   animation: leagueLivePulse 1.8s ease-in-out infinite;
-}
-
-@keyframes chatDotPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-.chat-unread-dot {
-  animation: chatDotPulse 1.5s ease-in-out infinite;
 }

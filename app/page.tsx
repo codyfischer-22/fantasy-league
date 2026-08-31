@@ -25,7 +25,7 @@ export default function Home() {
         <h2 style={{
           fontSize: '3rem',
           color: '#ffffff',
-          marginBottom: '16px',
+          marginBottom: '14px',
           letterSpacing: '1px'
         }}>
           Fantasy without the Pigskin, <span style={{ color: '#f0b429' }}>Finally</span>

@@ -141,13 +141,14 @@ const lastPickNumberRef = useRef<number | null>(null)
     if (!confirmed) return
     setPicking(true)
 
-    const { error } = await supabase.from('draft_picks').insert({
-      league_id: league.id,
-      user_id: user.id,
-      castaway_id: castawayId,
-      round: currentRound,
-      pick_number: league.current_pick_number,
-    })
+   const { error } = await supabase.from('draft_picks').insert({
+  league_id: league.id,
+  user_id: user.id,
+  castaway_id: castawayId,
+  round: currentRound,
+  pick_number: league.current_pick_number,
+  original_user_id: user.id,
+})
 
     if (error) {
       alert('Something went wrong making your pick. Please try again.')
@@ -218,13 +219,14 @@ const handleMissedPick = async () => {
 
       const randomPick = eligibleCastaways[Math.floor(Math.random() * eligibleCastaways.length)]
 
-   await supabase.from('draft_picks').insert({
+await supabase.from('draft_picks').insert({
   league_id: league.id,
   user_id: missedUserId,
   castaway_id: randomPick.id,
   round: Math.ceil(league.current_pick_number / members.length),
   pick_number: league.current_pick_number,
   was_auto_assigned: true,
+  original_user_id: missedUserId,
 })
 
       const nextPickNumber = league.current_pick_number + 1
@@ -409,14 +411,17 @@ if (league.draft_status !== 'in_progress' && league.draft_status !== 'completed'
         }}>
           ← Back to {league.name}
         </a>
-        <h1 style={{ fontSize: '2.25rem', marginBottom: '16px' }}>
-          <span style={{ color: '#f0b429' }}>📋League </span>{' '}
-          <span style={{ color: '#ffffff' }}>Draft Room</span>
-        </h1>
-        <p style={{ color: '#555570' }}>
-          The draft room is not open yet. Please check back once host starts the draft!
-        </p>
-      </div>
+      <h1 style={{ fontSize: '2.25rem', marginBottom: '4px' }}>
+  <span style={{ color: '#f0b429' }}>📋League </span>{' '}
+  <span style={{ color: '#ffffff' }}>Draft Room</span>
+</h1>
+<p style={{ color: '#555570' }}>
+  The draft room is not open yet. Please check back once host starts the draft! Full draft policies may be found{' '}
+  <a href={`/leagues/${type}/draft`} style={{ color: '#f0b429', textDecoration: 'underline' }}>
+    here
+  </a>.
+</p>
+</div>
     </main>
   )
 }

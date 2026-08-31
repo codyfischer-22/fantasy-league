@@ -41,9 +41,9 @@ export default function DraftLogPage() {
       setLeagueName(league.name)
       setIsPrivateLeague(league.is_private ?? false)
 
-    const { data: picks } = await supabase
+const { data: picks } = await supabase
   .from('draft_picks')
-  .select('pick_number, round, user_id, castaway_id, drafted_at, was_auto_assigned')
+  .select('pick_number, round, original_user_id, castaway_id, drafted_at, was_auto_assigned')
   .eq('league_id', league.id)
   .order('pick_number')
 
@@ -65,9 +65,8 @@ if (picks && picks.length > 0 && picks[0].drafted_at) {
 
               const safePicks = picks ?? []
         const safeEvents = events ?? []
-        const userIds = [...new Set([...safePicks.map((p) => p.user_id), ...safeEvents.map((e) => e.user_id)])]
-        const castawayIds = [...new Set(safePicks.map((p) => p.castaway_id))]
-
+const userIds = [...new Set([...safePicks.map((p) => p.original_user_id), ...safeEvents.map((e) => e.user_id)])]
+const castawayIds = [...new Set(safePicks.map((p) => p.castaway_id))]
         const { data: profiles } = await supabase
           .from('profiles')
           .select('user_id, display_name')
@@ -89,15 +88,15 @@ if (picks && picks.length > 0 && picks[0].drafted_at) {
           (rankings ?? []).map((r) => [`${r.user_id}-${r.castaway_id}`, r.rank_position])
         )
 
-             const pickEntries: LogEntry[] = safePicks.map((p) => ({
-          pick_number: p.pick_number,
-          round: p.round,
-          display_name: nameMap.get(p.user_id) ?? 'Unnamed Player',
-          castaway_name: castawayMap.get(p.castaway_id) ?? 'Unknown Castaway',
-          rank_choice: rankMap.get(`${p.user_id}-${p.castaway_id}`) ?? null,
-          was_auto_assigned: p.was_auto_assigned ?? false,
-          event_type: 'pick',
-        }))
+          const pickEntries: LogEntry[] = safePicks.map((p) => ({
+  pick_number: p.pick_number,
+  round: p.round,
+  display_name: nameMap.get(p.original_user_id) ?? 'Unnamed Player',
+  castaway_name: castawayMap.get(p.castaway_id) ?? 'Unknown Castaway',
+  rank_choice: rankMap.get(`${p.original_user_id}-${p.castaway_id}`) ?? null,
+  was_auto_assigned: p.was_auto_assigned ?? false,
+  event_type: 'pick',
+}))
 
         const eventEntries: LogEntry[] = safeEvents.map((e) => ({
           pick_number: e.pick_number,
@@ -160,7 +159,7 @@ if (picks && picks.length > 0 && picks[0].drafted_at) {
   🪵 <span style={{ color: '#f0b429' }}>League</span>{' '}
   <span style={{ color: '#ffffff' }}>Draft Log</span>
 </h1>
-      <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '36px' }}>
+      <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '32px' }}>
   {draftDate
     ? `Every pick, in order, exactly as the draft ran on ${draftDate}:`
     : 'This league hasn\u2019t drafted yet. Keep an eye peeled for results!'}

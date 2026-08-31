@@ -11,6 +11,20 @@ type Message = {
   created_at: string;
 };
 
+function linkify(text: string) {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const parts = text.split(urlRegex);
+  return parts.map((part, i) =>
+    urlRegex.test(part) ? (
+      <a key={i} href={part} target="_blank" rel="noopener noreferrer" style={{ color: '#f0b429', textDecoration: 'underline' }}>
+        {part}
+      </a>
+    ) : (
+      part
+    )
+  );
+}
+
 export default function ChatPanel({ onClose }: { onClose: () => void }) {
   const { user } = useAuth();
   const [leagues, setLeagues] = useState<{ id: number; name: string; league_type: string }[]>([]);
@@ -418,19 +432,20 @@ async function toggleReaction(messageId: string, emoji: string) {
         left: 0
       }}
     >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          backgroundColor: '#1a1a2e',
-          borderLeft: '2.25px solid #f0b429',
-          width: '340px',
-          maxWidth: '90vw',
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          padding: '16px'
-        }}
-      >
+     <div
+  onClick={(e) => e.stopPropagation()}
+  style={{
+    backgroundColor: '#1a1a2e',
+    borderLeft: '2.25px solid #f0b429',
+    width: '340px',
+    maxWidth: '90vw',
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    padding: '12px',
+    boxSizing: 'border-box'
+  }}
+>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
           <select
             value={selectedLeagueId ?? ''}
@@ -489,12 +504,12 @@ async function toggleReaction(messageId: string, emoji: string) {
                     {msg.user_id === user?.id ? 'Me' : (displayNames[msg.user_id] ?? '...')}:
                   </span>
                   {' '}
-                  <span style={{
-                    color: specialColor ?? (msg.user_id === user?.id ? '#ffffff' : '#a0a0b0'),
-                    fontWeight: isAdminMsg ? 'bold' : 'normal'
-                  }}>
-                    {msg.content}
-                  </span>
+                <span style={{
+  color: specialColor ?? (msg.user_id === user?.id ? '#ffffff' : '#a0a0b0'),
+  fontWeight: isAdminMsg ? 'bold' : 'normal'
+}}>
+  {linkify(msg.content)}
+</span>
                   <div style={{ display: 'flex', gap: '4px', marginTop: '2px', flexWrap: 'wrap' }}>
                     {reactionEmojis.map((emoji) => {
                       const emojiReactions = (reactions[msg.id] ?? []).filter((r) => r.emoji === emoji);
@@ -619,7 +634,8 @@ async function toggleReaction(messageId: string, emoji: string) {
                       border: 'none',
                       fontSize: '1.3rem',
                       cursor: 'pointer',
-                      padding: '4px'
+                      padding: '4px',
+                      flexShrink: 0
                     }}
                   >
                     {emoji}
@@ -632,16 +648,17 @@ async function toggleReaction(messageId: string, emoji: string) {
                 We are gifting read-only chat access until Episode 1 scores drop. To participate or continue viewing after Week 1, please upgrade to Castaway+!
               </p>
             ) : (
-              <div style={{ display: 'flex', gap: '8px' }}>
+              <div style={{ display: 'flex', gap: '6px' }}>
                 <button
                   onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                   style={{
-                    background: 'none',
-                    border: '1px solid #333350',
-                    borderRadius: '6px',
-                    fontSize: '1.1rem',
-                    cursor: 'pointer',
-                    padding: '0 10px'
+                     background: 'none',
+    border: '1px solid #333350',
+    borderRadius: '6px',
+    fontSize: '1.1rem',
+    cursor: 'pointer',
+    padding: '0 8px',
+    flexShrink: 0
                   }}
                 >
                   🏆
@@ -654,29 +671,32 @@ async function toggleReaction(messageId: string, emoji: string) {
                   }}
                   placeholder="Type a message..."
                   style={{
-                    flex: 1,
+                    flex: '0 1 200px',
+                    minWidth: 0,
                     backgroundColor: '#12121a',
                     color: '#e0e0e8',
                     border: '1px solid #333350',
                     borderRadius: '6px',
-                    padding: '8px 10px',
+                    padding: '4px 8px',
                     fontSize: '0.9rem'
                   }}
                 />
                 <button
-                  onClick={handleSend}
-                  style={{
-                    backgroundColor: '#f0b429',
-                    color: '#0a0a0f',
-                    border: 'none',
-                    borderRadius: '6px',
-                    padding: '8px 14px',
-                    fontWeight: 'bold',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Send
-                </button>
+  onClick={handleSend}
+  style={{
+    backgroundColor: '#f0b429',
+    color: '#0a0a0f',
+    border: 'none',
+    borderRadius: '6px',
+    padding: '8px 10px',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    flexShrink: 0,
+    whiteSpace: 'nowrap'
+  }}
+>
+  Send
+</button>
               </div>
             )}
           </div>

@@ -186,7 +186,7 @@ await supabase
   await supabase.from('notifications').insert(
     orderedMembers.map((m) => ({
       user_id: m.user_id,
-      message: `The draft for ${league.name} has started! That&apos;s right, silly season is upon us. Click this notification to head to the draft room and make your pick.`,
+      message: `The draft for ${league.name} has started! That\u2019s right, silly season is upon us. Head to the draft room and make your pick.`,
       link: `/leagues/${type}/${instance}/draft-room`,
     }))
   )
@@ -440,7 +440,7 @@ const confirmJoin = async () => {
           display: 'inline-block',
           marginBottom: '24px'
         }}>
-          ← Back to 🌴 Politics on the Beach
+          ← Back to Politics on the Beach
         </a>
       </main>
     )
@@ -456,10 +456,8 @@ const toolGroups = [
       { label: 'Rosters', emoji: '👥', href: `/leagues/${type}/${instance}/roster` },
       { label: 'Draft Room', emoji: '📋', href: `/leagues/${type}/${instance}/draft-room` },
       { label: 'Draft Log', emoji: '🪵', href: `/leagues/${type}/${instance}/draft-log` },
-      { label: 'Trade Portal', emoji: '🔄' },
-      { label: 'League Chat', emoji: '💬' },
-    ].filter((item) => !(item.label === 'Draft Room' && league.draft_status === 'completed')),
-  },
+{ label: 'Trade Portal', emoji: '🔄', href: `/leagues/${type}/${instance}/trade-portal` },    
+].filter((item) => !(item.label === 'Draft Room' && (league.draft_status === 'completed' || type === 'potb-demo'))),  },
 ]
 
   return (
@@ -471,19 +469,15 @@ const toolGroups = [
       padding: '60px 40px'
     }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-<button onClick={() => router.back()} style={{
-  background: 'none',
-  border: 'none',
+<a href={`/leagues/${type}`} style={{
   color: '#a0a0b0',
   fontSize: '0.85rem',
-  cursor: 'pointer',
-  padding: 0,
-  marginBottom: '24px',
-  fontFamily: 'inherit',
-  display: 'inline-block'
+  textDecoration: 'none',
+  display: 'inline-block',
+  marginBottom: '24px'
 }}>
-  ← Back to Previous Page
-</button>
+  ← Back to Politics on the Beach
+</a>
 
         <div style={{ textAlign: 'left', marginBottom: '12px' }}>
           <div style={{

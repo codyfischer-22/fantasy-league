@@ -28,7 +28,7 @@ export default function CreateLeaguePage() {
   const [missedPickBehavior, setMissedPickBehavior] = useState('bump_to_back')
 
   const requiredEmoji = leagueTypeEmojis[type] ?? ''
-
+const [requireHostTradeApproval, setRequireHostTradeApproval] = useState(false)
 
 
 const strippedName = name
@@ -93,20 +93,21 @@ if (!isAdmin) {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '') + '-' + Math.random().toString(36).slice(2, 6)
 
-    const { data: newLeague, error } = await supabase
-      .from('leagues')
-      .insert({
-        name: finalName,
-        slug,
-        league_type: type,
-        is_private: true,
-        host_user_id: user.id,
-        invite_token: crypto.randomUUID(),
-        pick_timer_seconds: pickTimerSeconds ? parseInt(pickTimerSeconds) : null,
-        draft_order_method: draftOrderMethod,
-        guarantee_full_coverage: guaranteeFullCoverage,
-        missed_pick_behavior: missedPickBehavior,
-      })
+   const { data: newLeague, error } = await supabase
+  .from('leagues')
+  .insert({
+    name: finalName,
+    slug,
+    league_type: type,
+    is_private: true,
+    host_user_id: user.id,
+    invite_token: crypto.randomUUID(),
+    pick_timer_seconds: pickTimerSeconds ? parseInt(pickTimerSeconds) : null,
+    draft_order_method: draftOrderMethod,
+    guarantee_full_coverage: guaranteeFullCoverage,
+    missed_pick_behavior: missedPickBehavior,
+    require_host_trade_approval: requireHostTradeApproval,
+  })
       .select()
       .single()
 
@@ -229,6 +230,18 @@ if (!isAdmin) {
 </span>
         </label>
         
+<label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '24px', cursor: 'pointer' }}>
+  <input
+    type="checkbox"
+    checked={requireHostTradeApproval}
+    onChange={(e) => setRequireHostTradeApproval(e.target.checked)}
+    style={{ marginTop: '3px' }}
+  />
+  <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
+    <strong>OPTIONAL:</strong> Require host to approve or deny all league trades (or they sit idle as pending).
+  </span>
+</label>
+
         <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '24px', cursor: 'pointer' }}>
           <input
             type="checkbox"

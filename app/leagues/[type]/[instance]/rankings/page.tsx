@@ -25,6 +25,7 @@ export default function RankingsPage() {
   const [alreadyDrafted, setAlreadyDrafted] = useState(false)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
 
   useEffect(() => {
     async function loadData() {
@@ -124,6 +125,24 @@ export default function RankingsPage() {
     setCastaways(updated)
   }
 
+  const handleDragStart = (index: number) => {
+  setDraggedIndex(index)
+}
+
+const handleDragOver = (e: React.DragEvent, index: number) => {
+  e.preventDefault()
+  if (draggedIndex === null || draggedIndex === index) return
+  const updated = [...castaways]
+  const [moved] = updated.splice(draggedIndex, 1)
+  updated.splice(index, 0, moved)
+  setCastaways(updated)
+  setDraggedIndex(index)
+}
+
+const handleDragEnd = () => {
+  setDraggedIndex(null)
+}
+
   const handleSubmit = async () => {
     if (!user || leagueId === null) return
     setSaving(true)
@@ -196,7 +215,7 @@ export default function RankingsPage() {
         {alreadyDrafted ? (
           <div style={{ textAlign: 'center' }}>
             <h1 style={{ color: '#f0b429', fontSize: '2rem', marginBottom: '16px' }}>
-              🐍 This League Has Already Drafted!
+              🐍 This league has already drafted!
             </h1>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '24px' }}>
               Rankings are locked now that the draft has run. Check out the results below.
@@ -233,32 +252,41 @@ export default function RankingsPage() {
               🐍 Rank Your Castaways
             </h1>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '28px', lineHeight: '1.6' }}>
-              Move your most-wanted castaway to the top, using the arrows, and work your way down from there. We&apos;ll simulate the draft based on everyone&apos;s
-              rankings within the draft window. Happy drafting, friends!
+              Drag and drop your most-wanted castaway to the top, and work your way down from there. If you need to make a tweak before the offline snake draft begins, just re-edit and save your rankings. Happy drafting, friends!
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '28px' }}>
-              {castaways.map((castaway, index) => (
-                <div key={castaway.id} style={{
-                  backgroundColor: '#1a1a2e',
-                  border: '1px solid #2a2a3e',
-                  borderRadius: '8px',
-                  padding: '12px 16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between'
-                }}>
+            {castaways.map((castaway, index) => (
+  <div
+    key={castaway.id}
+    draggable
+    onDragStart={() => handleDragStart(index)}
+    onDragOver={(e) => handleDragOver(e, index)}
+    onDragEnd={handleDragEnd}
+    style={{
+      backgroundColor: draggedIndex === index ? '#2a2a3e' : '#1a1a2e',
+      border: '1px solid #2a2a3e',
+      borderRadius: '8px',
+      padding: '12px 16px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      cursor: 'grab',
+      opacity: draggedIndex === index ? 0.5 : 1
+    }}
+  >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <span style={{
-                      color: '#f0b429',
-                      fontWeight: 'bold',
-                      fontSize: '0.9rem',
-                      minWidth: '24px'
-                    }}>
-                      {index + 1}
-                    </span>
-                    <span style={{ fontSize: '0.95rem' }}>{castaway.name}</span>
-                  </div>
+  <span style={{ color: '#555570', fontSize: '1rem', cursor: 'grab' }}>⠿</span>
+  <span style={{
+    color: '#f0b429',
+    fontWeight: 'bold',
+    fontSize: '0.9rem',
+    minWidth: '24px'
+  }}>
+    {index + 1}
+  </span>
+  <span style={{ fontSize: '0.95rem' }}>{castaway.name}</span>
+</div>
                   <div style={{ display: 'flex', gap: '6px' }}>
                     <button
                       onClick={() => moveUp(index)}

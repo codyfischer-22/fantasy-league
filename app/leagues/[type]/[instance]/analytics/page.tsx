@@ -456,7 +456,7 @@ setLeagueName(league.name)
   ← Back to {leagueName ?? 'League'}
 </a>
 
-        <h1 style={{ fontSize: '2.25rem', marginBottom: '2px' }}>
+        <h1 style={{ fontSize: '2.25rem', marginBottom: '4px' }}>
           📈 <span style={{ color: '#f0b429' }}>Season 51</span>{' '}
           <span style={{ color: '#ffffff' }}>Analytics</span>
         </h1>

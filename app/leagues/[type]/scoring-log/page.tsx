@@ -189,7 +189,7 @@ export default function ScoringLogPage() {
           {fromInstance ? `← Back to ${leagueName ?? 'League'}` : '← Back to 🌴 Politics on the Beach'}
         </a>
 
-        <h1 style={{ fontSize: '2.25rem', marginBottom: '8px' }}>
+        <h1 style={{ fontSize: '2.25rem', marginBottom: '4px' }}>
           🧮 <span style={{ color: '#f0b429' }}>Episode</span>{' '}
           <span style={{ color: '#ffffff' }}>Scoring Log</span>
         </h1>

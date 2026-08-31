@@ -201,7 +201,7 @@ if (isFrozen) {
           ← Back to {leagueName || 'League'}
         </a>
 
-<h1 style={{ fontSize: '2.25rem', marginBottom: '0px' }}>
+<h1 style={{ fontSize: '2.25rem', marginBottom: '4px' }}>
   <span style={{ color: '#f0b429' }}> 🏆 League</span>{' '}
   <span style={{ color: '#ffffff' }}>Leaderboard</span>
 </h1>

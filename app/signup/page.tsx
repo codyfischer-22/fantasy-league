@@ -46,7 +46,7 @@ const handleSignUp = async (e: React.FormEvent) => {
   }
 
   if (containsEmoji(displayName)) {
-  setMessage('Display came cannot contain emojis.')
+  setMessage('Display name cannot contain emojis.')
   return
 }
 

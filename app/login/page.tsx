@@ -15,6 +15,8 @@ const [resetEmail, setResetEmail] = useState('')
 const [resetMessage, setResetMessage] = useState('')
 const [resetLoading, setResetLoading] = useState(false)
 
+
+
   const handleResetPassword = async () => {
   if (!resetEmail) {
     setResetMessage('Please enter your email address.')
@@ -100,7 +102,7 @@ return (
             marginBottom: '16px',
             borderRadius: '6px',
             border: '1px solid #2a2a3e',
-            backgroundColor: '#12121a',
+    backgroundColor: '#12121a',
             color: '#ffffff'
           }}
         />
@@ -118,8 +120,8 @@ return (
             padding: '10px',
             marginBottom: '4px',
             borderRadius: '6px',
-            border: '1px solid #2a2a3e',
-            backgroundColor: '#12121a',
+             border: '1px solid #2a2a3e',
+    backgroundColor: '#12121a',
             color: '#ffffff'
           }}
         />

@@ -42,12 +42,12 @@ export default function PardonOurMessModal() {
          🚧 Pardon our mess!
         </h3>
         <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '8px', lineHeight: '1.6' }}>
-          Please know, as we approach Survivor 51, we&apos;re actively polishing the mobile experience and building out chat and private league feature.</p>
+          As we approach Survivor 51, please know we&apos;re actively polishing the mobile experience and building out additional features.</p>
         <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '8px', lineHeight: '1.6' }}>
   We wanted to go live early, letting you sign up and share with friends before the season start.
 </p>
 <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '24px', lineHeight: '1.6' }}>
-  Thanks for being here early! Definitely expect things to keep getting better!
+  Thanks for being here early! Things will continue to improve from here!
 </p>
         <button onClick={handleDismiss} style={{
           backgroundColor: '#f0b429',

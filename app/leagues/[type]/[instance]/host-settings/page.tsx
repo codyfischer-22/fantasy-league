@@ -26,6 +26,7 @@ export default function LeagueSettingsPage() {
   const [showMembers, setShowMembers] = useState(false)
 const [members, setMembers] = useState<{ user_id: string; display_name: string }[]>([])
 const [customOrder, setCustomOrder] = useState<string[]>([])
+const [requireHostTradeApproval, setRequireHostTradeApproval] = useState(false)
 
   useEffect(() => {
     async function loadLeague() {
@@ -61,6 +62,7 @@ if (leagueData.is_frozen) {
       setPickTimerSeconds(leagueData.pick_timer_seconds ? String(leagueData.pick_timer_seconds) : '')
       setDraftOrderMethod(leagueData.draft_order_method ?? 'random')
       setGuaranteeFullCoverage(leagueData.guarantee_full_coverage ?? false)
+      setRequireHostTradeApproval(leagueData.require_host_trade_approval ?? false)
       setMissedPickBehavior(leagueData.missed_pick_behavior ?? 'bump_to_back')
 
       const { data: memberRows } = await supabase
@@ -100,7 +102,7 @@ setCustomOrder([...stillValidOrder, ...missingFromOrder])
     setSaving(true)
     setMessage('')
 
-   const { error } = await supabase
+  const { error } = await supabase
   .from('leagues')
   .update({
     pick_timer_seconds: pickTimerSeconds ? parseInt(pickTimerSeconds) : null,
@@ -108,6 +110,7 @@ setCustomOrder([...stillValidOrder, ...missingFromOrder])
     guarantee_full_coverage: guaranteeFullCoverage,
     missed_pick_behavior: missedPickBehavior,
     custom_draft_order: draftOrderMethod === 'host_set' ? customOrder : null,
+    require_host_trade_approval: requireHostTradeApproval,
   })
   .eq('id', league.id)
 
@@ -316,6 +319,13 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
             <strong>OPTIONAL:</strong> Require every player to be drafted if more than 4 league players. <em>(Castaways will be cloned as necessary to give all tribes 4 unique players.)</em>
           </span>
         </label>
+
+        <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '24px', cursor: 'pointer' }}>
+  <input type="checkbox" checked={requireHostTradeApproval} onChange={(e) => setRequireHostTradeApproval(e.target.checked)} style={{ marginTop: '3px' }} />
+  <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
+    <strong>OPTIONAL:</strong> Require host to approve or deny all league trades (or they sit idle as pending).
+  </span>
+</label>
 
         <button
           onClick={handleSave}

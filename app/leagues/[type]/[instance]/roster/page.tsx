@@ -183,10 +183,14 @@ export default function RosterPage() {
           ← Back to {leagueName || 'League'}
         </a>
 
-<h1 style={{ fontSize: '2.25rem', marginBottom: '32px' }}>
+<h1 style={{ fontSize: '2.25rem', marginBottom: '4px' }}>
   <span style={{ color: '#f0b429' }}>👥 League</span>{' '}
   <span style={{ color: '#ffffff' }}>Roster</span>
 </h1>
+
+<p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '32px' }}>
+  See who's got who for this season of Politics on the Beach. This page will update as new trades occur!
+</p>
 
         {roster.length === 0 ? (
           <p style={{ color: '#555570' }}>No players have joined this league yet.</p>
