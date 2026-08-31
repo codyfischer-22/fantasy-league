@@ -12,6 +12,7 @@ type PlayerResult = {
   user_id: string
   display_name: string
 }
+
 type Trade = {
   id: string
   proposing_user_id: string
@@ -19,6 +20,7 @@ type Trade = {
   offered_castaway_id: number
   requested_castaway_id: number
   status: string
+  declined_by: string | null
   created_at: string
   resolved_at: string | null
 }
@@ -302,7 +304,7 @@ if (hasEliminated) {
 
     const { data: activeTrades, error: checkError } = await supabase
       .from('trades')
-      .select('id, offered_castaway_id, requested_castaway_id')
+      .select('id, offered_castaway_id, requested_castaway_id, proposing_user_id, receiving_user_id')
       .eq('league_id', leagueId)
       .in('status', ['pending', 'pending_host_approval'])
 
