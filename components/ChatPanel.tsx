@@ -87,7 +87,6 @@ const [leagues, setLeagues] = useState<{ id: number; name: string; league_type: 
   const [reportingMessageId, setReportingMessageId] = useState<string | null>(null);
 const [reportReason, setReportReason] = useState('');
 const [reportSubmitting, setReportSubmitting] = useState(false);
-const reporterName = leagueMemberList.find((m) => m.user_id === user.id)?.display_name ?? 'Someone';
 
 useEffect(() => {
   async function loadUnreadPerLeague() {
@@ -241,8 +240,7 @@ useEffect(() => {
       }
       const myLeagues = leagueRows ?? [];
       const myLeagueTypes = [...new Set(myLeagues.map((l) => l.league_type))];
-      let communityChats: { id: number; name: string; league_type: string }[] = [];
-      if (myLeagueTypes.length > 0) {
+let communityChats: { id: number; name: string; league_type: string; slug: string }[] = [];      if (myLeagueTypes.length > 0) {
         const { data: chatRows, error: chatError } = await supabase
           .from('leagues')
           .select('id, name, league_type, slug')
@@ -480,7 +478,9 @@ await supabase.from('notifications').insert(
 
 async function submitReport(msg: Message) {
   if (!user || !reportReason.trim()) return;
+  const currentUserId = user.id;
   setReportSubmitting(true);
+  const reporterName = leagueMemberList.find((m) => m.user_id === currentUserId)?.display_name ?? 'Someone';
   const { data: leagueData } = await supabase
     .from('leagues')
     .select('name')

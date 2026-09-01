@@ -19,6 +19,7 @@ type League = {
   pick_timer_seconds?: number | null
   draft_order_method?: string | null
   custom_draft_order?: string[] | null
+  allow_custom_scoring: boolean
 }
 
 export default function LeagueInstancePage() {
