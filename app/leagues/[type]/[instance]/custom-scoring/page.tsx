@@ -35,15 +35,16 @@ export default function CustomScoringPage() {
 
   const [selectedCastawayId, setSelectedCastawayId] = useState('')
   const [episodeNumber, setEpisodeNumber] = useState('')
-  const [categoryLabel, setCategoryLabel] = useState('')
   const [points, setPoints] = useState('')
   const [notes, setNotes] = useState('')
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
 
-  const existingCategories = [...new Set(entries.map((e) => e.category_label))]
-  const isNewCategory = categoryLabel.trim() !== '' && !existingCategories.includes(categoryLabel.trim())
-  const atCategoryLimit = existingCategories.length >= 3 && isNewCategory
+const [newSlotText, setNewSlotText] = useState('')
+const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+
+const savedCategories = [...new Set(entries.map((e) => e.category_label))].slice(0, 3)
+  const [showCategorySuggestions, setShowCategorySuggestions] = useState(false)
 
   useEffect(() => {
     async function loadData() {
@@ -109,47 +110,48 @@ setIsHost(true)
     }
   }, [user, loading, type, instance, router])
 
-  const handleAddEntry = async () => {
-    if (!league || !selectedCastawayId || !episodeNumber || !categoryLabel.trim() || !points) {
-      setMessage('Please fill out all fields.')
-      return
-    }
-    if (atCategoryLimit) {
-      setMessage('You can only create up to 3 custom scoring categories for this league.')
-      return
-    }
-    setSaving(true)
-    setMessage('')
+const handleAddEntry = async () => {
+  const finalCategory = selectedCategory ?? newSlotText.trim()
+  if (!league || !selectedCastawayId || !episodeNumber || !finalCategory || !points) {
+    setMessage('Please fill out all fields, including selecting or entering a category.')
+    return
+  }
+  if (!selectedCategory && savedCategories.length >= 3) {
+    setMessage('You already have 3 categories. Select one of the existing ones instead.')
+    return
+  }
+  setSaving(true)
+  setMessage('')
 
-    const { data: newEntry, error } = await supabase
-      .from('custom_scoring_entries')
-      .insert({
-        league_id: league.id,
-        castaway_id: parseInt(selectedCastawayId),
-        episode_number: parseInt(episodeNumber),
-        category_label: categoryLabel.trim(),
-        points: parseInt(points),
-        notes: notes.trim() || null,
-      })
-      .select()
-      .single()
+  const { data: newEntry, error } = await supabase
+    .from('custom_scoring_entries')
+    .insert({
+      league_id: league.id,
+      castaway_id: parseInt(selectedCastawayId),
+      episode_number: parseInt(episodeNumber),
+      category_label: finalCategory,
+      points: parseInt(points),
+      notes: notes.trim() || null,
+    })
+    .select()
+    .single()
 
-    setSaving(false)
+  setSaving(false)
 
   if (error || !newEntry) {
-  console.error('Error saving custom scoring entry:', JSON.stringify(error, null, 2))
-  setMessage('Something went wrong saving this entry. Please try again.')
-  return
-}
-
-    setEntries((prev) => [newEntry, ...prev])
-    setMessage('Entry added!')
-    setSelectedCastawayId('')
-    setEpisodeNumber('')
-    setCategoryLabel('')
-    setPoints('')
-    setNotes('')
+    setMessage('Something went wrong saving this entry. Please try again.')
+    return
   }
+
+setEntries((prev) => [newEntry, ...prev])
+setMessage('Entry added!')
+setSelectedCastawayId('')
+setEpisodeNumber('')
+setSelectedCategory(null)
+setNewSlotText('')
+setPoints('')
+setNotes('')
+}
 
   const handleDeleteEntry = async (entryId: string) => {
     const confirmed = window.confirm('Remove this custom scoring entry?')
@@ -245,23 +247,51 @@ setIsHost(true)
             onChange={(e) => setEpisodeNumber(e.target.value)}
             style={inputStyle}
           />
+<label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '8px' }}>Category</label>
+<div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
+  {savedCategories.map((cat) => (
+    <button
+      key={cat}
+      type="button"
+      onClick={() => { setSelectedCategory(cat); setNewSlotText('') }}
+      style={{
+        flex: '1 1 140px',
+        padding: '10px 14px',
+        borderRadius: '20px',
+        border: selectedCategory === cat ? '2px solid #f0b429' : '1px solid #2a2a3e',
+        backgroundColor: '#12121a',
+        color: '#f0b429',
+        fontSize: '0.85rem',
+        textAlign: 'center',
+        cursor: 'pointer'
+      }}
+    >
+      {cat}
+    </button>
+  ))}
+  {savedCategories.length < 3 && (
+    <input
+      type="text"
+      value={newSlotText}
+      onChange={(e) => { setNewSlotText(e.target.value); setSelectedCategory(null) }}
+      onFocus={() => setSelectedCategory(null)}
+      placeholder="New category..."
+      maxLength={40}
+      style={{
+        flex: '1 1 140px',
+        padding: '10px 14px',
+        borderRadius: '20px',
+        border: newSlotText ? '2px solid #f0b429' : '1px solid #2a2a3e',
+        backgroundColor: '#12121a',
+        color: '#ffffff',
+        fontSize: '0.85rem',
+        textAlign: 'center'
+      }}
+    />
+  )}
+</div>
 
-          <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '4px' }}>Category Name</label>
-          <input
-            type="text"
-            value={categoryLabel}
-            onChange={(e) => setCategoryLabel(e.target.value)}
-            placeholder="e.g. Advantage Found"
-            maxLength={40}
-            style={inputStyle}
-          />
-          {existingCategories.length > 0 && (
-            <p style={{ color: '#555570', fontSize: '0.75rem', marginTop: '-10px', marginBottom: '16px' }}>
-              Text must be typed the same each time. So far you have: {existingCategories.join(', ')} ({existingCategories.length}/3).
-            </p>
-          )}
-
-          <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '4px' }}>Points Awarded</label>
+          <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0hja85rem', marginBottom: '4px' }}>Points Awarded</label>
           <input
             type="number"
             value={points}
@@ -279,28 +309,27 @@ setIsHost(true)
             style={inputStyle}
           />
 
-          <button
-            onClick={handleAddEntry}
-            disabled={saving || atCategoryLimit}
-            style={{
-              backgroundColor: '#f0b429',
-              color: '#0a0a0f',
-              padding: '12px 24px',
-              borderRadius: '6px',
-              border: 'none',
-              fontWeight: 'bold',
-              cursor: saving || atCategoryLimit ? 'not-allowed' : 'pointer',
-              opacity: atCategoryLimit ? 0.5 : 1
-            }}
-          >
-            {saving ? 'Saving...' : 'Add Entry'}
-          </button>
+<button
+  onClick={handleAddEntry}
+  disabled={saving}
+  style={{
+    backgroundColor: '#f0b429',
+    color: '#0a0a0f',
+    padding: '12px 24px',
+    borderRadius: '6px',
+    border: 'none',
+    fontWeight: 'bold',
+    cursor: saving ? 'not-allowed' : 'pointer'
+  }}
+>
+  {saving ? 'Saving...' : 'Add Entry'}
+</button>
 
           {message && (
-            <p style={{ color: atCategoryLimit ? '#ff6b6b' : '#f0b429', fontSize: '0.85rem', marginTop: '12px' }}>
-              {message}
-            </p>
-          )}
+  <p style={{ color: message.includes('wrong') || message.includes('Please fill') ? '#ff6b6b' : '#f0b429', fontSize: '0.85rem', marginTop: '12px' }}>
+    {message}
+  </p>
+)}
         </div>
 
         <h2 style={{ color: '#f0b429', fontSize: '1.2rem', marginBottom: '12px' }}>Existing Entries</h2>

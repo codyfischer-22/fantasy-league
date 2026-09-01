@@ -304,9 +304,9 @@ if ((scores && scores.length > 0) || (customEntries && customEntries.length > 0)
     )}
     {categoryLabels[entry.category] ?? entry.category}
     {entry.count > 1 ? ` (×${entry.count})` : ''}
-    {': '}
+    {' | '}
     {entry.points > 0 ? '+' : ''}{entry.points}{entry.count > 1 ? ` each` : ''}
-    {entry.notes ? ` — ${entry.notes}` : ''}
+    {entry.notes ? ` | ${entry.notes}` : ''}
   </div>
 ))}
                     </div>
