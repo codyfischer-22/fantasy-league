@@ -11,24 +11,55 @@ type Message = {
   created_at: string;
 };
 
-function linkify(text: string) {
+function renderMessageContent(text: string, members: { user_id: string; display_name: string }[]) {
   const urlRegex = /(https?:\/\/[^\s]+)/g;
-  const parts = text.split(urlRegex);
-  return parts.map((part, i) =>
-    urlRegex.test(part) ? (
-      <a key={i} href={part} target="_blank" rel="noopener noreferrer" style={{ color: '#f0b429', textDecoration: 'underline' }}>
-        {part}
-      </a>
-    ) : (
-      part
-    )
-  );
+  const names = members.map((m) => m.display_name).sort((a, b) => b.length - a.length);
+  const mentionRegex = names.length > 0
+    ? new RegExp(`(@(?:${names.map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')}))`, 'g')
+    : null;
+
+  // Split on URLs first
+  const urlParts = text.split(urlRegex);
+
+  return urlParts.map((part, i) => {
+    if (urlRegex.test(part)) {
+      urlRegex.lastIndex = 0;
+    return (
+  <a
+    key={`url-${i}`}
+    href={part}
+    target="_blank"
+    rel="noopener noreferrer"
+    style={{
+      color: '#f0b429',
+      textDecoration: 'underline',
+      wordBreak: 'break-all',
+      overflowWrap: 'break-word'
+    }}
+  >
+    {part}
+  </a>
+);
+    }
+    // Within each non-URL chunk, split further on mentions
+    if (!mentionRegex) return part;
+    const mentionParts = part.split(mentionRegex);
+    return mentionParts.map((mentionPart, j) => {
+      const isMention = names.some((n) => `@${n}` === mentionPart);
+      return isMention ? (
+        <span key={`mention-${i}-${j}`} style={{ color: '#f5820e', fontWeight: 'bold' }}>
+          {mentionPart}
+        </span>
+      ) : (
+        <span key={`text-${i}-${j}`}>{mentionPart}</span>
+      );
+    });
+  });
 }
 
 export default function ChatPanel({ onClose }: { onClose: () => void }) {
   const { user } = useAuth();
-  const [leagues, setLeagues] = useState<{ id: number; name: string; league_type: string }[]>([]);
-  const [selectedLeagueId, setSelectedLeagueId] = useState<number | null>(null);
+const [leagues, setLeagues] = useState<{ id: number; name: string; league_type: string; slug: string }[]>([]);  const [selectedLeagueId, setSelectedLeagueId] = useState<number | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -47,6 +78,16 @@ export default function ChatPanel({ onClose }: { onClose: () => void }) {
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
   const [loadingOlder, setLoadingOlder] = useState(false);
   const isPrependingRef = useRef(false);
+  const [showMentionPicker, setShowMentionPicker] = useState(false);
+  const [mentionQuery, setMentionQuery] = useState('');
+  const [mentionCandidates, setMentionCandidates] = useState<{ user_id: string; display_name: string }[]>([]);
+  const [leagueMemberList, setLeagueMemberList] = useState<{ user_id: string; display_name: string }[]>([]);
+  const messagesContainerRef = useRef<HTMLDivElement | null>(null);
+  const [isNearTop, setIsNearTop] = useState(false);
+  const [reportingMessageId, setReportingMessageId] = useState<string | null>(null);
+const [reportReason, setReportReason] = useState('');
+const [reportSubmitting, setReportSubmitting] = useState(false);
+const reporterName = leagueMemberList.find((m) => m.user_id === user.id)?.display_name ?? 'Someone';
 
 useEffect(() => {
   async function loadUnreadPerLeague() {
@@ -191,7 +232,7 @@ useEffect(() => {
       }
       const { data: leagueRows, error: leagueError } = await supabase
         .from('leagues')
-        .select('id, name, league_type')
+        .select('id, name, league_type, slug')
         .in('id', leagueIds)
         .order('id', { ascending: true });
       if (leagueError) {
@@ -204,7 +245,7 @@ useEffect(() => {
       if (myLeagueTypes.length > 0) {
         const { data: chatRows, error: chatError } = await supabase
           .from('leagues')
-          .select('id, name, league_type')
+          .select('id, name, league_type, slug')
           .eq('is_show_chat', true)
           .in('league_type', myLeagueTypes);
         if (chatError) {
@@ -219,6 +260,40 @@ useEffect(() => {
     }
     loadLeagues();
   }, [user]);
+
+  useEffect(() => {
+  async function loadMembersForMentions() {
+    if (!selectedLeagueId) {
+      setLeagueMemberList([]);
+      return;
+    }
+    const { data: memberRows, error: memberError } = await supabase
+      .from('league_members')
+      .select('user_id')
+      .eq('league_id', selectedLeagueId);
+    if (memberError) {
+      console.error('Error loading members for mentions:', JSON.stringify(memberError, null, 2));
+      return;
+    }
+    const memberIds = (memberRows ?? []).map((m) => m.user_id);
+    if (memberIds.length === 0) {
+      setLeagueMemberList([]);
+      return;
+    }
+    const { data: profileRows, error: profileError } = await supabase
+      .from('profiles')
+      .select('user_id, display_name')
+      .in('user_id', memberIds);
+    if (profileError) {
+      console.error('Error loading mention profiles:', JSON.stringify(profileError, null, 2));
+      return;
+    }
+    setLeagueMemberList(
+      (profileRows ?? []).map((p) => ({ user_id: p.user_id, display_name: p.display_name || 'Unnamed Player' }))
+    );
+  }
+  loadMembersForMentions();
+}, [selectedLeagueId]);
 
   useEffect(() => {
     if (!selectedLeagueId) {
@@ -368,19 +443,65 @@ async function loadOlderMessages() {
   setMessages((prev) => [...olderBatch, ...prev]);
 }
 
-  async function handleSend() {
-    if (!newMessage.trim() || !selectedLeagueId || !user) return;
-    const { error } = await supabase.from('messages').insert({
-      league_id: selectedLeagueId,
-      user_id: user.id,
-      content: newMessage.trim()
-    });
-    if (error) {
-      console.error('Error sending message:', JSON.stringify(error, null, 2));
-      return;
-    }
-    setNewMessage('');
+function handleMessagesScroll() {
+  const el = messagesContainerRef.current;
+  if (!el) return;
+  setIsNearTop(el.scrollTop < 80);
+}
+
+async function handleSend() {
+  if (!newMessage.trim() || !selectedLeagueId || !user) return;
+  const trimmed = newMessage.trim();
+  const { error } = await supabase.from('messages').insert({
+    league_id: selectedLeagueId,
+    user_id: user.id,
+    content: trimmed
+  });
+  if (error) {
+    console.error('Error sending message:', JSON.stringify(error, null, 2));
+    return;
   }
+ const mentionedMembers = leagueMemberList.filter(
+  (m) => trimmed.includes(`@${m.display_name}`) && m.user_id !== user.id
+);
+if (mentionedMembers.length > 0) {
+ const senderName = leagueMemberList.find((m) => m.user_id === user.id)?.display_name ?? 'Someone';
+const league = leagues.find((l) => l.id === selectedLeagueId);
+await supabase.from('notifications').insert(
+  mentionedMembers.map((m) => ({
+    user_id: m.user_id,
+    message: `${senderName} tagged you in the ${league?.name ?? 'a league'} chat!`,
+    link: null,
+  }))
+);
+}
+  setNewMessage('');
+}
+
+async function submitReport(msg: Message) {
+  if (!user || !reportReason.trim()) return;
+  setReportSubmitting(true);
+  const { data: leagueData } = await supabase
+    .from('leagues')
+    .select('name')
+    .eq('id', msg.league_id)
+    .single();
+  const { data: admins } = await supabase
+    .from('profiles')
+    .select('user_id')
+    .eq('is_global_admin', true);
+  const reportedName = displayNames[msg.user_id] ?? 'a Player';
+  await supabase.from('notifications').insert(
+    (admins ?? []).map((a) => ({
+      user_id: a.user_id,
+      message: `⚠️ ${reporterName} reported a message from ${reportedName} in ${leagueData?.name ?? 'a league'}. Report: "${reportReason.trim()}"`,
+      link: null,
+    }))
+  );
+  setReportSubmitting(false);
+  setReportingMessageId(null);
+  setReportReason('');
+}
 
 async function toggleReaction(messageId: string, emoji: string) {
   if (!user) return;
@@ -452,7 +573,7 @@ async function toggleReaction(messageId: string, emoji: string) {
             onChange={(e) => setSelectedLeagueId(Number(e.target.value))}
             style={{
               backgroundColor: '#12121a',
-              color: '#f0b429',
+              color: '#f7af09',
               border: '1px solid #f0b429',
               borderRadius: '6px',
               padding: '6px 30px 6px 8px',
@@ -488,7 +609,11 @@ async function toggleReaction(messageId: string, emoji: string) {
           </button>
         </div>
 
-        <div style={{ flex: 1, overflowY: 'auto', marginBottom: '12px' }}>
+        <div
+  ref={messagesContainerRef}
+  onScroll={handleMessagesScroll}
+  style={{ flex: 1, overflowY: 'auto', marginBottom: '12px' }}
+>
           {chatLocked ? null : leagues.length === 0 ? (
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem' }}>You're not in any leagues yet.</p>
           ) : messages.length === 0 ? (
@@ -504,11 +629,11 @@ async function toggleReaction(messageId: string, emoji: string) {
                     {msg.user_id === user?.id ? 'Me' : (displayNames[msg.user_id] ?? '...')}:
                   </span>
                   {' '}
-                <span style={{
+   <span style={{
   color: specialColor ?? (msg.user_id === user?.id ? '#ffffff' : '#a0a0b0'),
   fontWeight: isAdminMsg ? 'bold' : 'normal'
 }}>
-  {linkify(msg.content)}
+  {renderMessageContent(msg.content, leagueMemberList)}
 </span>
                   <div style={{ display: 'flex', gap: '4px', marginTop: '2px', flexWrap: 'wrap' }}>
                     {reactionEmojis.map((emoji) => {
@@ -536,7 +661,8 @@ async function toggleReaction(messageId: string, emoji: string) {
                       );
                     })}
                     <button
-                      onClick={() => setActiveReactionPicker(activeReactionPicker === msg.id ? null : msg.id)}
+                      onClick={() => setActiveReactionPicker
+                      (activeReactionPicker === msg.id ? null : msg.id)}
                       style={{
                         background: 'transparent',
                         border: '1px solid #333350',
@@ -550,22 +676,41 @@ async function toggleReaction(messageId: string, emoji: string) {
                       +
                     </button>
                   </div>
-                  {activeReactionPicker === msg.id && (
-                    <div style={{ display: 'flex', gap: '4px', marginTop: '4px' }}>
-                      {reactionEmojis.map((emoji) => (
-                        <button
-                          key={emoji}
-                          onClick={() => {
-                            toggleReaction(msg.id, emoji);
-                            setActiveReactionPicker(null);
-                          }}
-                          style={{ background: 'none', border: 'none', fontSize: '1rem', cursor: 'pointer' }}
-                        >
-                          {emoji}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                {activeReactionPicker === msg.id && (
+  <div style={{ display: 'flex', gap: '4px', marginTop: '4px', alignItems: 'center' }}>
+    {reactionEmojis.map((emoji) => (
+      <button
+        key={emoji}
+        onClick={() => {
+          toggleReaction(msg.id, emoji);
+          setActiveReactionPicker(null);
+        }}
+        style={{ background: 'none', border: 'none', fontSize: '1rem', cursor: 'pointer' }}
+      >
+        {emoji}
+      </button>
+    ))}
+    {msg.user_id !== user?.id && (
+      <button
+        onClick={() => {
+          setReportingMessageId(msg.id);
+          setActiveReactionPicker(null);
+        }}
+        style={{
+          background: 'none',
+          border: '1px solid #333350',
+          borderRadius: '10px',
+          fontSize: '0.7rem',
+          padding: '2px 8px',
+          cursor: 'pointer',
+          color: '#a0a0b0'
+        }}
+      >
+        🚩 Report
+      </button>
+    )}
+  </div>
+)}
                 </div>
               );
             })
@@ -573,7 +718,7 @@ async function toggleReaction(messageId: string, emoji: string) {
           <div ref={messagesEndRef} />
         </div>
 
-        {hasMoreMessages && messages.length > 0 && !chatLocked && (
+       {hasMoreMessages && messages.length > 0 && !chatLocked && isNearTop && (
   <button
     onClick={loadOlderMessages}
     disabled={loadingOlder}
@@ -663,24 +808,79 @@ async function toggleReaction(messageId: string, emoji: string) {
                 >
                   🏆
                 </button>
-                <input
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') handleSend();
-                  }}
-                  placeholder="Type a message..."
-                  style={{
-                    flex: '0 1 200px',
-                    minWidth: 0,
-                    backgroundColor: '#12121a',
-                    color: '#e0e0e8',
-                    border: '1px solid #333350',
-                    borderRadius: '6px',
-                    padding: '4px 8px',
-                    fontSize: '0.9rem'
-                  }}
-                />
+              <input
+  value={newMessage}
+  onChange={(e) => {
+    const value = e.target.value;
+    setNewMessage(value);
+    const cursorPos = e.target.selectionStart ?? value.length;
+    const textBeforeCursor = value.slice(0, cursorPos);
+    const atMatch = textBeforeCursor.match(/@([a-zA-Z0-9_ ]*)$/);
+    if (atMatch) {
+      const query = atMatch[1].toLowerCase();
+      setMentionQuery(query);
+      setMentionCandidates(
+        leagueMemberList.filter((m) => m.display_name.toLowerCase().includes(query)).slice(0, 5)
+      );
+      setShowMentionPicker(true);
+    } else {
+      setShowMentionPicker(false);
+    }
+  }}
+  onKeyDown={(e) => {
+    if (e.key === 'Enter' && !showMentionPicker) handleSend();
+  }}
+  placeholder="Type a message..."
+  style={{
+    flex: '0 1 200px',
+    minWidth: 0,
+    backgroundColor: '#12121a',
+    color: '#e0e0e8',
+    border: '1px solid #333350',
+    borderRadius: '6px',
+    padding: '4px 8px',
+    fontSize: '0.9rem'
+  }}
+/>
+{showMentionPicker && mentionCandidates.length > 0 && (
+  <div style={{
+    position: 'absolute',
+    bottom: '48px',
+    left: 0,
+    right: 0,
+    backgroundColor: '#1a1a2e',
+    border: '1px solid #f0b429',
+    borderRadius: '8px',
+    padding: '4px',
+    zIndex: 60
+  }}>
+    {mentionCandidates.map((m) => (
+      <button
+        key={m.user_id}
+        onClick={() => {
+          const cursorPos = newMessage.length;
+          const textBeforeCursor = newMessage.slice(0, cursorPos);
+          const newText = textBeforeCursor.replace(/@([a-zA-Z0-9_ ]*)$/, `@${m.display_name} `);
+          setNewMessage(newText);
+          setShowMentionPicker(false);
+        }}
+        style={{
+          display: 'block',
+          width: '100%',
+          textAlign: 'left',
+          background: 'none',
+          border: 'none',
+          color: '#f0b429',
+          padding: '6px 10px',
+          fontSize: '0.85rem',
+          cursor: 'pointer'
+        }}
+      >
+        @{m.display_name}
+      </button>
+    ))}
+  </div>
+)}
                 <button
   onClick={handleSend}
   style={{
@@ -702,6 +902,72 @@ async function toggleReaction(messageId: string, emoji: string) {
           </div>
         )}
       </div>
+{reportingMessageId && (
+  <div
+    onClick={() => setReportingMessageId(null)}
+    style={{
+      position: 'fixed',
+      top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.7)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 200
+    }}
+  >
+    <div
+      onClick={(e) => e.stopPropagation()}
+      style={{
+        backgroundColor: '#1a1a2e',
+        border: '1px solid #f0b429',
+        borderRadius: '12px',
+        padding: '16px',
+        maxWidth: '340px',
+        width: '90%'
+      }}
+    >
+      <p style={{ color: '#f0b429', fontSize: '0.85rem', marginBottom: '12px' }}>
+        Let our team know why you are reporting this message. This will send a notification for review.
+      </p>
+      <textarea
+        value={reportReason}
+        onChange={(e) => setReportReason(e.target.value)}
+        placeholder="What's the issue?"
+        maxLength={300}
+        style={{
+          width: '100%',
+          minHeight: '80px',
+          padding: '8px 10px',
+          borderRadius: '6px',
+          border: '1px solid #2a2a3e',
+          backgroundColor: '#12121a',
+          color: '#ffffff',
+          fontSize: '0.9rem',
+          marginBottom: '12px',
+          fontFamily: 'inherit'
+        }}
+      />
+      <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+        <button
+          onClick={() => { setReportingMessageId(null); setReportReason(''); }}
+          style={{ background: 'none', border: '1px solid #2a2a3e', color: '#a0a0b0', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer' }}
+        >
+          Cancel
+        </button>
+        <button
+          onClick={() => {
+            const msg = messages.find((m) => m.id === reportingMessageId);
+            if (msg) submitReport(msg);
+          }}
+          disabled={reportSubmitting || !reportReason.trim()}
+          style={{ background: '#ff6b6b', border: 'none', color: '#ffffff', padding: '8px 16px', borderRadius: '6px', fontWeight: 'bold', cursor: reportSubmitting ? 'not-allowed' : 'pointer' }}
+        >
+          {reportSubmitting ? 'Sending...' : 'Submit Report'}
+        </button>
+      </div>
+          </div>
+      </div>
+    )}
     </div>
   );
 }

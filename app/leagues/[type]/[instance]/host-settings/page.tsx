@@ -24,9 +24,11 @@ export default function LeagueSettingsPage() {
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
   const [showMembers, setShowMembers] = useState(false)
-const [members, setMembers] = useState<{ user_id: string; display_name: string }[]>([])
-const [customOrder, setCustomOrder] = useState<string[]>([])
-const [requireHostTradeApproval, setRequireHostTradeApproval] = useState(false)
+  const [members, setMembers] = useState<{ user_id: string; display_name: string }[]>([])
+  const [customOrder, setCustomOrder] = useState<string[]>([])
+  const [requireHostTradeApproval, setRequireHostTradeApproval] = useState(false)
+  const [allowCustomScoring, setAllowCustomScoring] = useState(false)
+  const [userTier, setUserTier] = useState<string | null>(null)
 
   useEffect(() => {
     async function loadLeague() {
@@ -45,18 +47,11 @@ const [requireHostTradeApproval, setRequireHostTradeApproval] = useState(false)
       if (!leagueData || leagueData.host_user_id !== user.id) {
         router.push(`/leagues/${type}/${instance}`)
         return
-      }
-
-      if (!leagueData || leagueData.host_user_id !== user.id) {
-  router.push(`/leagues/${type}/${instance}`)
-  return
 }
-
 if (leagueData.is_frozen) {
   router.push(`/leagues/${type}/${instance}`)
   return
 }
-
       setLeague(leagueData)
       setIsHost(true)
       setPickTimerSeconds(leagueData.pick_timer_seconds ? String(leagueData.pick_timer_seconds) : '')
@@ -64,6 +59,14 @@ if (leagueData.is_frozen) {
       setGuaranteeFullCoverage(leagueData.guarantee_full_coverage ?? false)
       setRequireHostTradeApproval(leagueData.require_host_trade_approval ?? false)
       setMissedPickBehavior(leagueData.missed_pick_behavior ?? 'bump_to_back')
+      setAllowCustomScoring(leagueData.allow_custom_scoring ?? false)
+
+const { data: profileData } = await supabase
+  .from('profiles')
+  .select('tier')
+  .eq('user_id', user.id)
+  .single()
+setUserTier(profileData?.tier ?? null)
 
       const { data: memberRows } = await supabase
         .from('league_members')
@@ -102,7 +105,7 @@ setCustomOrder([...stillValidOrder, ...missingFromOrder])
     setSaving(true)
     setMessage('')
 
-  const { error } = await supabase
+ const { error } = await supabase
   .from('leagues')
   .update({
     pick_timer_seconds: pickTimerSeconds ? parseInt(pickTimerSeconds) : null,
@@ -111,6 +114,7 @@ setCustomOrder([...stillValidOrder, ...missingFromOrder])
     missed_pick_behavior: missedPickBehavior,
     custom_draft_order: draftOrderMethod === 'host_set' ? customOrder : null,
     require_host_trade_approval: requireHostTradeApproval,
+    allow_custom_scoring: userTier === 'teamprincipal' ? allowCustomScoring : false,
   })
   .eq('id', league.id)
 
@@ -326,6 +330,15 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
     <strong>OPTIONAL:</strong> Require host to approve or deny all league trades (or they sit idle as pending).
   </span>
 </label>
+
+{userTier === 'teamprincipal' && (
+  <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '24px', cursor: 'pointer' }}>
+    <input type="checkbox" checked={allowCustomScoring} onChange={(e) => setAllowCustomScoring(e.target.checked)} style={{ marginTop: '3px' }} />
+    <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
+      <strong>OPTIONAL:</strong> Create up to 3 custom scoring categories for your league (exclusive to Team Principal).
+    </span>
+  </label>
+)}
 
         <button
           onClick={handleSave}

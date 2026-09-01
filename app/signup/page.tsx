@@ -245,11 +245,12 @@ if (error) {
               onChange={(e) => setAgreedToTerms(e.target.checked)}
               style={{ marginTop: '3px' }}
             />
-            <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
-              I agree to the{' '}
-              <a href="/terms" target="_blank" style={{ color: '#f0b429' }}>Terms & Conditions</a>
-              {' '} and Privacy Policy.
-            </span>
+     <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
+  I agree to the{' '}
+  <a href="/terms" target="_blank" style={{ color: '#f0b429' }}>Terms & Conditions</a>
+  {' '} and{' '}
+  <a href="/privacy" target="_blank" style={{ color: '#f0b429' }}>Privacy Policy</a>.
+</span>
           </label>
           <button
             type="submit"

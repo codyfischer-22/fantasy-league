@@ -41,6 +41,7 @@ export default function LeagueInstancePage() {
   const [myTier, setMyTier] = useState('stowaway')
   const [isHost, setIsHost] = useState(false)
   const [maxMembers, setMaxMembers] = useState<number | null>(null)
+  const [hostTier, setHostTier] = useState<string | null>(null)
 
   useEffect(() => {
     if (type === 'potb-demo') {
@@ -59,9 +60,15 @@ export default function LeagueInstancePage() {
 
       setLeague(leagueData)
 
-      if (leagueData && user && leagueData.host_user_id === user.id) {
-        setIsHost(true)
-      }
+     if (leagueData && user && leagueData.host_user_id === user.id) {
+  setIsHost(true)
+  const { data: profileData } = await supabase
+    .from('profiles')
+    .select('tier')
+    .eq('user_id', user.id)
+    .single()
+  setHostTier(profileData?.tier ?? null)
+}
 
       if (leagueData) {
         const { count } = await supabase
@@ -563,21 +570,35 @@ const toolGroups = [
                 </button>
               </div>
 
-              <div style={{ marginTop: '-4px', paddingTop: '16px'}}>
-  <a
-    href={`/leagues/${type}/${instance}/host-settings`}
+<div style={{ marginTop: '-4px', paddingTop: '16px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+  <a href={`/leagues/${type}/${instance}/host-settings`}
     className="btn"
     style={{
       display: 'inline-block',
       color: '#f0b429',
       fontSize: '0.85rem',
       fontWeight: 'bold',
-      textDecoration: 'none',
-      marginRight: '142px'
+      textDecoration: 'none'
     }}
   >
     ⚙️ League Settings
   </a>
+
+  {league.allow_custom_scoring && hostTier === 'teamprincipal' && (
+  <a href={`/leagues/${type}/${instance}/custom-scoring`}
+      className="btn"
+      style={{
+        display: 'inline-block',
+        color: '#f0b429',
+        fontSize: '0.85rem',
+        fontWeight: 'bold',
+        textDecoration: 'none'
+      }}
+    >
+      🎯 Custom Scoring
+    </a>
+  )}
+
   {league.draft_status !== 'in_progress' && league.draft_status !== 'completed' && (
     <button
       onClick={handleStartDraft}

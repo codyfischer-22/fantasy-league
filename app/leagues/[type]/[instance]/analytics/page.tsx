@@ -204,14 +204,32 @@ setLeagueName(league.name)
       const names = (castawayList ?? []).map((c) => c.name)
       setCastawayNames(names)
 
-      const { data: scores } = await supabase
-        .from('episode_scores')
-        .select('episode_number, castaway_id, category, points, count, notes')
-        .eq('league_type', league.league_type)
-        .in('castaway_id', castawayIds)
-        .order('episode_number')
+    const { data: rawScores } = await supabase
+  .from('episode_scores')
+  .select('episode_number, castaway_id, category, points, count, notes')
+  .eq('league_type', league.league_type)
+  .in('castaway_id', castawayIds)
+  .order('episode_number')
 
-      if (!scores || scores.length === 0) return
+const { data: customEntries } = await supabase
+  .from('custom_scoring_entries')
+  .select('episode_number, castaway_id, category_label, points, notes')
+  .eq('league_id', league.id)
+
+const customAsScores = (customEntries ?? []).map((c) => ({
+  episode_number: c.episode_number,
+  castaway_id: c.castaway_id,
+  category: c.category_label,
+  points: c.points,
+  count: 1,
+  notes: c.notes,
+}))
+
+const scores = [...(rawScores ?? []), ...customAsScores].sort(
+  (a, b) => a.episode_number - b.episode_number
+)
+
+if (!scores || scores.length === 0) return
 
       const episodeNumbers = [...new Set(scores.map((s) => s.episode_number))].sort((a, b) => a - b)
 

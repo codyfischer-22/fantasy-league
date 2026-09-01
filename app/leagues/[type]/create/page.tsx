@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { containsEmoji } from '@/lib/validation'
+import { useState, useEffect } from 'react'
 
 const leagueTypeEmojis: Record<string, string> = {
   'politics-on-the-beach': '🌴',
@@ -26,9 +26,10 @@ export default function CreateLeaguePage() {
   const [creating, setCreating] = useState(false)
   const [message, setMessage] = useState('')
   const [missedPickBehavior, setMissedPickBehavior] = useState('bump_to_back')
-
   const requiredEmoji = leagueTypeEmojis[type] ?? ''
-const [requireHostTradeApproval, setRequireHostTradeApproval] = useState(false)
+  const [requireHostTradeApproval, setRequireHostTradeApproval] = useState(false)
+  const [allowCustomScoring, setAllowCustomScoring] = useState(false)
+  const [userTier, setUserTier] = useState<string | null>(null)
 
 
 const strippedName = name
@@ -37,7 +38,18 @@ const strippedName = name
 
 const finalName = requiredEmoji ? `${requiredEmoji} ${strippedName}` : strippedName
 
-
+useEffect(() => {
+  async function loadTier() {
+    if (!user) return
+    const { data } = await supabase
+      .from('profiles')
+      .select('tier')
+      .eq('user_id', user.id)
+      .single()
+    setUserTier(data?.tier ?? null)
+  }
+  loadTier()
+}, [user])
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -93,7 +105,7 @@ if (!isAdmin) {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '') + '-' + Math.random().toString(36).slice(2, 6)
 
-   const { data: newLeague, error } = await supabase
+  const { data: newLeague, error } = await supabase
   .from('leagues')
   .insert({
     name: finalName,
@@ -107,6 +119,7 @@ if (!isAdmin) {
     guarantee_full_coverage: guaranteeFullCoverage,
     missed_pick_behavior: missedPickBehavior,
     require_host_trade_approval: requireHostTradeApproval,
+    allow_custom_scoring: userTier === 'teamprincipal' ? allowCustomScoring : false,
   })
       .select()
       .single()
@@ -241,6 +254,20 @@ if (!isAdmin) {
     <strong>OPTIONAL:</strong> Require host to approve or deny all league trades (or they sit idle as pending).
   </span>
 </label>
+
+{userTier === 'teamprincipal' && (
+  <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '24px', cursor: 'pointer' }}>
+    <input
+      type="checkbox"
+      checked={allowCustomScoring}
+      onChange={(e) => setAllowCustomScoring(e.target.checked)}
+      style={{ marginTop: '3px' }}
+    />
+    <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
+      <strong>OPTIONAL:</strong> Create up to 3 custom scoring categories for your league (exclusive to Team Principals).
+    </span>
+  </label>
+)}
 
         <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '24px', cursor: 'pointer' }}>
           <input

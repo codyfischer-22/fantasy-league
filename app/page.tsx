@@ -116,8 +116,8 @@ We inspire players to cheer on and team up with reality television stars and dri
               <li>✅ Private League Access</li>
               <li>✅ Basic Leaderboards</li>
       <li>✅ Trade Portal Access</li>
+ <li>❌ No Analytics</li>
               <li>❌ No Public Chat</li>
-              <li>❌ No Analytics</li>
               <li>❌ No League Hosting</li>
               <li>❌ No Settings Controls</li>
             </ul>
@@ -144,8 +144,8 @@ We inspire players to cheer on and team up with reality television stars and dri
               <li>✅ Private League Access</li>
               <li>✅ Basic Leaderboards</li>
               <li>✅ Trade Portal Access</li>
-              <li>✅ Public League Chat</li>
               <li>✅ Tracking Analytics</li>
+              <li>✅ Public League Chat</li>
               <li>❌ No League Hosting</li>
               <li>❌ No Settings Controls</li>
             </ul>
@@ -171,8 +171,8 @@ We inspire players to cheer on and team up with reality television stars and dri
               <li>✅ Private League Access</li>
               <li>✅ Basic Leaderboards</li>
                  <li>✅ Trade Portal Access</li>
-                 <li>✅ Public League Chat</li>
-              <li>✅ Tracking Analytics</li>
+                <li>✅ Tracking Analytics</li> 
+                <li>✅ Public League Chat</li>
               <li>✅ Host 8-Player League</li>
               <li>✅ Custom League Settings</li>
               
@@ -217,10 +217,10 @@ We inspire players to cheer on and team up with reality television stars and dri
               <li>✅ Private League Access</li>
               <li>✅ Basic Leaderboards</li>
                  <li>✅ Trade Portal Access</li>
+                 <li>✅ Tracking Analytics</li>
                  <li>⭐ Highlighted in Chat</li>
-              <li>✅ Tracking Analytics</li>
               <li>⭐ Host 3 18-Player Leagues</li>
-              <li>✅ Custom League Settings</li>
+              <li>⭐ Custom Scoring Inputs</li>
               
             </ul>
           </div>

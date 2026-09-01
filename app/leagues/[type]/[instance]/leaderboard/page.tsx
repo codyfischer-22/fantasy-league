@@ -73,19 +73,28 @@ setIsFrozen(league.is_frozen ?? false)
 
       const castawayNameMap = new Map((castawayList ?? []).map((c) => [c.id, c.name]))
 
-      const { data: scores } = castawayIds.length > 0
-        ? await supabase
-            .from('episode_scores')
-            .select('castaway_id, points, count')
-            .eq('league_type', league.league_type)
-            .in('castaway_id', castawayIds)
-        : { data: [] }
+ const { data: scores } = castawayIds.length > 0
+  ? await supabase
+      .from('episode_scores')
+      .select('castaway_id, points, count')
+      .eq('league_type', league.league_type)
+      .in('castaway_id', castawayIds)
+  : { data: [] }
 
-      const castawayTotals = new Map<number, number>()
-      ;(scores ?? []).forEach((s) => {
-        const current = castawayTotals.get(s.castaway_id) ?? 0
-        castawayTotals.set(s.castaway_id, current + s.points * s.count)
-      })
+const { data: customEntries } = await supabase
+  .from('custom_scoring_entries')
+  .select('castaway_id, points')
+  .eq('league_id', league.id)
+
+const castawayTotals = new Map<number, number>()
+;(scores ?? []).forEach((s) => {
+  const current = castawayTotals.get(s.castaway_id) ?? 0
+  castawayTotals.set(s.castaway_id, current + s.points * s.count)
+})
+;(customEntries ?? []).forEach((c) => {
+  const current = castawayTotals.get(c.castaway_id) ?? 0
+  castawayTotals.set(c.castaway_id, current + c.points)
+})
 
       const playerStandings: PlayerStanding[] = (profiles ?? []).map((profile) => {
         const userPicks = (picks ?? []).filter((p) => p.user_id === profile.user_id)

@@ -180,21 +180,9 @@ export default function Header() {
         <a href="/leagues-overview" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.2rem' }}>Leagues</a>
         <a href="/contact" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Contact</a>
 
-        <button
-          onClick={() => setShowExtrasModal(true)}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: '#f0b429',
-            textDecoration: 'none',
-            fontSize: '1.1rem',
-            cursor: 'pointer',
-            fontFamily: 'inherit',
-            padding: 0
-          }}
-        >
-          Extras
-        </button>
+        <a href="/extras" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>
+  Extras
+</a>
 
         {loading ? null : user ? (
           <>
@@ -368,46 +356,6 @@ export default function Header() {
           }}>Sign In</a>
         )}
       </nav>
-
-      {showExtrasModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.7)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 100
-        }}>
-          <div style={{
-            backgroundColor: '#1a1a2e',
-            border: '1px solid #f0b429',
-            borderRadius: '12px',
-            padding: '32px',
-            maxWidth: '380px',
-            textAlign: 'center'
-          }}>
-            <h3 style={{ color: '#f0b429', fontSize: '2rem', textAlign: 'left', marginBottom: '12px' }}>
-              🔧 Coming soon!
-            </h3>
-            <p style={{ color: '#a0a0b0', fontSize: '1rem', textAlign: 'left', marginBottom: '24px', lineHeight: '1.6' }}>
-              Stay tuned for extra features like regular blog posts, special offers, and more!
-            </p>
-            <button onClick={() => setShowExtrasModal(false)} style={{
-              backgroundColor: '#f0b429',
-              color: '#0a0a0f',
-              padding: '10px 28px',
-              borderRadius: '6px',
-              border: 'none',
-              fontWeight: 'bold',
-              fontSize: '0.9rem',
-              cursor: 'pointer'
-            }}>
-              Got it!
-            </button>
-          </div>
-        </div>
-      )}
 
       {isChatOpen && (
         <ChatPanel onClose={() => setIsChatOpen(false)} />

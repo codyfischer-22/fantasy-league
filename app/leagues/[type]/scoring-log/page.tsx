@@ -29,6 +29,7 @@ type ScoreEntry = {
   points: number
   count: number
   notes: string | null
+  is_custom: boolean
 }
 
 type EpisodeGroup = {
@@ -63,37 +64,96 @@ export default function ScoringLogPage() {
         setLeagueName(league?.name ?? null)
         setIsFrozen(league?.is_frozen ?? false)
       }
-      const { data: scores } = await supabase
-        .from('episode_scores')
-        .select('episode_number, castaway_id, category, points, count, notes')
-        .eq('league_type', type)
-        .order('episode_number', { ascending: false })
-      if (scores && scores.length > 0) {
-        const castawayIds = [...new Set(scores.map((s) => s.castaway_id))]
-        const { data: castawayList } = await supabase
-          .from('castaways')
-          .select('id, name')
-          .in('id', castawayIds)
-        const nameMap = new Map((castawayList ?? []).map((c) => [c.id, c.name]))
-        const grouped: Record<number, ScoreEntry[]> = {}
-        scores.forEach((s) => {
-          if (!grouped[s.episode_number]) grouped[s.episode_number] = []
-          grouped[s.episode_number].push({
-            castaway_name: nameMap.get(s.castaway_id) ?? 'Unknown',
-            category: s.category,
-            points: s.points,
-            count: s.count,
-            notes: s.notes,
-          })
-        })
-        const episodeGroups = Object.keys(grouped)
-          .map((ep) => ({
-            episode_number: parseInt(ep),
-            entries: grouped[parseInt(ep)],
-          }))
-          .sort((a, b) => b.episode_number - a.episode_number)
-        setEpisodes(episodeGroups)
-      }
+      
+      
+      
+      
+      
+      
+      
+      
+     let leagueId: number | null = null
+if (fromInstance) {
+  const { data: leagueRow } = await supabase
+    .from('leagues')
+    .select('id')
+    .eq('league_type', type)
+    .eq('slug', fromInstance)
+    .single()
+  leagueId = leagueRow?.id ?? null
+}
+
+const { data: scores } = await supabase
+  .from('episode_scores')
+  .select('episode_number, castaway_id, category, points, count, notes')
+  .eq('league_type', type)
+  .order('episode_number', { ascending: false })
+
+const { data: customEntries } = leagueId
+  ? await supabase
+      .from('custom_scoring_entries')
+      .select('episode_number, castaway_id, category_label, points, notes')
+      .eq('league_id', leagueId)
+      .order('episode_number', { ascending: false })
+  : { data: [] }
+
+if ((scores && scores.length > 0) || (customEntries && customEntries.length > 0)) {
+  const allCastawayIds = [
+    ...new Set([
+      ...(scores ?? []).map((s) => s.castaway_id),
+      ...(customEntries ?? []).map((c) => c.castaway_id),
+    ]),
+  ]
+  const { data: castawayList } = await supabase
+    .from('castaways')
+    .select('id, name')
+    .in('id', allCastawayIds)
+  const nameMap = new Map((castawayList ?? []).map((c) => [c.id, c.name]))
+
+  const grouped: Record<number, ScoreEntry[]> = {}
+
+  ;(scores ?? []).forEach((s) => {
+  if (!grouped[s.episode_number]) grouped[s.episode_number] = []
+  grouped[s.episode_number].push({
+    castaway_name: nameMap.get(s.castaway_id) ?? 'Unknown',
+    category: s.category,
+    points: s.points,
+    count: s.count,
+    notes: s.notes,
+    is_custom: false,
+  })
+})
+
+;(customEntries ?? []).forEach((c) => {
+  if (!grouped[c.episode_number]) grouped[c.episode_number] = []
+  grouped[c.episode_number].push({
+    castaway_name: nameMap.get(c.castaway_id) ?? 'Unknown',
+    category: c.category_label,
+    points: c.points,
+    count: 1,
+    notes: c.notes,
+    is_custom: true,
+  })
+})
+
+  const episodeGroups = Object.keys(grouped)
+    .map((ep) => ({
+      episode_number: parseInt(ep),
+      entries: grouped[parseInt(ep)],
+    }))
+    .sort((a, b) => b.episode_number - a.episode_number)
+  setEpisodes(episodeGroups)
+}
+
+
+
+
+
+
+
+
+
+
       setPageLoading(false)
     }
     loadLog()
@@ -237,15 +297,18 @@ export default function ScoringLogPage() {
                           {castawayTotals[castawayName] > 0 ? '+' : ''}{castawayTotals[castawayName]} pts
                         </div>
                       </div>
-                      {byCastaway[castawayName].map((entry, idx) => (
-                        <div key={idx} style={{ color: '#a0a0b0', fontSize: '0.8rem', marginTop: '2px' }}>
-                          {categoryLabels[entry.category] ?? entry.category}
-                          {entry.count > 1 ? ` (×${entry.count})` : ''}
-                          {': '}
-                          {entry.points > 0 ? '+' : ''}{entry.points}{entry.count > 1 ? ` each` : ''}
-                          {entry.notes ? ` — ${entry.notes}` : ''}
-                        </div>
-                      ))}
+                     {byCastaway[castawayName].map((entry, idx) => (
+  <div key={idx} style={{ color: '#a0a0b0', fontSize: '0.8rem', marginTop: '2px' }}>
+    {entry.is_custom && (
+      <span style={{ color: '#f0b429', fontWeight: 'bold' }}>🎯 Custom: </span>
+    )}
+    {categoryLabels[entry.category] ?? entry.category}
+    {entry.count > 1 ? ` (×${entry.count})` : ''}
+    {': '}
+    {entry.points > 0 ? '+' : ''}{entry.points}{entry.count > 1 ? ` each` : ''}
+    {entry.notes ? ` — ${entry.notes}` : ''}
+  </div>
+))}
                     </div>
                   ))}
                 </div>

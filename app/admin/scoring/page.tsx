@@ -52,6 +52,37 @@ export default function ScoringAdminPage() {
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
 
+const loadExistingScores = async (leagueType: string, episode: string) => {
+  if (!episode) {
+    setRows({})
+    setManualAdjust({})
+    return
+  }
+  const { data: existing } = await supabase
+    .from('episode_scores')
+    .select('castaway_id, category, points, count, notes')
+    .eq('league_type', leagueType)
+    .eq('episode_number', parseInt(episode))
+
+  const newRows: Record<number, RowState> = {}
+  const newManual: Record<number, { points: string; notes: string }> = {}
+
+  ;(existing ?? []).forEach((entry) => {
+    if (entry.category === 'manual_adjustment') {
+      newManual[entry.castaway_id] = {
+        points: String(entry.points),
+        notes: entry.notes ?? '',
+      }
+    } else {
+      if (!newRows[entry.castaway_id]) newRows[entry.castaway_id] = {}
+      newRows[entry.castaway_id][entry.category] = entry.count
+    }
+  })
+
+  setRows(newRows)
+  setManualAdjust(newManual)
+}
+
 const toggleEliminated = async (castaway: Castaway) => {
   if (castaway.status === 'eliminated') {
     const { error } = await supabase
@@ -245,10 +276,8 @@ const toggleEliminated = async (castaway: Castaway) => {
       }
     }
 
-    setSaving(false)
-    setMessage(`Saved ${entries.length} scoring events for Episode ${episodeNumber}!`)
-    setRows({})
-    setManualAdjust({})
+   setSaving(false)
+setMessage(`Saved ${entries.length} scoring events for Episode ${episodeNumber}!`)
   }
 
   if (loading || checking) {
@@ -281,13 +310,12 @@ const toggleEliminated = async (castaway: Castaway) => {
             League
           </label>
           <select
-            value={selectedLeagueType}
-            onChange={(e) => {
-              setSelectedLeagueType(e.target.value)
-              loadCastaways(e.target.value)
-              setRows({})
-              setManualAdjust({})
-            }}
+  value={selectedLeagueType}
+  onChange={(e) => {
+    setSelectedLeagueType(e.target.value)
+    loadCastaways(e.target.value)
+    loadExistingScores(e.target.value, episodeNumber)
+  }}
             style={{
               padding: '8px 12px',
               borderRadius: '6px',
@@ -306,19 +334,23 @@ const toggleEliminated = async (castaway: Castaway) => {
             Voting Cycle
           </label>
           <input
-            type="number"
-            min="1"
-            value={episodeNumber}
-            onChange={(e) => setEpisodeNumber(e.target.value)}
-            style={{
-              padding: '8px 12px',
-              borderRadius: '6px',
-              border: '1px solid #2a2a3e',
-              backgroundColor: '#12121a',
-              color: '#ffffff',
-              width: '100px'
-            }}
-          />
+  type="number"
+  min="1"
+  value={episodeNumber}
+  onChange={(e) => {
+    const newEpisode = e.target.value
+    setEpisodeNumber(newEpisode)
+    loadExistingScores(selectedLeagueType, newEpisode)
+  }}
+  style={{
+    padding: '8px 12px',
+    borderRadius: '6px',
+    border: '1px solid #2a2a3e',
+    backgroundColor: '#12121a',
+    color: '#ffffff',
+    width: '100px'
+  }}
+/>
         </div>
 
        <div style={{ overflowX: 'auto', overflowY: 'auto', maxHeight: '70vh' }}>
