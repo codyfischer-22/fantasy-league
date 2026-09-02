@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
+import ConfirmModal from '@/components/ConfirmModal'
 
 type Castaway = { id: number; name: string }
 type Pick = { user_id: string; castaway_id: number }
@@ -84,13 +85,13 @@ export default function DraftRoomPage() {
   const isExpired = deadlineMs !== null && now >= deadlineMs
   const secondsRemaining = deadlineMs !== null ? Math.max(0, Math.ceil((deadlineMs - now) / 1000)) : null
   const [showCompleteModal, setShowCompleteModal] = useState(false)
-  
+  const currentRound = league ? Math.ceil(league.current_pick_number / members.length) : 1
   const totalPicksNeeded = members.length * 4
   const baseClone = castaways.length > 0 ? Math.ceil(totalPicksNeeded / castaways.length) : 1
   const [showInstructions, setShowInstructions] = useState(true)
-
-const firedWarningsRef = useRef<Set<number>>(new Set())
-const lastPickNumberRef = useRef<number | null>(null)
+  const [pendingPick, setPendingPick] = useState<{ id: number; name: string } | null>(null)
+  const firedWarningsRef = useRef<Set<number>>(new Set())
+  const lastPickNumberRef = useRef<number | null>(null)
 
   const remainingByCastaway: Record<number, number> = {}
   castaways.forEach((c) => {
@@ -135,10 +136,6 @@ const lastPickNumberRef = useRef<number | null>(null)
   const handleMakePick = async (castawayId: number, castawayName: string) => {
     if (!user || !league || !isMyTurn) return
     const currentRound = Math.ceil(league.current_pick_number / members.length)
-    const confirmed = window.confirm(
-      `Are you sure you want to select ${castawayName} for your Round ${currentRound} pick?`
-    )
-    if (!confirmed) return
     setPicking(true)
 
    const { error } = await supabase.from('draft_picks').insert({
@@ -524,8 +521,7 @@ if (
                     <button
                       key={c.id}
                       disabled={!pickable}
-                      onClick={() => handleMakePick(c.id, c.name)}
-                      style={{
+                      onClick={() => setPendingPick({ id: c.id, name: c.name })}                      style={{
                         display: 'block',
                         width: '100%',
                         textAlign: 'left',
@@ -653,6 +649,18 @@ if (
     </div>
   </div>
 )}
+
+<ConfirmModal
+  open={pendingPick !== null}
+  title="Confirm Your Pick"
+  message={`Are you sure you want to select ${pendingPick?.name} for your Round ${currentRound} pick?`}
+  confirmText="Confirm Pick"
+  onConfirm={() => {
+    if (pendingPick) handleMakePick(pendingPick.id, pendingPick.name)
+    setPendingPick(null)
+  }}
+  onCancel={() => setPendingPick(null)}
+/>
 
       </div>
     </main>

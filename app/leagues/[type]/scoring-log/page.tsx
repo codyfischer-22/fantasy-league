@@ -254,11 +254,11 @@ if ((scores && scores.length > 0) || (customEntries && customEntries.length > 0)
           <span style={{ color: '#ffffff' }}>Scoring Log</span>
         </h1>
         <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '32px' }}>
-          Every scoring event, episode by episode, with full transparency how points were awarded:
+          Check out the fully-transparent points breakdown for Politics on the Beach! Please note episodes with more than one tribal council (e.g. premiere or finale) may be broken down into multiple "voting cycles" below.
         </p>
 
         {episodes.length === 0 ? (
-          <p style={{ color: '#555570' }}>No episodes have been scored yet.</p>
+          <p style={{ color: '#555570' }}>No voting cycle scores have been submitted yet.</p>
         ) : (
           episodes.map((ep) => {
             const castawayTotals: Record<string, number> = {}
@@ -274,7 +274,7 @@ if ((scores && scores.length > 0) || (customEntries && customEntries.length > 0)
             return (
               <div key={ep.episode_number} style={{ marginBottom: '40px' }}>
                 <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '12px' }}>
-                  Episode {ep.episode_number}
+                  Voting Cycle {ep.episode_number}
                 </h2>
                 <div style={{
                   backgroundColor: '#1a1a2e',

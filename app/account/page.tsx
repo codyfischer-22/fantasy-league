@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation'
 import { upgradeTier } from '@/lib/upgradeTier'
 import { Suspense } from 'react'
 import { containsEmoji } from '@/lib/validation'
+import ConfirmModal from '@/components/ConfirmModal'
 
 type Profile = {
   email: string
@@ -35,7 +36,7 @@ function AccountContent() {
   const [changingPassword, setChangingPassword] = useState(false)
   const [passwordMessage, setPasswordMessage] = useState('')
   const [showPasswordFields, setShowPasswordFields] = useState(false)
-
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false)
   const handleChangePassword = async () => {
     setPasswordMessage('')
     if (newPassword.length < 6) {
@@ -75,10 +76,6 @@ function AccountContent() {
 
   const handleCancelSubscription = async () => {
     if (!user) return
-    const confirmed = window.confirm(
-      'Are you sure you want to downgrade? Doing so will cause you to lose membership perks at the end of your paid period. Your current membership tier will remain active until then.'
-    )
-    if (!confirmed) return
     setUpgrading('stowaway')
     setCancelMessage('')
     const res = await fetch('/api/cancel-subscription', {
@@ -331,17 +328,17 @@ const handleSave = async () => {
           <div style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '8px' }}>Change Tier</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
             {['stowaway', 'castaway', 'crewchief', 'teamprincipal'].map((t) => (
-              <button
-                key={t}
-                onClick={() => {
-                  if (isGlobalAdmin) {
-                    handleUpgrade(t)
-                  } else if (t === 'stowaway') {
-                    handleCancelSubscription()
-                  } else {
-                    handleStripeCheckout(t)
-                  }
-                }}
+             <button
+  key={t}
+  onClick={() => {
+    if (isGlobalAdmin) {
+      handleUpgrade(t)
+    } else if (t === 'stowaway') {
+      setShowCancelConfirm(true)
+    } else {
+      handleStripeCheckout(t)
+    }
+  }}
                 disabled={upgrading !== null || profile.tier === t}
                 style={{
                   backgroundColor: profile.tier === t ? '#f0b429' : 'transparent',
@@ -526,6 +523,17 @@ const handleSave = async () => {
             </div>
           )}
         </div>
+
+<ConfirmModal
+  open={showCancelConfirm}
+  title="Downgrade to Stowaway?"
+  message="Are you sure you want to downgrade? Doing so will cause you to lose membership perks at the end of your paid period. Your current membership tier will remain active until then."
+  confirmText="Downgrade"
+  danger
+  onConfirm={() => { setShowCancelConfirm(false); handleCancelSubscription() }}
+  onCancel={() => setShowCancelConfirm(false)}
+/>
+
       </div>
     </main>
   )

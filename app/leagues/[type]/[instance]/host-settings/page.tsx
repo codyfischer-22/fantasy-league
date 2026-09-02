@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
+import ConfirmModal from '@/components/ConfirmModal'
 
 export default function LeagueSettingsPage() {
   const params = useParams()
@@ -29,6 +30,8 @@ export default function LeagueSettingsPage() {
   const [requireHostTradeApproval, setRequireHostTradeApproval] = useState(false)
   const [allowCustomScoring, setAllowCustomScoring] = useState(false)
   const [userTier, setUserTier] = useState<string | null>(null)
+  const [ejectingPlayer, setEjectingPlayer] = useState<{ id: string; name: string } | null>(null)
+  const [showScrapConfirm, setShowScrapConfirm] = useState(false)
 
   useEffect(() => {
     async function loadLeague() {
@@ -129,8 +132,6 @@ setCustomOrder([...stillValidOrder, ...missingFromOrder])
 
 const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
   if (!league) return
-  const confirmed = window.confirm(`Are you sure you want to remove ${playerName} from this league? There is no guarantee they'll be able to re-join without losing league data.`)
-  if (!confirmed) return
 
   await supabase.from('notifications').insert({
     user_id: playerUserId,
@@ -155,10 +156,7 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
 
   const handleCancelLeague = async () => {
   if (!user || !league) return
-  const confirmed = window.confirm(
-    'Are you sure you want to permanently cancel/delete this league? This cannot be undone and data will not be archived.'
-  )
-  if (!confirmed) return
+
 
   const { data: allMembers } = await supabase
     .from('league_members')
@@ -394,7 +392,7 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
                   <span style={{ fontSize: '0.85rem' }}>{m.display_name}</span>
                   {m.user_id !== user?.id && (
                     <button
-                      onClick={() => handleEjectPlayer(m.user_id, m.display_name)}
+                     onClick={() => setEjectingPlayer({ id: m.user_id, name: m.display_name })}
                       style={{
                         background: 'none',
                         border: 'none',
@@ -413,7 +411,7 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
         </div>
 
           <button
-            onClick={handleCancelLeague}
+            onClick={() => setShowScrapConfirm(true)}
             style={{
               width: '100%',
               backgroundColor: 'transparent',
@@ -428,6 +426,30 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
           >
             Scrap League
           </button>
+
+<ConfirmModal
+  open={ejectingPlayer !== null}
+  title="Eject Player?"
+  message={`Are you sure you want to remove ${ejectingPlayer?.name} from this league? There is no guarantee they'll be able to re-join without losing league data.`}
+  confirmText="Eject Player"
+  danger
+  onConfirm={() => {
+    if (ejectingPlayer) handleEjectPlayer(ejectingPlayer.id, ejectingPlayer.name)
+    setEjectingPlayer(null)
+  }}
+  onCancel={() => setEjectingPlayer(null)}
+/>
+
+<ConfirmModal
+  open={showScrapConfirm}
+  title="Scrap League?"
+  message="Are you sure you want to permanently cancel/delete this league? This cannot be undone and data will not be archived."
+  confirmText="Scrap League"
+  danger
+  onConfirm={() => { setShowScrapConfirm(false); handleCancelLeague() }}
+  onCancel={() => setShowScrapConfirm(false)}
+/>
+
       </div>
     </main>
   )

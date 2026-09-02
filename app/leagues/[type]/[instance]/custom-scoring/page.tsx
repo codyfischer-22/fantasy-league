@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
+import ConfirmModal from '@/components/ConfirmModal'
 
 type Castaway = {
   id: number
@@ -32,18 +33,16 @@ export default function CustomScoringPage() {
   const [castaways, setCastaways] = useState<Castaway[]>([])
   const [entries, setEntries] = useState<CustomEntry[]>([])
   const [castawayNames, setCastawayNames] = useState<Record<number, string>>({})
-
   const [selectedCastawayId, setSelectedCastawayId] = useState('')
   const [episodeNumber, setEpisodeNumber] = useState('')
   const [points, setPoints] = useState('')
   const [notes, setNotes] = useState('')
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
-
-const [newSlotText, setNewSlotText] = useState('')
-const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-
-const savedCategories = [...new Set(entries.map((e) => e.category_label))].slice(0, 3)
+  const [newSlotText, setNewSlotText] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [deletingEntryId, setDeletingEntryId] = useState<string | null>(null)
+  const savedCategories = [...new Set(entries.map((e) => e.category_label))].slice(0, 3)
   const [showCategorySuggestions, setShowCategorySuggestions] = useState(false)
 
   useEffect(() => {
@@ -154,8 +153,6 @@ setNotes('')
 }
 
   const handleDeleteEntry = async (entryId: string) => {
-    const confirmed = window.confirm('Remove this custom scoring entry?')
-    if (!confirmed) return
     const { error } = await supabase
       .from('custom_scoring_entries')
       .delete()
@@ -219,8 +216,9 @@ setNotes('')
           <span style={{ color: '#ffffff' }}>Custom Scoring</span>
         </h1>
         <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '28px', lineHeight: '1.6' }}>
-          Create up to 3 custom scoring categories for your league. Players will see these entries in the Scoring Log, folded in alongside the standard categories.
+          Here's your chance to create up to 3 custom scoring categories for your league! Episodes with multiple tribal councils may be broken into multiple <strong>voting cycles;</strong> you are responsible for ensuring submissions match host voting cycles. Players can see these entries in the Scoring Log, alongside standard categories.
         </p>
+
 
         <div style={{
           backgroundColor: '#1a1a2e',
@@ -229,7 +227,7 @@ setNotes('')
           padding: '24px',
           marginBottom: '32px'
         }}>
-          <h2 style={{ color: '#f0b429', fontSize: '1.2rem', marginBottom: '16px' }}>Add an Entry</h2>
+          <h2 style={{ color: '#f0b429', fontSize: '1.2rem', marginBottom: '16px' }}>Add Scoring Event</h2>
 
           <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '4px' }}>Castaway</label>
           <select value={selectedCastawayId} onChange={(e) => setSelectedCastawayId(e.target.value)} style={selectStyle}>
@@ -239,7 +237,7 @@ setNotes('')
             ))}
           </select>
 
-          <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '4px' }}>Episode Number</label>
+          <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '4px' }}> Voting Cycle Number</label>
           <input
             type="number"
             min="1"
@@ -247,7 +245,7 @@ setNotes('')
             onChange={(e) => setEpisodeNumber(e.target.value)}
             style={inputStyle}
           />
-<label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '8px' }}>Category</label>
+<label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '8px' }}>Scoring Category</label>
 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
   {savedCategories.map((cat) => (
     <button
@@ -275,7 +273,7 @@ setNotes('')
       value={newSlotText}
       onChange={(e) => { setNewSlotText(e.target.value); setSelectedCategory(null) }}
       onFocus={() => setSelectedCategory(null)}
-      placeholder="New category..."
+      placeholder="New Category..."
       maxLength={40}
       style={{
         flex: '1 1 140px',
@@ -291,7 +289,7 @@ setNotes('')
   )}
 </div>
 
-          <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0hja85rem', marginBottom: '4px' }}>Points Awarded</label>
+          <label style={{ display: 'block', color: '#a0a0b0', fontSize: '.85rem', marginBottom: '4px' }}>Points Awarded</label>
           <input
             type="number"
             value={points}
@@ -349,26 +347,40 @@ setNotes('')
             }}>
               <div style={{ fontSize: '0.85rem' }}>
                 <strong style={{ color: '#f0b429' }}>{castawayNames[entry.castaway_id] ?? 'Unknown'}</strong>
-                {' | '}Episode {entry.episode_number} | {entry.category_label}: {entry.points > 0 ? '+' : ''}{entry.points}
+                {' | '}Voting Cycle {entry.episode_number} | {entry.category_label}: {entry.points > 0 ? '+' : ''}{entry.points}
                 {entry.notes && <div style={{ color: '#a0a0b0', marginTop: '2px' }}>{entry.notes}</div>}
               </div>
-              <button
-                onClick={() => handleDeleteEntry(entry.id)}
-                style={{
-                  background: 'none',
-                  border: '1px solid #ff6b6b',
-                  color: '#ff6b6b',
-                  borderRadius: '6px',
-                  padding: '4px 10px',
-                  fontSize: '0.75rem',
-                  cursor: 'pointer'
-                }}
-              >
-                Remove
-              </button>
+             <button
+  onClick={() => setDeletingEntryId(entry.id)}
+  style={{
+    background: 'none',
+    border: '1px solid #ff6b6b',
+    color: '#ff6b6b',
+    borderRadius: '6px',
+    padding: '4px 10px',
+    fontSize: '0.75rem',
+    cursor: 'pointer'
+  }}
+>
+  Remove
+</button>
             </div>
           ))
         )}
+
+<ConfirmModal
+  open={deletingEntryId !== null}
+  title="Remove this entry?"
+  message="Remove this custom scoring entry?"
+  confirmText="Remove"
+  danger
+  onConfirm={() => {
+    if (deletingEntryId) handleDeleteEntry(deletingEntryId)
+    setDeletingEntryId(null)
+  }}
+  onCancel={() => setDeletingEntryId(null)}
+/>
+
       </div>
     </main>
   )

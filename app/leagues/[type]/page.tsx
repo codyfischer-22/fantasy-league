@@ -27,10 +27,11 @@ export default function LeagueHubPage() {
   useEffect(() => {
     const loadInstances = async () => {
       const { data } = await supabase
-        .from('leagues')
-        .select('*')
-        .eq('league_type', type)
-        .eq('is_private', false)
+       .from('leagues')
+  .select('*')
+  .eq('league_type', type)
+  .eq('is_private', false)
+  .eq('is_show_chat', false)
       setInstances(data ?? [])
       setPageLoading(false)
     }

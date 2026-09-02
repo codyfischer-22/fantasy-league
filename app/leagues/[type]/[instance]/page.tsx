@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
+import ConfirmModal from '@/components/ConfirmModal'
 
 type League = {
   id: number
@@ -28,7 +29,7 @@ export default function LeagueInstancePage() {
   const instance = params.instance as string
   const { user, loading } = useAuth()
   const router = useRouter()
-
+  const [showStartDraftConfirm, setShowStartDraftConfirm] = useState(false)
   const [hasDrafted, setHasDrafted] = useState(false)
   const [league, setLeague] = useState<League | null>(null)
   const [isMember, setIsMember] = useState(false)
@@ -43,6 +44,7 @@ export default function LeagueInstancePage() {
   const [isHost, setIsHost] = useState(false)
   const [maxMembers, setMaxMembers] = useState<number | null>(null)
   const [hostTier, setHostTier] = useState<string | null>(null)
+  const [showLeaveConfirm, setShowLeaveConfirm] = useState(false)
 
   useEffect(() => {
     if (type === 'potb-demo') {
@@ -136,11 +138,6 @@ const handleStartDraft = async () => {
     alert(`You need at least 3 players to start the draft.`)
     return
   }
-
-  const confirmed = window.confirm(
-    'The draft window for Politics on the Beach runs September 16-20 (7 PM CT). League hosts are responsible for communicating draft start times (any where in that window), selection time limits, consequences of missing picks, etc.\n\nAre you sure you want to start your draft?\n\nClicking "OK" will immediately start the selection timer for the first player up.\n\nNote: All players should be actively engaged in your draft window (whether it lasts 60 minutes or 2 days).'
-  )
-  if (!confirmed) return
 
   const { data: members } = await supabase
     .from('league_members')
@@ -348,9 +345,7 @@ const confirmJoin = async () => {
     alert('As the host, use "Scrap League" in your League Settings to remove this league.')
     return
   }
-  const confirmed = window.confirm('Are you sure you want to leave this league?')
-    if (!confirmed) return
-    setLeaving(true)
+ setLeaving(true)
 
      const { data: myProfile } = await supabase
       .from('profiles')
@@ -602,7 +597,7 @@ const toolGroups = [
 
   {league.draft_status !== 'in_progress' && league.draft_status !== 'completed' && (
     <button
-      onClick={handleStartDraft}
+      onClick={() => setShowStartDraftConfirm(true)}
       className="league-card"
       style={{
         backgroundColor: '#068e38',
@@ -722,7 +717,7 @@ return page.href ? (
                   </a>
 {!isHost && (
   <button
-    onClick={handleLeave}
+    onClick={() => setShowLeaveConfirm(true)}
     disabled={leaving}
     style={{
       display: 'inline-block',
@@ -863,6 +858,29 @@ return page.href ? (
           </div>
         </div>
       )}
+
+<ConfirmModal
+  open={showStartDraftConfirm}
+  title="Start the Draft?"
+  message={[
+    'The draft window for Politics on the Beach runs September 16-20 (7 PM CT). League hosts are responsible for communicating draft start times (anywhere in that window), selection time limits, consequences of missing picks, etc.',
+    'Clicking "Start Draft" will immediately start the selection timer for the first player up.',
+    'Note: All players should be actively engaged in your draft window (whether it lasts 60 minutes or 2 days).'
+  ]}
+  confirmText="Start Draft"
+  onConfirm={() => { setShowStartDraftConfirm(false); handleStartDraft() }}
+  onCancel={() => setShowStartDraftConfirm(false)}
+/>
+
+<ConfirmModal
+  open={showLeaveConfirm}
+  title="Leave league?"
+  message="Are you sure you want to leave this league?"
+  confirmText="Leave League"
+  danger
+  onConfirm={() => { setShowLeaveConfirm(false); handleLeave() }}
+  onCancel={() => setShowLeaveConfirm(false)}
+/>
     </main>
   )
 }

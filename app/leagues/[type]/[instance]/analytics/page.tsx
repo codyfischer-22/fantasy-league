@@ -257,7 +257,7 @@ if (!scores || scores.length === 0) return
           })
         })
 
-        const row: CastawayChartRow = { episode: `Ep. ${ep}` }
+        const row: CastawayChartRow = { episode: `TC ${ep}` }
         names.forEach((n) => {
           row[n] = runningTotals[n]
         })
@@ -379,7 +379,7 @@ if (!scores || scores.length === 0) return
             (a, b) => playerRunningTotals[b] - playerRunningTotals[a]
           )
 
-          const row: PlayerChartRow = { episode: `Ep. ${ep}` }
+          const row: PlayerChartRow = { episode: `TC ${ep}` }
           ranked.forEach((name, idx) => {
             row[name] = idx + 1
           })
@@ -479,7 +479,7 @@ if (!scores || scores.length === 0) return
           <span style={{ color: '#ffffff' }}>Analytics</span>
         </h1>
         <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '48px' }}>
-          Paid members get exclusive access to league analytic charts to visual process along the way!
+          Paid members get exclusive access to league analytic charts to visual process along the way! Please note episodes with more than one tribal council (e.g. premiere or finale) may be broken down into multiple "voting cycles" below.
         </p>
 
         {!isPrivateLeague && (
@@ -600,7 +600,7 @@ if (!scores || scores.length === 0) return
           Player Standings Over Time
         </h2>
         <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '20px', textAlign: 'left' }}>
-          Tracking player&apos; rankings week to week, with the pack leader topping the chart!
+          Tracking week-to-week player&apos; rankings, with the pack leader topping the chart!
         </p>
 
         <input
@@ -641,12 +641,12 @@ if (!scores || scores.length === 0) return
             padding: '20px',
             marginBottom: '48px'
           }}>
-            <ResponsiveContainer width="100%" height={400}>
-              <LineChart data={playerChartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#2a2a3e" />
-                <XAxis dataKey="episode" stroke="#a0a0b0" fontSize={12} />
-                <YAxis stroke="#a0a0b0" fontSize={12} reversed domain={[1, playerNames.length]} allowDecimals={false} />
-                <Tooltip content={<RankTooltip />} />
+          <ResponsiveContainer width="100%" height={400}>
+  <LineChart data={playerChartData} margin={{ bottom: 12 }}>
+    <CartesianGrid strokeDasharray="3 3" stroke="#2a2a3e" />
+    <XAxis dataKey="episode" stroke="#a0a0b0" fontSize={12} dy={8} />
+    <YAxis stroke="#a0a0b0" fontSize={12} reversed domain={[1, playerNames.length]} allowDecimals={false} />
+    <Tooltip content={<RankTooltip />} />
                 {playerNames.map((name, i) => {
                   const filteredPlayerNames = playerSearch
                     ? playerNames.filter((n) => n.toLowerCase().includes(playerSearch.toLowerCase()))
@@ -697,7 +697,7 @@ if (!scores || scores.length === 0) return
         Castaway Standings Over Time
         </h2>
         <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '20px', textAlign: 'left' }}>
-          Tracking castaway point totals week to week. Search a name to highlight their points journey!
+          Tracking week-to-week castaway point totals. Search a name to highlight their points journey!
         </p>
 
         <input
@@ -742,11 +742,11 @@ color: '#555570',
               marginBottom: '20px'
             }}>
               <ResponsiveContainer width="100%" height={400}>
-                <LineChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#2a2a3e" />
-                  <XAxis dataKey="episode" stroke="#a0a0b0" fontSize={12} />
-                  <YAxis stroke="#a0a0b0" fontSize={12} />
-                  <Tooltip content={<CustomTooltip />} />
+  <LineChart data={chartData} margin={{ bottom: 12 }}>
+    <CartesianGrid strokeDasharray="3 3" stroke="#2a2a3e" />
+    <XAxis dataKey="episode" stroke="#a0a0b0" fontSize={12} dy={8} />
+    <YAxis stroke="#a0a0b0" fontSize={12} />
+    <Tooltip content={<CustomTooltip />} />
                   {castawayNames.map((name, i) => {
                     const isMatch = filteredNames.includes(name)
                     const isHighlighted = highlighted === name
