@@ -294,7 +294,7 @@ We inspire players to cheer on and team up with reality television stars and dri
             padding: '28px',
             textAlign: 'center'
           }}>
-            <h3 style={{ color: '#ca29ca', fontSize: 'clamp(1.0rem, 5vw, 1.5rem)', marginBottom: '8px' }}>
+            <h3 style={{ color: '#ca29ca', fontSize: 'clamp(1.0rem, 4.5vw, 1.5rem)', marginBottom: '8px' }}>
               <span style={{ color: '#ca29ca', fontWeight: 'bold' }}>Coming in 2027:</span>
               {' '}
               <span style={{ color: '#ffffff', fontWeight: 'bold' }}>All-Access Pass</span>
@@ -472,7 +472,7 @@ Red Lights Out →
         <h2 style={{
           textAlign: 'center',
           color: '#f0b429',
-          fontSize: 'clamp(1.75rem, 6vw, 2.25rem)',
+          fontSize: 'clamp(1.5rem, 6vw, 2.25rem)',
           marginBottom: '0px',
           letterSpacing: '2px'
         }}>
