@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/AuthContext";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import SiteFrame from "@/components/SiteFrame";
 import PardonOurMessModal from "@/components/PardonOurMessModal";
 
 const geistSans = Geist({
@@ -36,12 +35,8 @@ export default function RootLayout({
     >
 <body className="min-h-full flex flex-col">
   <AuthProvider>
-    <Header />
-     <PardonOurMessModal />
-    <div style={{ flex: 1 }}>
-      {children}
-    </div>
-    <Footer />
+    <PardonOurMessModal />
+    <SiteFrame>{children}</SiteFrame>
   </AuthProvider>
 </body>
 

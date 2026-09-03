@@ -9,17 +9,50 @@ export default function Home() {
   const router = useRouter()
 
   return (
-    <main style={{
-      backgroundColor: '#0a0a0f',
-      minHeight: '100vh',
-      fontFamily: 'Georgia, serif',
-      color: '#ffffff'
+<main style={{
+  backgroundColor: '#0a0a0f',
+  minHeight: '100vh',
+  fontFamily: 'Georgia, serif',
+  color: '#ffffff'
+}}>
+  <div className="mobile-home-title" style={{
+  display: 'none',
+  textAlign: 'center',
+  padding: '24px 20px 22px 20px',
+  borderBottom: '2px solid #f0b429',
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  right: 0,
+  backgroundColor: '#0a0a0f',
+  zIndex: 140
+}}>
+    <h1 style={{
+      color: '#f0b429',
+      fontSize: 'clamp(1.6rem, 8vw, 2.5rem)',
+      margin: 0,
+      letterSpacing: '1px',
+      fontWeight: 'bold',
+      whiteSpace: 'nowrap'
     }}>
+      ⚜️ Trekkon Fantasy Leagues
+    </h1>
+    <p style={{
+      color: '#a0a0b0',
+      margin: '4px 0 0 0',
+      fontSize: '0.85rem',
+      marginBottom: '0px',
+      letterSpacing: '.9px'
+    }}>
+      Gather Buddies. Draft Teams. Make History.
+    </p>
+  </div>
+  
 
       {/* ─── HERO ─── */}
       <section style={{
         textAlign: 'center',
-        padding: '80px 40px',
+        padding: '60px 40px',
         background: 'linear-gradient(180deg, #12121a 0%, #0a0a0f 100%)'
       }}>
         <h2 style={{
@@ -47,7 +80,7 @@ export default function Home() {
   lineHeight: '1.7'
 }}>
   <span style={{ fontStyle: 'italic' }}>Trekkon</span> is derived from the biblical <span style={{ fontStyle: 'italic' }}>"τρέχω,"</span> to race or run, and <span style={{ fontStyle: 'italic' }}>"ἀγών,"</span> a gathering place for games, competitions, or battles.
-We inspire players to cheer on and team up with reality television stars and drivers in the hopes they&apos;ll race out and conquer their own battles!
+We inspire players to cheer on and team up with reality television stars and drivers in the hopes they&apos;ll trek out and conquer their own battles!
 </p>
         <a href="#leagues" className="btn" style={{
           backgroundColor: '#f0b429',
@@ -65,14 +98,14 @@ We inspire players to cheer on and team up with reality television stars and dri
 
 {/* ─── PRICING TIERS ─── */}
       <section id="tiers" style={{
-        padding: '60px 40px',
+        padding: '20px 40px',
         backgroundColor: '#0a0a0f',
       }}>
         <h2 style={{
           textAlign: 'center',
           color: '#f0b429',
           fontSize: '2.25rem',
-          marginBottom: '4px',
+          marginBottom: '0px',
           letterSpacing: '2px'
         }}>
         Membership Tiers
@@ -80,7 +113,7 @@ We inspire players to cheer on and team up with reality television stars and dri
        <p style={{
   textAlign: 'center',
   color: '#a0a0b0',
-  marginBottom: '40px',
+  marginBottom: '36px',
   fontSize: '1.0rem'
 }}>
   Prices shown <span style={{ fontWeight: 'bold' }}>per month</span> unless you opt for the yearlong pass (coming soon) good for all leagues.
@@ -275,12 +308,12 @@ We inspire players to cheer on and team up with reality television stars and dri
       </section>
 
       {/* ─── LEAGUES ─── */}
-      <section id="leagues" style={{ padding: '60px 40px' }}>
+      <section id="leagues" style={{ padding: '50px 40px' }}>
         <h2 style={{
           textAlign: 'center',
           color: '#f0b429',
           fontSize: '2.25rem',
-          marginBottom: '30px',
+          marginBottom: '24px',
           letterSpacing: '2px'
         }}>
         Choose Your League
@@ -354,10 +387,10 @@ We inspire players to cheer on and team up with reality television stars and dri
             padding: '28px'
           }}>
             <h3 style={{ color: 'rgb(245, 255, 156)', fontSize: '1.6rem', marginBottom: '8px' }}>
-              🚗 'Muricans Turn Left
+              🚗 Drive Fast, Turn Left
             </h3>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
-              Coming in 2027, climb through the cargo net for 36 weeks of thunder and see how many points you can drive to the checkered flag.
+              Coming in 2027, climb through the cargo net for 36 weeks of American Muscle, seeing how many points you can bring to the checkered.
             </p>
             <div style={{
               backgroundColor: '#12121a',
@@ -396,7 +429,7 @@ We inspire players to cheer on and team up with reality television stars and dri
             padding: '28px'
           }}>
             <h3 style={{ color: '#f0b429', fontSize: '1.6rem', marginBottom: '8px' }}>
-             🏎️ European Rockets
+             🏎️ Road Rocket Racing
             </h3>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
               Coming in 2027, travel the globe with world-class drivers up and down the grid over 24 weeks of high octane racing.
@@ -432,7 +465,7 @@ Red Lights Out →
 
       {/* ─── SUGGEST A LEAGUE ─── */}
       <section id="suggest" style={{
-        padding: '60px 40px',
+        padding: '20px 40px',
         textAlign: 'center',
         backgroundColor: '#0a0a0f',
       }}>
@@ -440,7 +473,7 @@ Red Lights Out →
           textAlign: 'center',
           color: '#f0b429',
           fontSize: '2.25rem',
-          marginBottom: '4px',
+          marginBottom: '0px',
           letterSpacing: '2px'
         }}>
         Suggest a New League
@@ -461,6 +494,7 @@ Red Lights Out →
           padding: '14px 32px',
           borderRadius: '8px',
           textDecoration: 'none',
+          marginBottom: '40px',
           fontWeight: 'bold',
           fontSize: '1rem',
         }}>

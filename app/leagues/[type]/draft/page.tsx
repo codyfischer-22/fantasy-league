@@ -21,11 +21,11 @@ const draftContent: Record<string, {
       'Here\u2019s everything you need before the draft window \u2014 timing, format, and how trades work once your roster is set.',
     ],
     draftWindow: [
-      { label: 'Signup Deadline', detail: 'Sunday, Sept. 13, 11:59 PM CT' },
-      { label: 'Draft Rankings Due (Public)', detail: 'Tuesday, Sept. 15, 5 PM CT' },
-      { label: 'Draft Order Set', detail: 'Tuesday, Sept. 15, 7 PM CT \u2013 Wednesday, Sept. 16, 5 PM CT' },
-      { label: 'Draft Window', detail: 'Wednesday, Sept. 16, 7 PM CT \u2013 Sunday, Sept. 20, 7 PM CT' },
-      { label: 'Episode 1 Airs', detail: 'Wednesday, Sept. 23, 7 PM CT' },
+      { label: 'Signup Deadline', detail: 'SUN, SEPT. 13, 11:59 PM CT' },
+      { label: 'Draft Rankings Due (Public)', detail: 'TUE, SEPT. 15, 5 PM CT' },
+      { label: 'Draft Order Set', detail: 'TUE, SEPT. 15, 7 PM CT \u2013 WED, SEPT. 16, 5 PM CT' },
+      { label: 'Draft Window', detail: 'WED, SEPT. 16, 7 PM CT \u2013 SUN, SEPT. 20, 7 PM CT' },
+      { label: 'Episode 1 Airs', detail: 'WED, SEPT. 23, 7 PM CT' },
     ],
     draftFormatPublic: [
         '➤ Given the high level of participation we expect in public leagues, we will implement an offline draft where each player ranks the order in which they would draft castaways if available:',

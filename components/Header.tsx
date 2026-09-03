@@ -23,6 +23,19 @@ export default function Header() {
   const dingAudioRef = useRef<HTMLAudioElement | null>(null)
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [hasUnreadChat, setHasUnreadChat] = useState(false)
+  const notifRef = useRef<HTMLDivElement | null>(null)
+
+useEffect(() => {
+  function handleClickOutside(e: MouseEvent) {
+    if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+      setShowNotifications(false)
+    }
+  }
+  if (showNotifications) {
+    document.addEventListener('mousedown', handleClickOutside)
+  }
+  return () => document.removeEventListener('mousedown', handleClickOutside)
+}, [showNotifications])
 
   useEffect(() => {
     async function checkUnreadChat() {
@@ -257,8 +270,8 @@ export default function Header() {
                   )}
                 </button>
 
-                {showNotifications && (
-                  <div style={{
+           {showNotifications && (
+  <div ref={notifRef} className="mobile-notif-panel" style={{
                     position: 'absolute',
                     top: '36px',
                     right: 0,

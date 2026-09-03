@@ -112,18 +112,6 @@ a:hover .demo-arrow {
   gap: 10px;
 }
 
-@media (max-width: 600px) {
-  .tool-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (max-width: 400px) {
-  .tool-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
 .mobile-rotate-hint {
   display: none;
 }
@@ -213,4 +201,113 @@ html, body {
 
 .league-live-pulse {
   animation: leagueLivePulse 1.8s ease-in-out infinite;
+}
+
+@media (max-width: 600px) {
+  body {
+    zoom: 0.75;
+  }
+  .mobile-bottom-nav {
+    zoom: 1.25; /* 1 / 0.85, cancels out the body zoom */
+  }
+}
+
+@media (max-width: 600px) {
+  #tiers {
+    padding: 40px 12px !important;
+  }
+  .tier-card {
+    padding: 20px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .mobile-chat-panel {
+    zoom: 1.25; /* cancels out body's 0.85 zoom, same as bottom nav */
+  }
+}
+
+@media (max-width: 600px) {
+  .mobile-notif-panel {
+    zoom: 1.25;
+  }
+}
+
+@media (max-width: 600px) {
+  .tier-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    max-width: 100% !important;
+    gap: 10px !important;
+  }
+}
+
+.tool-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.tool-grid > * {
+  flex: 1 1 105px;
+  max-width: 150px;
+}
+
+@media (max-width: 600px) {
+  footer {
+    padding: 20px 16px 110px 16px !important;
+    font-size: 0.85rem !important;
+  }
+  footer p {
+    font-size: 0.85em !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .mobile-home-title {
+    display: block !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .mobile-home-title ~ section:first-of-type {
+    margin-top: 100px;
+  }
+}
+
+@media (max-width: 600px) {
+  .mobile-page-content {
+    margin-top: 100px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  footer {
+    border-top: none !important;
+  }
+}
+
+@media (max-width: 600px) {
+  footer {
+    background-color: #0a0a0f !important;
+  }
+}
+
+@media (max-width: 600px) {
+  main {
+    min-height: unset !important;
+    height: auto !important;
+  }
+}
+
+.outline-btn:hover:not(:disabled) {
+  background-color: rgba(240, 180, 41, 0.15) !important;
+}
+
+.solid-btn:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.danger-btn:hover:not(:disabled) {
+  background-color: rgba(255, 107, 107, 0.15) !important;
 }

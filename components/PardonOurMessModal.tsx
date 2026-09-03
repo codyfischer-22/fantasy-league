@@ -39,15 +39,15 @@ export default function PardonOurMessModal() {
         textAlign: 'left'
       }}>
         <h3 style={{ color: '#f0b429', fontSize: '2rem', marginBottom: '12px' }}>
-         🚧 Pardon our mess!
+         🔥 ALMOST GO TIME!
         </h3>
         <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '8px', lineHeight: '1.6' }}>
-          Thanks for patience with our ongoing efforts to improve this site.</p>
+          We&apos;re mobile-friendly now, and we&apos;ll continue to improve!</p>
         <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '8px', lineHeight: '1.6' }}>
-  As we approach Survivor 51, please know we&apos;re actively polishing the mobile experience and building out additional features.
+Now it's time to fill leagues before the Survivor 51 Premiere! <strong>Can you share this link with friends?</strong>
 </p>
 <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '12px', lineHeight: '1.6' }}>
-  Let us know if there&apos;s something we&apos;re missing!
+  Get ready for a fun trek with friends!
 </p>
      <button onClick={handleDismiss} style={{
   backgroundColor: '#f0b429',

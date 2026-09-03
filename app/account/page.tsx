@@ -59,6 +59,11 @@ function AccountContent() {
     }
   }
 
+const handleSignOut = async () => {
+  await supabase.auth.signOut()
+  router.push('/')
+}
+
   const handleStripeCheckout = async (tier: string) => {
     if (!user) return
     const res = await fetch('/api/checkout', {
@@ -326,37 +331,38 @@ const handleSave = async () => {
         </div>
         <div style={{ marginBottom: '16px' }}>
           <div style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '8px' }}>Change Tier</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-            {['stowaway', 'castaway', 'crewchief', 'teamprincipal'].map((t) => (
-             <button
-  key={t}
-  onClick={() => {
-    if (isGlobalAdmin) {
-      handleUpgrade(t)
-    } else if (t === 'stowaway') {
-      setShowCancelConfirm(true)
-    } else {
-      handleStripeCheckout(t)
-    }
-  }}
-                disabled={upgrading !== null || profile.tier === t}
-                style={{
-                  backgroundColor: profile.tier === t ? '#f0b429' : 'transparent',
-                  color: profile.tier === t ? '#0a0a0f' : '#f0b429',
-                  border: '1px solid #f0b429',
-                  padding: '8px 14px',
-                  borderRadius: '6px',
-                  fontSize: '0.85rem',
-                  fontWeight: 'bold',
-                  cursor: profile.tier === t ? 'default' : 'pointer',
-                  opacity: upgrading !== null && upgrading !== t ? 0.5 : 1,
-                  boxShadow: highlightTier === t ? '0 0 0 3px rgba(240, 180, 41, 0.5)' : 'none'
-                }}
-              >
-                {upgrading === t ? '...' : (tierLabels[t] ?? t)}
-              </button>
-            ))}
-          </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
+  {['stowaway', 'castaway', 'crewchief', 'teamprincipal'].map((t) => (
+    <button
+      key={t}
+      className={profile.tier === t ? 'solid-btn' : 'outline-btn'}
+      onClick={() => {
+        if (isGlobalAdmin) {
+          handleUpgrade(t)
+        } else if (t === 'stowaway') {
+          setShowCancelConfirm(true)
+        } else {
+          handleStripeCheckout(t)
+        }
+      }}
+      disabled={upgrading !== null || profile.tier === t}
+      style={{
+        backgroundColor: profile.tier === t ? '#f0b429' : 'transparent',
+        color: profile.tier === t ? '#0a0a0f' : '#f0b429',
+        border: '1px solid #f0b429',
+        padding: '8px 14px',
+        borderRadius: '6px',
+        fontSize: '0.85rem',
+        fontWeight: 'bold',
+        cursor: profile.tier === t ? 'default' : 'pointer',
+        opacity: upgrading !== null && upgrading !== t ? 0.5 : 1,
+        boxShadow: highlightTier === t ? '0 0 0 3px rgba(240, 180, 41, 0.5)' : 'none'
+      }}
+    >
+      {upgrading === t ? '...' : (tierLabels[t] ?? t)}
+    </button>
+  ))}
+</div>
           {cancelMessage && (
             <div style={{ color: '#a0a0b0', fontSize: '0.8rem', marginTop: '8px' }}>
               {cancelMessage}
@@ -383,6 +389,7 @@ const handleSave = async () => {
                 }}
               />
               <button
+                className="solid-btn"
                 onClick={handleSave}
                 disabled={saving}
                 style={{
@@ -403,57 +410,54 @@ const handleSave = async () => {
                   setNameInput(profile.display_name ?? '')
                 }}
                 style={{
-                  backgroundColor: 'transparent',
-                  color: '#a0a0b0',
-                  padding: '8px 14px',
-                  borderRadius: '6px',
-                  border: '1px solid #2a2a3e',
-                  cursor: 'pointer'
-                }}
+    backgroundColor: 'transparent',
+    color: '#f0b429',
+    border: '1px solid #f0b429',
+    padding: '4px 12px',
+    borderRadius: '6px',
+    fontSize: '0.8rem',
+    cursor: 'pointer',
+    minWidth: '90px'
+  }}
               >
                 Cancel
               </button>
             </div>
           ) : (
-           
-           
-           
-           
-           
-           
-           
-           
+   
           <div>
   <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
     <div style={{ fontSize: '1.1rem' }}>{profile.display_name || 'Not set'}</div>
-    <button
-      onClick={() => setEditing(true)}
-      style={{
-        backgroundColor: 'transparent',
-        color: '#f0b429',
-        border: '1px solid #f0b429',
-        padding: '4px 12px',
-        borderRadius: '6px',
-        fontSize: '0.8rem',
-        cursor: 'pointer'
-      }}
-    >
-      Edit
-    </button>
-    <button
-      onClick={() => setShowPasswordFields(!showPasswordFields)}
-      style={{
-        backgroundColor: 'transparent',
-        color: '#f0b429',
-        border: '1px solid #f0b429',
-        padding: '4px 12px',
-        borderRadius: '6px',
-        fontSize: '0.8rem',
-        cursor: 'pointer'
-      }}
-    >
-      {showPasswordFields ? 'Cancel' : 'Change Password'}
-    </button>
+  <button
+  onClick={() => setEditing(true)}
+  style={{
+    backgroundColor: 'transparent',
+    color: '#f0b429',
+    border: '1px solid #f0b429',
+    padding: '4px 12px',
+    borderRadius: '6px',
+    fontSize: '0.8rem',
+    cursor: 'pointer',
+    minWidth: '100px'
+  }}
+>
+  Change Name
+</button>
+<button
+  onClick={() => setShowPasswordFields(!showPasswordFields)}
+  style={{
+    backgroundColor: 'transparent',
+    color: '#f0b429',
+    border: '1px solid #f0b429',
+    padding: '4px 12px',
+    borderRadius: '6px',
+    fontSize: '0.8rem',
+    cursor: 'pointer',
+    minWidth: '90px'
+  }}
+>
+  {showPasswordFields ? 'Cancel' : 'Change Password'}
+</button>
   </div>
 
   {showPasswordFields && (
@@ -495,6 +499,7 @@ const handleSave = async () => {
                     onClick={handleChangePassword}
                     disabled={changingPassword}
                     style={{
+                      className: "outline-btn",
                       backgroundColor: '#f0b429',
                       color: '#0a0a0f',
                       border: 'none',
@@ -523,6 +528,24 @@ const handleSave = async () => {
             </div>
           )}
         </div>
+
+        <button
+  onClick={handleSignOut}
+  style={{
+    marginTop: '24px',
+    width: '100%',
+    backgroundColor: 'transparent',
+    color: '#ff6b6b',
+    padding: '10px',
+    borderRadius: '6px',
+    border: '1px solid #ff6b6b',
+    fontWeight: 'bold',
+    fontSize: '0.9rem',
+    cursor: 'pointer'
+  }}
+>
+  Sign Out
+</button>
 
 <ConfirmModal
   open={showCancelConfirm}

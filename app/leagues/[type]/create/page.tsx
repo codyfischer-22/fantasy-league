@@ -182,7 +182,17 @@ if (!isAdmin) {
         width: '100%',
         maxWidth: '480px'
       }}>
-        <h1 style={{ color: '#f0b429', fontSize: '1.8rem', marginBottom: '24px', textAlign: 'center' }}>
+        <a href={`/leagues/${type}`} style={{
+  color: '#a0a0b0',
+  fontSize: '0.85rem',
+  textDecoration: 'none',
+  display: 'inline-block',
+  marginBottom: '38px'
+}}>
+  ← Back to {type === 'politics-on-the-beach' ? 'Politics on the Beach' : type === 'americans-turning-left' ? "'Muricans Turn Left" : type === 'european-rocket-ships' ? 'European Rockets' : 'League'}
+</a>
+        
+        <h1 style={{ color: '#f0b429', fontSize: '1.8rem', marginBottom: '12px', textAlign: 'center' }}>
           Create Your League
         </h1>
 

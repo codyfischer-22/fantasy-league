@@ -370,7 +370,7 @@ setNotes('')
 
 <ConfirmModal
   open={deletingEntryId !== null}
-  title="Remove this entry?"
+  title="Remove Entry?"
   message="Remove this custom scoring entry?"
   confirmText="Remove"
   danger

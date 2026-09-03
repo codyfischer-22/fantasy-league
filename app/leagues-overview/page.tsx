@@ -21,8 +21,8 @@ export default function LeaguesOverviewPage() {
   const [userTier, setUserTier] = useState<string | null>(null)
   const leagueTypes = [
   { name: 'Politics on the Beach', slug: 'politics-on-the-beach', emoji: '🏝️', color: '#f0b429', comingSoon: false },
-  { name: "'Muricans Turn Left", slug: 'americans-turning-left', emoji: '🚗', color: 'rgb(245, 255, 156)', comingSoon: true },
-  { name: 'European Rockets', slug: 'european-rocket-ships', emoji: '🏎️', color: '#f0b429', comingSoon: true },
+  { name: "Drive Fast, Turn Left", slug: 'drive-fast-turn-left', emoji: '🚗', color: 'rgb(245, 255, 156)', comingSoon: true },
+  { name: 'Road Rocket Racing', slug: 'road-rocket-racing', emoji: '🏎️', color: '#f0b429', comingSoon: true },
   ]
 
   useEffect(() => {
@@ -104,9 +104,9 @@ const allLeagues = (leagues ?? []).map((l) => ({
     }}>
       <div style={{ maxWidth: '700px', margin: '0 auto' }}>
 
-        <h1 style={{ color: '#f0b429', fontSize: '2.25rem', marginBottom: '20px' }}>
-          🏆 Trekkon Fantasy Leagues
-        </h1>
+       <h1 style={{ color: '#f0b429', fontSize: 'clamp(1.8rem, 6vw, 2.25rem)', marginBottom: '20px', whiteSpace: 'nowrap' }}>
+  🏆 Trekkon Fantasy Leagues
+</h1>
 
 <div className="leagues-grid">
 
@@ -168,7 +168,7 @@ const allLeagues = (leagues ?? []).map((l) => ({
       </h2>
       {hostedLeagues.length === 0 ? (
         <p style={{ color: '#555570' }}>
-          You&apos;re not hosting any leagues yet. To create your first league: League Type (left) → League Resources → 🔒 Private Leagues → "Create Private League."
+          You&apos;re not hosting any leagues yet. To create your first league: League Type → League Resources → 🔒 Private Leagues → "Create Private League."
         </p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>

@@ -457,10 +457,11 @@ const toolGroups = [
       { label: 'Scoring Log', emoji: '🧮', href: `/leagues/${type}/scoring-log?from=${instance}` },
       { label: 'Analytics', emoji: '📈', href: `/leagues/${type}/${instance}/analytics` },
       { label: 'Rosters', emoji: '👥', href: `/leagues/${type}/${instance}/roster` },
-      { label: 'Draft Room', emoji: '📋', href: `/leagues/${type}/${instance}/draft-room` },
       { label: 'Draft Log', emoji: '🪵', href: `/leagues/${type}/${instance}/draft-log` },
-{ label: 'Trade Portal', emoji: '🔄', href: `/leagues/${type}/${instance}/trade-portal` },    
-].filter((item) => !(item.label === 'Draft Room' && (league.draft_status === 'completed' || type === 'potb-demo'))),  },
+      { label: 'Trade Portal', emoji: '🔄', href: `/leagues/${type}/${instance}/trade-portal` },
+      { label: 'Draft Room', emoji: '📋', href: `/leagues/${type}/${instance}/draft-room` },
+    ].filter((item) => !(item.label === 'Draft Room' && (league.draft_status === 'completed' || type === 'potb-demo'))),
+  },
 ]
 
   return (
@@ -482,31 +483,29 @@ const toolGroups = [
   ← Back to Politics on the Beach
 </a>
 
-        <div style={{ textAlign: 'left', marginBottom: '12px' }}>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '8px'
-          }}>
-            <h1 style={{ fontSize: '2.5rem', margin: 0 }}>
-              {type === 'potb-demo' && league.name.includes('Demo!') ? (
-                <>
-                  <span style={{ color: '#f0b429' }}>{league.name.replace('Demo!', '').trim()}</span>{' '}
-                  <span style={{ color: '#ffffff' }}>Demo!</span>
-                </>
-              ) : (
-                <span style={{ color: '#f0b429' }}>{league.name}</span>
-              )}
-            </h1>
-            <p style={{ color: '#555570', fontSize: '1.75rem', margin: 0 }}>
-              {league.is_private && maxMembers
-                ? `${memberCount ?? '...'} / ${maxMembers}`
-                : league.max_members
-                ? `${memberCount ?? '...'} / ${league.max_members}`
-                : `${memberCount ?? '...'} Members`}
-            </p>
-          </div>
+       <div style={{ textAlign: 'left', marginBottom: '12px' }}>
+  <div style={{
+    display: 'flex',
+    flexDirection: 'column',
+    marginBottom: '8px'
+  }}>
+    <h1 style={{ fontSize: 'clamp(1.65rem, 6vw, 2.5rem)', margin: 0, whiteSpace: 'nowrap' }}>
+      {type === 'potb-demo' && league.name.includes('Demo!') ? (
+        <>
+          <span style={{ color: '#f0b429' }}>{league.name.replace('Demo!', '').trim()}</span>{' '}
+          <span style={{ color: '#ffffff' }}>Demo!</span>
+        </>
+      ) : (
+        <span style={{ color: '#f0b429' }}>{league.name}</span>
+      )}
+    </h1>
+<p style={{ color: '#555570', fontSize: '1.1rem', margin: '0px 0 12px 43px' }}>  {league.is_private && maxMembers
+    ? `${memberCount ?? '...'} / ${maxMembers} Spots Filled`
+    : league.max_members
+    ? `${memberCount ?? '...'} / ${league.max_members} Spots Filled`
+    : `${memberCount ?? '...'} Members`}
+</p>
+  </div>
 
 {league.is_frozen && (
   <div style={{
@@ -534,37 +533,40 @@ const toolGroups = [
                 Share to invite players into <strong>this</strong> private league (anyone with link can join):
               </p>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <input
-                  readOnly
-                  value={`${window.location.origin}/leagues/${type}/join/${league.invite_token}`}
-                  style={{
-                    flex: 1,
-                    padding: '8px 10px',
-                    borderRadius: '6px',
-                    border: '1px solid #2a2a3e',
-                    backgroundColor: '#12121a',
-                    color: '#ffffff',
-                    fontSize: '0.85rem'
-                  }}
-                />
-                <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(`${window.location.origin}/leagues/${type}/join/${league.invite_token}`)
-                  }}
-                  style={{
-                    backgroundColor: '#f0b429',
-                    color: '#0a0a0f',
-                    border: 'none',
-                    padding: '8px 16px',
-                    borderRadius: '6px',
-                    fontWeight: 'bold',
-                    fontSize: '0.85rem',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Copy
-                </button>
-              </div>
+  <input
+    readOnly
+    value={`${window.location.origin}/leagues/${type}/join/${league.invite_token}`}
+    style={{
+      flex: 1,
+      minWidth: 0,
+      padding: '8px 10px',
+      borderRadius: '6px',
+      border: '1px solid #2a2a3e',
+      backgroundColor: '#12121a',
+      color: '#ffffff',
+      fontSize: '0.85rem',
+      textOverflow: 'ellipsis'
+    }}
+  />
+  <button
+    onClick={() => {
+      navigator.clipboard.writeText(`${window.location.origin}/leagues/${type}/join/${league.invite_token}`)
+    }}
+    style={{
+      backgroundColor: '#f0b429',
+      color: '#0a0a0f',
+      border: 'none',
+      padding: '8px 16px',
+      borderRadius: '6px',
+      fontWeight: 'bold',
+      fontSize: '0.85rem',
+      cursor: 'pointer',
+      flexShrink: 0
+    }}
+  >
+    Copy
+  </button>
+</div>
 
 <div style={{ marginTop: '-4px', paddingTop: '16px', display: 'flex', alignItems: 'center', gap: '16px' }}>
   <a href={`/leagues/${type}/${instance}/host-settings`}
@@ -671,16 +673,16 @@ return page.href ? (
           }}>
             {isMember ? (
               <div>
-                <p style={{
-                  color: '#f0b429',
-                  fontSize: '1.5rem',
-                  fontWeight: 'bold',
-                  marginBottom: '12px',
-                  marginTop: '8px',
-                  whiteSpace: 'nowrap'
-                }}>
-                  You&apos;re in the league, {tierLabels[memberTier ?? ''] ?? memberTier}!
-                </p>
+             <p style={{
+  color: '#f0b429',
+  fontSize: 'clamp(1.4rem, 5vw, 1.5rem)',
+  fontWeight: 'bold',
+  marginBottom: '12px',
+  marginTop: '8px',
+  whiteSpace: 'nowrap'
+}}>
+  You&apos;re in the league, {tierLabels[memberTier ?? ''] ?? memberTier}!
+</p>
                 <div style={{
                   display: 'flex',
                   flexWrap: 'wrap',

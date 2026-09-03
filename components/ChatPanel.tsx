@@ -31,7 +31,7 @@ function renderMessageContent(text: string, members: { user_id: string; display_
     target="_blank"
     rel="noopener noreferrer"
     style={{
-      color: '#f0b429',
+      color: 'rgb(245, 255, 156)',
       textDecoration: 'underline',
       wordBreak: 'break-all',
       overflowWrap: 'break-word'
@@ -47,7 +47,7 @@ function renderMessageContent(text: string, members: { user_id: string; display_
     return mentionParts.map((mentionPart, j) => {
       const isMention = names.some((n) => `@${n}` === mentionPart);
       return isMention ? (
-        <span key={`mention-${i}-${j}`} style={{ color: '#f5820e', fontWeight: 'bold' }}>
+        <span key={`mention-${i}-${j}`} style={{ color: 'rgb(245, 255, 156)', fontWeight: 'bold' }}>
           {mentionPart}
         </span>
       ) : (
@@ -553,7 +553,8 @@ async function toggleReaction(messageId: string, emoji: string) {
         left: 0
       }}
     >
-     <div
+<div
+  className="mobile-chat-panel"
   onClick={(e) => e.stopPropagation()}
   style={{
     backgroundColor: '#1a1a2e',

@@ -107,7 +107,41 @@ export default function LeagueHubPage() {
       color: '#ffffff',
       padding: '60px 40px'
     }}>
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+
+  <div className="mobile-home-title" style={{
+  display: 'none',
+  textAlign: 'center',
+  padding: '24px 20px 22px 20px',
+  borderBottom: '2px solid #f0b429',
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  right: 0,
+  backgroundColor: '#0a0a0f',
+  zIndex: 140
+}}>
+    <h1 style={{
+      color: '#f0b429',
+      fontSize: 'clamp(1.6rem, 8vw, 2.5rem)',
+      margin: 0,
+      letterSpacing: '1px',
+      fontWeight: 'bold',
+      whiteSpace: 'nowrap'
+    }}>
+      ⚜️ Trekkon Fantasy Leagues
+    </h1>
+    <p style={{
+      color: '#a0a0b0',
+      margin: '4px 0 0 0',
+      fontSize: '0.85rem',
+      marginBottom: '0px',
+      letterSpacing: '.9px'
+    }}>
+      Gather Buddies. Draft Teams. Make History.
+    </p>
+  </div>
+
+      <div className="mobile-page-content" style={{ maxWidth: '800px', margin: '0 auto' }}>
         <a href="/" style={{
           color: '#a0a0b0',
           fontSize: '0.85rem',
@@ -119,9 +153,9 @@ export default function LeagueHubPage() {
         </a>
 
         <div style={{ textAlign: 'left', marginBottom: '48px', maxWidth: '900px', marginLeft: 'auto', marginRight: 'auto' }}>
-          <h1 style={{ color: '#f0b429', fontSize: '3rem', marginBottom: '24px' }}>
-            🏝️ Welcome to Politics on the Beach!
-          </h1>
+          <h1 style={{ color: '#f0b429', fontSize: 'clamp(2.5rem, 6vw, 3rem)', marginBottom: '24px' }}>
+  🏝️ Welcome to Politics on the Beach!
+</h1>
           <h2 style={{ color: '#f0b429', fontSize: '1.4rem', textAlign: 'left', marginBottom: '4px' }}>
             Introduction
           </h2>
@@ -148,8 +182,7 @@ export default function LeagueHubPage() {
             Membership Tiers
           </h2>
 
-          <section id="tiers" style={{ backgroundColor: '#0a0a0f', marginBottom: '12px' }}>
-            <div className="tier-grid">
+<section id="hub-tiers" style={{ backgroundColor: '#0a0a0f', marginBottom: '12px' }}>            <div className="tier-grid">
               <div
                 className="tier-card"
                 onClick={() => router.push('/account?tier=stowaway')}
@@ -236,8 +269,8 @@ export default function LeagueHubPage() {
                 </h3>
                 <ul style={{ color: '#a0a0b0', fontSize: '0.9rem', textAlign: 'left', lineHeight: '1.7', listStyle: 'none', padding: 0 }}>
                   <li>🚀 All Previous Perks</li>
-                  <li>🚀 3 Private Leagues</li>
-                  <li>🚀 Host ≤ 18 Players</li>
+                  <li>🚀 3 18-Player Leagues</li>
+                  <li>🚀 Add Custom Scoring</li>
                   <li>🚀 Highlighted Chats</li>
                   <div style={{ fontSize: '1.5rem', color: '#f0b429', fontWeight: 'bold', textAlign: 'center', marginBottom: '0px' }}>
                     $6.99
