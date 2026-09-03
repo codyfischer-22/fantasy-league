@@ -208,7 +208,7 @@ html, body {
     zoom: 0.85;
   }
   .mobile-bottom-nav {
-    zoom: 1.176; /* 1 / 0.85, cancels out the body zoom */
+    zoom: 1.1; /* 1 / 0.85, cancels out the body zoom */
   }
 }
 
@@ -223,13 +223,13 @@ html, body {
 
 @media (max-width: 600px) {
   .mobile-chat-panel {
-    zoom: 1.176; /* cancels out body's 0.85 zoom, same as bottom nav */
+    zoom: 1.1; /* cancels out body's 0.85 zoom, same as bottom nav */
   }
 }
 
 @media (max-width: 600px) {
   .mobile-notif-panel {
-    zoom: 1.176;
+    zoom: 1.1;
   }
 }
 
@@ -310,4 +310,33 @@ html, body {
 
 .danger-btn:hover:not(:disabled) {
   background-color: rgba(255, 107, 107, 0.15) !important;
+}
+
+@media (max-width: 600px) {
+  .hero-text {
+    text-align: left !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .home-tier-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .home-tier-grid .tier-card {
+    padding: 28px !important;
+    max-width: 280px !important;
+    margin: 0 auto !important;
+  }
+  .home-tier-grid .tier-card h3 {
+    font-size: 1.1rem !important;
+  }
+  .home-tier-grid .tier-card li {
+    font-size: 0.85rem !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .all-access-teaser {
+    max-width: 235px !important;
+  }
 }

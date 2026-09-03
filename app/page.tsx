@@ -29,7 +29,7 @@ export default function Home() {
 }}>
     <h1 style={{
       color: '#f0b429',
-      fontSize: 'clamp(1.6rem, 8vw, 2.5rem)',
+      fontSize: 'clamp(1rem, 6.5vw, 2.5rem)',
       margin: 0,
       letterSpacing: '1px',
       fontWeight: 'bold',
@@ -40,7 +40,7 @@ export default function Home() {
     <p style={{
       color: '#a0a0b0',
       margin: '4px 0 0 0',
-      fontSize: '0.85rem',
+      fontSize: 'clamp(.75rem, 4vw, 0.85rem)',
       marginBottom: '0px',
       letterSpacing: '.9px'
     }}>
@@ -56,25 +56,25 @@ export default function Home() {
         background: 'linear-gradient(180deg, #12121a 0%, #0a0a0f 100%)'
       }}>
         <h2 style={{
-          fontSize: '3rem',
+          fontSize: 'clamp(1.75rem, 8vw, 3rem)',
           color: '#ffffff',
           marginBottom: '14px',
           letterSpacing: '1px'
         }}>
           Fantasy without the Pigskin, <span style={{ color: '#f0b429' }}>Finally</span>
         </h2>
-        <p style={{
+<p className="hero-text" style={{
   color: '#a0a0b0',
-  fontSize: '1.2rem',
+  fontSize: 'clamp(.85rem, 4.5vw, 1.2rem)',
   maxWidth: '600px',
   margin: '0 auto 16px auto',
   lineHeight: '1.7'
 }}>
   Move over, Football! Here comes a new wave of fantasy leagues for the cutthroat, the speed junkies, and the adventurous at heart.
 </p>
-<p style={{
+<p className="hero-text" style={{
   color: '#a0a0b0',
-  fontSize: '1.2rem',
+  fontSize: 'clamp(.85rem, 4.5vw, 1.2rem)',
   maxWidth: '800px',
   margin: '0 auto 32px auto',
   lineHeight: '1.7'
@@ -104,7 +104,7 @@ We inspire players to cheer on and team up with reality television stars and dri
         <h2 style={{
           textAlign: 'center',
           color: '#f0b429',
-          fontSize: '2.25rem',
+          fontSize: 'clamp(1.75rem, 8vw, 2.25rem)',
           marginBottom: '0px',
           letterSpacing: '2px'
         }}>
@@ -114,12 +114,12 @@ We inspire players to cheer on and team up with reality television stars and dri
   textAlign: 'center',
   color: '#a0a0b0',
   marginBottom: '36px',
-  fontSize: '1.0rem'
+  fontSize: 'clamp(.85rem, 4.75vw, 1rem)',
 }}>
   Prices shown <span style={{ fontWeight: 'bold' }}>per month</span> unless you opt for the yearlong pass (coming soon) good for all leagues.
 </p>
 
-        <div style={{
+        <div className="home-tier-grid" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
           gap: '20px',
@@ -261,11 +261,11 @@ We inspire players to cheer on and team up with reality television stars and dri
         </div>
 
 {/* All-Access Teaser */}
-        <div style={{
-          maxWidth: '600px',
-          margin: '40px auto 0 auto',
-          position: 'relative'
-        }}>
+      <div className="all-access-teaser" style={{
+  maxWidth: '600px',
+  margin: '40px auto 0 auto',
+  position: 'relative'
+}}>
 
           {/* Best Value Badge */}
           <div style={{
@@ -294,12 +294,12 @@ We inspire players to cheer on and team up with reality television stars and dri
             padding: '28px',
             textAlign: 'center'
           }}>
-            <h3 style={{ color: '#ca29ca', fontSize: '1.5rem', marginBottom: '8px' }}>
+            <h3 style={{ color: '#ca29ca', fontSize: 'clamp(1.0rem, 5vw, 1.5rem)', marginBottom: '8px' }}>
               <span style={{ color: '#ca29ca', fontWeight: 'bold' }}>Coming in 2027:</span>
               {' '}
               <span style={{ color: '#ffffff', fontWeight: 'bold' }}>All-Access Pass</span>
             </h3>
-            <p style={{ color: '#a0a0b0', fontSize: '1.2rem', lineHeight: '1.7' }}>
+            <p style={{ color: '#a0a0b0', fontSize: 'clamp(.7rem, 4vw, 1.2rem)', lineHeight: '1.7' }}>
               Annual price for every league, every season, and every perk!
             </p>
           </div>
@@ -312,8 +312,8 @@ We inspire players to cheer on and team up with reality television stars and dri
         <h2 style={{
           textAlign: 'center',
           color: '#f0b429',
-          fontSize: '2.25rem',
-          marginBottom: '24px',
+          fontSize: 'clamp(1.75rem, 8vw, 2.25rem)',
+          marginBottom: '16px',
           letterSpacing: '2px'
         }}>
         Choose Your League
@@ -472,13 +472,13 @@ Red Lights Out →
         <h2 style={{
           textAlign: 'center',
           color: '#f0b429',
-          fontSize: '2.25rem',
+          fontSize: 'clamp(1.75rem, 8vw, 2.25rem)',
           marginBottom: '0px',
           letterSpacing: '2px'
         }}>
         Suggest a New League
         </h2>
-        <p style={{
+        <p className="hero-text" style={{
           color: '#a0a0b0',
           fontSize: '1.0rem',
           maxWidth: '500px',
