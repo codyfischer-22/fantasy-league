@@ -108,18 +108,6 @@ export default function LeagueHubPage() {
       padding: '60px 40px'
     }}>
 
-  <div className="mobile-home-title" style={{
-  display: 'none',
-  textAlign: 'center',
-  padding: '24px 20px 22px 20px',
-  borderBottom: '2px solid #f0b429',
-  position: 'fixed',
-  top: 0,
-  left: 0,
-  right: 0,
-  backgroundColor: '#0a0a0f',
-  zIndex: 140
-}}>
      <div className="mobile-home-title" style={{
   display: 'none',
   textAlign: 'center',
