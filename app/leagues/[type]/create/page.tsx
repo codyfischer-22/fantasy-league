@@ -201,7 +201,7 @@ if (!isAdmin) {
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          maxLength={32}
+          maxLength={28}
           required
           placeholder="(e.g. The Beach Bums)"
           style={inputStyle}

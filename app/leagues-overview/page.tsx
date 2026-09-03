@@ -104,7 +104,7 @@ const allLeagues = (leagues ?? []).map((l) => ({
     }}>
       <div style={{ maxWidth: '700px', margin: '0 auto' }}>
 
-       <h1 style={{ color: '#f0b429', fontSize: 'clamp(1.8rem, 6vw, 2.25rem)', marginBottom: '20px', whiteSpace: 'nowrap' }}>
+       <h1 style={{ color: '#f0b429', fontSize: 'clamp(1.6rem, 6vw, 2.25rem)', marginBottom: '20px', whiteSpace: 'nowrap' }}>
   🏆 Trekkon Fantasy Leagues
 </h1>
 
