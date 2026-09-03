@@ -183,7 +183,7 @@ export default function RosterPage() {
           ← Back to {leagueName || 'League'}
         </a>
 
-<h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px', marginBottom: '4px' }}>
+<h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px' }}>
   <span style={{ color: '#f0b429' }}>👥 League</span>{' '}
   <span style={{ color: '#ffffff' }}>Roster</span>
 </h1>
