@@ -386,3 +386,9 @@ html, body {
     text-align: center !important;
   }
 }
+
+@media (max-width: 600px) {
+  .draft-date-detail {
+    white-space: pre-line;
+  }
+}

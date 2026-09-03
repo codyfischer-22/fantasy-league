@@ -20,13 +20,13 @@ const draftContent: Record<string, {
     intro: [
       'Here\u2019s everything you need before the draft window \u2014 timing, format, and how trades work once your roster is set.',
     ],
-    draftWindow: [
-      { label: 'Signup Deadline', detail: 'SUN, SEPT. 13, 11:59 PM CT' },
-      { label: 'Draft Rankings Due (Public)', detail: 'TUE, SEPT. 15, 5 PM CT' },
-      { label: 'Draft Order Set', detail: 'TUE, SEPT. 15, 7 PM CT \u2013 WED, SEPT. 16, 5 PM CT' },
-      { label: 'Draft Window', detail: 'WED, SEPT. 16, 7 PM CT \u2013 SUN, SEPT. 20, 7 PM CT' },
-      { label: 'Episode 1 Airs', detail: 'WED, SEPT. 23, 7 PM CT' },
-    ],
+   draftWindow: [
+  { label: 'Signup Deadline', detail: 'SUN, SEPT. 13, 11:59 PM CT' },
+  { label: 'Draft Rankings Due (Public)', detail: 'TUE, SEPT. 15, 5 PM CT' },
+  { label: 'Draft Order Set', detail: 'TUE, SEPT. 15, 7 PM CT\n\u2013 WED, SEPT. 16, 5 PM CT' },
+  { label: 'Draft Window', detail: 'WED, SEPT. 16, 7 PM CT\n\u2013 SUN, SEPT. 20, 7 PM CT' },
+  { label: 'Episode 1 Airs', detail: 'WED, SEPT. 23, 7 PM CT' },
+],
     draftFormatPublic: [
         '➤ Given the high level of participation we expect in public leagues, we will implement an offline draft where each player ranks the order in which they would draft castaways if available:',
         '"I would take 1) Attractive Alex, 2) Smarty Pants Perry, 3) Beef Cake Casey . . . 21) Snivelling Sam."',
@@ -106,9 +106,9 @@ export default function DraftPage() {
           ← Back to 🌴 {content.leagueName}
         </a>
 
-        <h1 style={{ fontSize: '2.25rem', marginBottom: '10px' }}>
+        <h1 style={{ fontSize: 'clamp(1.85rem, 6vw, 2.25rem', marginBottom: '10px' }}>
           📋 <span style={{ color: '#f0b429' }}>{content.leagueName}</span>{' '}
-          <span style={{ color: '#ffffff' }}>Drafting & Trading</span>
+          <span style={{ color: '#ffffff' }}>Draft & Trading</span>
         </h1>
 
         <div style={{ marginBottom: '36px' }}>
@@ -130,25 +130,25 @@ export default function DraftPage() {
             overflow: 'hidden'
           }}>
             {content.draftWindow.map((row, i) => (
-              <div key={row.label} style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '14px 20px',
-                borderBottom: i < content.draftWindow.length - 1 ? '1px solid #2a2a3e' : 'none',
-                flexWrap: 'wrap',
-                gap: '4px'
-              }}>
-                <div style={{ fontSize: '0.95rem', fontWeight: 'bold', color: '#f0b429' }}>{row.label}</div>
-                <div style={{ fontSize: '0.9rem', color: '#a0a0b0' }}>{row.detail}</div>
-              </div>
-            ))}
+  <div key={row.label} style={{
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '14px 20px',
+    borderBottom: i < content.draftWindow.length - 1 ? '1px solid #2a2a3e' : 'none',
+    flexWrap: 'wrap',
+    gap: '4px'
+  }}>
+    <div style={{ fontSize: '0.95rem', fontWeight: 'bold', color: '#f0b429' }}>{row.label}</div>
+    <div className="draft-date-detail" style={{ fontSize: '0.9rem', color: '#a0a0b0' }}>{row.detail}</div>
+  </div>
+))}
           </div>
         </div>
 
         <div style={{ marginBottom: '32px' }}>
           <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '12px' }}>
-            🐍 Offline Draft Procedures (Public)
+            🐍 Public Draft Procedures
           </h2>
           <div style={{
             backgroundColor: '#1a1a2e',
@@ -174,7 +174,7 @@ export default function DraftPage() {
 
         <div style={{ marginBottom: '32px' }}>
           <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '12px' }}>
-            🔒 Live Draft Procedures (Private)
+            🔒 Private Draft Procedures
           </h2>
           <div style={{
             backgroundColor: '#1a1a2e',
