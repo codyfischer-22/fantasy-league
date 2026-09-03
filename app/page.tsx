@@ -29,7 +29,7 @@ export default function Home() {
 }}>
     <h1 style={{
       color: '#f0b429',
-      fontSize: 'clamp(1rem, 6vw, 2.5rem)',
+      fontSize: 'clamp(1rem, 5.9vw, 2.5rem)',
       margin: 0,
       letterSpacing: '1px',
       fontWeight: 'bold',
@@ -294,16 +294,15 @@ We inspire players to cheer on and team up with reality television stars and dri
             padding: '28px',
             textAlign: 'center'
           }}>
-            <h3 style={{ color: '#ca29ca', fontSize: 'clamp(1.0rem, 4.5vw, 1.5rem)', marginBottom: '8px' }}>
-              <span style={{ color: '#ca29ca', fontWeight: 'bold' }}>Coming in 2027:</span>
-              {' '}
-              <span style={{ color: '#ffffff', fontWeight: 'bold' }}>All-Access Pass</span>
-            </h3>
-            <p style={{ color: '#a0a0b0', fontSize: 'clamp(.7rem, 4vw, 1.2rem)', lineHeight: '1.7' }}>
-              Annual price for every league, every season, and every perk!
-            </p>
-          </div>
-
+         <h3 style={{ color: '#ca29ca', fontSize: 'clamp(1.0rem, 8vw, 1.5rem)', marginBottom: '8px' }}>
+  <span className="all-access-line1" style={{ color: '#ca29ca', fontWeight: 'bold' }}>Coming in 2027:</span>
+  {' '}
+  <span className="all-access-line2" style={{ color: '#ffffff', fontWeight: 'bold' }}>All-Access Pass</span>
+</h3>
+<p style={{ color: '#a0a0b0', fontSize: 'clamp(.7rem, 5vw, 1.2rem)', lineHeight: '1.7' }}>
+  Annual price for every league, every season, and every perk!
+</p>
+        </div>
         </div>
       </section>
 
