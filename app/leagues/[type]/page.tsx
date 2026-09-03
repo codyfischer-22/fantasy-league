@@ -120,9 +120,21 @@ export default function LeagueHubPage() {
   backgroundColor: '#0a0a0f',
   zIndex: 140
 }}>
+     <div className="mobile-home-title" style={{
+  display: 'none',
+  textAlign: 'center',
+  padding: '24px 20px 22px 20px',
+  borderBottom: '2px solid #f0b429',
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  right: 0,
+  backgroundColor: '#0a0a0f',
+  zIndex: 140
+}}>
     <h1 style={{
       color: '#f0b429',
-      fontSize: 'clamp(1.6rem, 8vw, 2.5rem)',
+      fontSize: 'clamp(1rem, 5.9vw, 2.5rem)',
       margin: 0,
       letterSpacing: '1px',
       fontWeight: 'bold',
@@ -133,7 +145,7 @@ export default function LeagueHubPage() {
     <p style={{
       color: '#a0a0b0',
       margin: '4px 0 0 0',
-      fontSize: '0.85rem',
+      fontSize: 'clamp(.75rem, 3.5vw, 0.85rem)',
       marginBottom: '0px',
       letterSpacing: '.9px'
     }}>

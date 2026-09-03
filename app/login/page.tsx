@@ -67,7 +67,7 @@ const handleLogin = async (e: React.FormEvent) => {
 }}
 
 return (
-    <main style={{
+    <main className="auth-page" style={{
       backgroundColor: '#0a0a0f',
       minHeight: '100vh',
       display: 'flex',

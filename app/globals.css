@@ -371,3 +371,10 @@ html, body {
     display: block !important;
   }
 }
+
+@media (max-width: 600px) {
+  .auth-page {
+    padding-top: 40px !important;
+    align-items: flex-start !important;
+  }
+}
