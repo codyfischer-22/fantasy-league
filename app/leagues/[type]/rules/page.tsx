@@ -168,7 +168,7 @@ export default function RulesPage() {
           ← Back to 🌴 {content.leagueName}
         </a>
 
-       <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem', marginBottom: '24px' }}>
+       <h1 style={{ fontSize: 'clamp(1.85rem, 8vw, 2.25rem)', marginBottom: '24px' }}>
   📜 <span style={{ color: '#f0b429' }}>{content.leagueName}</span>{' '}
   <span style={{ color: '#ffffff' }}>Rules & Scoring</span>
 </h1>
