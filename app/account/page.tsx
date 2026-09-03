@@ -416,8 +416,7 @@ const handleSave = async () => {
     padding: '4px 12px',
     borderRadius: '6px',
     fontSize: '0.8rem',
-    cursor: 'pointer',
-    minWidth: '90px'
+    cursor: 'pointer'
   }}
               >
                 Cancel
@@ -426,8 +425,8 @@ const handleSave = async () => {
           ) : (
    
           <div>
-  <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-    <div style={{ fontSize: '1.1rem' }}>{profile.display_name || 'Not set'}</div>
+ <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+  <div style={{ fontSize: '1.1rem' }}>{profile.display_name || 'Not set'}</div>
   <button
   onClick={() => setEditing(true)}
   style={{
@@ -437,8 +436,7 @@ const handleSave = async () => {
     padding: '4px 12px',
     borderRadius: '6px',
     fontSize: '0.8rem',
-    cursor: 'pointer',
-    minWidth: '100px'
+    cursor: 'pointer'
   }}
 >
   Change Name
@@ -452,8 +450,7 @@ const handleSave = async () => {
     padding: '4px 12px',
     borderRadius: '6px',
     fontSize: '0.8rem',
-    cursor: 'pointer',
-    minWidth: '90px'
+    cursor: 'pointer'
   }}
 >
   {showPasswordFields ? 'Cancel' : 'Change Password'}

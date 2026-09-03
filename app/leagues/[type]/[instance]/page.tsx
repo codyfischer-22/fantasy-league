@@ -489,17 +489,17 @@ const toolGroups = [
     flexDirection: 'column',
     marginBottom: '8px'
   }}>
-    <h1 style={{ fontSize: 'clamp(1.65rem, 6vw, 2.5rem)', margin: 0, whiteSpace: 'nowrap' }}>
-      {type === 'potb-demo' && league.name.includes('Demo!') ? (
-        <>
-          <span style={{ color: '#f0b429' }}>{league.name.replace('Demo!', '').trim()}</span>{' '}
-          <span style={{ color: '#ffffff' }}>Demo!</span>
-        </>
-      ) : (
-        <span style={{ color: '#f0b429' }}>{league.name}</span>
-      )}
-    </h1>
-<p style={{ color: '#555570', fontSize: '1.1rem', margin: '0px 0 12px 43px' }}>  {league.is_private && maxMembers
+  <h1 style={{ fontSize: 'clamp(1.65rem, 5.5vw, 2.5rem)', margin: 0, lineHeight: '1.2' }}>
+  {type === 'potb-demo' && league.name.includes('Demo!') ? (
+    <>
+      <span style={{ color: '#f0b429' }}>{league.name.replace('Demo!', '').trim()}</span>{' '}
+      <span style={{ color: '#ffffff' }}>Demo!</span>
+    </>
+  ) : (
+    <span style={{ color: '#f0b429' }}>{league.name}</span>
+  )}
+</h1>
+<p style={{ color: '#555570', fontSize: '1.1rem', margin: '0px 0 12px' }}>  {league.is_private && maxMembers
     ? `${memberCount ?? '...'} / ${maxMembers} Spots Filled`
     : league.max_members
     ? `${memberCount ?? '...'} / ${league.max_members} Spots Filled`
@@ -673,7 +673,7 @@ return page.href ? (
           }}>
             {isMember ? (
               <div>
-             <p style={{
+<p className="league-welcome-text" style={{
   color: '#f0b429',
   fontSize: 'clamp(1.4rem, 5vw, 1.5rem)',
   fontWeight: 'bold',
@@ -681,7 +681,7 @@ return page.href ? (
   marginTop: '8px',
   whiteSpace: 'nowrap'
 }}>
-  You&apos;re in the league, {tierLabels[memberTier ?? ''] ?? memberTier}!
+  You&apos;re in the league,<br className="league-welcome-break" /> {tierLabels[memberTier ?? ''] ?? memberTier}!
 </p>
                 <div style={{
                   display: 'flex',

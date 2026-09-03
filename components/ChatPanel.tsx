@@ -596,18 +596,19 @@ async function toggleReaction(messageId: string, emoji: string) {
   </option>
 ))}
           </select>
-          <button
-            onClick={onClose}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#a0a0b0',
-              fontSize: '1.2rem',
-              cursor: 'pointer'
-            }}
-          >
-            ✕
-          </button>
+         <button
+  className="desktop-only-close"
+  onClick={onClose}
+  style={{
+    background: 'none',
+    border: 'none',
+    color: '#a0a0b0',
+    fontSize: '1.2rem',
+    cursor: 'pointer'
+  }}
+>
+  ✕
+</button>
         </div>
 
         <div

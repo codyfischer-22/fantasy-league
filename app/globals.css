@@ -392,3 +392,48 @@ html, body {
     white-space: pre-line;
   }
 }
+
+@media (max-width: 600px) {
+  .footer-disclaimer-1 {
+    display: inline;
+    overflow-wrap: break-word;
+  }
+  .footer-disclaimer-2 {
+    display: inline;
+    overflow-wrap: break-word;
+  }
+  .footer-disclaimer-1::after {
+    content: " ";
+  }
+}
+
+@media (max-width: 600px) {
+  .footer-line {
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+    word-break: break-word !important;
+  }
+}
+
+@media (max-width: 600px) {
+  html, body {
+    overflow-x: hidden !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .desktop-only-close {
+    display: none !important;
+  }
+}
+
+@media (min-width: 601px) {
+  .league-welcome-break {
+    display: none;
+  }
+}
+@media (max-width: 600px) {
+  .league-welcome-text {
+    white-space: normal !important;
+  }
+}
