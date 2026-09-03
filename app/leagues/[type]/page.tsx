@@ -166,10 +166,10 @@ export default function LeagueHubPage() {
             Whether or not you&apos;ve played fantasy leagues before, please trust we&apos;ll guide you through this process. We encourage you to immerse yourself in the fun league spirit and community! Draft tribes, make trades, watch episodes, and then get off your couch and live your own adventure!
           </p>
           <p style={{ color: '#f0b429', fontSize: '1.2rem', lineHeight: '1.2', textAlign: 'center', marginBottom: '16px' }}>
-            To ensure your spot in a league, register by September 13 (11:59 PM).
+            To ensure your spot in a league, register by Sept. 13 (11:59 PM CT).
           </p>
           <p style={{ color: '#f0b429', fontSize: '1.2rem', lineHeight: '1.2', textAlign: 'center', marginBottom: '24px' }}>
-            Drafts will occur September 16-20 (7:00 PM).
+            Drafts will occur Sept. 16-20 (7:00 PM CT).
           </p>
           <p style={{ color: '#a0a0b0', fontSize: '1.1rem', lineHeight: '1.2', marginBottom: '24px' }}>
             Each tribe drafts 4 real-life castaways with the top 3 point-scorers counted toward season totals.
