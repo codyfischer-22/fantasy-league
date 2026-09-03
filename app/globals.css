@@ -106,12 +106,6 @@ a:hover .demo-arrow {
   transform: translateX(6px);
 }
 
-.tool-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
-  gap: 10px;
-}
-
 .mobile-rotate-hint {
   display: none;
 }
@@ -130,14 +124,6 @@ html, body {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 12px;
-}
-
-@media (max-width: 600px) {
-  .tier-grid {
-    grid-template-columns: 1fr;
-    max-width: 190px;
-    margin: 0 auto;
-  }
 }
 
 .leagues-grid {
@@ -230,14 +216,6 @@ html, body {
 @media (max-width: 600px) {
   .mobile-notif-panel {
     zoom: 1.1;
-  }
-}
-
-@media (max-width: 600px) {
-  .tier-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    max-width: 100% !important;
-    gap: 10px !important;
   }
 }
 
@@ -382,5 +360,29 @@ html, body {
 @media (max-width: 600px) {
   .auth-form {
     margin-bottom: 36px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .tier-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  .tier-grid .tier-card {
+    max-width: 280px !important;
+    margin: 0 auto !important;
+    padding: 16px !important;
+  }
+  .tier-grid .tier-card h3 {
+    font-size: 1.1rem !important;
+  }
+  .tier-grid .tier-card li {
+    font-size: 0.85rem !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .mobile-center-heading {
+    text-align: center !important;
   }
 }

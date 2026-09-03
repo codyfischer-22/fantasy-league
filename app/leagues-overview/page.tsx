@@ -313,7 +313,7 @@ const allLeagues = (leagues ?? []).map((l) => ({
       backgroundColor: '#1a1a2e',
       border: '1px solid #f0b429',
       borderRadius: '12px',
-      padding: '32px',
+      padding: '20px',
       maxWidth: '380px',
       textAlign: 'center'
     }}>
