@@ -337,6 +337,24 @@ html, body {
 
 @media (max-width: 600px) {
   .all-access-teaser {
-    max-width: 235px !important;
+    max-width: 400px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .home-tier-grid .tier-card {
+    margin-bottom: 10px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .footer-disclaimer-1 {
+    display: inline;
+  }
+  .footer-disclaimer-2 {
+    display: inline;
+  }
+  .footer-disclaimer-1::after {
+    content: " ";
   }
 }

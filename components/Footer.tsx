@@ -11,19 +11,19 @@ export default function Footer() {
       <p style={{ marginBottom: '8px' }}>
         ⚜️ <span style={{ color: '#f0b429', fontWeight: 'bold' }}>Trekkon Fantasy Leagues</span> — All Rights Reserved
       </p>
-      <p style={{ fontSize: '.9em', color: '#555570', marginBottom: '0px' }}>
-        Trekkon Fantasy Leagues is an independent, fan-run platform not affiliated with,
-        endorsed by, or connected to any official sports organization or television network.
-      </p>
-      <p style={{
-        color: '#555570',
-        fontSize: '.9em',
-        lineHeight: '1.7',
-        maxWidth: '600px',
-        margin: '0 auto'
-      }}>
-        There is no mandatory entry fee or requirements to participate/win in this league.
-      </p>
+    <p className="footer-disclaimer-1" style={{ fontSize: '.9em', color: '#555570', marginBottom: '0px' }}>
+  Trekkon Fantasy Leagues is an independent, fan-run platform not affiliated with,
+  endorsed by, or connected to any official sports organization or television network.
+</p>
+<p className="footer-disclaimer-2" style={{
+  color: '#555570',
+  fontSize: '.9em',
+  lineHeight: '1.7',
+  maxWidth: '600px',
+  margin: '0 auto'
+}}>
+  There is no mandatory entry fee or requirements to participate/win in this league.
+</p>
       <p style={{
         color: '#4c4c55',
         fontSize: '.75em',
