@@ -40,7 +40,7 @@ export default function Home() {
     <p style={{
       color: '#a0a0b0',
       margin: '4px 0 0 0',
-      fontSize: 'clamp(.75rem, 3.5vw, 0.85rem)',
+      fontSize: 'clamp(.75rem, 4vw, 0.85rem)',
       marginBottom: '0px',
       letterSpacing: '.9px'
     }}>
@@ -306,17 +306,17 @@ We inspire players to cheer on and team up with reality television stars and dri
         </div>
       </section>
 
-      {/* ─── LEAGUES ─── */}
-      <section id="leagues" style={{ padding: '50px 40px' }}>
-        <h2 style={{
-          textAlign: 'center',
-          color: '#f0b429',
-          fontSize: 'clamp(1.75rem, 8vw, 2.25rem)',
-          marginBottom: '16px',
-          letterSpacing: '2px'
-        }}>
-        Choose Your League
-        </h2>
+    {/* ─── LEAGUES ─── */}
+<section id="leagues" className="scroll-offset" style={{ padding: '50px 40px' }}>
+  <h2 style={{
+    textAlign: 'center',
+    color: '#f0b429',
+    fontSize: 'clamp(1.75rem, 8vw, 2.25rem)',
+    marginBottom: '16px',
+    letterSpacing: '2px'
+  }}>
+  Choose Your League
+  </h2>
 
         <div style={{
           display: 'grid',

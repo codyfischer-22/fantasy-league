@@ -106,7 +106,7 @@ export default function DraftPage() {
           ← Back to 🌴 {content.leagueName}
         </a>
 
-        <h1 style={{ fontSize: 'clamp(1.85rem, 8vw, 2.25rem)', marginBottom: '10px' }}>
+        <h1 style={{ fontSize: 'clamp(1.9rem, 8vw, 2.25rem)', marginBottom: '10px' }}>
           📋 <span style={{ color: '#f0b429' }}>{content.leagueName}</span>{' '}
           <span style={{ color: '#ffffff' }}>Draft & Trading</span>
         </h1>

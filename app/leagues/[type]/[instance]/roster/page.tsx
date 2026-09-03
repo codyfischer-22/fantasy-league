@@ -183,13 +183,13 @@ export default function RosterPage() {
           ← Back to {leagueName || 'League'}
         </a>
 
-<h1 style={{ fontSize: '2.25rem', marginBottom: '4px' }}>
+<h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px', marginBottom: '4px' }}>
   <span style={{ color: '#f0b429' }}>👥 League</span>{' '}
   <span style={{ color: '#ffffff' }}>Roster</span>
 </h1>
 
 <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '32px' }}>
-  See who's got who for this season of Politics on the Beach. This page will update as new trades occur!
+  See who's got who for this season of Politics on the Beach. This page will update as trades occur!
 </p>
 
         {roster.length === 0 ? (
@@ -198,26 +198,26 @@ export default function RosterPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {roster.map((member) => (
               <div key={member.user_id} style={{
-                backgroundColor: '#1a1a2e',
-                border: '1px solid #2a2a3e',
-                borderRadius: '10px',
-                padding: '20px'
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                  <div style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
-                    {member.display_name || 'Unnamed Player'}
-                  </div>
-                  <div style={{
-                    backgroundColor: '#12121a',
-                    color: '#f0b429',
-                    padding: '4px 12px',
-                    borderRadius: '20px',
-                    fontSize: '0.8rem',
-                    fontWeight: 'bold'
-                  }}>
-                    {tierLabels[member.tier] ?? member.tier}
-                  </div>
-                </div>
+  backgroundColor: '#1a1a2e',
+  border: '1px solid #2a2a3e',
+  borderRadius: '10px',
+  padding: '20px'
+}}>
+  <div className="roster-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+    <div style={{ fontSize: 'clamp(.75rem, 4vw, 1.1rem)', fontWeight: 'bold' }}>
+      {member.display_name || 'Unnamed Player'}
+    </div>
+    <div style={{
+      backgroundColor: '#12121a',
+      color: '#f0b429',
+      padding: '4px 12px',
+      borderRadius: '20px',
+      fontSize: '0.8rem',
+      fontWeight: 'bold'
+    }}>
+      {tierLabels[member.tier] ?? member.tier}
+    </div>
+  </div>
                 {member.castaways.length > 0 ? (
                   <p style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
                     Tribe: {member.castaways.join(', ')}

@@ -21,7 +21,7 @@ export default function TermsPage() {
           ← Back to Trekkon Fantasy Leagues
         </a>
 
-        <h1 style={{ color: '#f0b429', fontSize: 'clamp(1.7rem, 6vw, 2.25rem)', marginBottom: '-2px' }}>
+        <h1 style={{ color: '#f0b429', fontSize: 'clamp(1.9rem, 6vw, 2.25rem)', marginBottom: '-2px' }}>
           Terms & Conditions
         </h1>
         <p style={{ color: '#555570', fontSize: '0.85rem', marginBottom: '24px' }}>

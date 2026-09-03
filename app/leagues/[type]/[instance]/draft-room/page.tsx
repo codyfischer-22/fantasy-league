@@ -408,7 +408,7 @@ if (league.draft_status !== 'in_progress' && league.draft_status !== 'completed'
         }}>
           ← Back to {league.name}
         </a>
-      <h1 style={{ fontSize: '2.25rem', marginBottom: '4px' }}>
+      <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px' }}>
   <span style={{ color: '#f0b429' }}>📋League </span>{' '}
   <span style={{ color: '#ffffff' }}>Draft Room</span>
 </h1>
@@ -449,7 +449,7 @@ if (
           ← Back to {league.name}
         </a>
 
-        <h1 style={{ color: '#f0b429', fontSize: '2.25rem', marginBottom: '12px' }}>
+        <h1 style={{ color: '#f0b429', fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '12px' }}>
           📋 <span style={{ color: '#f0b429' }}>League</span>{' '}
           <span style={{ color: '#ffffff' }}>Draft Room</span>
         </h1>
@@ -491,7 +491,7 @@ if (
 </button>
 
         {league.draft_status === 'in_progress' && (
-          <p style={{ color: isMyTurn ? '#068e38' : '#f0b429', fontSize: '1.6rem', fontWeight: isMyTurn ? 'bold' : 'normal', marginBottom: '8px' }}>
+          <p style={{ color: isMyTurn ? '#068e38' : '#f0b429', fontSize: 'clamp(.9rem, 6vw, 1.6rem)', fontWeight: isMyTurn ? 'bold' : 'normal', marginBottom: '24px' }}>
             {isMyTurn ? "You're up to draft for" : `${currentPicker?.display_name ?? 'the next Player'} is up to draft for`}
             {' '}pick {league.current_pick_number} of {draftOrder.length}:
           </p>
@@ -505,7 +505,7 @@ if (
 
 <div className="draft-room-columns">
     <div style={{ flex: '0 0 250px' }}>
-              <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '8px' }}>Available Picks</h2>
+              <h2 style={{ color: '#f0b429', fontSize: 'clamp(.8rem, 5.5vw, 1.3rem)', marginBottom: '8px' }}>Available Picks</h2>
               <div style={{
                 maxHeight: '650px',
                 overflowY: 'auto',
@@ -552,7 +552,7 @@ if (
 
 
  <div style={{ flex: '0 0 260px' }}>
-  <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '8px' }}>Draft Order</h2>
+  <h2 style={{ color: '#f0b429', fontSize: 'clamp(.8rem, 5.5vw, 1.3rem)', marginBottom: '8px' }}>Draft Order</h2>
   <div style={{
     maxHeight: '650px',
     overflowY: 'auto',
@@ -585,7 +585,7 @@ if (
 </div>
 
 <div style={{ flex: '1 1 250px', minWidth: 0 }}>
-  <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '8px' }}>Live Rosters</h2>
+  <h2 style={{ color: '#f0b429', fontSize: 'clamp(.8rem, 5.5vw, 1.3rem)', marginBottom: '8px' }}>Live Rosters</h2>
   <div style={{
     maxHeight: '750px',
     overflowY: 'auto',
@@ -598,7 +598,7 @@ if (
       <div key={m.user_id} style={{ backgroundColor: '#1a1a2e', border: '1px solid #2a2a3e', borderRadius: '10px', padding: '14px 18px', flexShrink: 0 }}>
         <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>{m.display_name}</div>
         <div style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
-          {rosterByPlayer[m.user_id]?.length > 0 ? rosterByPlayer[m.user_id].join(', ') : 'No picks yet'}
+          {rosterByPlayer[m.user_id]?.length > 0 ? rosterByPlayer[m.user_id].join(', ') : 'No Picks Yet'}
         </div>
       </div>
     ))}

@@ -249,16 +249,16 @@ if ((scores && scores.length > 0) || (customEntries && customEntries.length > 0)
           {fromInstance ? `← Back to ${leagueName ?? 'League'}` : '← Back to 🌴 Politics on the Beach'}
         </a>
 
-        <h1 style={{ fontSize: '2.25rem', marginBottom: '4px' }}>
+        <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px' }}>
           🧮 <span style={{ color: '#f0b429' }}>Episode</span>{' '}
           <span style={{ color: '#ffffff' }}>Scoring Log</span>
         </h1>
-        <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '32px' }}>
+        <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '20px' }}>
           Check out the fully-transparent points breakdown for Politics on the Beach! Please note episodes with more than one tribal council (e.g. premiere or finale) may be broken down into multiple "voting cycles" below.
         </p>
 
         {episodes.length === 0 ? (
-          <p style={{ color: '#555570' }}>No voting cycle scores have been submitted yet.</p>
+          <p style={{ color: '#555570', fontSize: 'clamp(.7rem, 5vw, .85rem)' }}>No voting cycle scores have been submitted yet.</p>
         ) : (
           episodes.map((ep) => {
             const castawayTotals: Record<string, number> = {}

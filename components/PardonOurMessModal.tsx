@@ -38,7 +38,7 @@ export default function PardonOurMessModal() {
         width: '90%',
         textAlign: 'left'
       }}>
-        <h3 style={{ color: '#f0b429', fontSize: '2rem', marginBottom: '12px' }}>
+        <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.5rem, 6vw, 2rem)', marginBottom: '12px' }}>
          🔥 ALMOST GO TIME!
         </h3>
         <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '8px', lineHeight: '1.6' }}>

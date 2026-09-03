@@ -1,5 +1,4 @@
 'use client'
-
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
@@ -9,7 +8,6 @@ type CastawayScore = {
   castaway_name: string
   total: number
 }
-
 type PlayerStanding = {
   user_id: string
   display_name: string
@@ -21,7 +19,6 @@ export default function LeaderboardPage() {
   const params = useParams()
   const type = params.type as string
   const instance = params.instance as string
-
   const [leagueName, setLeagueName] = useState('')
   const [standings, setStandings] = useState<PlayerStanding[]>([])
   const [pageLoading, setPageLoading] = useState(true)
@@ -30,83 +27,68 @@ export default function LeaderboardPage() {
 
   useEffect(() => {
     async function loadLeaderboard() {
-     const { data: league } = await supabase
-  .from('leagues')
-  .select('id, name, league_type, is_frozen')
-  .eq('league_type', type)
-  .eq('slug', instance)
-  .single()
-if (!league) {
-  setPageLoading(false)
-  return
-}
-setLeagueName(league.name)
-setIsFrozen(league.is_frozen ?? false)
-
+      const { data: league } = await supabase
+        .from('leagues')
+        .select('id, name, league_type, is_frozen')
+        .eq('league_type', type)
+        .eq('slug', instance)
+        .single()
+      if (!league) {
+        setPageLoading(false)
+        return
+      }
+      setLeagueName(league.name)
+      setIsFrozen(league.is_frozen ?? false)
       const { data: members } = await supabase
         .from('league_members')
         .select('user_id')
         .eq('league_id', league.id)
-
       if (!members || members.length === 0) {
         setPageLoading(false)
         return
       }
-
       const userIds = members.map((m) => m.user_id)
-
       const { data: profiles } = await supabase
         .from('profiles')
         .select('user_id, display_name')
         .in('user_id', userIds)
-
       const { data: picks } = await supabase
         .from('draft_picks')
         .select('user_id, castaway_id')
         .eq('league_id', league.id)
-
       const castawayIds = [...new Set((picks ?? []).map((p) => p.castaway_id))]
-
       const { data: castawayList } = castawayIds.length > 0
         ? await supabase.from('castaways').select('id, name').in('id', castawayIds)
         : { data: [] }
-
       const castawayNameMap = new Map((castawayList ?? []).map((c) => [c.id, c.name]))
-
- const { data: scores } = castawayIds.length > 0
-  ? await supabase
-      .from('episode_scores')
-      .select('castaway_id, points, count')
-      .eq('league_type', league.league_type)
-      .in('castaway_id', castawayIds)
-  : { data: [] }
-
-const { data: customEntries } = await supabase
-  .from('custom_scoring_entries')
-  .select('castaway_id, points')
-  .eq('league_id', league.id)
-
-const castawayTotals = new Map<number, number>()
-;(scores ?? []).forEach((s) => {
-  const current = castawayTotals.get(s.castaway_id) ?? 0
-  castawayTotals.set(s.castaway_id, current + s.points * s.count)
-})
-;(customEntries ?? []).forEach((c) => {
-  const current = castawayTotals.get(c.castaway_id) ?? 0
-  castawayTotals.set(c.castaway_id, current + c.points)
-})
-
+      const { data: scores } = castawayIds.length > 0
+        ? await supabase
+            .from('episode_scores')
+            .select('castaway_id, points, count')
+            .eq('league_type', league.league_type)
+            .in('castaway_id', castawayIds)
+        : { data: [] }
+      const { data: customEntries } = await supabase
+        .from('custom_scoring_entries')
+        .select('castaway_id, points')
+        .eq('league_id', league.id)
+      const castawayTotals = new Map<number, number>()
+      ;(scores ?? []).forEach((s) => {
+        const current = castawayTotals.get(s.castaway_id) ?? 0
+        castawayTotals.set(s.castaway_id, current + s.points * s.count)
+      })
+      ;(customEntries ?? []).forEach((c) => {
+        const current = castawayTotals.get(c.castaway_id) ?? 0
+        castawayTotals.set(c.castaway_id, current + c.points)
+      })
       const playerStandings: PlayerStanding[] = (profiles ?? []).map((profile) => {
         const userPicks = (picks ?? []).filter((p) => p.user_id === profile.user_id)
-
         const castawayBreakdown: CastawayScore[] = userPicks.map((p) => ({
           castaway_id: p.castaway_id,
           castaway_name: castawayNameMap.get(p.castaway_id) ?? 'Unknown',
           total: castawayTotals.get(p.castaway_id) ?? 0,
         }))
-
         const playerTotal = castawayBreakdown.reduce((sum, c) => sum + c.total, 0)
-
         return {
           user_id: profile.user_id,
           display_name: profile.display_name || 'Unnamed Player',
@@ -114,13 +96,10 @@ const castawayTotals = new Map<number, number>()
           castaways: castawayBreakdown,
         }
       })
-
       playerStandings.sort((a, b) => b.total - a.total)
-
       setStandings(playerStandings)
       setPageLoading(false)
     }
-
     loadLeaderboard()
   }, [type, instance])
 
@@ -152,43 +131,27 @@ const castawayTotals = new Map<number, number>()
     )
   }
 
-  if (pageLoading) {
-  return (
-    <main style={{
-      backgroundColor: '#0a0a0f',
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      color: '#a0a0b0',
-      fontFamily: 'Georgia, serif'
-    }}>
-      Loading...
-    </main>
-  )
-}
-
-if (isFrozen) {
-  return (
-    <main style={{
-      backgroundColor: '#0a0a0f',
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      color: '#a0a0b0',
-      fontFamily: 'Georgia, serif',
-      gap: '16px',
-      padding: '40px'
-    }}>
-      <p style={{ maxWidth: '400px', textAlign: 'center' }}>
-        🚩 This league is no longer receiving updates as the host&apos;s membership dropped below Crew Chief.
-      </p>
-      <a href={`/leagues/${type}/${instance}`} style={{ color: '#f0b429' }}>← Back to League</a>
-    </main>
-  )
-}
+  if (isFrozen) {
+    return (
+      <main style={{
+        backgroundColor: '#0a0a0f',
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: '#a0a0b0',
+        fontFamily: 'Georgia, serif',
+        gap: '16px',
+        padding: '40px'
+      }}>
+        <p style={{ maxWidth: '400px', textAlign: 'center' }}>
+          🚩 This league is no longer receiving updates as the host&apos;s membership dropped below Crew Chief.
+        </p>
+        <a href={`/leagues/${type}/${instance}`} style={{ color: '#f0b429' }}>← Back to League</a>
+      </main>
+    )
+  }
 
   return (
     <main style={{
@@ -199,7 +162,6 @@ if (isFrozen) {
       padding: '60px 40px'
     }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-
         <a href={`/leagues/${type}/${instance}`} style={{
           color: '#a0a0b0',
           fontSize: '0.85rem',
@@ -209,15 +171,13 @@ if (isFrozen) {
         }}>
           ← Back to {leagueName || 'League'}
         </a>
-
-<h1 style={{ fontSize: '2.25rem', marginBottom: '4px' }}>
-  <span style={{ color: '#f0b429' }}> 🏆 League</span>{' '}
-  <span style={{ color: '#ffffff' }}>Leaderboard</span>
-</h1>
-<p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '32px' }}>
-  Where do you stack up on the league leaderboard? Expand a player to see their tribe of 4!
-</p>
-
+        <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px' }}>
+          <span style={{ color: '#f0b429' }}> 🏆 League</span>{' '}
+          <span style={{ color: '#ffffff' }}>Leaderboard</span>
+        </h1>
+        <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '32px' }}>
+          Where do you stack up on the leaderboard? Expand a player to see their tribe of 4!
+        </p>
         {standings.length === 0 ? (
           <p style={{ color: '#555570' }}>No Players have joined this league yet.</p>
         ) : (
@@ -235,7 +195,7 @@ if (isFrozen) {
                     width: '100%',
                     display: 'flex',
                     justifyContent: 'space-between',
-                    alignItems: 'center',
+                    alignItems: 'flex-start',
                     padding: '16px 20px',
                     background: 'none',
                     border: 'none',
@@ -244,12 +204,12 @@ if (isFrozen) {
                     textAlign: 'left'
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                    <span style={{
+<div style={{ display: 'flex', alignItems: 'center', gap: '14px', minWidth: 0, maxWidth: '60%' }}>                    <span style={{
                       color: index === 0 ? '#f0b429' : '#555570',
                       fontWeight: 'bold',
                       fontSize: '1.1rem',
-                      minWidth: '28px'
+                      minWidth: '28px',
+                      flexShrink: 0
                     }}>
                       #{index + 1}
                     </span>
@@ -257,7 +217,7 @@ if (isFrozen) {
                       {player.display_name}
                     </span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0, whiteSpace: 'nowrap' }}>
                     <span style={{
                       color: player.total < 0 ? '#ff6b6b' : '#f0b429',
                       fontWeight: 'bold',
@@ -302,7 +262,6 @@ if (isFrozen) {
             ))}
           </div>
         )}
-
       </div>
     </main>
   )
