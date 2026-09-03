@@ -326,10 +326,10 @@ export default function LeagueHubPage() {
             justifyContent: 'center'
           }}>
             <h2 style={{ color: '#f0b429', fontSize: 'clamp(1.1rem, 6.6vw, 1.7rem)', marginBottom: '8px' }}>
-              📋 Drafting & Trading <span className="demo-arrow">→</span>
+              📋 Draft & Trading <span className="demo-arrow">→</span>
             </h2>
             <p style={{ color: '#a0a0b0', fontSize: '1rem', lineHeight: '1.5' }}>
-              Study up on on draft windows, snake order, selection length, trade rules, etc.
+              Study up on on draft windows, snake order, selection length, and trade rules.
             </p>
           </a>
 
@@ -342,7 +342,7 @@ export default function LeagueHubPage() {
             flexDirection: 'column',
             justifyContent: 'flex-start'
           }}>
-            <h2 style={{ color: '#f0b429', fontSize: '1.7rem', marginBottom: '10px' }}>
+            <h2 style={{ color: '#f0b429', fontSize: 'clamp(1.1rem, 6.6vw, 1.7rem)', marginBottom: '10px' }}>
               🌍 Public Leagues
             </h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -383,7 +383,7 @@ export default function LeagueHubPage() {
             flexDirection: 'column',
             justifyContent: 'flex-start'
           }}>
-            <h2 style={{ color: '#f0b429', fontSize: '1.7rem', marginBottom: '8px' }}>
+            <h2 style={{ color: '#f0b429', fontSize: 'clamp(1.1rem, 6.6vw, 1.7rem)', marginBottom: '8px' }}>
               🔒 Private Leagues
             </h2>
 
@@ -453,7 +453,7 @@ export default function LeagueHubPage() {
           color: '#ffffff',
           marginBottom: '0px'
         }}>
-          <h2 style={{ color: '#f0b429', fontSize: '1.7rem', marginBottom: '8px' }}>
+          <h2 style={{ color: '#f0b429', fontSize: 'clamp(1.1rem, 6.6vw, 1.7rem)', marginBottom: '8px' }}>
             🎪 Demo League <span className="demo-arrow">→</span>
           </h2>
           <p style={{ color: '#a0a0b0', fontSize: '1rem', lineHeight: '1.5' }}>
