@@ -496,10 +496,10 @@ const handleSave = async () => {
                     }}
                   />
                   <button
+                    className="outline-btn"
                     onClick={handleChangePassword}
                     disabled={changingPassword}
                     style={{
-                      className: "outline-btn",
                       backgroundColor: '#f0b429',
                       color: '#0a0a0f',
                       border: 'none',
