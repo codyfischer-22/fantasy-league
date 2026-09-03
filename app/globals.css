@@ -378,3 +378,9 @@ html, body {
     align-items: flex-start !important;
   }
 }
+
+@media (max-width: 600px) {
+  .auth-form {
+    margin-bottom: 36px !important;
+  }
+}

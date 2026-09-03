@@ -76,14 +76,14 @@ return (
       fontFamily: 'Georgia, serif',
       color: '#ffffff'
     }}>
-      <form onSubmit={handleLogin} style={{
-        backgroundColor: '#1a1a2e',
-        border: '1px solid #f0b429',
-        borderRadius: '12px',
-        padding: '40px',
-        width: '100%',
-        maxWidth: '380px'
-      }}>
+     <form onSubmit={handleLogin} className="auth-form" style={{
+  backgroundColor: '#1a1a2e',
+  border: '1px solid #f0b429',
+  borderRadius: '12px',
+  padding: '40px',
+  width: '100%',
+  maxWidth: '380px'
+}}>
         <h1 style={{ color: '#f0b429', fontSize: '1.8rem', marginBottom: '24px', textAlign: 'center' }}>
           Welcome Back
         </h1>
