@@ -205,10 +205,10 @@ html, body {
 
 @media (max-width: 600px) {
   body {
-    zoom: 0.75;
+    zoom: 0.85;
   }
   .mobile-bottom-nav {
-    zoom: 1.25; /* 1 / 0.85, cancels out the body zoom */
+    zoom: 1.176; /* 1 / 0.85, cancels out the body zoom */
   }
 }
 
@@ -223,13 +223,13 @@ html, body {
 
 @media (max-width: 600px) {
   .mobile-chat-panel {
-    zoom: 1.25; /* cancels out body's 0.85 zoom, same as bottom nav */
+    zoom: 1.176; /* cancels out body's 0.85 zoom, same as bottom nav */
   }
 }
 
 @media (max-width: 600px) {
   .mobile-notif-panel {
-    zoom: 1.25;
+    zoom: 1.176;
   }
 }
 
