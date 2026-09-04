@@ -6,6 +6,7 @@ import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import ConfirmModal from '@/components/ConfirmModal'
 import { Cog, Palette } from 'lucide-react'
+import ResourcesModal from '@/components/ResourcesModal'
 
 type League = {
   id: number
@@ -47,6 +48,7 @@ export default function LeagueInstancePage() {
   const [hostTier, setHostTier] = useState<string | null>(null)
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [showResources, setShowResources] = useState(false)
 
   useEffect(() => {
     async function loadLeague() {
@@ -385,20 +387,23 @@ export default function LeagueInstancePage() {
   }
 
   const toolGroups = [
-    {
-      label: 'Standings, Draft & Community Tools:',
-      items: [
-        { label: 'Leaderboard', emoji: '🏆', href: `/leagues/${type}/${instance}/leaderboard` },
-        { label: 'Scoring Log', emoji: '🧮', href: `/leagues/${type}/scoring-log?from=${instance}` },
-        { label: 'Analytics', emoji: '📈', href: `/leagues/${type}/${instance}/analytics` },
-        { label: 'Rosters', emoji: '👥', href: `/leagues/${type}/${instance}/roster` },
-        { label: 'Draft Log', emoji: '📋', href: `/leagues/${type}/${instance}/draft-log` },
-        { label: 'Trade Portal', emoji: '🔄', href: `/leagues/${type}/${instance}/trade-portal` },
-        { label: 'Draft Room', emoji: '🧩', href: `/leagues/${type}/${instance}/draft-room` },
-      ].filter((item) => !(item.label === 'Draft Room' && (league.draft_status === 'completed' || type === 'potb-demo'))),
-    },
-  ]
-
+  {
+    label: 'Standings, Draft & Community Tools:',
+    items: [
+      { label: 'Leaderboard', emoji: '🏆', href: `/leagues/${type}/${instance}/leaderboard` },
+      { label: 'Scoring Log', emoji: '🧮', href: `/leagues/${type}/scoring-log?from=${instance}` },
+      { label: 'Analytics', emoji: '📈', href: `/leagues/${type}/${instance}/analytics` },
+      { label: 'Rosters', emoji: '👥', href: `/leagues/${type}/${instance}/roster` },
+      { label: 'Draft Log', emoji: '📋', href: `/leagues/${type}/${instance}/draft-log` },
+      { label: 'Trade Portal', emoji: '🔄', href: `/leagues/${type}/${instance}/trade-portal` },
+      { label: 'Draft Room', emoji: '🧩', href: `/leagues/${type}/${instance}/draft-room` },
+      { label: 'Castaways', emoji: '🔬', href: null },
+    ].filter((item) =>
+      !((item.label === 'Draft Room' || item.label === 'Castaways') &&
+        (league.draft_status === 'completed' || type === 'potb-demo'))
+    ),
+  },
+]
   return (
     <main style={{
       backgroundColor: '#0a0a0f',
@@ -574,39 +579,54 @@ export default function LeagueInstancePage() {
                   {group.label}
                 </div>
                 <div className="tool-grid" style={{ maxWidth: '800px' }}>
-                  {group.items.map((page) => {
-                    const content = (
-                      <>
-                        <div style={{ fontSize: '2.5rem', marginBottom: '4px' }}>
-                          <span className="draft-room-emoji">{page.emoji}</span>
-                        </div>
-                        <div style={{ fontSize: '1rem', textAlign: 'center' }}>{page.label}</div>
-                      </>
-                    )
-                    const cardStyle = {
-                      borderRadius: '10px',
-                      padding: '0px 0px',
-                      textAlign: 'center' as const,
-                      textDecoration: 'none',
-                      color: page.href ? '#ffffff' : '#555570',
-                    }
-                    const isDraftRoomTile = page.label === 'Draft Room'
-                    const shouldPulse = isDraftRoomTile && league.draft_status === 'in_progress'
-                    return page.href ? (
-                      <a
-                        key={page.label}
-                        href={page.href}
-                        className={`subpage-card ${shouldPulse ? 'draft-pulse' : ''}`}
-                        style={cardStyle}
-                      >
-                        {content}
-                      </a>
-                    ) : (
-                      <div key={page.label} className="subpage-card" style={cardStyle}>
-                        {content}
-                      </div>
-                    )
-                  })}
+                 {group.items.map((page) => {
+  const content = (
+    <>
+      <div style={{ fontSize: '2.5rem', marginBottom: '4px' }}>
+        <span className="draft-room-emoji">{page.emoji}</span>
+      </div>
+      <div style={{ fontSize: '1rem', textAlign: 'center' }}>{page.label}</div>
+    </>
+  )
+  const cardStyle = {
+    borderRadius: '10px',
+    padding: '0px 0px',
+    textAlign: 'center' as const,
+    textDecoration: 'none',
+    color: page.href ? '#ffffff' : '#555570',
+    cursor: page.label === 'Research Castaways' ? 'pointer' : 'default',
+  }
+  const isDraftRoomTile = page.label === 'Draft Room'
+  const shouldPulse = isDraftRoomTile && league.draft_status === 'in_progress'
+
+  if (page.label === 'Castaways') {
+    return (
+      <div
+        key={page.label}
+        className="subpage-card"
+        style={{ ...cardStyle, color: '#ffffff' }}
+        onClick={() => setShowResources(true)}
+      >
+        {content}
+      </div>
+    )
+  }
+
+  return page.href ? (
+    <a
+      key={page.label}
+      href={page.href}
+      className={`subpage-card ${shouldPulse ? 'draft-pulse' : ''}`}
+      style={cardStyle}
+    >
+      {content}
+    </a>
+  ) : (
+    <div key={page.label} className="subpage-card" style={cardStyle}>
+      {content}
+    </div>
+  )
+})}
                 </div>
               </div>
             ))}
@@ -830,6 +850,8 @@ export default function LeagueInstancePage() {
         onConfirm={() => { setShowLeaveConfirm(false); handleLeave() }}
         onCancel={() => setShowLeaveConfirm(false)}
       />
+
+      <ResourcesModal open={showResources} onClose={() => setShowResources(false)} />
     </main>
   )
 }

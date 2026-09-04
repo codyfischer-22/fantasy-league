@@ -4,6 +4,8 @@ import { useEffect, useState, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
+import ResourcesModal from '@/components/ResourcesModal'
+import { Search } from 'lucide-react'
 
 type Castaway = {
   id: number
@@ -26,6 +28,7 @@ export default function RankingsPage() {
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
+  const [showResources, setShowResources] = useState(false)
 
   useEffect(() => {
     async function loadData() {
@@ -276,13 +279,36 @@ const handleTouchEnd = () => {
           </div>
         ) : (
           <>
-            <h1 style={{ color: '#f0b429', fontSize: '2rem', marginBottom: '8px' }}>
+            <h1 style={{ color: '#f0b429', fontSize: 'clamp(1.72rem, 6vw, 2.25rem)', marginBottom: '8px' }}>
               🐍 Rank Your Castaways
             </h1>
-            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '28px', lineHeight: '1.6' }}>
+            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '16px', lineHeight: '1.6' }}>
               Drag and drop your most-wanted castaway to the top, and work your way down from there. If you need to make a tweak before the offline snake draft begins, just re-edit and save your rankings. Happy drafting, friends!
             </p>
-
+<button
+  onClick={() => setShowResources(true)}
+  style={{
+    backgroundColor: 'transparent',
+    color: '#f0b429',
+    border: '1px solid #f0b429',
+    borderRadius: '6px',
+    padding: '8px 16px',
+    fontWeight: 'bold',
+    fontSize: '0.85rem',
+    cursor: 'pointer',
+    marginTop: '1rem',
+    marginBottom: '1rem',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '6px',
+    marginLeft: 'auto',
+    marginRight: 'auto'
+  }}
+>
+  <Search size={16} strokeWidth={2} /> Research Castaways
+</button>
+<ResourcesModal open={showResources} onClose={() => setShowResources(false)} />
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '28px' }}>
             {castaways.map((castaway, index) => (
  <div
