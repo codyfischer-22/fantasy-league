@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import ChatPanel from '@/components/ChatPanel'
+import { Home, Swords, MessageCircle, Bell, User, KeyRound } from 'lucide-react'
 
 export default function MobileNav() {
   const { user } = useAuth()
@@ -147,21 +148,21 @@ export default function MobileNav() {
         zIndex: 150
       }}>
         <a href="/" style={navItemStyle}>
-          <span>🏠</span>
-          <span style={navLabelStyle}>Home</span>
-        </a>
-        <a href="/leagues-overview" style={navItemStyle}>
-          <span>🧭</span>
-          <span style={navLabelStyle}>Leagues</span>
-        </a>
+  <Home size={22} strokeWidth={2} />
+  <span style={navLabelStyle}>Home</span>
+</a>
+<a href="/leagues-overview" style={navItemStyle}>
+  <Swords size={22} strokeWidth={2} />
+  <span style={navLabelStyle}>Leagues</span>
+</a>
         {user && (
           <button
             onClick={() => { setIsChatOpen(!isChatOpen); setShowNotifications(false) }}
             style={navItemStyle}
           >
             <span style={{ position: 'relative' }}>
-              💬
-              {hasUnreadChat && (
+  <MessageCircle size={22} strokeWidth={2} />
+  {hasUnreadChat && (
                 <span style={{
                   position: 'absolute',
                   top: '-2px',
@@ -182,8 +183,8 @@ export default function MobileNav() {
             style={navItemStyle}
           >
             <span style={{ position: 'relative' }}>
-              🔔
-              {unreadCount > 0 && (
+  <Bell size={22} strokeWidth={2} />
+  {unreadCount > 0 && (
                 <span style={{
                   position: 'absolute',
                   top: '-4px',
@@ -205,9 +206,9 @@ export default function MobileNav() {
           </button>
         )}
         <a href={user ? '/account' : '/login'} style={navItemStyle}>
-          <span>{user ? '👤' : '🔑'}</span>
-          <span style={navLabelStyle}>{user ? 'Account' : 'Sign In'}</span>
-        </a>
+  {user ? <User size={22} strokeWidth={2} /> : <KeyRound size={22} strokeWidth={2} />}
+  <span style={navLabelStyle}>{user ? 'Account' : 'Sign In'}</span>
+</a>
       </nav>
 
       {showNotifications && (

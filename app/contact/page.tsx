@@ -82,7 +82,7 @@ export default function ContactPage() {
             Contact Trekkon
           </h1>
           <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '28px', textAlign: 'center' }}>
-            We&apos;d love to hear from you with any questions, ideas, league suggestions, or about who your real-world inspiration is!
+            We&apos;d love to hear from you with any questions, league suggestions, bugs discovered, or real-world inspirations!
           </p>
 
           <label style={labelStyle}>Player Name:</label>
@@ -122,7 +122,7 @@ export default function ContactPage() {
             <option value="Other">Miscellaneous Question</option>
             <option value="Signup Question">Signup Question</option>
             <option value="Billing Question">Billing Question</option>
-            <option value="League Question (I'm a Member)">League Question (I&apos;m a Member)</option>
+            <option value="League Question (Already Member)">League Question (I&apos;m a Member)</option>
             <option value="Suggest a New League">Suggest a New League</option>
           </select>
 

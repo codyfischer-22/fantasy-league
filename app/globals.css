@@ -482,3 +482,12 @@ html, body {
     margin-left: auto;
   }
 }
+
+.footer-extras-link {
+  display: none;
+}
+@media (max-width: 600px) {
+  .footer-extras-link {
+    display: inline;
+  }
+}

@@ -32,6 +32,10 @@ export default function Footer() {
   <a href="/terms" style={{ color: '#4c4c55', textDecoration: 'underline' }}>Terms & Conditions</a>
   {'  •  '}
   <a href="/privacy" style={{ color: '#4c4c55', textDecoration: 'underline' }}>Privacy Policy</a>
+  <span className="footer-extras-link">
+    {'  •  '}
+    <a href="/extras" style={{ color: '#4c4c55', textDecoration: 'underline' }}>Extras</a>
+  </span>
 </p>
     </footer>
   )

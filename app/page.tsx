@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import { Rat, Anchor, Drill, Rocket } from 'lucide-react'
 
 export default function Home() {
   const { user, loading } = useAuth()
@@ -141,8 +142,10 @@ We inspire players to cheer on and team up with reality television stars and dri
     textAlign: 'center'
   }}
 >
-            <div style={{ fontSize: '2rem', marginBottom: '8px' }}>⚓</div>
-            <h3 style={{ fontSize: '1.1rem', color: '#a0a0b0', marginBottom: '8px' }}>Stowaway</h3>
+           <div style={{ marginBottom: '4px', marginTop: '8px', display: 'flex', justifyContent: 'center' }}>
+  <Rat size={35} strokeWidth={2} color="#a0a0b0" />
+</div>
+<h3 style={{ fontSize: '1.1rem', color: '#a0a0b0', marginBottom: '8px' }}>Stowaway</h3>
             <div style={{ fontSize: '2rem', color: '#a0a0b0', fontWeight: 'bold', marginBottom: '16px' }}>
               $0.00
             </div>
@@ -169,8 +172,10 @@ We inspire players to cheer on and team up with reality television stars and dri
             padding: '28px',
             textAlign: 'center'
           }}>
-            <div style={{ fontSize: '2rem', marginBottom: '8px' }}>🥭</div>
-            <h3 style={{ fontSize: '1.1rem', color: '#ffffff', marginBottom: '8px' }}>Castaway</h3>
+            <div style={{ marginBottom: '4px', marginTop: '8px', display: 'flex', justifyContent: 'center' }}>
+  <Anchor size={35} strokeWidth={2} color="#ffffff" />
+</div>
+<h3 style={{ fontSize: '1.1rem', color: '#ffffff', marginBottom: '8px' }}>Castaway</h3>
             <div style={{ fontSize: '2rem', color: '#ffffff', fontWeight: 'bold', marginBottom: '16px' }}>
               $1.99
             </div>
@@ -196,8 +201,10 @@ We inspire players to cheer on and team up with reality television stars and dri
             padding: '28px',
             textAlign: 'center'
           }}>
-            <div style={{ fontSize: '2rem', marginBottom: '8px' }}>🔧</div>
-            <h3 style={{ fontSize: '1.1rem', color: 'rgb(245, 255, 156)', marginBottom: '8px' }}>Crew Chief</h3>
+           <div style={{ marginBottom: '4px', marginTop: '8px', display: 'flex', justifyContent: 'center' }}>
+  <Drill size={35} strokeWidth={2} color="rgb(245, 255, 156)" />
+</div>
+<h3 style={{ fontSize: '1.1rem', color: 'rgb(245, 255, 156)', marginBottom: '8px' }}>Crew Chief</h3>
             <div style={{ fontSize: '2rem', color: 'rgb(245, 255, 156)', fontWeight: 'bold', marginBottom: '16px' }}>
               $3.99
             </div>
@@ -241,10 +248,12 @@ We inspire players to cheer on and team up with reality television stars and dri
             }}>
               BEST VALUE
             </div>
-<div style={{ fontSize: '2rem', marginBottom: '8px', marginTop: '24px' }}>🚀</div>            
+<div style={{ marginBottom: '4px', marginTop: '12px', display: 'flex', justifyContent: 'center' }}>
+  <Rocket size={35} strokeWidth={2} color="#f0b429" />
+</div>
 <h3 style={{ fontSize: '1.1rem', color: '#f0b429', marginBottom: '8px' }}>
-              Team Principal
-            </h3>
+  Team Principal
+</h3>
             <div style={{ fontSize: '2rem', color: '#f0b429', fontWeight: 'bold', marginBottom: '16px' }}>
               $6.99
             </div>
@@ -392,7 +401,7 @@ We inspire players to cheer on and team up with reality television stars and dri
               🚗 Drive Fast, Turn Left
             </h3>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
-              Coming in 2027, climb through the cargo net for 36 weeks of American Muscle, seeing how many points you can bring to the checkered.
+              Coming in 2027, climb through the cargo net for 36 weeks of American Muscle, seeing how many points you can bring to the checkered flag.
             </p>
             <div style={{
               backgroundColor: '#12121a',

@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useRef } from 'react'
 import ChatPanel from '@/components/ChatPanel'
+import { MessageCircle, Bell, Settings } from 'lucide-react'
 
 type Notification = {
   id: number
@@ -202,22 +203,23 @@ useEffect(() => {
             <a href="/account" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Account</a>
 
             {user && (
-              <button
-                onClick={() => {
-                  setIsChatOpen(!isChatOpen)
-                  setShowNotifications(false)
-                }}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontSize: '1.3rem',
-                  color: '#f0b429',
-                  position: 'relative'
-                }}
-              >
-                💬
-                {hasUnreadChat && (
+             <button
+  onClick={() => {
+    setIsChatOpen(!isChatOpen)
+    setShowNotifications(false)
+  }}
+  style={{
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    color: '#ffffff',
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center'
+  }}
+>
+  <MessageCircle size={24} strokeWidth={2} />
+  {hasUnreadChat && (
                   <span
                     className="chat-unread-dot"
                     style={{
@@ -237,21 +239,22 @@ useEffect(() => {
             {user && (
               <div style={{ position: 'relative' }}>
                 <button
-                  onClick={() => {
-                    setShowNotifications(!showNotifications)
-                    setIsChatOpen(false)
-                  }}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '1.3rem',
-                    position: 'relative',
-                    color: '#f0b429'
-                  }}
-                >
-                  🔔
-                  {unreadCount > 0 && (
+  onClick={() => {
+    setShowNotifications(!showNotifications)
+    setIsChatOpen(false)
+  }}
+  style={{
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    position: 'relative',
+    color: '#ffffff',
+    display: 'flex',
+    alignItems: 'center'
+  }}
+>
+  <Bell size={24} strokeWidth={2} />
+  {unreadCount > 0 && (
                     <span style={{
                       position: 'absolute',
                       top: '-4px',
@@ -342,10 +345,10 @@ useEffect(() => {
             )}
 
             {isAdmin && (
-              <a href="/admin/scoring" className="btn" style={{ color: '#ff6b6b', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 'bold' }}>
-                ⚙️
-              </a>
-            )}
+  <a href="/admin/scoring" className="btn" style={{ color: '#ffffff', textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+    <Settings size={24} strokeWidth={2} />
+  </a>
+)}
             <button onClick={handleSignOut} style={{
               backgroundColor: 'transparent',
               color: '#f0b429',

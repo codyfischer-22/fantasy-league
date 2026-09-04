@@ -370,58 +370,58 @@ const handleSave = async () => {
           )}
         </div>
         <div>
-          <div style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '4px' }}>Display Name</div>
-          {editing ? (
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-              <input
-                type="text"
-                value={nameInput}
-                onChange={(e) => setNameInput(e.target.value)}
-                maxLength={32}
-                style={{
-                  flex: 1,
-                  padding: '8px 10px',
-                  borderRadius: '6px',
-                  border: '1px solid #2a2a3e',
-                  backgroundColor: '#12121a',
-                  color: '#ffffff',
-                  fontSize: '1rem'
-                }}
-              />
-              <button
-                className="solid-btn"
-                onClick={handleSave}
-                disabled={saving}
-                style={{
-                  backgroundColor: '#f0b429',
-                  color: '#0a0a0f',
-                  padding: '8px 14px',
-                  borderRadius: '6px',
-                  border: 'none',
-                  fontWeight: 'bold',
-                  cursor: saving ? 'not-allowed' : 'pointer'
-                }}
-              >
-                {saving ? '...' : 'Save'}
-              </button>
-              <button
-                onClick={() => {
-                  setEditing(false)
-                  setNameInput(profile.display_name ?? '')
-                }}
-                style={{
-    backgroundColor: 'transparent',
-    color: '#f0b429',
-    border: '1px solid #f0b429',
-    padding: '4px 12px',
-    borderRadius: '6px',
-    fontSize: '0.8rem',
-    cursor: 'pointer'
-  }}
-              >
-                Cancel
-              </button>
-            </div>
+{editing ? (
+<div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+  <input
+    type="text"
+    value={nameInput}
+    onChange={(e) => setNameInput(e.target.value)}
+    maxLength={32}
+    style={{
+      flex: '1 1 100%',
+      minWidth: 0,
+      padding: '8px 10px',
+      borderRadius: '6px',
+      border: '1px solid #2a2a3e',
+      backgroundColor: '#12121a',
+      color: '#ffffff',
+      fontSize: '1rem'
+    }}
+  />
+  <button
+    className="solid-btn"
+    onClick={handleSave}
+    disabled={saving}
+    style={{
+      backgroundColor: '#f0b429',
+      color: '#0a0a0f',
+      padding: '8px 14px',
+      borderRadius: '6px',
+      border: 'none',
+      fontWeight: 'bold',
+      cursor: saving ? 'not-allowed' : 'pointer'
+    }}
+  >
+    {saving ? '...' : 'Save'}
+  </button>
+  <button
+    onClick={() => {
+      setEditing(false)
+      setNameInput(profile.display_name ?? '')
+    }}
+    style={{
+      backgroundColor: 'transparent',
+      color: '#f0b429',
+      border: '1px solid #f0b429',
+      padding: '4px 12px',
+      borderRadius: '6px',
+      fontSize: '0.8rem',
+      cursor: 'pointer'
+    }}
+  >
+    Cancel
+  </button>
+</div>
           ) : (
    
           <div>
