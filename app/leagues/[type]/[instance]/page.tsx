@@ -46,6 +46,7 @@ export default function LeagueInstancePage() {
   const [maxMembers, setMaxMembers] = useState<number | null>(null)
   const [hostTier, setHostTier] = useState<string | null>(null)
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     async function loadLeague() {
@@ -407,15 +408,15 @@ export default function LeagueInstancePage() {
       padding: '60px 40px'
     }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-        <a href={`/leagues/${type}`} style={{
-          color: '#a0a0b0',
-          fontSize: '0.85rem',
-          textDecoration: 'none',
-          display: 'inline-block',
-          marginBottom: '24px'
-        }}>
-          ← Back to Politics on the Beach
-        </a>
+        <a href={type === 'potb-demo' ? '/leagues/politics-on-the-beach' : `/leagues/${type}`} style={{
+  color: '#a0a0b0',
+  fontSize: '0.85rem',
+  textDecoration: 'none',
+  display: 'inline-block',
+  marginBottom: '24px'
+}}>
+  ← Back to Politics on the Beach
+</a>
 
         <div style={{ textAlign: 'left', marginBottom: '12px' }}>
           <div style={{
@@ -485,23 +486,29 @@ export default function LeagueInstancePage() {
         }}
       />
       <button
-        onClick={() => {
-          navigator.clipboard.writeText(`${window.location.origin}/leagues/${type}/join/${league.invite_token}`)
-        }}
-        style={{
-          backgroundColor: '#f0b429',
-          color: '#0a0a0f',
-          border: 'none',
-          padding: '8px 16px',
-          borderRadius: '6px',
-          fontWeight: 'bold',
-          fontSize: '0.85rem',
-          cursor: 'pointer',
-          flexShrink: 0
-        }}
-      >
-        Copy
-      </button>
+  onClick={() => {
+    navigator.clipboard.writeText(`${window.location.origin}/leagues/${type}/join/${league.invite_token}`)
+    if (navigator.vibrate) {
+      navigator.vibrate(50)
+    }
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }}
+  style={{
+    backgroundColor: copied ? '#ff9f03' : '#f0b429',
+    color: copied ? '#ffffff' : '#0a0a0f',
+    border: 'none',
+    padding: '8px 16px',
+    borderRadius: '6px',
+    fontWeight: 'bold',
+    fontSize: '0.85rem',
+    cursor: 'pointer',
+    flexShrink: 0,
+    transition: 'background-color 0.2s ease'
+  }}
+>
+  {copied ? 'Copied!' : 'Copy'}
+</button>
     </div>
     <div style={{ marginTop: '-4px', paddingTop: '16px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '16px' }}>
       <a href={`/leagues/${type}/${instance}/host-settings`}

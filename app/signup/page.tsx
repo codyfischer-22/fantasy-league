@@ -90,7 +90,7 @@ if (error) {
   setMessage(error.message)
 } else {
   setSignedUp(true)
-}
+}}
 
   const inputStyle = {
     width: '100%',
@@ -277,4 +277,5 @@ if (error) {
         </form>
       )}
     </main>
-  )}
+  )
+}
