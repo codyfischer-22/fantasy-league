@@ -495,7 +495,7 @@ export default function LeagueInstancePage() {
     setTimeout(() => setCopied(false), 2000)
   }}
   style={{
-    backgroundColor: copied ? '#ff9f03' : '#f0b429',
+    backgroundColor: copied ? '#24a720' : '#f0b429',
     color: copied ? '#ffffff' : '#0a0a0f',
     border: 'none',
     padding: '8px 16px',
@@ -553,7 +553,7 @@ export default function LeagueInstancePage() {
       onClick={() => setShowStartDraftConfirm(true)}
       className="league-card"
       style={{
-        backgroundColor: '#068e38',
+        backgroundColor: '#24a720',
         color: '#ffffff',
         border: '2px solid #ffff',
         padding: '10px 20px',

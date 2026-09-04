@@ -491,3 +491,9 @@ html, body {
     display: inline;
   }
 }
+
+@media (max-width: 600px) {
+  .mobile-left-text {
+    text-align: left !important;
+  }
+}
