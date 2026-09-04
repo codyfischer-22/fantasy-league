@@ -89,13 +89,7 @@ const { error } = await supabase.auth.signUp({
 if (error) {
   setMessage(error.message)
 } else {
-  const pendingInvite = localStorage.getItem('pendingInvitePath')
-  if (pendingInvite) {
-    router.push(pendingInvite)
-  } else {
-    setSignedUp(true)
-  }
-}
+  setSignedUp(true)
 }
 
   const inputStyle = {
