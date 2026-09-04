@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import ConfirmModal from '@/components/ConfirmModal'
+import { Cog, Palette } from 'lucide-react'
 
 type League = {
   id: number
@@ -390,9 +391,9 @@ export default function LeagueInstancePage() {
         { label: 'Scoring Log', emoji: '🧮', href: `/leagues/${type}/scoring-log?from=${instance}` },
         { label: 'Analytics', emoji: '📈', href: `/leagues/${type}/${instance}/analytics` },
         { label: 'Rosters', emoji: '👥', href: `/leagues/${type}/${instance}/roster` },
-        { label: 'Draft Log', emoji: '🪵', href: `/leagues/${type}/${instance}/draft-log` },
+        { label: 'Draft Log', emoji: '📋', href: `/leagues/${type}/${instance}/draft-log` },
         { label: 'Trade Portal', emoji: '🔄', href: `/leagues/${type}/${instance}/trade-portal` },
-        { label: 'Draft Room', emoji: '📋', href: `/leagues/${type}/${instance}/draft-room` },
+        { label: 'Draft Room', emoji: '🧩', href: `/leagues/${type}/${instance}/draft-room` },
       ].filter((item) => !(item.label === 'Draft Room' && (league.draft_status === 'completed' || type === 'potb-demo'))),
     },
   ]
@@ -455,104 +456,111 @@ export default function LeagueInstancePage() {
             </div>
           )}
 
-          {isHost && league.is_private && (
-            <div style={{
-              backgroundColor: '#1a1a2e',
-              border: '1px solid #f0b429',
-              borderRadius: '10px',
-              padding: '16px 20px',
-              marginBottom: '24px',
-              marginTop: '16px'
-            }}>
-              <p style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '8px' }}>
-                Share to invite players into <strong>this</strong> private league (anyone with link can join):
-              </p>
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <input
-                  readOnly
-                  value={`${window.location.origin}/leagues/${type}/join/${league.invite_token}`}
-                  style={{
-                    flex: 1,
-                    minWidth: 0,
-                    padding: '8px 10px',
-                    borderRadius: '6px',
-                    border: '1px solid #2a2a3e',
-                    backgroundColor: '#12121a',
-                    color: '#ffffff',
-                    fontSize: '0.85rem',
-                    textOverflow: 'ellipsis'
-                  }}
-                />
-                <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(`${window.location.origin}/leagues/${type}/join/${league.invite_token}`)
-                  }}
-                  style={{
-                    backgroundColor: '#f0b429',
-                    color: '#0a0a0f',
-                    border: 'none',
-                    padding: '8px 16px',
-                    borderRadius: '6px',
-                    fontWeight: 'bold',
-                    fontSize: '0.85rem',
-                    cursor: 'pointer',
-                    flexShrink: 0
-                  }}
-                >
-                  Copy
-                </button>
-              </div>
+         {isHost && league.is_private && (
+  <div style={{
+    backgroundColor: '#1a1a2e',
+    border: '1px solid #f0b429',
+    borderRadius: '10px',
+    padding: '16px 20px',
+    marginBottom: '20px',
+    marginTop: '16px'
+  }}>
+    <p style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '8px' }}>
+      Share to invite players into <strong>this</strong> private league (anyone with link can join):
+    </p>
+    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+      <input
+        readOnly
+        value={`${window.location.origin}/leagues/${type}/join/${league.invite_token}`}
+        style={{
+          flex: 1,
+          minWidth: 0,
+          padding: '8px 10px',
+          borderRadius: '6px',
+          border: '1px solid #2a2a3e',
+          backgroundColor: '#12121a',
+          color: '#ffffff',
+          fontSize: '0.85rem',
+          textOverflow: 'ellipsis'
+        }}
+      />
+      <button
+        onClick={() => {
+          navigator.clipboard.writeText(`${window.location.origin}/leagues/${type}/join/${league.invite_token}`)
+        }}
+        style={{
+          backgroundColor: '#f0b429',
+          color: '#0a0a0f',
+          border: 'none',
+          padding: '8px 16px',
+          borderRadius: '6px',
+          fontWeight: 'bold',
+          fontSize: '0.85rem',
+          cursor: 'pointer',
+          flexShrink: 0
+        }}
+      >
+        Copy
+      </button>
+    </div>
+    <div style={{ marginTop: '-4px', paddingTop: '16px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '16px' }}>
+      <a href={`/leagues/${type}/${instance}/host-settings`}
+        className="btn"
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '4px',
+          color: '#f0b429',
+          fontSize: '0.85rem',
+          fontWeight: 'bold',
+          textDecoration: 'none',
+          whiteSpace: 'nowrap'
+        }}
+      >
+        <Cog size={16} color="#ffffff" strokeWidth={2} style={{ flexShrink: 0 }} /> League Settings
+      </a>
+      {league.allow_custom_scoring && hostTier === 'teamprincipal' && (
+        <a href={`/leagues/${type}/${instance}/custom-scoring`}
+          className="btn"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            color: '#f0b429',
+            fontSize: '0.85rem',
+            fontWeight: 'bold',
+            textDecoration: 'none',
+            whiteSpace: 'nowrap'
+          }}
+        >
+          <Palette size={16} color="#ffffff" strokeWidth={2} style={{ flexShrink: 0 }} /> Custom Scoring
+        </a>
+      )}
+    </div>
+  </div>
+)}
 
-              <div style={{ marginTop: '-4px', paddingTop: '16px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <a href={`/leagues/${type}/${instance}/host-settings`}
-                  className="btn"
-                  style={{
-                    display: 'inline-block',
-                    color: '#f0b429',
-                    fontSize: '0.85rem',
-                    fontWeight: 'bold',
-                    textDecoration: 'none'
-                  }}
-                >
-                  ⚙️ League Settings
-                </a>
-                {league.allow_custom_scoring && hostTier === 'teamprincipal' && (
-                  <a href={`/leagues/${type}/${instance}/custom-scoring`}
-                    className="btn"
-                    style={{
-                      display: 'inline-block',
-                      color: '#f0b429',
-                      fontSize: '0.85rem',
-                      fontWeight: 'bold',
-                      textDecoration: 'none'
-                    }}
-                  >
-                    🎯 Custom Scoring
-                  </a>
-                )}
-                {league.draft_status !== 'in_progress' && league.draft_status !== 'completed' && (
-                  <button
-                    onClick={() => setShowStartDraftConfirm(true)}
-                    className="league-card"
-                    style={{
-                      backgroundColor: '#068e38',
-                      color: '#ffffff',
-                      border: '2px solid #ffff',
-                      padding: '10px 20px',
-                      borderRadius: '6px',
-                      fontWeight: 'bold',
-                      fontSize: '0.85rem',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Start Draft Procedure
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
-
-          <div style={{ margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '36px', marginBottom: '40px' }}>
+{isHost && league.is_private && league.draft_status !== 'in_progress' && league.draft_status !== 'completed' && (
+  <div style={{ marginBottom: '24px', textAlign: 'center' }}>
+    <button
+      onClick={() => setShowStartDraftConfirm(true)}
+      className="league-card"
+      style={{
+        backgroundColor: '#068e38',
+        color: '#ffffff',
+        border: '2px solid #ffff',
+        padding: '10px 20px',
+        borderRadius: '6px',
+        fontWeight: 'bold',
+        fontSize: '0.85rem',
+        cursor: 'pointer'
+      }}
+    >
+      Start Draft Procedure
+    </button>
+  </div>
+)}
+          <div style={{ margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '30px', marginBottom: '40px' }}>
             {toolGroups.map((group) => (
               <div key={group.label}>
                 <div style={{ color: '#a0a0b0', fontSize: '1rem', marginBottom: '16px' }}>

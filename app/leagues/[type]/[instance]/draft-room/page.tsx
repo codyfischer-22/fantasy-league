@@ -409,14 +409,15 @@ if (league.draft_status !== 'in_progress' && league.draft_status !== 'completed'
           ← Back to {league.name}
         </a>
       <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px' }}>
-  <span style={{ color: '#f0b429' }}>📋League </span>{' '}
+  <span style={{ color: '#f0b429' }}>🧩 League </span>{' '}
   <span style={{ color: '#ffffff' }}>Draft Room</span>
 </h1>
-<p style={{ color: '#555570' }}>
-  The draft room is not open yet. Please check back once host starts the draft! Full draft policies may be found{' '}
+<p style={{ color: '#555570', marginBottom: '8px' }}>
+  Ready to piece your team together? Please check with your host to see when your draft starts.</p>
+  <p style={{ color: '#555570' }}>Full draft policies may be found{' '}
   <a href={`/leagues/${type}/draft`} style={{ color: '#f0b429', textDecoration: 'underline' }}>
     here
-  </a>.
+  </a>, but your host has control over time limits, addressing missed turns, etc.
 </p>
 </div>
     </main>
@@ -450,13 +451,13 @@ if (
         </a>
 
         <h1 style={{ color: '#f0b429', fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '12px' }}>
-          📋 <span style={{ color: '#f0b429' }}>League</span>{' '}
+          🧩 <span style={{ color: '#f0b429' }}>League</span>{' '}
           <span style={{ color: '#ffffff' }}>Draft Room</span>
         </h1>
 {showInstructions && (
   <>
     <p style={{ color: '#a0a0b0', fontSize: '1rem', lineHeight: '1.6', marginBottom: '8px', maxWidth: '800px' }}>
-      Welcome to the draft (some call this casting or silly season)! <span style={{ color: '#f0b429' }}>Please note we recommend a computer screen for the optimal drafting experience.</span> A few reminders to get you started:
+     Ready to piece your team together? It's time for the draft (some call this casting or silly season)! <span style={{ color: '#f0b429' }}>Please note we recommend a computer screen for the optimal drafting experience.</span> A few reminders to get you started:
     </p>
     <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginLeft: '30px', lineHeight: '1.6', marginBottom: '8px', maxWidth: '800px' }}>
       ➤ There are 21 castaways in Survivor 51 so any league with over 5 players will have castways &quot;cloned&quot; as necessary (e.g. 10 players → 40 castaways needed → clone each castaway twice for 42 selectable options).

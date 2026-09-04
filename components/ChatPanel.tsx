@@ -802,13 +802,13 @@ async function toggleReaction(messageId: string, emoji: string) {
                      background: 'none',
     border: '1px solid #333350',
     borderRadius: '6px',
-    fontSize: '1.1rem',
+    fontSize: '1.2rem',
     cursor: 'pointer',
     padding: '0 8px',
     flexShrink: 0
                   }}
                 >
-                  🏆
+                  😎
                 </button>
               <input
   value={newMessage}

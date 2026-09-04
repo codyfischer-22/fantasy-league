@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
+import { Trophy, Lock } from 'lucide-react'
 
 type JoinedLeague = {
   name: string
@@ -104,8 +105,8 @@ const allLeagues = (leagues ?? []).map((l) => ({
     }}>
       <div style={{ maxWidth: '700px', margin: '0 auto' }}>
 
-       <h1 style={{ color: '#f0b429', fontSize: 'clamp(1.5rem, 5vw, 2.25rem)', marginBottom: '20px', whiteSpace: 'nowrap' }}>
-  🏆 Trekkon Fantasy Leagues
+    <h1 style={{ color: '#f0b429', fontSize: 'clamp(1.5rem, 5vw, 2.25rem)', marginBottom: '20px', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'left', gap: '10px' }}>
+  <Trophy size={30} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '-1px' }} /> Trekkon Fantasy Leagues
 </h1>
 
 <div className="leagues-grid">
@@ -167,9 +168,9 @@ const allLeagues = (leagues ?? []).map((l) => ({
         Leagues You Host
       </h2>
       {hostedLeagues.length === 0 ? (
-        <p style={{ color: '#555570' }}>
-          You&apos;re not hosting any leagues yet. To create your first league: League Type → League Resources → 🔒 Private Leagues → "Create Private League."
-        </p>
+   <p style={{ color: '#555570' }}>
+  You&apos;re not hosting any leagues yet. To create your first league: League Type → League Resources → <Lock size={14} strokeWidth={2} style={{ display: 'inline', verticalAlign: 'middle', position: 'relative', top: '-1px' }} /> Private Leagues → "Create Private League."
+</p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           {hostedLeagues.map((league) => (
@@ -250,7 +251,7 @@ const allLeagues = (leagues ?? []).map((l) => ({
     fontSize: '0.95rem'
   }}
 >
-  <div>🎪 Politics on the Beach Demo →</div>
+  <div>🧪 Politics on the Beach Demo →</div>
   <div style={{ color: '#555570', fontWeight: 'normal', fontSize: '0.8rem', marginTop: '0px' }}>
     Can you guess what season this represents?!
   </div>

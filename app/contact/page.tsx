@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useAuth } from '@/lib/AuthContext'
+import { Mail } from 'lucide-react'
 
 export default function ContactPage() {
   const { user } = useAuth()
@@ -78,9 +79,9 @@ export default function ContactPage() {
           padding: '36px',
           width: '100%'
         }}>
-          <h1 style={{ color: '#f0b429', fontSize: '1.8rem', marginBottom: '8px', textAlign: 'center' }}>
-            Contact Trekkon
-          </h1>
+          <h1 style={{ color: '#f0b429', fontSize: '1.8rem', marginBottom: '8px', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+  <Mail size={30} strokeWidth={2} style={{ position: 'relative', top: '1px' }} /> Contact Trekkon
+</h1>
           <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '28px', textAlign: 'center' }}>
             We&apos;d love to hear from you with any questions, league suggestions, bugs discovered, or real-world inspirations!
           </p>

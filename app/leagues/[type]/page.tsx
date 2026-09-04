@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/AuthContext'
+import { Rat, Anchor, Drill, Rocket, ScrollText, ClipboardList, Earth, Lock, TestTubeDiagonal} from 'lucide-react'
 
 type League = {
   id: number
@@ -194,16 +195,16 @@ export default function LeagueHubPage() {
                   textAlign: 'center'
                 }}
               >
-                <h3 style={{ fontSize: '1.2rem', color: '#a0a0b0', marginBottom: '10px' }}>Stowaway</h3>
-                <ul style={{ color: '#a0a0b0', fontSize: '0.9rem', textAlign: 'left', lineHeight: '1.7', listStyle: 'none', padding: 0 }}>
-                  <li>⚓ 1 Public League</li>
-                  <li>⚓ Private Access</li>
-                  <li>⚓ Basic Leaderboards</li>
-                  <li>⚓ Trade Portal Access</li>
-                  <div style={{ fontSize: '1.5rem', color: '#a0a0b0', textAlign: 'center', fontWeight: 'bold', marginBottom: '0px' }}>
-                    $0.00
-                  </div>
-                </ul>
+                <h3 style={{ fontSize: '1.2rem', color: '#a0a0b0', marginBottom: '8px' }}>Stowaway</h3>
+            <ul style={{ color: '#a0a0b0', fontSize: '0.9rem', textAlign: 'left', lineHeight: '1.7', listStyle: 'none', padding: 0 }}>
+  <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rat size={14} strokeWidth={2} /> 1 Public League</li>
+  <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rat size={14} strokeWidth={2} /> Private Access</li>
+  <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rat size={14} strokeWidth={2} /> Basic Leaderboards</li>
+  <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rat size={14} strokeWidth={2} /> Trade Portal Access</li>
+  <div style={{ fontSize: '1.5rem', color: '#a0a0b0', textAlign: 'center', fontWeight: 'bold', marginBottom: '0px' }}>
+    $0.00
+  </div>
+</ul>
               </div>
 
               <div
@@ -217,12 +218,12 @@ export default function LeagueHubPage() {
                   textAlign: 'center'
                 }}
               >
-                <h3 style={{ fontSize: '1.2rem', color: '#ffffff', marginBottom: '10px' }}>Castaway</h3>
+                <h3 style={{ fontSize: '1.2rem', color: '#ffffff', marginBottom: '8px' }}>Castaway</h3>
                 <ul style={{ color: '#a0a0b0', fontSize: '0.9rem', textAlign: 'left', lineHeight: '1.7', listStyle: 'none', padding: 0 }}>
-                  <li>🥭 All Previous Perks</li>
-                  <li>🥭 3 Public Leagues</li>
-                  <li>🥭 Public League Chat</li>
-                  <li>🥭 Tracking Analytics</li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Anchor size={14} strokeWidth={2} color="#ffffff" /> All Previous Perks</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Anchor size={14} strokeWidth={2} color="#ffffff" /> 3 Public Leagues</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Anchor size={14} strokeWidth={2} color="#ffffff" /> Public League Chat</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Anchor size={14} strokeWidth={2} color="#ffffff" /> Tracking Analytics</li>
                   <div style={{ fontSize: '1.5rem', color: '#ffffff', textAlign: 'center', fontWeight: 'bold', marginBottom: '0px' }}>
                     $1.99
                   </div>
@@ -240,12 +241,12 @@ export default function LeagueHubPage() {
                   textAlign: 'center'
                 }}
               >
-                <h3 style={{ fontSize: '1.2rem', color: 'rgb(245, 255, 156)', marginBottom: '10px' }}>Crew Chief</h3>
+                <h3 style={{ fontSize: '1.2rem', color: 'rgb(245, 255, 156)', marginBottom: '8px' }}>Crew Chief</h3>
                 <ul style={{ color: '#a0a0b0', fontSize: '0.9rem', textAlign: 'left', lineHeight: '1.7', listStyle: 'none', padding: 0 }}>
-                  <li>🔧 All Previous Perks</li>
-                  <li>🔧 Host Private League</li>
-                  <li>🔧 8-Player Capacity</li>
-                  <li>🔧 Customize Settings</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Drill size={14} strokeWidth={2} color="rgb(245, 255, 156)" /> All Previous Perks</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Drill size={14} strokeWidth={2} color="rgb(245, 255, 156)" /> Host Private League</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Drill size={14} strokeWidth={2} color="rgb(245, 255, 156)" /> 8-Player Capacity</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Drill size={14} strokeWidth={2} color="rgb(245, 255, 156)" /> Customize Settings</li>
                   <div style={{ fontSize: '1.5rem', color: 'rgb(245, 255, 156)', fontWeight: 'bold', textAlign: 'center', marginBottom: '0px' }}>
                     $3.99
                   </div>
@@ -268,10 +269,10 @@ export default function LeagueHubPage() {
                   Team Principal
                 </h3>
                 <ul style={{ color: '#a0a0b0', fontSize: '0.9rem', textAlign: 'left', lineHeight: '1.7', listStyle: 'none', padding: 0 }}>
-                  <li>🚀 All Previous Perks</li>
-                  <li>🚀 3 18-Player Leagues</li>
-                  <li>🚀 Add Custom Scoring</li>
-                  <li>🚀 Highlighted Chats</li>
+                 <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> All Previous Perks</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> 3 18-Player Leagues</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> Add Custom Scoring</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> Highlighted Chats</li>
                   <div style={{ fontSize: '1.5rem', color: '#f0b429', fontWeight: 'bold', textAlign: 'center', marginBottom: '0px' }}>
                     $6.99
                   </div>
@@ -306,9 +307,9 @@ export default function LeagueHubPage() {
             flexDirection: 'column',
             justifyContent: 'center'
           }}>
-            <h2 style={{ color: '#f0b429', fontSize: 'clamp(1.1rem, 6.6vw, 1.7rem)', marginBottom: '8px' }}>
-              📜 Rules & Scoring <span className="demo-arrow">→</span>
-            </h2>
+           <h2 style={{ color: '#f0b429', fontSize: 'clamp(1.1rem, 6.6vw, 1.7rem)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+  <ScrollText size={28} strokeWidth={2} color="#ffffff" style={{ flexShrink: 0 }} /> Rules & Scoring <span className="demo-arrow">→</span>
+</h2>
             <p style={{ color: '#a0a0b0', fontSize: '1rem', lineHeight: '1.5' }}>
               See the official point breakdown for challenges, idols, tribal councils, and the end game.
             </p>
@@ -325,9 +326,9 @@ export default function LeagueHubPage() {
             flexDirection: 'column',
             justifyContent: 'center'
           }}>
-            <h2 style={{ color: '#f0b429', fontSize: 'clamp(1.1rem, 6.6vw, 1.7rem)', marginBottom: '8px' }}>
-              📋 Draft & Trading <span className="demo-arrow">→</span>
-            </h2>
+            <h2 style={{ color: '#f0b429', fontSize: 'clamp(1.1rem, 6.6vw, 1.7rem)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+  <ClipboardList size={28} strokeWidth={2} color="#ffffff" style={{ flexShrink: 0 }} /> Draft & Trading <span className="demo-arrow">→</span>
+</h2>
             <p style={{ color: '#a0a0b0', fontSize: '1rem', lineHeight: '1.5' }}>
               Study up on on draft windows, snake order, selection length, and trade rules.
             </p>
@@ -342,9 +343,9 @@ export default function LeagueHubPage() {
             flexDirection: 'column',
             justifyContent: 'flex-start'
           }}>
-            <h2 style={{ color: '#f0b429', fontSize: 'clamp(1.1rem, 6.6vw, 1.7rem)', marginBottom: '10px' }}>
-              🌍 Public Leagues
-            </h2>
+            <h2 style={{ color: '#f0b429', fontSize: 'clamp(1.1rem, 6.6vw, 1.7rem)', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+  <Earth size={28} color="#ffffff" strokeWidth={2} style={{ flexShrink: 0 }} /> Public Leagues
+</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {instances.length === 0 ? (
                 <p style={{ color: '#555570', fontSize: '0.9rem' }}>No public leagues available yet.</p>
@@ -383,9 +384,9 @@ export default function LeagueHubPage() {
             flexDirection: 'column',
             justifyContent: 'flex-start'
           }}>
-            <h2 style={{ color: '#f0b429', fontSize: 'clamp(1.1rem, 6.6vw, 1.7rem)', marginBottom: '8px' }}>
-              🔒 Private Leagues
-            </h2>
+         <h2 style={{ color: '#f0b429', fontSize: 'clamp(1.1rem, 6.6vw, 1.7rem)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+  <Lock size={28} color="#ffffff" strokeWidth={2} style={{ flexShrink: 0, position: 'relative', top: '-2px' }} /> Private Leagues
+</h2>
 
             {userTier === 'crewchief' || userTier === 'teamprincipal' ? (
               <a href={`/leagues/${type}/create`} className="league-card" style={{
@@ -453,9 +454,9 @@ export default function LeagueHubPage() {
           color: '#ffffff',
           marginBottom: '0px'
         }}>
-          <h2 style={{ color: '#f0b429', fontSize: 'clamp(1.1rem, 6.6vw, 1.7rem)', marginBottom: '8px' }}>
-            🎪 Demo League <span className="demo-arrow">→</span>
-          </h2>
+        <h2 style={{ color: '#f0b429', fontSize: 'clamp(1.1rem, 6.6vw, 1.7rem)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+  <TestTubeDiagonal size={28} color="#ffffff" strokeWidth={2} style={{ flexShrink: 0 }} /> Demo League <span className="demo-arrow">→</span>
+</h2>
           <p style={{ color: '#a0a0b0', fontSize: '1rem', lineHeight: '1.5' }}>
             See a &quot;real&quot; league in action to get a feel for how your league will look.
           </p>

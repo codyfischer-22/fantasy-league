@@ -9,6 +9,7 @@ import { upgradeTier } from '@/lib/upgradeTier'
 import { Suspense } from 'react'
 import { containsEmoji } from '@/lib/validation'
 import ConfirmModal from '@/components/ConfirmModal'
+import { UserPen } from 'lucide-react'
 
 type Profile = {
   email: string
@@ -308,9 +309,9 @@ const handleSave = async () => {
         }}>
           ← Back to Previous Page
         </button>
-        <h1 style={{ color: '#f0b429', fontSize: '2rem', marginBottom: '24px' }}>
-          My Account
-        </h1>
+        <h1 style={{ color: '#f0b429', fontSize: '2rem', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+  <UserPen size={30} strokeWidth={2} style={{ position: 'relative', top: '0px' }} /> My Account
+</h1>
         <div style={{ marginBottom: '16px' }}>
           <div style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '4px' }}>Email</div>
           <div style={{ fontSize: '1.1rem' }}>{profile.email}</div>

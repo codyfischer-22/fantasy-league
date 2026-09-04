@@ -2,6 +2,7 @@
 import { useAuth } from '@/lib/AuthContext'
 import { useSearchParams } from 'next/navigation'
 import { Suspense, useState } from 'react'
+import { MicSignal, HandCoins } from 'lucide-react'
 
 function ExtrasContent() {
   const { user } = useAuth()
@@ -50,10 +51,11 @@ function ExtrasContent() {
           ← Back to Trekkon Fantasy Leagues
         </a>
 
-<h1 style={{ fontSize: '2.25rem', marginBottom: '4px' }}>
-        🔧<span style={{ color: '#f0b429' }}>Trekkon</span>{' '}
-        <span style={{ color: '#ffffff' }}>Extras</span>
-        </h1>
+<h1 style={{ fontSize: '2.25rem', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+  <MicSignal size={32} strokeWidth={2} style={{ position: 'relative', top: '1px' }} />
+  <span style={{ color: '#f0b429' }}>Trekkon</span>{' '}
+  <span style={{ color: '#ffffff' }}>Extras</span>
+</h1>
         <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '30px', lineHeight: '1.6' }}>
           As time goes on, keep an eye out for locally-sourced podcasts, blogs, special offers, and other fun features! In the meantime, consider a tip below!
         </p>
@@ -108,9 +110,9 @@ function ExtrasContent() {
           padding: '28px',
           marginBottom: '24px'
         }}>
-          <h2 style={{ color: '#f0b429', fontSize: '1.4rem', marginBottom: '8px' }}>
-            💰 Tip Jar
-          </h2>
+          <h2 style={{ color: '#f0b429', fontSize: '1.4rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+  <HandCoins size={28} strokeWidth={2} style={{ position: 'relative', top: '0px' }} /> Tip Jar
+</h2>
           <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '20px', lineHeight: '1.6' }}>
             What began as a hobby project turned into hundreds of hours of late-night coding and paying for various website hosting tools. Consider a one-time tip to help cover your league, support the platform, and keep the trek going!
         </p>

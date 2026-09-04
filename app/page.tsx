@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
-import { Rat, Anchor, Drill, Rocket } from 'lucide-react'
+import { Rat, Anchor, Drill, Rocket, Wallet, Hourglass } from 'lucide-react'
 
 export default function Home() {
   const { user, loading } = useAuth()
@@ -82,8 +82,8 @@ export default function Home() {
   margin: '0 auto 32px auto',
   lineHeight: '1.7'
 }}>
-  <span style={{ fontStyle: 'italic' }}>Trekkon</span> is derived from the biblical <span style={{ fontStyle: 'italic' }}>"τρέχω,"</span> to race or run, and <span style={{ fontStyle: 'italic' }}>"ἀγών,"</span> a gathering place for games, competitions, or battles.
-We inspire players to cheer on and team up with reality television stars and drivers in the hopes they&apos;ll trek out and conquer their own battles!
+  <span style={{ fontStyle: 'italic' }}>Trekkon</span> is derived from the Ancient Greek <span style={{ fontStyle: 'italic' }}>"τρέχω,"</span> to race or run, and <span style={{ fontStyle: 'italic' }}>"ἀγών,"</span> a gathering place for games, competitions, or battles.
+We inspire players to cheer on and team up with their favorite on-screen personas in the hopes they&apos;ll trek out and conquer battles of their own.
 </p>
         <a href="#leagues" className="btn" style={{
           backgroundColor: '#f0b429',
@@ -143,7 +143,7 @@ We inspire players to cheer on and team up with reality television stars and dri
   }}
 >
            <div style={{ marginBottom: '4px', marginTop: '8px', display: 'flex', justifyContent: 'center' }}>
-  <Rat size={35} strokeWidth={2} color="#a0a0b0" />
+  <Rat size={40} strokeWidth={2} color="#a0a0b0" />
 </div>
 <h3 style={{ fontSize: '1.1rem', color: '#a0a0b0', marginBottom: '8px' }}>Stowaway</h3>
             <div style={{ fontSize: '2rem', color: '#a0a0b0', fontWeight: 'bold', marginBottom: '16px' }}>
@@ -173,7 +173,7 @@ We inspire players to cheer on and team up with reality television stars and dri
             textAlign: 'center'
           }}>
             <div style={{ marginBottom: '4px', marginTop: '8px', display: 'flex', justifyContent: 'center' }}>
-  <Anchor size={35} strokeWidth={2} color="#ffffff" />
+  <Anchor size={40} strokeWidth={2} color="#ffffff" />
 </div>
 <h3 style={{ fontSize: '1.1rem', color: '#ffffff', marginBottom: '8px' }}>Castaway</h3>
             <div style={{ fontSize: '2rem', color: '#ffffff', fontWeight: 'bold', marginBottom: '16px' }}>
@@ -202,7 +202,7 @@ We inspire players to cheer on and team up with reality television stars and dri
             textAlign: 'center'
           }}>
            <div style={{ marginBottom: '4px', marginTop: '8px', display: 'flex', justifyContent: 'center' }}>
-  <Drill size={35} strokeWidth={2} color="rgb(245, 255, 156)" />
+  <Drill size={40} strokeWidth={2} color="rgb(245, 255, 156)" />
 </div>
 <h3 style={{ fontSize: '1.1rem', color: 'rgb(245, 255, 156)', marginBottom: '8px' }}>Crew Chief</h3>
             <div style={{ fontSize: '2rem', color: 'rgb(245, 255, 156)', fontWeight: 'bold', marginBottom: '16px' }}>
@@ -249,7 +249,7 @@ We inspire players to cheer on and team up with reality television stars and dri
               BEST VALUE
             </div>
 <div style={{ marginBottom: '4px', marginTop: '12px', display: 'flex', justifyContent: 'center' }}>
-  <Rocket size={35} strokeWidth={2} color="#f0b429" />
+  <Rocket size={40} strokeWidth={2} color="#f0b429" />
 </div>
 <h3 style={{ fontSize: '1.1rem', color: '#f0b429', marginBottom: '8px' }}>
   Team Principal
@@ -356,16 +356,19 @@ We inspire players to cheer on and team up with reality television stars and dri
   <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
     Set sail for this island adventure, going 25+ years strong, by drafting your tribe, winning challenges, and surviving the vote.
   </p>
-  <div style={{
-    backgroundColor: '#12121a',
-    borderRadius: '6px',
-    padding: '10px 14px',
-    marginBottom: '16px',
-    fontSize: '0.8rem',
-    color: '#a0a0b0'
-  }}>
-    💰 From <span style={{ color: '#f0b429', fontWeight: 'bold' }}>$0.00</span> / Season
-  </div>
+ <div style={{
+  backgroundColor: '#12121a',
+  borderRadius: '6px',
+  padding: '10px 14px',
+  marginBottom: '16px',
+  fontSize: '0.8rem',
+  color: '#a0a0b0',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '10px'
+}}>
+  <Wallet size={18} strokeWidth={2} /> From <span style={{ color: '#f0b429', fontWeight: 'bold' }}>$0.00</span> / Season
+</div>
  <button
   onClick={(e) => {
     e.stopPropagation()
@@ -401,19 +404,22 @@ We inspire players to cheer on and team up with reality television stars and dri
               🚗 Drive Fast, Turn Left
             </h3>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
-              Coming in 2027, climb through the cargo net for 36 weeks of American Muscle, seeing how many points you can bring to the checkered flag.
+              Coming in 2027, climb through the cargo net for 36 weeks of American Muscle, seeing how many points you can bring to the checkered.
             </p>
-            <div style={{
-              backgroundColor: '#12121a',
-              borderRadius: '6px',
-              padding: '10px 14px',
-              marginBottom: '16px',
-              fontSize: '0.8rem',
-              fontWeight: 'bold',
-              color: '#a0a0b0'
-            }}>
-              ⏳ <span style={{ color: '#a0a0b0', fontWeight: 'bold' }}>Coming Soon!</span>
-            </div>
+          <div style={{
+  backgroundColor: '#12121a',
+  borderRadius: '6px',
+  padding: '10px 14px',
+  marginBottom: '16px',
+  fontSize: '0.8rem',
+  fontWeight: 'bold',
+  color: '#a0a0b0',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '7px'
+}}>
+  <Hourglass size={16} strokeWidth={2} /> <span style={{ color: '#a0a0b0', fontWeight: 'bold' }}>Coming Soon!</span>
+</div>
             <button
   onClick={() => setShowComingSoon(true)}
   style={{
@@ -449,15 +455,19 @@ We inspire players to cheer on and team up with reality television stars and dri
               Coming in 2027, travel the globe with world-class drivers up and down the grid over 24 weeks of high octane racing.
             </p>
             <div style={{
-              backgroundColor: '#12121a',
-              borderRadius: '6px',
-              padding: '10px 14px',
-              marginBottom: '16px',
-              fontSize: '0.8rem',
-              color: '#a0a0b0'
-            }}>
-              ⏳ <span style={{ color: '#a0a0b0', fontWeight: 'bold' }}>Coming Soon!</span>
-            </div>
+  backgroundColor: '#12121a',
+  borderRadius: '6px',
+  padding: '10px 14px',
+  marginBottom: '16px',
+  fontSize: '0.8rem',
+  fontWeight: 'bold',
+  color: '#a0a0b0',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '7px'
+}}>
+  <Hourglass size={16} strokeWidth={2} /> <span style={{ color: '#a0a0b0', fontWeight: 'bold' }}>Coming Soon!</span>
+</div>
             <button
   onClick={() => setShowComingSoon(true)}
   style={{
