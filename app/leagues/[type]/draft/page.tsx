@@ -21,11 +21,11 @@ const draftContent: Record<string, {
       'Here\u2019s everything you need before the draft window \u2014 timing, format, and how trades work once your roster is set.',
     ],
    draftWindow: [
-  { label: 'Signup Deadline', detail: 'SUN, SEPT. 13, 11:59 PM CT' },
-  { label: 'Draft Rankings Due (Public)', detail: 'TUE, SEPT. 15, 5 PM CT' },
-  { label: 'Draft Order Set', detail: 'TUE, SEPT. 15, 7 PM CT\n\u2013 WED, SEPT. 16, 5 PM CT' },
-  { label: 'Draft Window', detail: 'WED, SEPT. 16, 7 PM CT\n\u2013 SUN, SEPT. 20, 7 PM CT' },
-  { label: 'Episode 1 Airs', detail: 'WED, SEPT. 23, 7 PM CT' },
+  { label: 'Signup Deadline', detail: 'Sunday, September 13, 11:59 PM' },
+  { label: 'Draft Rankings Due (Public)', detail: 'Tuesday, September 15, 5 PM' },
+  { label: 'Draft Order Set', detail: 'Tuesday, September 15, 7 PM\n\u2013 Wednesday, September 16, 5 PM' },
+  { label: 'Draft Window', detail: 'Wednesday, September 16, 7 PM\n\u2013 Sunday, September 20, 7 PM' },
+  { label: 'Episode 1 Airs', detail: 'Wednesday, September 23, 7 PM' },
 ],
     draftFormatPublic: [
         '➤ Given the high level of participation we expect in public leagues, we will implement an offline draft where each player ranks the order in which they would draft castaways if available:',
@@ -81,7 +81,7 @@ export default function DraftPage() {
         gap: '16px'
       }}>
         <p>Draft & trade info for this league isn&apos;t posted yet.</p>
-        <a href={`/leagues/${type}`} style={{ color: '#f0b429' }}>← Back to 🌴 Politics on the Beach</a>
+        <a href={`/leagues/${type}`} style={{ color: '#f0b429' }}>← Back to Politics on the Beach</a>
       </main>
     )
   }
@@ -106,7 +106,7 @@ export default function DraftPage() {
           ← Back to 🌴 {content.leagueName}
         </a>
 
-        <h1 style={{ fontSize: 'clamp(1.9rem, 8vw, 2.25rem)', marginBottom: '10px' }}>
+        <h1 style={{ fontSize: 'clamp(1.9rem, 8vw, 2.25rem)', marginBottom: '4px' }}>
           📋 <span style={{ color: '#f0b429' }}>{content.leagueName}</span>{' '}
           <span style={{ color: '#ffffff' }}>Draft & Trading</span>
         </h1>
@@ -123,6 +123,7 @@ export default function DraftPage() {
           <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '12px' }}>
             📅 Key League Dates
           </h2>
+
           <div style={{
             backgroundColor: '#1a1a2e',
             border: '1px solid #2a2a3e',
@@ -145,6 +146,10 @@ export default function DraftPage() {
 ))}
           </div>
         </div>
+
+        <p style={{ color: '#4a4a61', textAlign: 'center', fontSize: '.95rem', lineHeight: '1.2', marginTop: '-20px', marginBottom: '32px' }}>
+<i>Private deadlines at league host discretion. Public deadlines follow Central Time (CT). </i>
+          </p>
 
         <div style={{ marginBottom: '32px' }}>
           <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '12px' }}>

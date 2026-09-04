@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
@@ -128,6 +128,8 @@ export default function RankingsPage() {
   const handleDragStart = (index: number) => {
   setDraggedIndex(index)
 }
+const [touchDraggedIndex, setTouchDraggedIndex] = useState<number | null>(null)
+const touchStartY = useRef<number>(0)
 
 const handleDragOver = (e: React.DragEvent, index: number) => {
   e.preventDefault()
@@ -141,6 +143,32 @@ const handleDragOver = (e: React.DragEvent, index: number) => {
 
 const handleDragEnd = () => {
   setDraggedIndex(null)
+}
+
+const handleTouchStart = (index: number, e: React.TouchEvent) => {
+  setTouchDraggedIndex(index)
+  touchStartY.current = e.touches[0].clientY
+}
+
+const handleTouchMove = (e: React.TouchEvent) => {
+  if (touchDraggedIndex === null) return
+  e.preventDefault() // stops the page itself from scrolling while dragging
+  const touchY = e.touches[0].clientY
+  const rowElements = document.querySelectorAll('[data-rank-row]')
+  rowElements.forEach((el, index) => {
+    const rect = el.getBoundingClientRect()
+    if (touchY >= rect.top && touchY <= rect.bottom && index !== touchDraggedIndex) {
+      const updated = [...castaways]
+      const [moved] = updated.splice(touchDraggedIndex, 1)
+      updated.splice(index, 0, moved)
+      setCastaways(updated)
+      setTouchDraggedIndex(index)
+    }
+  })
+}
+
+const handleTouchEnd = () => {
+  setTouchDraggedIndex(null)
 }
 
   const handleSubmit = async () => {
@@ -257,12 +285,16 @@ const handleDragEnd = () => {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '28px' }}>
             {castaways.map((castaway, index) => (
-  <div
-    key={castaway.id}
-    draggable
-    onDragStart={() => handleDragStart(index)}
-    onDragOver={(e) => handleDragOver(e, index)}
-    onDragEnd={handleDragEnd}
+ <div
+  key={castaway.id}
+  data-rank-row
+  draggable
+  onDragStart={() => handleDragStart(index)}
+  onDragOver={(e) => handleDragOver(e, index)}
+  onDragEnd={handleDragEnd}
+  onTouchStart={(e) => handleTouchStart(index, e)}
+  onTouchMove={handleTouchMove}
+  onTouchEnd={handleTouchEnd}
     style={{
       backgroundColor: draggedIndex === index ? '#2a2a3e' : '#1a1a2e',
       border: '1px solid #2a2a3e',
@@ -272,7 +304,8 @@ const handleDragEnd = () => {
       alignItems: 'center',
       justifyContent: 'space-between',
       cursor: 'grab',
-      opacity: draggedIndex === index ? 0.5 : 1
+      opacity: draggedIndex === index ? 0.5 : 1,
+      touchAction: 'none'
     }}
   >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>

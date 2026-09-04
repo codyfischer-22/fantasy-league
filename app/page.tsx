@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
@@ -7,6 +8,7 @@ import { useRouter } from 'next/navigation'
 export default function Home() {
   const { user, loading } = useAuth()
   const router = useRouter()
+  const [showComingSoon, setShowComingSoon] = useState(false)
 
   return (
 <main style={{
@@ -226,7 +228,7 @@ We inspire players to cheer on and team up with reality television stars and dri
           }}>
             <div style={{
               position: 'absolute',
-              top: '-12px',
+              top: '-15px',
               left: '50%',
               transform: 'translateX(-50%)',
               backgroundColor: '#f0b429',
@@ -234,12 +236,13 @@ We inspire players to cheer on and team up with reality television stars and dri
               padding: '4px 14px',
               borderRadius: '20px',
               fontSize: '0.75rem',
-              fontWeight: 'bold'
+              fontWeight: 'bold',
+              whiteSpace: 'nowrap'
             }}>
               BEST VALUE
             </div>
-            <div style={{ fontSize: '2rem', marginBottom: '8px' }}>🚀</div>
-            <h3 style={{ fontSize: '1.1rem', color: '#f0b429', marginBottom: '8px' }}>
+<div style={{ fontSize: '2rem', marginBottom: '8px', marginTop: '24px' }}>🚀</div>            
+<h3 style={{ fontSize: '1.1rem', color: '#f0b429', marginBottom: '8px' }}>
               Team Principal
             </h3>
             <div style={{ fontSize: '2rem', color: '#f0b429', fontWeight: 'bold', marginBottom: '16px' }}>
@@ -291,7 +294,7 @@ We inspire players to cheer on and team up with reality television stars and dri
             backgroundColor: '#1a1a2e',
             border: '2px dashed #ca29ca',
             borderRadius: '12px',
-            padding: '28px',
+            padding: '24px',
             textAlign: 'center'
           }}>
          <h3 style={{ color: '#ca29ca', fontSize: 'clamp(1.0rem, 8vw, 1.5rem)', marginBottom: '8px' }}>
@@ -299,7 +302,7 @@ We inspire players to cheer on and team up with reality television stars and dri
   {' '}
   <span className="all-access-line2" style={{ color: '#ffffff', fontWeight: 'bold' }}>All-Access Pass</span>
 </h3>
-<p style={{ color: '#a0a0b0', fontSize: 'clamp(.7rem, 5vw, 1.2rem)', lineHeight: '1.7' }}>
+<p style={{ color: '#a0a0b0', fontSize: 'clamp(.7rem, 4.75vw, 1.1rem)', lineHeight: '1.7' }}>
   Annual price for every league, every season, and every perk!
 </p>
         </div>
@@ -402,21 +405,24 @@ We inspire players to cheer on and team up with reality television stars and dri
             }}>
               ⏳ <span style={{ color: '#a0a0b0', fontWeight: 'bold' }}>Coming Soon!</span>
             </div>
-            <button style={{
-              display: 'block',
-              width: '100%',
-              textAlign: 'center',
-              backgroundColor: '#2a2a3e',
-              color: '#a0a0b0',
-              padding: '10px',
-              borderRadius: '6px',
-              border: '1px solid #3a3a5e',
-              fontSize: '0.9rem',
-              fontWeight: 'bold',
-              cursor: 'not-allowed'
-            }}>
-              Start Your Engines →
-            </button>
+            <button
+  onClick={() => setShowComingSoon(true)}
+  style={{
+    display: 'block',
+    width: '100%',
+    textAlign: 'center',
+    backgroundColor: '#2a2a3e',
+    color: '#a0a0b0',
+    padding: '10px',
+    borderRadius: '6px',
+    border: '1px solid #3a3a5e',
+    fontSize: '0.9rem',
+    fontWeight: 'bold',
+    cursor: 'pointer'
+  }}
+>
+  Start Your Engines →
+</button>
           </div>
 
           {/* European Rocket Ships */}
@@ -443,21 +449,24 @@ We inspire players to cheer on and team up with reality television stars and dri
             }}>
               ⏳ <span style={{ color: '#a0a0b0', fontWeight: 'bold' }}>Coming Soon!</span>
             </div>
-            <button style={{
-              display: 'block',
-              width: '100%',
-              textAlign: 'center',
-              backgroundColor: '#2a2a3e',
-              color: '#a0a0b0',
-              padding: '10px',
-              borderRadius: '6px',
-              border: '1px solid #3a3a5e',
-              fontSize: '0.9rem',
-              fontWeight: 'bold',
-              cursor: 'not-allowed'
-            }}>
-Red Lights Out →
-            </button>
+            <button
+  onClick={() => setShowComingSoon(true)}
+  style={{
+    display: 'block',
+    width: '100%',
+    textAlign: 'center',
+    backgroundColor: '#2a2a3e',
+    color: '#a0a0b0',
+    padding: '10px',
+    borderRadius: '6px',
+    border: '1px solid #3a3a5e',
+    fontSize: '0.9rem',
+    fontWeight: 'bold',
+    cursor: 'pointer'
+  }}
+>
+  Red Lights Out →
+</button>
           </div>
         </div>
       </section>
@@ -500,6 +509,43 @@ Red Lights Out →
           Reach Out to Our Team →
         </a>
       </section>
+
+{showComingSoon && (
+  <div style={{
+    position: 'fixed',
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 100
+  }}>
+    <div style={{
+      backgroundColor: '#1a1a2e',
+      border: '1px solid #f0b429',
+      borderRadius: '12px',
+      padding: '20px',
+      maxWidth: '380px',
+      textAlign: 'center'
+    }}>
+      <p style={{ color: '#a0a0b0', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '24px' }}>
+        We&apos;re sorry! The track is still being paved. Try back soon for our new racing leagues!
+      </p>
+      <button onClick={() => setShowComingSoon(false)} style={{
+        backgroundColor: '#f0b429',
+        color: '#0a0a0f',
+        padding: '10px 28px',
+        borderRadius: '6px',
+        border: 'none',
+        fontWeight: 'bold',
+        fontSize: '0.9rem',
+        cursor: 'pointer'
+      }}>
+        Got it!
+      </button>
+    </div>
+  </div>
+)}
 
     </main>
   )

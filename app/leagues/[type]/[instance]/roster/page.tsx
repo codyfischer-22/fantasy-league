@@ -23,6 +23,12 @@ const tierLabels: Record<string, string> = {
   crewchief: 'Crew Chief',
   teamprincipal: 'Team Principal',
 }
+const tierLabelsMobile: Record<string, string> = {
+  stowaway: 'Stowaway',
+  castaway: 'Castaway',
+  crewchief: 'Crew Chief',
+  teamprincipal: 'Principal',
+}
 
 export default function RosterPage() {
   const params = useParams()
@@ -33,6 +39,18 @@ export default function RosterPage() {
   const [leagueName, setLeagueName] = useState('')
   const [roster, setRoster] = useState<RosterMember[]>([])
   const [pageLoading, setPageLoading] = useState(true)
+
+
+
+const [isMobileWidth, setIsMobileWidth] = useState(false)
+useEffect(() => {
+  function checkWidth() {
+    setIsMobileWidth(window.innerWidth <= 600)
+  }
+  checkWidth()
+  window.addEventListener('resize', checkWidth)
+  return () => window.removeEventListener('resize', checkWidth)
+}, [])
 
   useEffect(() => {
     async function loadRoster() {
@@ -215,8 +233,7 @@ export default function RosterPage() {
       fontSize: '0.8rem',
       fontWeight: 'bold'
     }}>
-      {tierLabels[member.tier] ?? member.tier}
-    </div>
+{(isMobileWidth ? tierLabelsMobile : tierLabels)[member.tier] ?? member.tier}    </div>
   </div>
                 {member.castaways.length > 0 ? (
                   <p style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>

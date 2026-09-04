@@ -538,7 +538,7 @@ useEffect(() => {
           </>
         )}
 
-        <h2 style={{ color: '#f0b429', fontSize: '1.5rem', marginBottom: '4px', textAlign: 'left' }}>
+        <h2 style={{ color: '#f0b429', fontSize: '1.5rem', marginBottom: '2px', textAlign: 'left' }}>
           Player Standings
         </h2>
         <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '20px', textAlign: 'left' }}>
@@ -573,65 +573,69 @@ useEffect(() => {
         }}>
           Rotate 📱 for a better view!
         </p>
-        {playerChartData.length > 0 && (
-          <div style={{
-            backgroundColor: '#1a1a2e',
-            border: '1px solid #2a2a3e',
-            borderRadius: '10px',
-            padding: '20px',
-            marginBottom: '48px'
-          }}>
-            <ResponsiveContainer width="100%" height={400}>
-              <LineChart data={playerChartData} margin={{ bottom: 12 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#2a2a3e" />
-                <XAxis dataKey="episode" stroke="#a0a0b0" fontSize={12} dy={8} />
-                <YAxis stroke="#a0a0b0" fontSize={12} reversed domain={[1, playerNames.length]} allowDecimals={false} />
-                <Tooltip content={<RankTooltip />} />
-                {playerNames.map((name, i) => {
-                  const filteredPlayerNames = playerSearch
-                    ? playerNames.filter((n) => n.toLowerCase().includes(playerSearch.toLowerCase()))
-                    : playerNames
-                  const isMatch = filteredPlayerNames.includes(name)
-                  const isHighlighted = playerHighlighted === name
-                  const dimmed = playerSearch && !isMatch
-                  return (
-                    <Line
-                      key={name}
-                      type="monotone"
-                      dataKey={name}
-                      stroke={colorForIndex(i)}
-                      strokeWidth={isHighlighted || (playerSearch && isMatch) ? 3 : 1.5}
-                      strokeOpacity={dimmed ? 0.15 : 1}
-                      dot={false}
-                      onClick={() => setPlayerHighlighted(name)}
-                      style={{ cursor: 'pointer' }}
-                    />
-                  )
-                })}
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        )}
-        {playerSearch && playerNames.filter((n) => n.toLowerCase().includes(playerSearch.toLowerCase())).length > 0 && (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '40px' }}>
-            {playerNames
-              .filter((n) => n.toLowerCase().includes(playerSearch.toLowerCase()))
-              .map((name) => (
-                <span key={name} style={{
-                  backgroundColor: '#1a1a2e',
-                  border: '1px solid #f0b429',
-                  color: '#f0b429',
-                  padding: '4px 12px',
-                  borderRadius: '20px',
-                  fontSize: '0.85rem'
-                }}>
-                  {name}
-                </span>
-              ))}
-          </div>
-        )}
+        {playerChartData.length === 0 ? (
+  <p style={{ color: '#555570' }}>No scoring data on record yet. Check back once episodes have been scored!</p>
+) : (
+  <>
+    <div style={{
+      backgroundColor: '#1a1a2e',
+      border: '1px solid #2a2a3e',
+      borderRadius: '10px',
+      padding: '20px',
+      marginBottom: '48px'
+    }}>
+      <ResponsiveContainer width="100%" height={400}>
+        <LineChart data={playerChartData} margin={{ bottom: 12 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#2a2a3e" />
+          <XAxis dataKey="episode" stroke="#a0a0b0" fontSize={12} dy={8} />
+          <YAxis stroke="#a0a0b0" fontSize={12} reversed domain={[1, playerNames.length]} allowDecimals={false} />
+          <Tooltip content={<RankTooltip />} />
+          {playerNames.map((name, i) => {
+            const filteredPlayerNames = playerSearch
+              ? playerNames.filter((n) => n.toLowerCase().includes(playerSearch.toLowerCase()))
+              : playerNames
+            const isMatch = filteredPlayerNames.includes(name)
+            const isHighlighted = playerHighlighted === name
+            const dimmed = playerSearch && !isMatch
+            return (
+              <Line
+                key={name}
+                type="monotone"
+                dataKey={name}
+                stroke={colorForIndex(i)}
+                strokeWidth={isHighlighted || (playerSearch && isMatch) ? 3 : 1.5}
+                strokeOpacity={dimmed ? 0.15 : 1}
+                dot={false}
+                onClick={() => setPlayerHighlighted(name)}
+                style={{ cursor: 'pointer' }}
+              />
+            )
+          })}
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+    {playerSearch && playerNames.filter((n) => n.toLowerCase().includes(playerSearch.toLowerCase())).length > 0 && (
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '40px' }}>
+        {playerNames
+          .filter((n) => n.toLowerCase().includes(playerSearch.toLowerCase()))
+          .map((name) => (
+            <span key={name} style={{
+              backgroundColor: '#1a1a2e',
+              border: '1px solid #f0b429',
+              color: '#f0b429',
+              padding: '4px 12px',
+              borderRadius: '20px',
+              fontSize: '0.85rem'
+            }}>
+              {name}
+            </span>
+          ))}
+      </div>
+    )}
+  </>
+)}
 
-        <h2 style={{ color: '#f0b429', fontSize: '1.5rem', marginBottom: '4px', textAlign: 'left' }}>
+        <h2 style={{ color: '#f0b429', fontSize: '1.5rem', marginTop: '32px', marginBottom: '2px', textAlign: 'left' }}>
           Castaway Standings
         </h2>
         <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '20px', textAlign: 'left' }}>

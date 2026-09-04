@@ -143,7 +143,7 @@ export default function RulesPage() {
         gap: '16px'
       }}>
         <p>Rules for this league aren&apos;t posted yet.</p>
-        <a href={`/leagues/${type}`} style={{ color: '#f0b429' }}>← Back to 🌴 Politics on the Beach</a>
+        <a href={`/leagues/${type}`} style={{ color: '#f0b429' }}>← Back to Politics on the Beach</a>
       </main>
     )
   }

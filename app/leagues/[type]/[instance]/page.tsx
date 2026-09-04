@@ -527,7 +527,8 @@ const toolGroups = [
               border: '1px solid #f0b429',
               borderRadius: '10px',
               padding: '16px 20px',
-              marginBottom: '24px'
+              marginBottom: '24px',
+              marginTop: '16px'
             }}>
               <p style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '8px' }}>
                 Share to invite players into <strong>this</strong> private league (anyone with link can join):
