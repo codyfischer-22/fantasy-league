@@ -12,7 +12,7 @@ const resources = [
   },
   {
     title: 'Survivor 51 Playlist (RHAP)',
-    url: 'https://www.youtube.com/watch?v=bmWaE-kNNMg&list=PLG146qFvxINI',
+    url: 'https://youtube.com/playlist?list=PLG146qFvxINI&si=tff2kAJaFP2t814m',
   },
 ]
 
