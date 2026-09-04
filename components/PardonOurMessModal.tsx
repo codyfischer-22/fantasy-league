@@ -44,10 +44,10 @@ export default function PardonOurMessModal() {
         <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '8px', lineHeight: '1.6' }}>
           We&apos;re mobile-friendly now, and we&apos;ll continue to improve!</p>
         <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '8px', lineHeight: '1.6' }}>
-Now it's time to fill leagues before the Survivor 51 Premiere! <strong>Can you share this link with friends?</strong>
+Now it's time to fill leagues before the Survivor 51 Premiere! <strong>Can you share this link with your tribe?!</strong>
 </p>
 <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '12px', lineHeight: '1.6' }}>
-  Get ready for a fun trek with friends!
+  Get ready for a fun trek!
 </p>
      <button onClick={handleDismiss} style={{
   backgroundColor: '#f0b429',
