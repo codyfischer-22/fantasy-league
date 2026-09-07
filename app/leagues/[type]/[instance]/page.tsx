@@ -578,7 +578,15 @@ export default function LeagueInstancePage() {
                 <div style={{ color: '#a0a0b0', fontSize: '1rem', marginBottom: '16px' }}>
                   {group.label}
                 </div>
-                <div className="tool-grid" style={{ maxWidth: '800px' }}>
+                <div
+  className="tool-grid"
+  style={{
+    maxWidth: '800px',
+    display: 'grid',
+    gridTemplateColumns: `repeat(${group.items.length >= 7 ? 4 : 3}, 1fr)`,
+    gap: '20px'
+  }}
+>
                  {group.items.map((page) => {
   const content = (
     <>

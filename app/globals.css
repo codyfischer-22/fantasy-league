@@ -219,18 +219,6 @@ html, body {
   }
 }
 
-.tool-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-}
-
-.tool-grid > * {
-  flex: 1 1 105px;
-  max-width: 150px;
-}
-
 @media (max-width: 600px) {
   footer {
     padding: 20px 16px 110px 16px !important;
