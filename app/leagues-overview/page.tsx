@@ -20,11 +20,12 @@ export default function LeaguesOverviewPage() {
   const [pageLoading, setPageLoading] = useState(true)
   const [showComingSoon, setShowComingSoon] = useState(false)
   const [userTier, setUserTier] = useState<string | null>(null)
-  const leagueTypes = [
+const leagueTypes = [
   { name: 'Politics on the Beach', slug: 'politics-on-the-beach', emoji: '🏝️', color: '#f0b429', comingSoon: false },
   { name: "Drive Fast, Turn Left", slug: 'drive-fast-turn-left', emoji: '🚗', color: 'rgb(245, 255, 156)', comingSoon: true },
   { name: 'Road Rocket Racing', slug: 'road-rocket-racing', emoji: '🏎️', color: '#f0b429', comingSoon: true },
-  ]
+  { name: 'Tumult in the Turret', slug: 'tumult-in-the-turret', emoji: '🗡️', color: 'rgb(245, 255, 156)', comingSoon: false },
+]
 
   useEffect(() => {
   async function loadUserTier() {

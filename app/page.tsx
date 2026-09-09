@@ -487,7 +487,62 @@ We inspire players to cheer on and team up with their favorite on-screen persona
   Red Lights Out →
 </button>
           </div>
-        </div>
+
+            {/* The Traitors */}
+ <div
+  className="league-card"
+  onClick={() => router.push('/leagues/tumult-in-the-turret')}
+  style={{
+    backgroundColor: '#1a1a2e',
+    border: '3px solid rgb(245, 255, 156)',
+    borderTop: '3px solid rgb(245, 255, 156)',
+    borderRadius: '12px',
+    padding: '28px'
+  }}
+  >
+            <h3 style={{ color: 'rgb(245, 255, 156)', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
+    🗡️ Tumult in the Turret
+  </h3>
+            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
+    Scale the turret steps of Alan's Castle and decide who you'll back in this game of murder, banishment, and deception.
+  </p>
+  <div style={{
+    backgroundColor: '#12121a',
+    borderRadius: '6px',
+    padding: '10px 14px',
+    marginBottom: '16px',
+    fontSize: '0.8rem',
+    fontWeight: 'bold',
+    color: '#a0a0b0',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '7px'
+  }}>
+  <Wallet size={18} strokeWidth={2} /> From <span style={{ color: '#f0b429', fontWeight: 'bold' }}>$0.00</span> / Season
+  </div>
+  <button
+  onClick={(e) => {
+    e.stopPropagation()
+    router.push('/leagues/tumult-in-the-turret')
+  }}
+    style={{
+      display: 'block',
+      width: '100%',
+      textAlign: 'center',
+      backgroundColor: '#f0b429',
+      color: '#0a0a0f',
+      padding: '10px',
+      borderRadius: '6px',
+      border: 'none',
+      fontWeight: 'bold',
+      fontSize: '0.9rem',
+      cursor: 'pointer'
+    }}
+  >
+    Cross the Loch →
+  </button>
+</div>
+       </div>
       </section>
 
       {/* ─── SUGGEST A LEAGUE ─── */}

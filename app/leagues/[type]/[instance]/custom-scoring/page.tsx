@@ -20,6 +20,12 @@ type CustomEntry = {
   created_at: string
 }
 
+const castawayTermByLeague: Record<string, string> = {
+  'politics-on-the-beach': 'Castaway',
+  'potb-demo': 'Castaway',
+  'tumult-in-the-turret': 'Castle-Goer',
+}
+
 export default function CustomScoringPage() {
   const params = useParams()
   const type = params.type as string
@@ -44,6 +50,7 @@ export default function CustomScoringPage() {
   const [deletingEntryId, setDeletingEntryId] = useState<string | null>(null)
   const savedCategories = [...new Set(entries.map((e) => e.category_label))].slice(0, 3)
   const [showCategorySuggestions, setShowCategorySuggestions] = useState(false)
+  const castawayTerm = castawayTermByLeague[type] ?? 'Castaway'
 
   useEffect(() => {
     async function loadData() {
@@ -216,7 +223,7 @@ setNotes('')
           <span style={{ color: '#ffffff' }}>Custom Scoring</span>
         </h1>
         <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '28px', lineHeight: '1.6' }}>
-          Here's your chance to create up to 3 custom scoring categories for your league! Episodes with multiple tribal councils may be broken into multiple <strong>voting cycles;</strong> you are responsible for ensuring submissions match host voting cycles. Players can see these entries in the Scoring Log, alongside standard categories.
+          Here's your chance to create up to 3 custom scoring categories for your league! Episodes with multiple elimination events (e.g. tribal council or round table) may be broken into multiple <strong>voting cycles;</strong> you are responsible for ensuring submissions match host voting cycles. Players can see these entries in the Scoring Log, alongside standard categories.
         </p>
 
 
@@ -229,9 +236,9 @@ setNotes('')
         }}>
           <h2 style={{ color: '#f0b429', fontSize: '1.2rem', marginBottom: '16px' }}>Add Scoring Event</h2>
 
-          <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '4px' }}>Castaway</label>
-          <select value={selectedCastawayId} onChange={(e) => setSelectedCastawayId(e.target.value)} style={selectStyle}>
-            <option value="">Select a Castaway...</option>
+         <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '4px' }}>{castawayTerm}</label>
+<select value={selectedCastawayId} onChange={(e) => setSelectedCastawayId(e.target.value)} style={selectStyle}>
+  <option value="">Select a {castawayTerm}...</option>
             {castaways.map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}

@@ -13,6 +13,12 @@ type Castaway = {
   status: string
 }
 
+const castawayTermByLeague: Record<string, string> = {
+  'politics-on-the-beach': 'Castaway',
+  'potb-demo': 'Castaway',
+  'tumult-in-the-turret': 'Castle-Goer',
+}
+
 export default function RankingsPage() {
   const params = useParams()
   const type = params.type as string
@@ -29,6 +35,7 @@ export default function RankingsPage() {
   const [message, setMessage] = useState('')
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
   const [showResources, setShowResources] = useState(false)
+  const castawayTerm = castawayTermByLeague[type] ?? 'Castaway'
 
   useEffect(() => {
     async function loadData() {
@@ -279,12 +286,12 @@ const handleTouchEnd = () => {
           </div>
         ) : (
           <>
-            <h1 style={{ color: '#f0b429', fontSize: 'clamp(1.72rem, 6vw, 2.25rem)', marginBottom: '8px' }}>
-              🐍 Rank Your Castaways
-            </h1>
-            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '16px', lineHeight: '1.6' }}>
-              Drag and drop your most-wanted castaway to the top, and work your way down from there. If you need to make a tweak before the offline snake draft begins, just re-edit and save your rankings. Happy drafting, friends!
-            </p>
+           <h1 style={{ color: '#f0b429', fontSize: 'clamp(1.72rem, 6vw, 2.25rem)', marginBottom: '8px' }}>
+  🐍 Rank Your {castawayTerm}s
+</h1>
+           <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '16px', lineHeight: '1.6' }}>
+  Drag and drop your most-wanted {castawayTerm.toLowerCase()} to the top, and work your way down from there. If you need to make a tweak before the offline snake draft begins, just re-edit and save your rankings. Happy drafting, friends!
+</p>
 <button
   onClick={() => setShowResources(true)}
   style={{
@@ -306,10 +313,9 @@ const handleTouchEnd = () => {
     marginRight: 'auto'
   }}
 >
-  <Search size={16} strokeWidth={2} /> Research Castaways
+  <Search size={16} strokeWidth={2} /> Research {castawayTerm}s
 </button>
-<ResourcesModal open={showResources} onClose={() => setShowResources(false)} />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '28px' }}>
+<ResourcesModal open={showResources} onClose={() => setShowResources(false)} type={type} />            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '28px' }}>
             {castaways.map((castaway, index) => (
  <div
   key={castaway.id}

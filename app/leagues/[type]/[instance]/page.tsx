@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase'
 import ConfirmModal from '@/components/ConfirmModal'
 import { Cog, Palette } from 'lucide-react'
 import ResourcesModal from '@/components/ResourcesModal'
+import { leagueTypeLabels } from '@/lib/leagueTypeLabels'
 
 type League = {
   id: number
@@ -175,12 +176,6 @@ export default function LeagueInstancePage() {
       }))
     )
     router.push(`/leagues/${type}/${instance}/draft-room`)
-  }
-
-  const leagueTypeLabels: Record<string, string> = {
-    'politics-on-the-beach': 'Politics on the Beach',
-    'americans-turning-left': "'Muricans Turn Left",
-    'european-rocket-ships': 'European Rockets',
   }
 
   const handleClimbAboard = () => {
@@ -397,10 +392,10 @@ export default function LeagueInstancePage() {
       { label: 'Draft Log', emoji: '📋', href: `/leagues/${type}/${instance}/draft-log` },
       { label: 'Trade Portal', emoji: '🔄', href: `/leagues/${type}/${instance}/trade-portal` },
       { label: 'Draft Room', emoji: '🧩', href: `/leagues/${type}/${instance}/draft-room` },
-      { label: 'Castaways', emoji: '🔬', href: null },
+      { label: 'Draft Research', emoji: '🔬', href: null },
     ].filter((item) =>
-      !((item.label === 'Draft Room' || item.label === 'Castaways') &&
-        (league.draft_status === 'completed' || type === 'potb-demo'))
+      !(item.label === 'Draft Room' && (!league.is_private || league.draft_status === 'completed' || type === 'potb-demo')) &&
+      !(item.label === 'Draft Research' && (league.draft_status === 'completed' || type === 'potb-demo'))
     ),
   },
 ]
@@ -420,7 +415,7 @@ export default function LeagueInstancePage() {
   display: 'inline-block',
   marginBottom: '24px'
 }}>
-  ← Back to Politics on the Beach
+← Back to {leagueTypeLabels[type] ?? 'League'}
 </a>
 
         <div style={{ textAlign: 'left', marginBottom: '12px' }}>
@@ -602,12 +597,12 @@ export default function LeagueInstancePage() {
     textAlign: 'center' as const,
     textDecoration: 'none',
     color: page.href ? '#ffffff' : '#555570',
-    cursor: page.label === 'Research Castaways' ? 'pointer' : 'default',
+    cursor: page.label === 'Draft Research' ? 'pointer' : 'default',
   }
   const isDraftRoomTile = page.label === 'Draft Room'
   const shouldPulse = isDraftRoomTile && league.draft_status === 'in_progress'
 
-  if (page.label === 'Castaways') {
+  if (page.label === 'Draft Research') {
     return (
       <div
         key={page.label}
@@ -859,7 +854,8 @@ export default function LeagueInstancePage() {
         onCancel={() => setShowLeaveConfirm(false)}
       />
 
-      <ResourcesModal open={showResources} onClose={() => setShowResources(false)} />
-    </main>
+<ResourcesModal open={showResources} onClose={() => setShowResources(false)} type={type} />    
+  
+</main>
   )
 }

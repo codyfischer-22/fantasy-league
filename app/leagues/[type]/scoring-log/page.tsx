@@ -4,23 +4,69 @@ import { useEffect, useState } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/AuthContext'
+import { leagueTypeLabels } from '@/lib/leagueTypeLabels'
 
-const categoryLabels: Record<string, string> = {
-  team_immunity_safety: 'Immunity Safety (Team)',
-  team_immunity_win: 'Immunity Win (Team)',
-  individual_immunity_win: 'Immunity Win (Individual)',
-  idol_found: 'Idol Found',
-  successful_idol_play: 'Successful Idol Play',
-  idol_in_pocket: 'Left with Idol in Pocket',
-  first_off_starter_tribe: 'First Off Starter Tribe',
-  first_boot: 'First Boot (Voted Off)',
-  votes_against: 'Votes Against',
-  survived_tribal_cycle: 'Survived Tribal Cycle',
-  make_merge: 'Made the Merge',
-  make_final_tribal: 'Made Final Tribal',
-  sole_survivor: 'Won Sole Survivor',
-  zero_vote_finalist: '0-Vote Finalist',
-  manual_adjustment: 'Manual Adjustment',
+const categoryLabelsByLeague: Record<string, Record<string, string>> = {
+  'politics-on-the-beach': {
+    team_immunity_safety: 'Immunity Safety (Team)',
+    team_immunity_win: 'Immunity Win (Team)',
+    individual_immunity_win: 'Immunity Win (Individual)',
+    idol_found: 'Idol Found',
+    successful_idol_play: 'Successful Idol Play',
+    idol_in_pocket: 'Left with Idol in Pocket',
+    first_off_starter_tribe: 'First Off Starter Tribe',
+    first_boot: 'First Boot (Voted Off)',
+    votes_against: 'Votes Against',
+    survived_tribal_cycle: 'Survived Tribal Cycle',
+    make_merge: 'Made the Merge',
+    make_final_tribal: 'Made Final Tribal',
+    sole_survivor: 'Won Sole Survivor',
+    zero_vote_finalist: '0-Vote Finalist',
+    manual_adjustment: 'Manual Adjustment',
+  },
+  'potb-demo': {
+    team_immunity_safety: 'Immunity Safety (Team)',
+    team_immunity_win: 'Immunity Win (Team)',
+    individual_immunity_win: 'Immunity Win (Individual)',
+    idol_found: 'Idol Found',
+    successful_idol_play: 'Successful Idol Play',
+    idol_in_pocket: 'Left with Idol in Pocket',
+    first_off_starter_tribe: 'First Off Starter Tribe',
+    first_boot: 'First Boot (Voted Off)',
+    votes_against: 'Votes Against',
+    survived_tribal_cycle: 'Survived Tribal Cycle',
+    make_merge: 'Made the Merge',
+    make_final_tribal: 'Made Final Tribal',
+    sole_survivor: 'Won Sole Survivor',
+    zero_vote_finalist: '0-Vote Finalist',
+    manual_adjustment: 'Manual Adjustment',
+  },
+  'tumult-in-the-turret': {
+    group_earns_5k: 'Group Earns $5K',
+    team_shield: 'Team Shield',
+    personal_shield: 'Personal Shield',
+    win_dagger: 'Win Dagger',
+    murdered_in_night: 'Murdered in the Night',
+    murdered_in_plain_site: "Murdered in Plain Sight",
+    escape_murder_with_shield: 'Escape Murder with Shield',
+    first_banished: 'First Castle-Goer Banished',
+    banished_round_table: 'Banished at Round Table',
+    survive_round_table_cycle: 'Survive Round Table Cycle',
+    successful_dagger_play: 'Successful Dagger Play',
+    make_fire_of_truth: 'Make Fire of Truth',
+    banished_fire_of_truth: 'Banished at Fire of Truth',
+    win_quartet: 'Win as a Quartet',
+    win_trio: 'Win as a Trio',
+    win_duo: 'Win as a Duo',
+    win_solo: 'Win the Game Solo',
+    manual_adjustment: 'Manual Adjustment',
+  },
+}
+
+const scoringLogIntro: Record<string, string> = {
+  'politics-on-the-beach': 'Check out the fully-transparent points breakdown for Politics on the Beach! Please note episodes with more than one tribal council (e.g. premiere or finale) may be broken down into multiple "voting cycles" below.',
+  'potb-demo': 'Check out the fully-transparent points breakdown for Politics on the Beach! Please note episodes with more than one tribal council (e.g. premiere or finale) may be broken down into multiple "voting cycles" below.',
+  'tumult-in-the-turret': 'Check out the fully-transparent points breakdown for Tumult in the Turret! Please note episodes with more than one round table may be broken down into multiple "voting cycles" below.',
 }
 
 type ScoreEntry = {
@@ -47,6 +93,7 @@ export default function ScoringLogPage() {
   const [pageLoading, setPageLoading] = useState(true)
   const { user, loading: authLoading } = useAuth()
   const [isFrozen, setIsFrozen] = useState(false)
+  const categoryLabels = categoryLabelsByLeague[type] ?? {}
 
   useEffect(() => {
     async function loadLog() {
@@ -246,16 +293,15 @@ if ((scores && scores.length > 0) || (customEntries && customEntries.length > 0)
           display: 'inline-block',
           marginBottom: '24px'
         }}>
-          {fromInstance ? `← Back to ${leagueName ?? 'League'}` : '← Back to 🌴 Politics on the Beach'}
-        </a>
+{fromInstance ? `← Back to ${leagueName ?? 'League'}` : `← Back to ${leagueTypeLabels[type] ?? 'League'}`}        </a>
 
         <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px' }}>
           🧮 <span style={{ color: '#f0b429' }}>Episode</span>{' '}
           <span style={{ color: '#ffffff' }}>Scoring Log</span>
         </h1>
         <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '20px' }}>
-          Check out the fully-transparent points breakdown for Politics on the Beach! Please note episodes with more than one tribal council (e.g. premiere or finale) may be broken down into multiple "voting cycles" below.
-        </p>
+  {scoringLogIntro[type] ?? `Check out the fully-transparent points breakdown for ${leagueTypeLabels[type] ?? 'this league'}!`}
+</p>
 
         {episodes.length === 0 ? (
           <p style={{ color: '#555570', fontSize: 'clamp(.7rem, 5vw, .85rem)' }}>No voting cycle scores have been submitted yet.</p>

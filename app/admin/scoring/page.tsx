@@ -19,22 +19,59 @@ type CategoryDef = {
   allowCount?: boolean
 }
 
-const categories: CategoryDef[] = [
-  { key: 'team_immunity_safety', label: 'Immunity Safety (Team)', points: 5 },
-  { key: 'team_immunity_win', label: 'Immunity Win (Team)', points: 8 },
-  { key: 'individual_immunity_win', label: 'Immunity Win (Individual)', points: 15 },
-  { key: 'idol_found', label: 'Idol Found', points: 10 },
-  { key: 'successful_idol_play', label: 'Successful Idol Play', points: 15 },
-  { key: 'idol_in_pocket', label: 'Left with Idol in Pocket', points: -20 },
-  { key: 'first_off_starter_tribe', label: 'First Off Starter Tribe', points: -10 },
-  { key: 'first_boot', label: 'First Boot (Voted Off)', points: -10 },
-  { key: 'votes_against', label: 'Votes Against', points: -2, allowCount: true },
-  { key: 'survived_tribal_cycle', label: 'Survived Tribal Cycle', points: 5 },
-  { key: 'make_merge', label: 'Made the Merge', points: 10 },
-  { key: 'make_final_tribal', label: 'Made Final Tribal', points: 20 },
-  { key: 'sole_survivor', label: 'Won Sole Survivor', points: 25 },
-  { key: 'zero_vote_finalist', label: '0-Vote Finalist', points: -10 },
-]
+const categoriesByLeague: Record<string, CategoryDef[]> = {
+  'politics-on-the-beach': [
+    { key: 'team_immunity_safety', label: 'Immunity Safety (Team)', points: 5 },
+    { key: 'team_immunity_win', label: 'Immunity Win (Team)', points: 8 },
+    { key: 'individual_immunity_win', label: 'Immunity Win (Individual)', points: 15 },
+    { key: 'idol_found', label: 'Idol Found', points: 10 },
+    { key: 'successful_idol_play', label: 'Successful Idol Play', points: 15 },
+    { key: 'idol_in_pocket', label: 'Left with Idol in Pocket', points: -20 },
+    { key: 'first_off_starter_tribe', label: 'First Off Starter Tribe', points: -10 },
+    { key: 'first_boot', label: 'First Boot (Voted Off)', points: -10 },
+    { key: 'votes_against', label: 'Votes Against', points: -2, allowCount: true },
+    { key: 'survived_tribal_cycle', label: 'Survived Tribal Cycle', points: 5 },
+    { key: 'make_merge', label: 'Made the Merge', points: 10 },
+    { key: 'make_final_tribal', label: 'Made Final Tribal', points: 20 },
+    { key: 'sole_survivor', label: 'Won Sole Survivor', points: 25 },
+    { key: 'zero_vote_finalist', label: '0-Vote Finalist', points: -10 },
+  ],
+  'potb-demo': [
+    { key: 'team_immunity_safety', label: 'Immunity Safety (Team)', points: 5 },
+    { key: 'team_immunity_win', label: 'Immunity Win (Team)', points: 8 },
+    { key: 'individual_immunity_win', label: 'Immunity Win (Individual)', points: 15 },
+    { key: 'idol_found', label: 'Idol Found', points: 10 },
+    { key: 'successful_idol_play', label: 'Successful Idol Play', points: 15 },
+    { key: 'idol_in_pocket', label: 'Left with Idol in Pocket', points: -20 },
+    { key: 'first_off_starter_tribe', label: 'First Off Starter Tribe', points: -10 },
+    { key: 'first_boot', label: 'First Boot (Voted Off)', points: -10 },
+    { key: 'votes_against', label: 'Votes Against', points: -2, allowCount: true },
+    { key: 'survived_tribal_cycle', label: 'Survived Tribal Cycle', points: 5 },
+    { key: 'make_merge', label: 'Made the Merge', points: 10 },
+    { key: 'make_final_tribal', label: 'Made Final Tribal', points: 20 },
+    { key: 'sole_survivor', label: 'Won Sole Survivor', points: 25 },
+    { key: 'zero_vote_finalist', label: '0-Vote Finalist', points: -10 },
+  ],
+  'tumult-in-the-turret': [
+    { key: 'group_earns_5k', label: 'Group Earns $5,000', points: 5, allowCount: true },
+    { key: 'team_shield', label: 'Team Shield', points: 5 },
+    { key: 'personal_shield', label: 'Personal Shield', points: 10 },
+    { key: 'win_dagger', label: 'Win Dagger', points: 10 },
+    { key: 'murdered_in_night', label: 'Murdered in the Night', points: -8 },
+    { key: 'murdered_in_plain_sight', label: 'Murdered in Plain Sight', points: -15 },
+    { key: 'escape_murder_with_shield', label: 'Escape Murder with Shield', points: 15 },
+    { key: 'first_banished', label: 'First Castle-Goer Banished', points: -5 },
+    { key: 'banished_round_table', label: 'Banished at Round Table', points: -10 },
+    { key: 'survive_round_table_cycle', label: 'Survive Round Table Cycle', points: 10 },
+    { key: 'successful_dagger_play', label: 'Successful Dagger Play', points: 15 },
+    { key: 'make_fire_of_truth', label: 'Make Fire of Truth', points: 15 },
+    { key: 'banished_fire_of_truth', label: 'Banished at Fire of Truth', points: -10 },
+    { key: 'win_quartet', label: 'Win as a Quartet', points: 10 },
+    { key: 'win_trio', label: 'Win as a Trio', points: 15 },
+    { key: 'win_duo', label: 'Win as a Duo', points: 30 },
+    { key: 'win_solo', label: 'Win the Game Solo', points: 45 },
+  ],
+}
 
 type RowState = Record<string, number>
 
@@ -45,6 +82,7 @@ export default function ScoringAdminPage() {
   const [isAdmin, setIsAdmin] = useState(false)
   const [checking, setChecking] = useState(true)
   const [selectedLeagueType, setSelectedLeagueType] = useState('politics-on-the-beach')
+  const categories = categoriesByLeague[selectedLeagueType] ?? []
   const [castaways, setCastaways] = useState<Castaway[]>([])
   const [episodeNumber, setEpisodeNumber] = useState('')
   const [rows, setRows] = useState<Record<number, RowState>>({})
@@ -202,8 +240,7 @@ const toggleEliminated = async (castaway: Castaway) => {
         if (count > 0) {
           entries.push({
             league_type: selectedLeagueType,
-            season: selectedLeagueType === 'politics-on-the-beach' ? 'Survivor 51' : 'Demo Season',
-            episode_number: parseInt(episodeNumber),
+season: selectedLeagueType === 'politics-on-the-beach' ? 'Survivor 51' : selectedLeagueType === 'tumult-in-the-turret' ? 'The Traitors: New Blood' : 'Demo Season',            episode_number: parseInt(episodeNumber),
             castaway_id: castaway.id,
             category: cat.key,
             points: cat.points,
@@ -217,8 +254,7 @@ const toggleEliminated = async (castaway: Castaway) => {
       if (manual && manual.points && parseInt(manual.points) !== 0) {
         entries.push({
           league_type: selectedLeagueType,
-          season: selectedLeagueType === 'politics-on-the-beach' ? 'Survivor 51' : 'Demo Season',
-          episode_number: parseInt(episodeNumber),
+season: selectedLeagueType === 'politics-on-the-beach' ? 'Survivor 51' : selectedLeagueType === 'tumult-in-the-turret' ? 'The Traitors: New Blood' : 'Demo Season',          episode_number: parseInt(episodeNumber),
           castaway_id: castaway.id,
           category: 'manual_adjustment',
           points: parseInt(manual.points),
@@ -301,9 +337,9 @@ setMessage(`Saved ${entries.length} scoring events for Episode ${episodeNumber}!
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
 
         <h1 style={{ fontSize: '2rem', marginBottom: '16px' }}>
-          🧮 <span style={{ color: '#f0b429' }}>Politics on the Beach</span>{' '}
-          <span style={{ color: '#ffffff' }}>Episode Scoring Guide</span>
-        </h1>
+  🧮 <span style={{ color: '#f0b429' }}>{selectedLeagueType === 'tumult-in-the-turret' ? 'Tumult in the Turret' : 'Politics on the Beach'}</span>{' '}
+  <span style={{ color: '#ffffff' }}>Episode Scoring Guide</span>
+</h1>
 
         <div style={{ marginBottom: '24px' }}>
           <label style={{ color: '#a0a0b0', fontSize: '0.85rem', display: 'block', marginBottom: '6px' }}>
@@ -316,17 +352,18 @@ setMessage(`Saved ${entries.length} scoring events for Episode ${episodeNumber}!
     loadCastaways(e.target.value)
     loadExistingScores(e.target.value, episodeNumber)
   }}
-            style={{
-              padding: '8px 12px',
-              borderRadius: '6px',
-              border: '1px solid #2a2a3e',
-              backgroundColor: '#12121a',
-              color: '#ffffff'
-            }}
-          >
-            <option value="politics-on-the-beach">Politics on the Beach (Season 51)</option>
-            <option value="potb-demo">Demo (Sample)</option>
-          </select>
+  style={{
+  padding: '8px 12px',
+  borderRadius: '6px',
+  border: '1px solid #2a2a3e',
+  backgroundColor: '#12121a',
+  color: '#ffffff'
+}}
+>
+  <option value="politics-on-the-beach">Politics on the Beach (Season 51)</option>
+  <option value="potb-demo">Demo (Sample)</option>
+  <option value="tumult-in-the-turret">Tumult in the Turret (New Blood)</option>
+</select>
         </div>
 
         <div style={{ marginBottom: '24px' }}>

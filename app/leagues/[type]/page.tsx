@@ -25,6 +25,64 @@ export default function LeagueHubPage() {
   const [userTier, setUserTier] = useState<string | null>(null)
   const [myPrivateLeagues, setMyPrivateLeagues] = useState<League[]>([])
 
+const hubContent: Record<string, {
+  title: string
+  emoji: string
+  intro: string[]
+  demoHref?: string
+  rulesDescription: string
+  draftDescription: string
+}> = {
+  'politics-on-the-beach': {
+    title: 'Welcome to Politics on the Beach!',
+    emoji: '🏝️',
+    intro: [
+      'For 25 years, our screens and hearts have been graced with the iconic television series Survivor. This fantasy league emerged for Season 50, with its zany fan favorites, and continues today for a new generation of players in Fiji and on this platform.',
+      'Whether or not you\u2019ve played fantasy leagues before, please trust we\u2019ll guide you through this process. We encourage you to immerse yourself in the league spirit and community. Draft tribes, make trades, watch episodes, and then get off your couch and live your own adventure!',
+      'To ensure your spot, register by September 13 (11:59 PM CT).',
+      'Drafts window is September 16-20 (7:00 PM CT).',
+      'Each tribe drafts 4 real-life castaways with the top 3 point-scorers counted toward season totals.',
+      'Island politics are dangerous business! Can you survive?!',
+    ],
+      demoHref: '/leagues/potb-demo/sample-league',
+  rulesDescription: 'See the official point breakdown for challenges, idols, tribal councils, and the end game.',
+  draftDescription: 'Study up on on draft windows, snake order, selection length, and trade rules.',
+},
+  'tumult-in-the-turret': {
+    title: 'Welcome to Tumult in the Turret!',
+    emoji: '🗡️',
+    intro: [
+      'Remember that game you used play at band camp? The one where someone is murdered every night and justice is doled out every morning? Well, multiply that by Fegan Floop from <em>Spy Kids</em>, and you have one of the hottest reality competition shows on television, <em>The Traitors</em>.',
+      'Whether or not you\u2019ve played fantasy leagues before, please trust we\u2019ll guide you through this process. We encourage you to immerse yourself in the league spirit and community. Draft teams, make trades, watch episodes, and then get off your couch and live your own adventure!',
+      'To ensure your spot, register by September 15 (11:59 PM CT).',
+      'Drafts window is September 16-17 (7:00 PM CT).',
+      'Each player drafts 4 real-life faithful or traitors with the top 3 point-scorers counted toward season totals.',
+      'As it turns out, Nessy isn\u2019t the scariest thing in Scotland! Can you survive the castle?!',
+    ],
+  rulesDescription: 'See the official point breakdown for missions, shields, round tables, and the end game.',
+  draftDescription: 'Study up on on draft windows, snake order, selection length, and trade rules.',
+},
+}
+
+if (!hubContent[type]) {
+  return (
+    <main style={{
+      backgroundColor: '#0a0a0f',
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: '#a0a0b0',
+      fontFamily: 'Georgia, serif',
+      gap: '16px'
+    }}>
+      <p>This league doesn&apos;t exist.</p>
+      <a href="/" style={{ color: '#f0b429' }}>← Back to Trekkon Fantasy Leagues</a>
+    </main>
+  )
+}
+
   useEffect(() => {
     const loadInstances = async () => {
       const { data } = await supabase
@@ -154,30 +212,23 @@ export default function LeagueHubPage() {
         </a>
 
         <div style={{ textAlign: 'left', marginBottom: '48px', maxWidth: '900px', marginLeft: 'auto', marginRight: 'auto' }}>
-          <h1 style={{ color: '#f0b429', fontSize: 'clamp(2.0rem, 6vw, 3rem)', marginBottom: '24px' }}>
-  🏝️ Welcome to Politics on the Beach!
+         <h1 style={{ color: '#f0b429', fontSize: 'clamp(2.0rem, 6vw, 3rem)', marginBottom: '24px' }}>
+  {hubContent[type]?.emoji} {hubContent[type]?.title ?? 'Welcome!'}
 </h1>
           <h2 className="mobile-center-heading" style={{ color: '#f0b429', fontSize: '1.4rem', textAlign: 'left', marginBottom: '4px' }}>
             Introduction
           </h2>
-          <p style={{ color: '#a0a0b0', fontSize: '1.1rem', lineHeight: '1.2', marginBottom: '24px' }}>
-            For 25 years, our screens and hearts have been graced with the iconic television series Survivor. This fantasy league emerged for Season 50, with its zany fan favorites, and continues today for a new generation of players in Fiji and on this platform.
-          </p>
-          <p style={{ color: '#a0a0b0', fontSize: '1.1rem', lineHeight: '1.2', marginBottom: '24px' }}>
-            Whether or not you&apos;ve played fantasy leagues before, please trust we&apos;ll guide you through this process. We encourage you to immerse yourself in the fun league spirit and community! Draft tribes, make trades, watch episodes, and then get off your couch and live your own adventure!
-          </p>
-          <p style={{ color: '#f0b429', fontSize: '1.2rem', lineHeight: '1.2', textAlign: 'center', marginBottom: '16px' }}>
-            To ensure your spot, register by September 13 (11:59 PM CT).
-          </p>
-          <p style={{ color: '#f0b429', fontSize: '1.2rem', lineHeight: '1.2', textAlign: 'center', marginBottom: '24px' }}>
-            Drafts window is September 16-20 (7:00 PM CT).
-          </p>
-          <p style={{ color: '#a0a0b0', fontSize: '1.1rem', lineHeight: '1.2', marginBottom: '24px' }}>
-            Each tribe drafts 4 real-life castaways with the top 3 point-scorers counted toward season totals.
-          </p>
-          <p style={{ color: '#a0a0b0', fontSize: '1.1rem', lineHeight: '1.2', marginBottom: '44px' }}>
-            Island politics are dangerous business! Can you survive?!
-          </p>
+       {(hubContent[type]?.intro ?? []).map((paragraph, i) => (
+  <p
+    key={i}
+    style={
+      i === 2 || i === 3
+        ? { color: '#f0b429', fontSize: '1.2rem', lineHeight: '1.2', textAlign: 'center', marginBottom: i === 3 ? '24px' : '16px' }
+        : { color: '#a0a0b0', fontSize: '1.1rem', lineHeight: '1.2', marginBottom: i === (hubContent[type]?.intro.length ?? 1) - 1 ? '44px' : '24px' }
+    }
+    dangerouslySetInnerHTML={{ __html: paragraph }}
+  />
+))}
 
           <h2 className="mobile-center-heading" style={{ color: '#f0b429', fontSize: '1.4rem', textAlign: 'left', marginBottom: '10px' }}>
             Membership Tiers
@@ -311,8 +362,8 @@ export default function LeagueHubPage() {
   <ScrollText size={28} strokeWidth={2} color="#ffffff" style={{ flexShrink: 0 }} /> Rules & Scoring <span className="demo-arrow">→</span>
 </h2>
             <p style={{ color: '#a0a0b0', fontSize: '1rem', lineHeight: '1.5' }}>
-              See the official point breakdown for challenges, idols, tribal councils, and the end game.
-            </p>
+  {hubContent[type]?.rulesDescription}
+</p>
           </a>
 
           <a href={`/leagues/${type}/draft`} style={{
@@ -329,9 +380,9 @@ export default function LeagueHubPage() {
             <h2 style={{ color: '#f0b429', fontSize: 'clamp(1.1rem, 6.6vw, 1.7rem)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
   <ClipboardList size={28} strokeWidth={2} color="#ffffff" style={{ flexShrink: 0 }} /> Draft & Trading <span className="demo-arrow">→</span>
 </h2>
-            <p style={{ color: '#a0a0b0', fontSize: '1rem', lineHeight: '1.5' }}>
-              Study up on on draft windows, snake order, selection length, and trade rules.
-            </p>
+         <p style={{ color: '#a0a0b0', fontSize: '1rem', lineHeight: '1.5' }}>
+  {hubContent[type]?.draftDescription}
+</p>
           </a>
 
           <div style={{
@@ -444,23 +495,25 @@ export default function LeagueHubPage() {
           </div>
         </div>
 
-        <a href="/leagues/potb-demo/sample-league" style={{
-          display: 'block',
-          backgroundColor: '#1a1a2e',
-          border: '3px solid #f0b429',
-          borderRadius: '12px',
-          padding: '24px',
-          textDecoration: 'none',
-          color: '#ffffff',
-          marginBottom: '0px'
-        }}>
-        <h2 style={{ color: '#f0b429', fontSize: 'clamp(1.1rem, 6.6vw, 1.7rem)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-  <TestTubeDiagonal size={28} color="#ffffff" strokeWidth={2} style={{ flexShrink: 0 }} /> Demo League <span className="demo-arrow">→</span>
-</h2>
-          <p style={{ color: '#a0a0b0', fontSize: '1rem', lineHeight: '1.5' }}>
-            See a &quot;real&quot; league in action to get a feel for how your league will look.
-          </p>
-        </a>
+       {hubContent[type]?.demoHref && (
+  <a href={hubContent[type].demoHref} style={{
+    display: 'block',
+    backgroundColor: '#1a1a2e',
+    border: '3px solid #f0b429',
+    borderRadius: '12px',
+    padding: '24px',
+    textDecoration: 'none',
+    color: '#ffffff',
+    marginBottom: '0px'
+  }}>
+    <h2 style={{ color: '#f0b429', fontSize: 'clamp(1.1rem, 6.6vw, 1.7rem)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <TestTubeDiagonal size={28} color="#ffffff" strokeWidth={2} style={{ flexShrink: 0 }} /> Demo League <span className="demo-arrow">→</span>
+    </h2>
+    <p style={{ color: '#a0a0b0', fontSize: '1rem', lineHeight: '1.5' }}>
+      See a &quot;real&quot; league in action to get a feel for how your league will look.
+    </p>
+  </a>
+)}
       </div>
     </main>
   )

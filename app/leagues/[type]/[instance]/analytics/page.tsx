@@ -7,22 +7,67 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts'
 
-const categoryLabels: Record<string, string> = {
-  team_immunity_safety: 'Immunity Safety (Team)',
-  team_immunity_win: 'Immunity Win (Team)',
-  individual_immunity_win: 'Immunity Win (Individual)',
-  idol_found: 'Idol Found',
-  successful_idol_play: 'Successful Idol Play',
-  idol_in_pocket: 'Left with Idol in Pocket',
-  first_off_starter_tribe: 'First Off Starter Tribe',
-  first_boot: 'First Boot (Voted Off)',
-  votes_against: 'Votes Against',
-  survived_tribal_cycle: 'Survived Tribal Cycle',
-  make_merge: 'Made the Merge',
-  make_final_tribal: 'Made Final Tribal',
-  sole_survivor: 'Won Sole Survivor',
-  zero_vote_finalist: '0-Vote Finalist',
-  manual_adjustment: 'Manual Adjustment',
+const categoryLabelsByLeague: Record<string, Record<string, string>> = {
+  'politics-on-the-beach': {
+    team_immunity_safety: 'Immunity Safety (Team)',
+    team_immunity_win: 'Immunity Win (Team)',
+    individual_immunity_win: 'Immunity Win (Individual)',
+    idol_found: 'Idol Found',
+    successful_idol_play: 'Successful Idol Play',
+    idol_in_pocket: 'Left with Idol in Pocket',
+    first_off_starter_tribe: 'First Off Starter Tribe',
+    first_boot: 'First Boot (Voted Off)',
+    votes_against: 'Votes Against',
+    survived_tribal_cycle: 'Survived Tribal Cycle',
+    make_merge: 'Made the Merge',
+    make_final_tribal: 'Made Final Tribal',
+    sole_survivor: 'Won Sole Survivor',
+    zero_vote_finalist: '0-Vote Finalist',
+    manual_adjustment: 'Manual Adjustment',
+  },
+  'potb-demo': {
+    team_immunity_safety: 'Immunity Safety (Team)',
+    team_immunity_win: 'Immunity Win (Team)',
+    individual_immunity_win: 'Immunity Win (Individual)',
+    idol_found: 'Idol Found',
+    successful_idol_play: 'Successful Idol Play',
+    idol_in_pocket: 'Left with Idol in Pocket',
+    first_off_starter_tribe: 'First Off Starter Tribe',
+    first_boot: 'First Boot (Voted Off)',
+    votes_against: 'Votes Against',
+    survived_tribal_cycle: 'Survived Tribal Cycle',
+    make_merge: 'Made the Merge',
+    make_final_tribal: 'Made Final Tribal',
+    sole_survivor: 'Won Sole Survivor',
+    zero_vote_finalist: '0-Vote Finalist',
+    manual_adjustment: 'Manual Adjustment',
+  },
+  'tumult-in-the-turret': {
+    group_earns_5k: 'Group Earns $5,000',
+    team_shield: 'Team Shield',
+    personal_shield: 'Personal Shield',
+    win_dagger: 'Win Dagger',
+    murdered_in_night: 'Murdered in the Night',
+    murdered_in_plain_sight: 'Murdered in Plain Sight',
+    escape_murder_with_shield: 'Escape Murder with Shield',
+    first_banished: 'First Castle-Goer Banished',
+    banished_round_table: 'Banished at Round Table',
+    survive_round_table_cycle: 'Survive Round Table Cycle',
+    successful_dagger_play: 'Successful Dagger Play',
+    make_fire_of_truth: 'Make Fire of Truth',
+    banished_fire_of_truth: 'Banished at Fire of Truth',
+    win_quartet: 'Win as a Quartet',
+    win_trio: 'Win as a Trio',
+    win_duo: 'Win as a Duo',
+    win_solo: 'Win the Game Solo',
+    manual_adjustment: 'Manual Adjustment',
+  },
+}
+
+const castawayTermByLeague: Record<string, string> = {
+  'politics-on-the-beach': 'Castaway',
+  'potb-demo': 'Castaway',
+  'tumult-in-the-turret': 'Castle-Goer',
 }
 
 type EventDetail = {
@@ -125,6 +170,8 @@ export default function AnalyticsPage() {
   const [leagueName, setLeagueName] = useState<string | null>(null)
   const [isFrozen, setIsFrozen] = useState(false)
   const [isPrivateLeague, setIsPrivateLeague] = useState(false)
+  const categoryLabels = categoryLabelsByLeague[type] ?? {}
+  const castawayTerm = castawayTermByLeague[type] ?? 'Contestant'
 
 const [isMobileWidth, setIsMobileWidth] = useState(false)
 
@@ -368,7 +415,7 @@ useEffect(() => {
         <div style={{ fontSize: '2.5rem' }}>🔒</div>
         <h1 style={{ color: '#f0b429', fontSize: '1.6rem' }}>Analytics is a Castaway+ perk.</h1>
         <p style={{ maxWidth: '400px', textAlign: 'center' }}>
-          Upgrade your membership to unlock full-season analytics and track every player and castaway&apos;s journey week by week.
+          Upgrade your membership to unlock full-season analytics and track every player and {castawayTerm.toLowerCase()}&apos;s journey week by week.
         </p>
         <a href="/account" className="btn" style={{
           backgroundColor: '#f0b429',
@@ -414,13 +461,13 @@ useEffect(() => {
         }}>
           ← Back to {leagueName ?? 'League'}
         </a>
-        <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px' }}>
-          📈 <span style={{ color: '#f0b429' }}>Season 51</span>{' '}
-          <span style={{ color: '#ffffff' }}>Analytics</span>
-        </h1>
-        <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '36px' }}>
-          Paid members get exclusive access to league analytic charts to visual process along the way! Please note episodes with more than one tribal council (e.g. premiere or finale) may be broken down into multiple "voting cycles" below.
-        </p>
+      <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px' }}>
+  📈 <span style={{ color: '#f0b429' }}>{leagueName ?? 'League'}</span>{' '}
+  <span style={{ color: '#ffffff' }}>Analytics</span>
+</h1>
+<p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '36px' }}>
+  Paid members get exclusive access to league analytic charts to visual process along the way! Please note episodes with more than one elimination (e.g. tribal council) may be broken down into multiple "voting cycles" below.
+</p>
 
         {!isPrivateLeague && (
           <>
@@ -636,15 +683,15 @@ useEffect(() => {
 )}
 
         <h2 style={{ color: '#f0b429', fontSize: '1.5rem', marginTop: '32px', marginBottom: '2px', textAlign: 'left' }}>
-          Castaway Standings
-        </h2>
+  {castawayTerm} Standings
+</h2>
         <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '20px', textAlign: 'left' }}>
-          Tracking week-to-week castaway point totals. Search a name to highlight their points journey!
-        </p>
+  Tracking week-to-week {castawayTerm.toLowerCase()} point totals. Search a name to highlight their points journey!
+</p>
         <input
           className="search-input-glow"
           type="text"
-          placeholder="Search a Castaway..."
+          placeholder={`Search a ${castawayTerm}...`}
           value={search}
           onChange={(e) => {
             setSearch(e.target.value)

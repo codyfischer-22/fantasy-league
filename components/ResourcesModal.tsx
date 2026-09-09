@@ -1,23 +1,52 @@
 'use client'
 import { Search, Play, X } from 'lucide-react'
 
-const resources = [
-  {
-    title: '3-Minute Snapshot (Reality Sea)',
-    url: 'https://www.facebook.com/reel/1598597491615056/',
-  },
-  {
-    title: '40-Minute Deep Dive (CBS)',
-    url: 'https://www.youtube.com/watch?v=KXLSVRsI3pk',
-  },
-  {
-    title: 'Survivor 51 Playlist (RHAP)',
-    url: 'https://youtube.com/playlist?list=PLG146qFvxINI&si=tff2kAJaFP2t814m',
-  },
-]
+const resourcesByLeague: Record<string, { title: string; url: string }[]> = {
+  'politics-on-the-beach': [
+    {
+      title: '3-Minute Snapshot (Reality Sea)',
+      url: 'https://www.facebook.com/reel/1598597491615056/',
+    },
+    {
+      title: '40-Minute Deep Dive (CBS)',
+      url: 'https://www.youtube.com/watch?v=KXLSVRsI3pk',
+    },
+    {
+      title: 'Survivor 51 Playlist (RHAP)',
+      url: 'https://youtube.com/playlist?list=PLG146qFvxINI&si=tff2kAJaFP2t814m',
+    },
+  ],
+  'potb-demo': [
+    {
+      title: '3-Minute Snapshot (Reality Sea)',
+      url: 'https://www.facebook.com/reel/1598597491615056/',
+    },
+    {
+      title: '40-Minute Deep Dive (CBS)',
+      url: 'https://www.youtube.com/watch?v=KXLSVRsI3pk',
+    },
+    {
+      title: 'Survivor 51 Playlist (RHAP)',
+      url: 'https://youtube.com/playlist?list=PLG146qFvxINI&si=tff2kAJaFP2t814m',
+    },
+  ],
+  'tumult-in-the-turret': [
+    {
+      title: '3-Minute Snapshot (Cami Twomey)',
+      url: 'https://youtube.com/shorts/QkLIOPvkSYU?si=x6-rYZA186CiqOng',
+    },
+    {
+      title: 'Breakdown Article (EW)',
+      url: 'https://ew.com/the-traitors-new-blood-first-ever-all-civilian-cast-revealed-exclusive-12056293',
+    },   
+  ],
+}
 
-export default function ResourcesModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+export default function ResourcesModal({ open, onClose, type }: { open: boolean; onClose: () => void; type: string }) {
   if (!open) return null
+
+  const resources = resourcesByLeague[type] ?? []
+  const castawayTerm = type === 'tumult-in-the-turret' ? 'Castle-Goers' : 'Castaways'
 
   return (
     <div
@@ -46,7 +75,7 @@ export default function ResourcesModal({ open, onClose }: { open: boolean; onClo
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <h3 style={{ color: '#f0b429', fontSize: '1.3rem', margin: 0 }}>
-            Research Castaways
+            Research {castawayTerm}
           </h3>
           <button
             onClick={onClose}
@@ -63,7 +92,7 @@ export default function ResourcesModal({ open, onClose }: { open: boolean; onClo
           </button>
         </div>
         <p style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '16px', lineHeight: '1.5' }}>
-          A few resources to help you get to know this season&apos;s Castaways before drafting or ranking:
+          A few resources to help you get to know this season&apos;s {castawayTerm} before drafting or ranking:
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {resources.map((r) => (

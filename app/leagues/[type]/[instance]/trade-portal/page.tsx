@@ -24,6 +24,12 @@ type Trade = {
   resolved_at: string | null
 }
 
+const castawayTermByLeague: Record<string, string> = {
+  'politics-on-the-beach': 'Castaway',
+  'potb-demo': 'Castaway',
+  'tumult-in-the-turret': 'Castle-Goer',
+}
+
 export default function TradePortalPage() {
   const params = useParams()
   const type = params.type as string
@@ -53,6 +59,7 @@ export default function TradePortalPage() {
   const [isPrivateLeague, setIsPrivateLeague] = useState(false)
   const [historyLimit, setHistoryLimit] = useState(10)
   const [reloadTrigger, setReloadTrigger] = useState(0)
+  const castawayTerm = castawayTermByLeague[type] ?? 'Contestant'
 
   const selectStyle = {
     width: '100%',
@@ -579,20 +586,20 @@ export default function TradePortalPage() {
             Propose a Trade
           </h2>
           <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '4px' }}>
-            1. Castaway you are offering:
+            1. {castawayTerm} you are offering:
           </label>
           <select
             value={selectedOfferedId ?? ''}
             onChange={(e) => setSelectedOfferedId(Number(e.target.value))}
             style={selectStyle}
           >
-            <option value="">Select Castaway...</option>
+            <option value="">Select {castawayTerm}...</option>
             {myCastaways.map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}
           </select>
           <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '6px' }}>
-            2. Tribe you wish to trade with:
+            2. Player you wish to trade with:
           </label>
           {!selectedTargetPlayer ? (
             <>
@@ -663,14 +670,14 @@ export default function TradePortalPage() {
           {selectedTargetPlayer && (
             <>
               <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '6px' }}>
-                Castaway you are requesting:
+                {castawayTerm} you are requesting:
               </label>
               <select
                 value={selectedRequestedId ?? ''}
                 onChange={(e) => setSelectedRequestedId(Number(e.target.value))}
                 style={selectStyle}
               >
-                <option value="">Select a Castaway...</option>
+                <option value="">Select a {castawayTerm}...</option>
                 {theirCastaways.map((c) => (
                   <option key={c.id} value={c.id}>{c.name}</option>
                 ))}

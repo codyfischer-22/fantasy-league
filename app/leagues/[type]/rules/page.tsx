@@ -18,7 +18,7 @@ const rulesContent: Record<string, {
   'politics-on-the-beach': {
     leagueName: 'Politics on the Beach',
     intro: [
-      'Trekkon Fantasy Leagues is all about keeping our leagues simple and players\u2019 viewing experience pure. We do not want to, as a wise soul before television wrote, "murder to dissect" trying to annotate every worm eaten, tear shed, and blindside planned. Leave the tabulations to us, then, and focus on restocking your watch party\u2019s bean dip, enjoying the island politics, and "Thursday Morning Quarterbacking" in the group chat.',
+      'Trekkon Fantasy Leagues is all about keeping our leagues simple and players\u2019 viewing experience pure. We do not want to – as a wise soul once wrote – "murder to dissect," trying to annotate every worm eaten, tear shed, and blindside planned. Leave the tabulations to us, then, and focus on restocking your watch party\u2019s bean dip, enjoying the island politics, and "Thursday Morning Quarterbacking" in the group chat.',
       'When our beloved franchise throws us twists and turns – looking at you Billie Eilish – please trust our team will do our best to arbitrate according to both the letter and spirit of the law.',
     ],
     sections: [
@@ -121,7 +121,96 @@ const rulesContent: Record<string, {
     ],
     tiebreaker: [
       'In the event of a season-end tie (whether tribes have the same three scored players or different combinations), tie breakers will be as follows: 1) Whose first-round draft pick scored more points? 2) Second? 3) Third? 4) \u201cBench player\u201d?',
-    ] },
+    ] 
+  },
+  'tumult-in-the-turret': {
+  leagueName: 'Tumult in the Turret',
+  intro: [
+    'Trekkon Fantasy Leagues is all about keeping our leagues simple and players\u2019 viewing experience pure. We do not want to – as a wise soul wrote – "murder to dissect," trying to annotate every pearl clutched, conversation overheard, and croissant eaten. Leave the tabulations to us, then, and focus on restocking your watch party\u2019s bean dip, enjoying the roundtable drama, and "Friday Morning Quarterbacking" in the group chat.',
+    'When the show throws us a twist we didn\u2019t see coming, please trust our team will arbitrate according to both the letter and spirit of the law.',
+  ],
+  sections: [
+    {
+      title: 'Mission Performances',
+      rows: [
+        { event: 'Group Earns $5,000', 
+          points: '+5',
+          notes: ['Only applicable for your player\u2019s subgroup. This stacks with each additional $5,000.'],
+        },
+        {event: 'Team Shield',
+          points: '+5',
+          notes: ['Applicable when an entire team wins shield immunity for a mission performance.']
+        },
+        { event: 'Personal Shield', 
+          points: '+10',
+          notes: ['Player finds and secures a shield token in the middle of a mission.']
+         },
+        { event: 'Win Dagger',
+          points: '+10',
+          notes: ['Player finds and secures a dagger in the middle of a mission.']
+         },
+      ],
+    },
+    {
+      title: 'Tumult in the Turret',
+      rows: [
+        {
+          event: 'Murdered in the Night',
+          points: '\u22128'
+        },
+        {
+          event: 'Murdered in Plain Sight',
+          points: '\u221215'
+        },
+           {
+          event: 'Escape Murder with Shield',
+          points: '+15'
+        }
+      ],
+    },
+    {
+      title: 'Round Table Terrors',
+      rows: [
+        {
+          event: 'First Castle-Goer Banished',
+          points: '\u22125',
+          notes: ['In addition to the normal banishment penalty, regardless of whether player is faithful or traitor.']
+        },
+        {
+          event: 'Banished at Round Table',
+          points: '\u221210',
+          notes: ['Regardless of whether player is faithful or traitor.']
+        },
+        {
+          event: 'Survive Round Table Cycle',
+          points: '+10',
+          notes: ['Awarded each cycle your player is not murdered or banished.'],
+        },
+         {
+          event: 'Successful Dagger Play',
+          points: '+15',
+          notes: ['If extra vote is correctly cast on eliminated player, when it needed to be, whether faithful or traitor.']
+        }
+      ],
+    },
+    {
+      title: 'End Game',
+      rows: [
+        { event: 'Make Fire of Truth', points: '+15' },
+        {  event: 'Banished at Fire of Truth',
+          points: '\u221210',
+        },
+         {event: 'Win as a Quartet', points: '+10' },
+         {event: 'Win as a Trio', points: '+15' },
+         { event: 'Win as a Duo', points: '+30' },
+         { event: 'Win the Game Solo', points: '+45' },
+      ],
+    },
+  ],
+  tiebreaker: [
+    'In the event of a season-end tie, tie breakers will be as follows: 1) Whose first-round draft pick scored more points? 2) Second? 3) Third? 4) \u201cBench player\u201d?',
+  ],
+},
 }
 
 export default function RulesPage() {
@@ -143,7 +232,7 @@ export default function RulesPage() {
         gap: '16px'
       }}>
         <p>Rules for this league aren&apos;t posted yet.</p>
-        <a href={`/leagues/${type}`} style={{ color: '#f0b429' }}>← Back to Politics on the Beach</a>
+<a href={`/leagues/${type}`} style={{ color: '#f0b429' }}>← Back to League</a>
       </main>
     )
   }
@@ -165,7 +254,7 @@ export default function RulesPage() {
           display: 'inline-block',
           marginBottom: '24px'
         }}>
-          ← Back to 🌴 {content.leagueName}
+          ← Back to {content.leagueName}
         </a>
 
        <h1 style={{ fontSize: 'clamp(1.85rem, 8vw, 2.25rem)', marginBottom: '24px' }}>

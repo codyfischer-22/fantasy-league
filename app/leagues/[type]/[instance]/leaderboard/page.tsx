@@ -175,11 +175,11 @@ export default function LeaderboardPage() {
           <span style={{ color: '#f0b429' }}> 🏆 League</span>{' '}
           <span style={{ color: '#ffffff' }}>Leaderboard</span>
         </h1>
-        <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '32px' }}>
-          Where do you stack up on the leaderboard? Expand a player to see their tribe of 4!
-        </p>
+      <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '32px' }}>
+  Where do you stack up on the leaderboard? Expand a player to see their {type === 'tumult-in-the-turret' ? 'roster' : 'tribe'} of 4!
+</p>
         {standings.length === 0 ? (
-          <p style={{ color: '#555570' }}>No Players have joined this league yet.</p>
+          <p style={{ color: '#555570' }}>No players have joined this league yet.</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {standings.map((player, index) => (

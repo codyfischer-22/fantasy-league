@@ -9,6 +9,30 @@ import ConfirmModal from '@/components/ConfirmModal'
 type Castaway = { id: number; name: string }
 type Pick = { user_id: string; castaway_id: number }
 
+const draftCompleteTitleByLeague: Record<string, string> = {
+  'politics-on-the-beach': '🔥 Tribes Are Set',
+  'potb-demo': '🔥 Tribes Are Set',
+  'tumult-in-the-turret': '🗡️ Rosters Are Set',
+}
+
+const draftInstructionsByLeague: Record<string, { countLine: string }> = {
+  'politics-on-the-beach': {
+    countLine: 'There are 21 castaways in Survivor 51 so any league with over 5 players will have castaways "cloned" as necessary (e.g. 10 players → 40 castaways needed → clone each castaway twice for 42 selectable options).',
+  },
+  'potb-demo': {
+    countLine: 'There are 21 castaways in Survivor 51 so any league with over 5 players will have castaways "cloned" as necessary (e.g. 10 players → 40 castaways needed → clone each castaway twice for 42 selectable options).',
+  },
+  'tumult-in-the-turret': {
+    countLine: 'There are 22 castle-goers in Tumult in the Turret so any league with over 5 players will have castle-goers "cloned" as necessary (e.g. 10 players → 40 castle-goers needed → clone each castle-goer twice for 44 selectable options).',
+  },
+}
+
+const castawayTermByLeague: Record<string, string> = {
+  'politics-on-the-beach': 'Castaway',
+  'potb-demo': 'Castaway',
+  'tumult-in-the-turret': 'Castle-Goer',
+}
+
 export default function DraftRoomPage() {
   const params = useParams()
   const type = params.type as string
@@ -24,6 +48,9 @@ export default function DraftRoomPage() {
   const [handlingMissedPick, setHandlingMissedPick] = useState(false)
   const [now, setNow] = useState(Date.now())
   const previousStatusRef = useRef<string | null>(null)
+  const draftCompleteTitle = draftCompleteTitleByLeague[type] ?? 'Draft Complete'
+  const draftInstructions = draftInstructionsByLeague[type] ?? draftInstructionsByLeague['politics-on-the-beach']
+const castawayTerm = castawayTermByLeague[type] ?? 'Castaway'
 
   const loadDraftState = async () => {
     const { data: leagueData } = await supabase
@@ -417,7 +444,7 @@ if (league.draft_status !== 'in_progress' && league.draft_status !== 'completed'
   <p style={{ color: '#555570' }}>Full draft policies may be found{' '}
   <a href={`/leagues/${type}/draft`} style={{ color: '#f0b429', textDecoration: 'underline' }}>
     here
-  </a>, but your host has control over time limits, addressing missed turns, etc.
+  </a>, but your host has control over draft order, time limits, addressing missed turns, etc.
 </p>
 </div>
     </main>
@@ -459,18 +486,18 @@ if (
     <p style={{ color: '#a0a0b0', fontSize: '1rem', lineHeight: '1.6', marginBottom: '8px', maxWidth: '800px' }}>
      Ready to piece your team together? It's time for the draft (some call this casting or silly season)! <span style={{ color: '#f0b429' }}>Please note we recommend a computer screen for the optimal drafting experience.</span> A few reminders to get you started:
     </p>
+   <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginLeft: '30px', lineHeight: '1.6', marginBottom: '8px', maxWidth: '800px' }}>
+  ➤ {draftInstructions.countLine}
+</p>
     <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginLeft: '30px', lineHeight: '1.6', marginBottom: '8px', maxWidth: '800px' }}>
-      ➤ There are 21 castaways in Survivor 51 so any league with over 5 players will have castways &quot;cloned&quot; as necessary (e.g. 10 players → 40 castaways needed → clone each castaway twice for 42 selectable options).
-    </p>
-    <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginLeft: '30px', lineHeight: '1.6', marginBottom: '8px', maxWidth: '800px' }}>
-      ➤ League hosts determine whether or not all 21 castaways need to be chosen before clones open up. Regardless, no player may recruit the same castaway twice.
-    </p>
+  ➤ League hosts determine whether or not all {castawayTerm.toLowerCase()}s need to be chosen before clones open up. Regardless, no player may recruit the same {castawayTerm.toLowerCase()} twice.
+</p>
     <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginLeft: '30px', lineHeight: '1.6', marginBottom: '8px', maxWidth: '800px' }}>
       ➤ Hosts are responsible for setting selection times, deciding what happens if timer goes off (system randomly assigns or turn bumped to end of draft), and assigning draft order (randomly generated or manually-set).
     </p>
     <p style={{ color: '#a0a0b0', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '16px', maxWidth: '800px' }}>
-      When it&apos;s your turn, click any non-faded castaway to add them to your roster. Once confirmed, selections cannot be changed outside of trade portal. <strong>Let&apos;s get it on!</strong>
-    </p>
+  When it&apos;s your turn, click any non-faded {castawayTerm.toLowerCase()} to add them to your roster. Once confirmed, selections cannot be changed outside of trade portal. <strong>Let&apos;s get it on!</strong>
+</p>
   </>
 )}
 
@@ -627,8 +654,8 @@ if (
       textAlign: 'center'
     }}>
       <h2 style={{ color: '#f0b429', fontSize: '1.6rem', marginBottom: '12px' }}>
-         🔥 Tribes Are Set
-      </h2>
+  {draftCompleteTitle}
+</h2>
       <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '24px', lineHeight: '1.6' }}>
        The draft is complete. Check out your roster, make trade offers, and get ready for the season!
       </p>

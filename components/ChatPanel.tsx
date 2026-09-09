@@ -87,6 +87,7 @@ const [leagues, setLeagues] = useState<{ id: number; name: string; league_type: 
   const [reportingMessageId, setReportingMessageId] = useState<string | null>(null);
 const [reportReason, setReportReason] = useState('');
 const [reportSubmitting, setReportSubmitting] = useState(false);
+const [selectedIsShowChat, setSelectedIsShowChat] = useState<boolean>(false);
 
 useEffect(() => {
   async function loadUnreadPerLeague() {
@@ -139,21 +140,24 @@ useEffect(() => {
 
   useEffect(() => {
     async function loadLeagueGateInfo() {
-      if (!selectedLeagueId) {
-        setSelectedLeagueIsPrivate(true);
-        setEpisode1Scored(false);
-        return;
-      }
-      const { data, error } = await supabase
-        .from('leagues')
-        .select('is_private, league_type')
-        .eq('id', selectedLeagueId)
-        .single();
-      if (error) {
-        console.error('Error loading league gate info:', JSON.stringify(error, null, 2));
-        return;
-      }
-      setSelectedLeagueIsPrivate(data?.is_private ?? true);
+  if (!selectedLeagueId) {
+  setSelectedLeagueIsPrivate(true);
+  setEpisode1Scored(false);
+  setSelectedIsShowChat(false);
+  return;
+}
+     const { data, error } = await supabase
+  .from('leagues')
+  .select('is_private, league_type, is_show_chat')
+  .eq('id', selectedLeagueId)
+  .single();
+if (error) {
+  console.error('Error loading league gate info:', JSON.stringify(error, null, 2));
+  return;
+}
+setSelectedLeagueIsPrivate(data?.is_private ?? true);
+setSelectedIsShowChat(data?.is_show_chat ?? false);
+
       if (data && data.is_private === false) {
         const { data: scoreRows, error: scoreError } = await supabase
           .from('episode_scores')
@@ -171,7 +175,7 @@ useEffect(() => {
       }
     }
     loadLeagueGateInfo();
-  }, [selectedLeagueId]);
+}, [selectedLeagueId, selectedIsShowChat]);
 
   useEffect(() => {
     async function loadUserTier() {
@@ -238,20 +242,20 @@ useEffect(() => {
         console.error('Error loading league details:', JSON.stringify(leagueError, null, 2));
         return;
       }
+
       const myLeagues = leagueRows ?? [];
-      const myLeagueTypes = [...new Set(myLeagues.map((l) => l.league_type))];
-let communityChats: { id: number; name: string; league_type: string; slug: string }[] = [];      if (myLeagueTypes.length > 0) {
-        const { data: chatRows, error: chatError } = await supabase
-          .from('leagues')
-          .select('id, name, league_type, slug')
-          .eq('is_show_chat', true)
-          .in('league_type', myLeagueTypes);
-        if (chatError) {
-          console.error('Error loading community chats:', JSON.stringify(chatError, null, 2));
-        } else {
-          communityChats = chatRows ?? [];
-        }
-      }
+let communityChats: { id: number; name: string; league_type: string; slug: string }[] = [];
+const { data: chatRows, error: chatError } = await supabase
+  .from('leagues')
+  .select('id, name, league_type, slug')
+  .eq('is_show_chat', true);
+if (chatError) {
+  console.error('Error loading community chats:', JSON.stringify(chatError, null, 2));
+} else {
+  communityChats = chatRows ?? [];
+}
+
+
       const leagueList = [...communityChats, ...myLeagues];
       setLeagues(leagueList);
       setSelectedLeagueId((current) => current ?? (leagueList.length > 0 ? leagueList[0].id : null));
@@ -265,6 +269,22 @@ let communityChats: { id: number; name: string; league_type: string; slug: strin
       setLeagueMemberList([]);
       return;
     }
+if (selectedIsShowChat) {
+  // Community Chat: anyone with an account can be tagged
+  const { data: profileRows, error: profileError } = await supabase
+    .from('profiles')
+    .select('user_id, display_name');
+  if (profileError) {
+    console.error('Error loading profiles for community chat mentions:', JSON.stringify(profileError, null, 2));
+    return;
+  }
+  setLeagueMemberList(
+    (profileRows ?? []).map((p) => ({ user_id: p.user_id, display_name: p.display_name || 'Unnamed Player' }))
+  );
+  return;
+}
+
+
     const { data: memberRows, error: memberError } = await supabase
       .from('league_members')
       .select('user_id')
@@ -291,7 +311,7 @@ let communityChats: { id: number; name: string; league_type: string; slug: strin
     );
   }
   loadMembersForMentions();
-}, [selectedLeagueId]);
+}, [selectedLeagueId, selectedIsShowChat]);
 
   useEffect(() => {
     if (!selectedLeagueId) {

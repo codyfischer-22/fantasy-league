@@ -28,7 +28,7 @@ const draftContent: Record<string, {
   { label: 'Episode 1 Airs', detail: 'Wednesday, September 23, 7 PM' },
 ],
     draftFormatPublic: [
-        '➤ Given the high level of participation we expect in public leagues, we will implement an offline draft where each player ranks the order in which they would draft castaways if available:',
+        '➤ Given the high level of participation we expect across public leagues, we will implement an offline draft where each player ranks the order in which they would draft castaways if available:',
         '"I would take 1) Attractive Alex, 2) Smarty Pants Perry, 3) Beef Cake Casey . . . 21) Snivelling Sam."',
 '➤ Every castaway will be "cloned" as necessary so each player can have a tribe of 4.',
 '(If there are 100 players in the league, we would need 400 unique castaways to draft. With 21 real-life castaways, they would each be cloned 20 times to make 420 draftable league castaways.)',
@@ -60,6 +60,49 @@ const draftContent: Record<string, {
 '➤ If players are caught manipulating trades with multiple accounts or friends, they will be banned from current and future league participation.',
 ],
   },
+  'tumult-in-the-turret': {
+  leagueName: 'Tumult in the Turret',
+  intro: [
+    'Here\u2019s everything you need before the draft window \u2014 timing, format, and how trades work once your roster is set.',
+  ],
+  draftWindow: [
+    { label: 'Signup Deadline', detail: 'Tuesday, September 15, 11:59 PM' },
+    { label: 'Draft Rankings Due (Public)', detail: 'Wednesday, September 16, 5 PM' },
+    { label: 'Draft Window', detail: 'Wednesday, September 16, 7 PM \n\u2013 Thursday, September 17, 5 PM' },
+    { label: 'Episode 1 Airs', detail: 'Thursday, September 17, 7 PM' },
+  ],
+  draftFormatPublic: [
+    '➤ Given the high level of participation we expect across public leagues, we will implement an offline draft where each player ranks the order in which they would draft castle-goers if available:',
+    '"I would take 1) Attractive Alex, 2) Smarty Pants Perry, 3) Beef Cake Casey . . . 21) Snivelling Sam."',
+    '➤ Every castle-goer will be "cloned" as necessary so each player can have a roster of 4.',
+    '(If there are 10 players in the league, we would need 40 unique castle-goers to draft. With 22 real-life castle-goers, they would each be cloned 3 times to make 66 draftable contestants.)',
+    '➤ The order in which players draft for public leagues is randomly assigned.',
+    '➤ Players failing to submit castle-goer rankings by the deadline above will have them automatically submitted in a default order without petition.',
+    '➤ In the draft window noted above, Trekkon Fantasy Leagues will use rankings to simulate a snake draft.',
+    '(In Round 1, Player 1 will draft before Players 2, 3, 4 . . . 10. After the last player drafts, Round 2 will begin in reverse order \u2014 Players 10, 9, 8 . . . 3, 2, 1. This "snaking" continues until all 4 draft rounds are complete and ensures each player gets high- and low-level choices.)',
+    '➤ Simulated draft results are final once shared; if players don\u2019t get their top choices, it\u2019s because those castle-goers were popular and ran out before their turn.',
+    '➤ Don\u2019t like your 4-person roster? Time to get trading!',
+  ],
+  draftFormatPrivate: [
+    '➤ Live draft order is randomly generated, but league hosts may manually adjust at their discretion.',
+    '➤ Private league hosts are responsible for manually starting the live snake draft.',
+    '➤ Private league hosts are responsible for selecting and communicating live draft time limits (from 2 minutes to 3 hours per pick).',
+    '➤ Players get time warning notifications at 10, 5, and 1 minutes remaining in their live draft pick.',
+    '➤ If a draft pick timer runs out, the host decides if that player\u2019s pick is A) skipped and moved to the end of the live draft or B) assigned a randomly-generated player on the draft board.',
+    '➤ If the live draft is not completed by the window above, league hosts or Trekkon Fantasy Leagues ensure all players have 4 castle-goers on their roster. Players failing to adhere to draft procedures outlined by the league host are unable to petition the castle-goers they receive.',
+    '➤ Players that sign up for a private league should expect their hosts to properly communicate and implement all draft policies and deadlines. Trekkon Fantasy Leagues is not responsible for issuing refunds if private league hosts fail to perform their expected duties. That is to say, before joining a league, make sure you trust the host to lead responsibly throughout the league.',
+  ],
+  trades: [
+    '➤ Every player, regardless of membership tier, can propose and accept trades.',
+    '➤ League hosts may elect to manually confirm trades in their league before they\u2019re official.',
+    '➤ Castle-goers can be traded, as long as they\u2019re still in the game, from the time rosters are announced until the penultimate episode\u2019s scores are in.',
+    '➤ Individual castle-goers cannot be included in more than one trade offer at a time.',
+    '➤ Trade offers do not expire; they sit until accepted, declined, or withdrawn by sender.',
+    '➤ If trades are declined, either party is welcome to re-submit a juicy new offer.',
+    '➤ Players must act in their own self-interest to finish well in season-end standings. Out-of-contention players should not "give away" players to help others win ("King Building").',
+    '➤ If players are caught manipulating trades with multiple accounts or friends, they will be banned from current and future league participation.',
+  ],
+},
 }
 
 export default function DraftPage() {
@@ -103,7 +146,7 @@ export default function DraftPage() {
           display: 'inline-block',
           marginBottom: '24px'
         }}>
-          ← Back to 🌴 {content.leagueName}
+          ← Back to {content.leagueName}
         </a>
 
         <h1 style={{ fontSize: 'clamp(1.9rem, 8vw, 2.25rem)', marginBottom: '4px' }}>

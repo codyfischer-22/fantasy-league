@@ -318,7 +318,7 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
         <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '24px', cursor: 'pointer' }}>
           <input type="checkbox" checked={guaranteeFullCoverage} onChange={(e) => setGuaranteeFullCoverage(e.target.checked)} style={{ marginTop: '3px' }} />
           <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
-            <strong>OPTIONAL:</strong> Require every player to be drafted if more than 4 league players. <em>(Castaways will be cloned as necessary to give all tribes 4 unique players.)</em>
+            <strong>OPTIONAL:</strong> Require every player to be drafted if more than 4 league players. <em>(Contestants will be cloned as necessary to give all rosters 4 unique members.)</em>
           </span>
         </label>
 

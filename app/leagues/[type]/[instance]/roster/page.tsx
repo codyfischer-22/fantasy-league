@@ -30,6 +30,12 @@ const tierLabelsMobile: Record<string, string> = {
   teamprincipal: 'Principal',
 }
 
+const rosterTermByLeague: Record<string, string> = {
+  'politics-on-the-beach': 'Tribe',
+  'potb-demo': 'Tribe',
+  'tumult-in-the-turret': 'Roster',
+}
+
 export default function RosterPage() {
   const params = useParams()
   const type = params.type as string
@@ -39,8 +45,7 @@ export default function RosterPage() {
   const [leagueName, setLeagueName] = useState('')
   const [roster, setRoster] = useState<RosterMember[]>([])
   const [pageLoading, setPageLoading] = useState(true)
-
-
+  const rosterTerm = rosterTermByLeague[type] ?? 'Roster'
 
 const [isMobileWidth, setIsMobileWidth] = useState(false)
 useEffect(() => {
@@ -207,7 +212,7 @@ useEffect(() => {
 </h1>
 
 <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '32px' }}>
-  See who's got who for this season of Politics on the Beach. This page will update as trades occur!
+  See who's got who for this season of {leagueName || 'this league'}. This page will update as trades occur!
 </p>
 
         {roster.length === 0 ? (
@@ -237,11 +242,10 @@ useEffect(() => {
   </div>
                 {member.castaways.length > 0 ? (
                   <p style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
-                    Tribe: {member.castaways.join(', ')}
-                  </p>
+               {rosterTerm}: {member.castaways.join(', ')}                  </p>
                 ) : (
                   <p style={{ color: '#555570', fontSize: '0.85rem', fontStyle: 'italic' }}>
-                    Tribe: Pending the draft!
+                    {rosterTerm}: Pending the draft!
                   </p>
                 )}
               </div>
@@ -278,7 +282,7 @@ useEffect(() => {
                     </div>
                   </div>
                   <p style={{ color: '#3a3a44', fontSize: '0.8rem' }}>
-                    Tribe (Out of Play): {member.castaways.join(', ')}
+                    {rosterTerm} (Out of Play): {member.castaways.join(', ')}
                   </p>
                 </div>
               ))}

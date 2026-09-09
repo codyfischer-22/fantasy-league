@@ -1,0 +1,6 @@
+export const leagueTypeLabels: Record<string, string> = {
+  'politics-on-the-beach': 'Politics on the Beach',
+  'americans-turning-left': "'Muricans Turn Left",
+  'european-rocket-ships': 'European Rockets',
+  'tumult-in-the-turret': 'Tumult in the Turret',
+}

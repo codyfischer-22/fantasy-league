@@ -14,6 +14,12 @@ type LogEntry = {
   event_type: 'pick' | 'bumped_to_back'
 }
 
+const castawayTermByLeague: Record<string, string> = {
+  'politics-on-the-beach': 'Castaway',
+  'potb-demo': 'Castaway',
+  'tumult-in-the-turret': 'Contestant',
+}
+
 export default function DraftLogPage() {
   const params = useParams()
   const type = params.type as string
@@ -23,6 +29,7 @@ export default function DraftLogPage() {
   const [log, setLog] = useState<LogEntry[]>([])
   const [pageLoading, setPageLoading] = useState(true)
   const [isPrivateLeague, setIsPrivateLeague] = useState(false)
+  const castawayTerm = castawayTermByLeague[type] ?? 'Contestant'
 
   useEffect(() => {
     async function loadLog() {
@@ -92,7 +99,7 @@ const castawayIds = [...new Set(safePicks.map((p) => p.castaway_id))]
   pick_number: p.pick_number,
   round: p.round,
   display_name: nameMap.get(p.original_user_id) ?? 'Unnamed Player',
-  castaway_name: castawayMap.get(p.castaway_id) ?? 'Unknown Castaway',
+  castaway_name: castawayMap.get(p.castaway_id) ?? `Unknown ${castawayTerm}`,
   rank_choice: rankMap.get(`${p.original_user_id}-${p.castaway_id}`) ?? null,
   was_auto_assigned: p.was_auto_assigned ?? false,
   event_type: 'pick',

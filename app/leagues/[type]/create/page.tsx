@@ -5,11 +5,13 @@ import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { containsEmoji } from '@/lib/validation'
 import { useState, useEffect } from 'react'
+import { leagueTypeLabels } from '@/lib/leagueTypeLabels'
 
 const leagueTypeEmojis: Record<string, string> = {
   'politics-on-the-beach': '🌴',
   'americans-turning-left': '🚗',
   'european-rocket-ships': '🏎️',
+  'tumult-in-the-turret': '🗡️',
 }
 
 export default function CreateLeaguePage() {
@@ -51,9 +53,33 @@ useEffect(() => {
   loadTier()
 }, [user])
 
+if (!leagueTypeLabels[type]) {
+  return (
+    <main style={{
+      backgroundColor: '#0a0a0f',
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: '#a0a0b0',
+      fontFamily: 'Georgia, serif',
+      gap: '16px'
+    }}>
+      <p>This league doesn&apos;t exist.</p>
+      <a href="/" style={{ color: '#f0b429' }}>← Back to Trekkon Fantasy Leagues</a>
+    </main>
+  )
+}
+
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) return
+
+     if (!leagueTypeLabels[type]) {
+    setMessage('This league type does not exist.')
+    return
+  }
 
     if (!agreedToHostResponsibly) {
       setMessage('You must check the required host agreement box to create a league.')
@@ -189,7 +215,7 @@ if (!isAdmin) {
   display: 'inline-block',
   marginBottom: '38px'
 }}>
-  ← Back to {type === 'politics-on-the-beach' ? 'Politics on the Beach' : type === 'americans-turning-left' ? "'Muricans Turn Left" : type === 'european-rocket-ships' ? 'European Rockets' : 'League'}
+← Back to {leagueTypeLabels[type] ?? 'League'}
 </a>
         
         <h1 style={{ color: '#f0b429', fontSize: '1.8rem', marginBottom: '12px', textAlign: 'center' }}>
@@ -249,7 +275,7 @@ if (!isAdmin) {
             style={{ marginTop: '3px' }}
           />
         <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
-  <strong>OPTIONAL:</strong> Require every player to be drafted if more than 4 league players. <em>(Castaways will be cloned as necessary to give all tribes 4 unique players.)</em>
+  <strong>OPTIONAL:</strong> Require every contesant to be drafted if more than 4 league players. <em>(Contestants will be cloned as necessary to give all rosters 4 unique members.)</em>
 </span>
         </label>
         
