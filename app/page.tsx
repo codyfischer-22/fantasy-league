@@ -285,7 +285,7 @@ Got an idea for a fantasy league we should build next? Send us your concept and 
   <button
   onClick={(e) => {
     e.stopPropagation()
-    router.push('/leagues/tumult-in-the-turret')
+    router.push('/contact')
   }}
     style={{
       display: 'block',
