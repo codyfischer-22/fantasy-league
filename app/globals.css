@@ -485,3 +485,14 @@ html, body {
     text-align: left !important;
   }
 }
+
+@media (max-width: 600px) {
+  .tool-grid {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .tool-grid > * {
+    flex: 0 0 calc(50% - 20px);
+    max-width: calc(50% - 20px);
+  }
+}

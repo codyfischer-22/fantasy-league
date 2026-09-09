@@ -5,6 +5,7 @@ import { useParams, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/AuthContext'
 import { leagueTypeLabels } from '@/lib/leagueTypeLabels'
+import { Calculator } from 'lucide-react'
 
 const categoryLabelsByLeague: Record<string, Record<string, string>> = {
   'politics-on-the-beach': {
@@ -259,8 +260,12 @@ if ((scores && scores.length > 0) || (customEntries && customEntries.length > 0)
         padding: '40px'
       }}>
         <div style={{ fontSize: '2.5rem' }}>🔒</div>
-        <h1 style={{ color: '#f0b429', fontSize: '1.6rem' }}>Scoring Log requires an account to view.</h1>
-        <p style={{ maxWidth: '400px', textAlign: 'center' }}>
+<h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+  <Calculator size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
+  <span style={{ color: '#f0b429' }}>Episode</span>{' '}
+  <span style={{ color: '#ffffff' }}>Scoring Log</span>
+</h1>        
+<p style={{ maxWidth: '400px', textAlign: 'center' }}>
           Sign up for free to see episode-by-episode scoring breakdowns for this league.
         </p>
         <a href="/signup" style={{
@@ -295,10 +300,11 @@ if ((scores && scores.length > 0) || (customEntries && customEntries.length > 0)
         }}>
 {fromInstance ? `← Back to ${leagueName ?? 'League'}` : `← Back to ${leagueTypeLabels[type] ?? 'League'}`}        </a>
 
-        <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px' }}>
-          🧮 <span style={{ color: '#f0b429' }}>Episode</span>{' '}
-          <span style={{ color: '#ffffff' }}>Scoring Log</span>
-        </h1>
+        <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+  <Calculator size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
+  <span style={{ color: '#f0b429' }}>Episode</span>{' '}
+  <span style={{ color: '#ffffff' }}>Scoring Log</span>
+</h1>
         <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '20px' }}>
   {scoringLogIntro[type] ?? `Check out the fully-transparent points breakdown for ${leagueTypeLabels[type] ?? 'this league'}!`}
 </p>

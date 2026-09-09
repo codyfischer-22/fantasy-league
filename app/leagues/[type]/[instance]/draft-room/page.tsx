@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import ConfirmModal from '@/components/ConfirmModal'
+import { Puzzle } from 'lucide-react'
 
 type Castaway = { id: number; name: string }
 type Pick = { user_id: string; castaway_id: number }
@@ -435,8 +436,9 @@ if (league.draft_status !== 'in_progress' && league.draft_status !== 'completed'
         }}>
           ← Back to {league.name}
         </a>
-      <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px' }}>
-  <span style={{ color: '#f0b429' }}>🧩 League </span>{' '}
+      <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+  <Puzzle size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
+  <span style={{ color: '#f0b429' }}>League</span>{' '}
   <span style={{ color: '#ffffff' }}>Draft Room</span>
 </h1>
 <p style={{ color: '#555570', marginBottom: '8px' }}>

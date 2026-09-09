@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { Trophy } from 'lucide-react'
 
 type CastawayScore = {
   castaway_id: number
@@ -171,10 +172,11 @@ export default function LeaderboardPage() {
         }}>
           ← Back to {leagueName || 'League'}
         </a>
-        <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px' }}>
-          <span style={{ color: '#f0b429' }}> 🏆 League</span>{' '}
-          <span style={{ color: '#ffffff' }}>Leaderboard</span>
-        </h1>
+     <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+  <Trophy size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
+  <span style={{ color: '#f0b429' }}>League</span>{' '}
+  <span style={{ color: '#ffffff' }}>Leaderboard</span>
+</h1>
       <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '32px' }}>
   Where do you stack up on the leaderboard? Expand a player to see their {type === 'tumult-in-the-turret' ? 'roster' : 'tribe'} of 4!
 </p>

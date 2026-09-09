@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { ClipboardList } from 'lucide-react'
 
 type LogEntry = {
   pick_number: number
@@ -162,8 +163,9 @@ const castawayIds = [...new Set(safePicks.map((p) => p.castaway_id))]
           ← Back to {leagueName || 'League'}
         </a>
 
-        <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px' }}>
-  📋 <span style={{ color: '#f0b429' }}>League</span>{' '}
+       <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+  <ClipboardList size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
+  <span style={{ color: '#f0b429' }}>League</span>{' '}
   <span style={{ color: '#ffffff' }}>Draft Log</span>
 </h1>
       <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '32px' }}>

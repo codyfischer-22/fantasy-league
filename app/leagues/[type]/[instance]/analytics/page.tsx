@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
+import { TrendingUp } from 'lucide-react'
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts'
@@ -461,8 +462,11 @@ useEffect(() => {
         }}>
           ← Back to {leagueName ?? 'League'}
         </a>
-      <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px' }}>
-  📈 <span style={{ color: '#f0b429' }}>{leagueName ?? 'League'}</span>{' '}
+     <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+  <TrendingUp size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
+  <span style={{ color: '#f0b429' }}>
+    {(leagueName ?? 'League').replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '').trim()}
+  </span>{' '}
   <span style={{ color: '#ffffff' }}>Analytics</span>
 </h1>
 <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '36px' }}>

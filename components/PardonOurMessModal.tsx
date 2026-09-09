@@ -42,12 +42,12 @@ export default function PardonOurMessModal() {
          🔥 ALMOST GO TIME!
         </h3>
         <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '8px', lineHeight: '1.6' }}>
-          Trekkon Leagues is mobile-friendly now, and we&apos;ll continue to improve!</p>
+          Welcome to the first season of Trekkon Fantasy Leagues!</p>
         <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '8px', lineHeight: '1.6' }}>
-Now it's time to fill leagues before the Survivor 51 Premiere! <strong>Can you share this link with your tribe?!</strong>
+Leagues are built and it's time to fill them before premiere season!
 </p>
 <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '12px', lineHeight: '1.6' }}>
-  Get ready for a fun trek!
+  Share a league with your tribe and prepare for the trek!
 </p>
      <button onClick={handleDismiss} style={{
   backgroundColor: '#f0b429',

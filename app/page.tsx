@@ -83,21 +83,231 @@ export default function Home() {
   lineHeight: '1.7'
 }}>
   <span style={{ fontStyle: 'italic' }}>Trekkon</span> is derived from the Ancient Greek <span style={{ fontStyle: 'italic' }}>"τρέχω,"</span> to race or run, and <span style={{ fontStyle: 'italic' }}>"ἀγών,"</span> a gathering place for games, competitions, or battles.
-We inspire players to cheer on and team up with their favorite on-screen personas in the hopes they&apos;ll trek out and conquer battles of their own.
+We inspire players to team up with their favorite on-screen personas in the hopes they&apos;ll trek out and conquer their own battles.
 </p>
-        <a href="#leagues" className="btn" style={{
-          backgroundColor: '#f0b429',
-          color: '#0a0a0f',
-          padding: '14px 32px',
-          borderRadius: '8px',
-          textDecoration: 'none',
-          fontWeight: 'bold',
-          fontSize: '1rem',
-          letterSpacing: '1.2px'
-        }}>
-          Browse Leagues →
-        </a>
+</section>
+
+      {/* ─── LEAGUES ─── */}
+<section id="leagues" className="scroll-offset" style={{ padding: '50px 40px' }}>
+  <h2 style={{
+    textAlign: 'center',
+    color: '#f0b429',
+    fontSize: 'clamp(1.75rem, 8vw, 2.25rem)',
+    marginBottom: '16px',
+    marginTop: '-84px',
+    letterSpacing: '2px'
+  }}>
+  Choose Your League
+  </h2>
+
+        <div style={{
+  display: 'flex',
+  flexWrap: 'wrap',
+  justifyContent: 'center',
+  gap: '24px',
+  maxWidth: '1100px',
+  margin: '0 auto'
+}}>
+
+          {/* Politics on the Beach */}
+<div
+  className="league-card"
+  onClick={() => router.push('/leagues/politics-on-the-beach')}
+  style={{
+    backgroundColor: '#1a1a2e',
+    border: '3px solid #f0b429',
+    borderTop: '3px solid #f0b429',
+    borderRadius: '12px',
+    padding: '28px',
+    flex: '0 1 350px'
+  }}
+>
+  <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
+    🏝️ Politics on the Beach
+  </h3>
+  <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
+    Set sail for this island adventure, going 25+ years strong, by drafting your tribe, winning challenges, and surviving the vote.
+  </p>
+ <button
+  onClick={(e) => {
+    e.stopPropagation()
+    router.push('/leagues/politics-on-the-beach')
+  }}
+    style={{
+      display: 'block',
+      width: '100%',
+      textAlign: 'center',
+      backgroundColor: '#f0b429',
+      color: '#0a0a0f',
+      padding: '10px',
+      borderRadius: '6px',
+      border: 'none',
+      fontWeight: 'bold',
+      fontSize: '0.9rem',
+      cursor: 'pointer'
+    }}
+  >
+    Climb Aboard →
+  </button>
+</div>
+
+         {/* The Traitors */}
+ <div
+  className="league-card"
+  onClick={() => router.push('/leagues/tumult-in-the-turret')}
+  style={{
+    backgroundColor: '#1a1a2e',
+    border: '3px solid rgb(245, 255, 156)',
+    borderTop: '3px solid rgb(245, 255, 156)',
+    borderRadius: '12px',
+    padding: '28px',
+    flex: '0 1 350px'
+  }}
+  >
+            <h3 style={{ color: 'rgb(245, 255, 156)', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
+    🗡️ Tumult in the Turret
+  </h3>
+            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
+    Scale the turret steps of Alan's Castle and decide who you'll back in this game of murder, banishment, and deception.
+  </p>
+  <button
+  onClick={(e) => {
+    e.stopPropagation()
+    router.push('/leagues/tumult-in-the-turret')
+  }}
+    style={{
+      display: 'block',
+      width: '100%',
+      textAlign: 'center',
+      backgroundColor: '#f0b429',
+      color: '#0a0a0f',
+      padding: '10px',
+      borderRadius: '6px',
+      border: 'none',
+      fontWeight: 'bold',
+      fontSize: '0.9rem',
+      cursor: 'pointer'
+    }}
+  >
+    Cross the Loch →
+  </button>
+       </div>
+
+          {/* European Rocket Ships */}
+          <div style={{
+            backgroundColor: '#1a1a2e',
+            border: '3px solid #f0b429',
+            borderTop: '3px solid #f0b429',
+            borderRadius: '12px',
+            padding: '28px',
+    flex: '0 1 350px'
+          }}>
+            <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
+             🏎️ Rocket Ship Racing
+            </h3>
+            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
+              Coming in 2027, travel the globe with world-class drivers up and down the grid over 24 weeks of high octane racing.
+            </p>
+            <button
+  onClick={() => setShowComingSoon(true)}
+  style={{
+    display: 'block',
+    width: '100%',
+    textAlign: 'center',
+    backgroundColor: '#2a2a3e',
+    color: '#a0a0b0',
+    padding: '10px',
+    borderRadius: '6px',
+    border: '1px solid #3a3a5e',
+    fontSize: '0.9rem',
+    fontWeight: 'bold',
+    cursor: 'pointer'
+  }}
+>
+  Red Lights Out →
+</button>
+          </div>
+
+          {/* Americans Turning Left */}
+          <div style={{
+            backgroundColor: '#1a1a2e',
+            border: '3px solid rgb(245, 255, 156)',
+            borderTop: '3px solid rgb(245, 255, 156)',
+            borderRadius: '12px',
+            padding: '28px',
+    flex: '0 1 350px'
+          }}>
+            <h3 style={{ color: 'rgb(245, 255, 156)', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
+              🚗 Drive Fast, Turn Left
+            </h3>
+            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
+              Coming in 2027, climb through the cargo net for 36 weeks of American Thunder and race to the checkered flag.</p>
+
+            <button
+  onClick={() => setShowComingSoon(true)}
+  style={{
+    display: 'block',
+    width: '100%',
+    textAlign: 'center',
+    backgroundColor: '#2a2a3e',
+    color: '#a0a0b0',
+    padding: '10px',
+    borderRadius: '6px',
+    border: '1px solid #3a3a5e',
+    fontSize: '0.9rem',
+    fontWeight: 'bold',
+    cursor: 'pointer'
+  }}
+>
+  Start Your Engines →
+</button>
+          </div>
+
+{/* Suggest a New League */}
+ <div
+  className="league-card"
+  onClick={() => router.push('/contact')}
+  style={{
+    backgroundColor: '#1a1a2e',
+    border: '3px solid #ffffff',
+    borderTop: '3px solid #ffffff',
+    borderRadius: '12px',
+    padding: '28px',
+    flex: '0 1 350px'
+  }}
+  >
+            <h3 style={{ color: '#ffffff', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
+     💭 Suggest New League
+  </h3>
+            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
+Got an idea for a fantasy league we should build next? Send us your concept and help shape the future of Trekkon Fantasy Leagues. 
+</p>
+  <button
+  onClick={(e) => {
+    e.stopPropagation()
+    router.push('/leagues/tumult-in-the-turret')
+  }}
+    style={{
+      display: 'block',
+      width: '100%',
+      textAlign: 'center',
+      backgroundColor: '#f0b429',
+      color: '#0a0a0f',
+      padding: '10px',
+      borderRadius: '6px',
+      border: 'none',
+      fontWeight: 'bold',
+      fontSize: '0.9rem',
+      cursor: 'pointer'
+    }}
+  >
+    Contact Our Team →
+  </button>
+</div>
+</div>
+
       </section>
+
 
 {/* ─── PRICING TIERS ─── */}
       <section id="tiers" style={{
@@ -109,6 +319,7 @@ We inspire players to cheer on and team up with their favorite on-screen persona
           color: '#f0b429',
           fontSize: 'clamp(1.75rem, 8vw, 2.25rem)',
           marginBottom: '0px',
+          marginTop: '-12px',
           letterSpacing: '2px'
         }}>
         Membership Tiers
@@ -304,6 +515,7 @@ We inspire players to cheer on and team up with their favorite on-screen persona
             border: '2px dashed #ca29ca',
             borderRadius: '12px',
             padding: '24px',
+            marginBottom: '48px',
             textAlign: 'center'
           }}>
          <h3 style={{ color: '#ca29ca', fontSize: 'clamp(1.0rem, 8vw, 1.5rem)', marginBottom: '8px' }}>
@@ -316,273 +528,7 @@ We inspire players to cheer on and team up with their favorite on-screen persona
 </p>
         </div>
         </div>
-      </section>
-
-    {/* ─── LEAGUES ─── */}
-<section id="leagues" className="scroll-offset" style={{ padding: '50px 40px' }}>
-  <h2 style={{
-    textAlign: 'center',
-    color: '#f0b429',
-    fontSize: 'clamp(1.75rem, 8vw, 2.25rem)',
-    marginBottom: '16px',
-    letterSpacing: '2px'
-  }}>
-  Choose Your League
-  </h2>
-
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-          gap: '24px',
-          maxWidth: '1100px',
-          margin: '0 auto'
-        }}>
-
-          {/* Politics on the Beach */}
-<div
-  className="league-card"
-  onClick={() => router.push('/leagues/politics-on-the-beach')}
-  style={{
-    backgroundColor: '#1a1a2e',
-    border: '3px solid #f0b429',
-    borderTop: '3px solid #f0b429',
-    borderRadius: '12px',
-    padding: '28px'
-  }}
->
-  <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
-    🏝️ Politics on the Beach
-  </h3>
-  <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
-    Set sail for this island adventure, going 25+ years strong, by drafting your tribe, winning challenges, and surviving the vote.
-  </p>
- <div style={{
-  backgroundColor: '#12121a',
-  borderRadius: '6px',
-  padding: '10px 14px',
-  marginBottom: '16px',
-  fontSize: '0.8rem',
-  color: '#a0a0b0',
-  display: 'flex',
-  alignItems: 'center',
-  gap: '10px'
-}}>
-  <Wallet size={18} strokeWidth={2} /> From <span style={{ color: '#f0b429', fontWeight: 'bold' }}>$0.00</span> / Season
-</div>
- <button
-  onClick={(e) => {
-    e.stopPropagation()
-    router.push('/leagues/politics-on-the-beach')
-  }}
-    style={{
-      display: 'block',
-      width: '100%',
-      textAlign: 'center',
-      backgroundColor: '#f0b429',
-      color: '#0a0a0f',
-      padding: '10px',
-      borderRadius: '6px',
-      border: 'none',
-      fontWeight: 'bold',
-      fontSize: '0.9rem',
-      cursor: 'pointer'
-    }}
-  >
-    Climb Aboard →
-  </button>
-</div>
-
-          {/* Americans Turning Left */}
-          <div style={{
-            backgroundColor: '#1a1a2e',
-            border: '3px solid rgb(245, 255, 156)',
-            borderTop: '3px solid rgb(245, 255, 156)',
-            borderRadius: '12px',
-            padding: '28px'
-          }}>
-            <h3 style={{ color: 'rgb(245, 255, 156)', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
-              🚗 Drive Fast, Turn Left
-            </h3>
-            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
-              Coming in 2027, climb through the cargo net for 36 weeks of American Muscle, seeing how many points you can bring to the checkered.
-            </p>
-          <div style={{
-  backgroundColor: '#12121a',
-  borderRadius: '6px',
-  padding: '10px 14px',
-  marginBottom: '16px',
-  fontSize: '0.8rem',
-  fontWeight: 'bold',
-  color: '#a0a0b0',
-  display: 'flex',
-  alignItems: 'center',
-  gap: '7px'
-}}>
-  <Hourglass size={16} strokeWidth={2} /> <span style={{ color: '#a0a0b0', fontWeight: 'bold' }}>Coming Soon!</span>
-</div>
-            <button
-  onClick={() => setShowComingSoon(true)}
-  style={{
-    display: 'block',
-    width: '100%',
-    textAlign: 'center',
-    backgroundColor: '#2a2a3e',
-    color: '#a0a0b0',
-    padding: '10px',
-    borderRadius: '6px',
-    border: '1px solid #3a3a5e',
-    fontSize: '0.9rem',
-    fontWeight: 'bold',
-    cursor: 'pointer'
-  }}
->
-  Start Your Engines →
-</button>
-          </div>
-
-          {/* European Rocket Ships */}
-          <div style={{
-            backgroundColor: '#1a1a2e',
-            border: '3px solid #f0b429',
-            borderTop: '3px solid #f0b429',
-            borderRadius: '12px',
-            padding: '28px'
-          }}>
-            <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
-             🏎️ Road Rocket Racing
-            </h3>
-            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
-              Coming in 2027, travel the globe with world-class drivers up and down the grid over 24 weeks of high octane racing.
-            </p>
-            <div style={{
-  backgroundColor: '#12121a',
-  borderRadius: '6px',
-  padding: '10px 14px',
-  marginBottom: '16px',
-  fontSize: '0.8rem',
-  fontWeight: 'bold',
-  color: '#a0a0b0',
-  display: 'flex',
-  alignItems: 'center',
-  gap: '7px'
-}}>
-  <Hourglass size={16} strokeWidth={2} /> <span style={{ color: '#a0a0b0', fontWeight: 'bold' }}>Coming Soon!</span>
-</div>
-            <button
-  onClick={() => setShowComingSoon(true)}
-  style={{
-    display: 'block',
-    width: '100%',
-    textAlign: 'center',
-    backgroundColor: '#2a2a3e',
-    color: '#a0a0b0',
-    padding: '10px',
-    borderRadius: '6px',
-    border: '1px solid #3a3a5e',
-    fontSize: '0.9rem',
-    fontWeight: 'bold',
-    cursor: 'pointer'
-  }}
->
-  Red Lights Out →
-</button>
-          </div>
-
-            {/* The Traitors */}
- <div
-  className="league-card"
-  onClick={() => router.push('/leagues/tumult-in-the-turret')}
-  style={{
-    backgroundColor: '#1a1a2e',
-    border: '3px solid rgb(245, 255, 156)',
-    borderTop: '3px solid rgb(245, 255, 156)',
-    borderRadius: '12px',
-    padding: '28px'
-  }}
-  >
-            <h3 style={{ color: 'rgb(245, 255, 156)', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
-    🗡️ Tumult in the Turret
-  </h3>
-            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
-    Scale the turret steps of Alan's Castle and decide who you'll back in this game of murder, banishment, and deception.
-  </p>
-  <div style={{
-    backgroundColor: '#12121a',
-    borderRadius: '6px',
-    padding: '10px 14px',
-    marginBottom: '16px',
-    fontSize: '0.8rem',
-    fontWeight: 'bold',
-    color: '#a0a0b0',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '7px'
-  }}>
-  <Wallet size={18} strokeWidth={2} /> From <span style={{ color: '#f0b429', fontWeight: 'bold' }}>$0.00</span> / Season
-  </div>
-  <button
-  onClick={(e) => {
-    e.stopPropagation()
-    router.push('/leagues/tumult-in-the-turret')
-  }}
-    style={{
-      display: 'block',
-      width: '100%',
-      textAlign: 'center',
-      backgroundColor: '#f0b429',
-      color: '#0a0a0f',
-      padding: '10px',
-      borderRadius: '6px',
-      border: 'none',
-      fontWeight: 'bold',
-      fontSize: '0.9rem',
-      cursor: 'pointer'
-    }}
-  >
-    Cross the Loch →
-  </button>
-</div>
-       </div>
-      </section>
-
-      {/* ─── SUGGEST A LEAGUE ─── */}
-      <section id="suggest" style={{
-        padding: '20px 40px',
-        textAlign: 'center',
-        backgroundColor: '#0a0a0f',
-      }}>
-        <h2 style={{
-          textAlign: 'center',
-          color: '#f0b429',
-          fontSize: 'clamp(1.5rem, 6vw, 2.25rem)',
-          marginBottom: '0px',
-          letterSpacing: '2px'
-        }}>
-        Suggest a New League
-        </h2>
-        <p className="hero-text" style={{
-          color: '#a0a0b0',
-          fontSize: '1.0rem',
-          maxWidth: '500px',
-          margin: '0 auto 28px auto',
-          lineHeight: '1.7'
-        }}>
-          Got an idea for a fantasy league we should build next? Send us your concept and help shape
-          the future of Trekkon Fantasy Leagues.
-        </p>
-        <a href="/contact" className="btn" style={{
-          backgroundColor: '#f0b429',
-          color: '#0a0a0f',
-          padding: '14px 32px',
-          borderRadius: '8px',
-          textDecoration: 'none',
-          marginBottom: '40px',
-          fontWeight: 'bold',
-          fontSize: '1rem',
-        }}>
-          Reach Out to Our Team →
-        </a>
-      </section>
+</section>
 
 {showComingSoon && (
   <div style={{

@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import ConfirmModal from '@/components/ConfirmModal'
-import { Cog, Palette } from 'lucide-react'
+import { Cog, Palette, Trophy, Calculator, TrendingUp, Users, ClipboardList, RefreshCw, Puzzle, Microscope } from 'lucide-react'
 import ResourcesModal from '@/components/ResourcesModal'
 import { leagueTypeLabels } from '@/lib/leagueTypeLabels'
 
@@ -50,6 +50,17 @@ export default function LeagueInstancePage() {
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false)
   const [copied, setCopied] = useState(false)
   const [showResources, setShowResources] = useState(false)
+
+const [isMobileWidth, setIsMobileWidth] = useState(false)
+
+useEffect(() => {
+  function checkWidth() {
+    setIsMobileWidth(window.innerWidth <= 600)
+  }
+  checkWidth()
+  window.addEventListener('resize', checkWidth)
+  return () => window.removeEventListener('resize', checkWidth)
+}, [])
 
   useEffect(() => {
     async function loadLeague() {
@@ -385,14 +396,14 @@ export default function LeagueInstancePage() {
   {
     label: 'Standings, Draft & Community Tools:',
     items: [
-      { label: 'Leaderboard', emoji: '🏆', href: `/leagues/${type}/${instance}/leaderboard` },
-      { label: 'Scoring Log', emoji: '🧮', href: `/leagues/${type}/scoring-log?from=${instance}` },
-      { label: 'Analytics', emoji: '📈', href: `/leagues/${type}/${instance}/analytics` },
-      { label: 'Rosters', emoji: '👥', href: `/leagues/${type}/${instance}/roster` },
-      { label: 'Draft Log', emoji: '📋', href: `/leagues/${type}/${instance}/draft-log` },
-      { label: 'Trade Portal', emoji: '🔄', href: `/leagues/${type}/${instance}/trade-portal` },
-      { label: 'Draft Room', emoji: '🧩', href: `/leagues/${type}/${instance}/draft-room` },
-      { label: 'Draft Research', emoji: '🔬', href: null },
+      { label: 'Leaderboard', icon: Trophy, href: `/leagues/${type}/${instance}/leaderboard` },
+      { label: 'Scoring Log', icon: Calculator, href: `/leagues/${type}/scoring-log?from=${instance}` },
+      { label: 'Analytics', icon: TrendingUp, href: `/leagues/${type}/${instance}/analytics` },
+      { label: 'Rosters', icon: Users, href: `/leagues/${type}/${instance}/roster` },
+      { label: 'Draft Log', icon: ClipboardList, href: `/leagues/${type}/${instance}/draft-log` },
+      { label: 'Trade Portal', icon: RefreshCw, href: `/leagues/${type}/${instance}/trade-portal` },
+      { label: 'Draft Room', icon: Puzzle, href: `/leagues/${type}/${instance}/draft-room` },
+      { label: 'Draft Research', icon: Microscope, href: null },
     ].filter((item) =>
       !(item.label === 'Draft Room' && (!league.is_private || league.draft_status === 'completed' || type === 'potb-demo')) &&
       !(item.label === 'Draft Research' && (league.draft_status === 'completed' || type === 'potb-demo'))
@@ -573,32 +584,36 @@ export default function LeagueInstancePage() {
                 <div style={{ color: '#a0a0b0', fontSize: '1rem', marginBottom: '16px' }}>
                   {group.label}
                 </div>
-                <div
+  <div
   className="tool-grid"
   style={{
     maxWidth: '800px',
-    display: 'grid',
-    gridTemplateColumns: `repeat(${group.items.length >= 7 ? 4 : 3}, 1fr)`,
-    gap: '20px'
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'space-evenly',
+    rowGap: '36px',
+    columnGap: '20px'
   }}
 >
                  {group.items.map((page) => {
-  const content = (
-    <>
-      <div style={{ fontSize: '2.5rem', marginBottom: '4px' }}>
-        <span className="draft-room-emoji">{page.emoji}</span>
-      </div>
-      <div style={{ fontSize: '1rem', textAlign: 'center' }}>{page.label}</div>
-    </>
-  )
+const Icon = page.icon
+const content = (
+  <>
+    <div style={{ marginBottom: '4px', display: 'flex', justifyContent: 'center' }}>
+      <Icon size={50} strokeWidth={1.5} color="rgb(245, 255, 156)" />
+    </div>
+    <div style={{ fontSize: '1rem', textAlign: 'center' }}>{page.label}</div>
+  </>
+)
   const cardStyle = {
-    borderRadius: '10px',
-    padding: '0px 0px',
-    textAlign: 'center' as const,
-    textDecoration: 'none',
-    color: page.href ? '#ffffff' : '#555570',
-    cursor: page.label === 'Draft Research' ? 'pointer' : 'default',
-  }
+  borderRadius: '10px',
+  padding: '0px 0px',
+  textAlign: 'center' as const,
+  textDecoration: 'none',
+  color: page.href ? '#ffffff' : '#555570',
+  flex: isMobileWidth ? '0 0 40%' : '0 0 auto',
+  maxWidth: isMobileWidth ? '40%' : 'none',
+}
   const isDraftRoomTile = page.label === 'Draft Room'
   const shouldPulse = isDraftRoomTile && league.draft_status === 'in_progress'
 

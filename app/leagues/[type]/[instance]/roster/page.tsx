@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { Users } from 'lucide-react'
 
 type RosterMember = {
   user_id: string
@@ -206,8 +207,9 @@ useEffect(() => {
           ← Back to {leagueName || 'League'}
         </a>
 
-<h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px' }}>
-  <span style={{ color: '#f0b429' }}>👥 League</span>{' '}
+<h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+  <Users size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
+  <span style={{ color: '#f0b429' }}>League</span>{' '}
   <span style={{ color: '#ffffff' }}>Roster</span>
 </h1>
 
