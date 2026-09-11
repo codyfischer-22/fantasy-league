@@ -496,3 +496,69 @@ html, body {
     max-width: calc(50% - 20px);
   }
 }
+
+.emoji-potb { font-size: 1em; }
+.emoji-turret { font-size: 1em; }
+.emoji-drive { font-size: 1.3em; }
+.emoji-suggest { font-size: 1.1em; }
+
+@media (max-width: 600px) {
+  .emoji-potb,
+  .emoji-turret,
+  .emoji-f1,
+  .emoji-drive,
+  .emoji-suggest {
+    font-size: 1em;
+    position: static;
+    top: 0;
+  }
+}
+
+.emoji-f1-home {
+  font-size: 1.75em;
+  position: relative;
+  top: -10px;
+  left: -10px;
+  display: inline-block;
+  line-height: 1;
+}
+
+@media (max-width: 600px) {
+  .emoji-f1-home {
+    font-size: 1em;
+    position: static;
+    top: 0;
+    left: 0;
+    line-height: normal;
+  }
+}
+
+.emoji-f1-list {
+  font-size: 1.5em;
+  position: relative;
+  top: -5px;
+  left: -8px;
+  display: inline-block;
+  line-height: 1;
+}
+
+@media (max-width: 600px) {
+  .emoji-f1-list {
+    font-size: 1em;
+    position: static;
+    top: 0;
+    left: 0;
+    line-height: normal;
+  }
+}
+
+.text-f1-shift {
+  position: relative;
+  left: -9px;
+}
+
+@media (max-width: 600px) {
+  .text-f1-shift {
+    left: 0;
+  }
+}

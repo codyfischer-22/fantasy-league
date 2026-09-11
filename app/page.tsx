@@ -123,8 +123,8 @@ We inspire players to team up with their favorite on-screen personas in the hope
   }}
 >
   <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
-    <span style={{ fontSize: '1.25em' }}>🏝️</span> Politics on the Beach
-  </h3>
+  <span className="emoji-potb">🏝️</span> Politics on the Beach
+</h3>
   <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
     Set sail for this island adventure, going 25+ years strong, by drafting your tribe, winning challenges, and surviving the vote.
   </p>
@@ -165,8 +165,8 @@ We inspire players to team up with their favorite on-screen personas in the hope
   }}
   >
             <h3 style={{ color: 'rgb(245, 255, 156)', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
-    <span style={{ fontSize: '1.25em' }}>🗡️</span> Turret Mafia
-  </h3>
+  <span className="emoji-turret">🗡️</span> Turret Mafia
+</h3>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
     Scale the turret steps of Alan's Castle and decide who you'll back in this game of murder, banishment, and deception.
   </p>
@@ -202,8 +202,16 @@ We inspire players to team up with their favorite on-screen personas in the hope
             padding: '28px',
     flex: '0 1 350px'
           }}>
-            <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
-  <span style={{ fontSize: '1.75em', position: 'relative', top: '-3px', display: 'inline-block' }}>🏎️</span> Rocket Ship Racing
+            <h3 style={{
+  color: '#f0b429',
+  fontSize: 'clamp(1.35rem, 6vw, 1.6rem)',
+  marginBottom: '8px',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '6px',
+  lineHeight: '1.2'
+}}>
+  <span className="emoji-f1-home">🏎️</span> <span style={{ position: 'relative', left: '-12px' }}>Rocket Ship Racing</span>
 </h3>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
               Coming in 2027, travel the globe with world-class drivers up and down the grid over 24 weeks of high octane racing.
@@ -238,8 +246,8 @@ We inspire players to team up with their favorite on-screen personas in the hope
     flex: '0 1 350px'
           }}>
             <h3 style={{ color: 'rgb(245, 255, 156)', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
-              <span style={{ fontSize: '1.3em' }}>🚗</span> Drive Fast, Turn Left
-            </h3>
+  <span className="emoji-drive">🚗</span> Drive Fast, Turn Left
+</h3>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
               Coming in 2027, climb through the cargo net for 36 weeks of American Thunder and race to the checkered flag.</p>
 
@@ -277,8 +285,8 @@ We inspire players to team up with their favorite on-screen personas in the hope
   }}
   >
             <h3 style={{ color: '#ffffff', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
-     <span style={{ fontSize: '1.1em' }}>💭</span> Suggest New League
-  </h3>
+  <span className="emoji-suggest">💭</span> Suggest New League
+</h3>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
 Got an idea for a fantasy league we should build next? Send us your concept and help shape the future of Trekkon Fantasy Leagues. 
 </p>

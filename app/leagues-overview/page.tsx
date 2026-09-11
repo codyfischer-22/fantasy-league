@@ -140,13 +140,8 @@ export default function LeaguesOverviewPage() {
     gap: '4px'
   }}
 >
-  <span style={{
-  fontSize: lt.slug === 'rocket-ship-racing' ? '1.5em' : '1em',
-  lineHeight: 1,
-  position: 'relative',
-  top: lt.slug === 'rocket-ship-racing' ? '-5px' : '0px'
-}}>{lt.emoji}</span> {lt.name} →
-</button>
+<span className={lt.slug === 'rocket-ship-racing' ? 'emoji-f1-list' : ''}>{lt.emoji}</span>{' '}
+<span className={lt.slug === 'rocket-ship-racing' ? 'text-f1-shift' : ''}>{lt.name}</span> →</button>
                 ) : (
                   <a
                     key={lt.slug}
