@@ -505,7 +505,6 @@ html, body {
 @media (max-width: 600px) {
   .emoji-potb,
   .emoji-turret,
-  .emoji-f1,
   .emoji-drive,
   .emoji-suggest {
     font-size: 1em;
@@ -559,6 +558,17 @@ html, body {
 
 @media (max-width: 600px) {
   .text-f1-shift {
+    left: 0;
+  }
+}
+
+.text-f1-shift-home {
+  position: relative;
+  left: -10px;
+}
+
+@media (max-width: 600px) {
+  .text-f1-shift-home {
     left: 0;
   }
 }

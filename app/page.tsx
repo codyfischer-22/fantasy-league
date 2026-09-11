@@ -211,8 +211,7 @@ We inspire players to team up with their favorite on-screen personas in the hope
   gap: '6px',
   lineHeight: '1.2'
 }}>
-  <span className="emoji-f1-home">🏎️</span> <span style={{ position: 'relative', left: '-12px' }}>Rocket Ship Racing</span>
-</h3>
+<span className="emoji-f1-home">🏎️</span> <span className="text-f1-shift-home">Rocket Ship Racing</span></h3>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
               Coming in 2027, travel the globe with world-class drivers up and down the grid over 24 weeks of high octane racing.
             </p>

@@ -140,7 +140,7 @@ export default function LeaguesOverviewPage() {
     gap: '4px'
   }}
 >
-<span className={lt.slug === 'rocket-ship-racing' ? 'emoji-f1-list' : ''}>{lt.emoji}</span>{' '}
+<span className={lt.slug === 'rocket-ship-racing' ? 'emoji-f1-list' : ''}>{lt.emoji}</span>{'  '}
 <span className={lt.slug === 'rocket-ship-racing' ? 'text-f1-shift' : ''}>{lt.name}</span> →</button>
                 ) : (
                   <a
@@ -158,7 +158,7 @@ export default function LeaguesOverviewPage() {
                       fontSize: '0.95rem'
                     }}
                   >
-                    {lt.emoji} {lt.name} →
+                    {lt.emoji}{'  '}{lt.name} →
                   </a>
                 )
               )}
@@ -254,7 +254,7 @@ export default function LeaguesOverviewPage() {
                   fontSize: '0.95rem'
                 }}
               >
-                <div>🧪 Politics on the Beach →</div>
+                <div>🧪{'  '}Politics on the Beach →</div>
               </a>
               <a
                 href="/leagues/turret-mafia-demo/sample-league-turret"
@@ -269,7 +269,7 @@ export default function LeaguesOverviewPage() {
                   fontSize: '0.95rem'
                 }}
               >
-                <div>🧪 Turret Mafia →</div>
+                <div>🧪{'  '}Turret Mafia →</div>
               </a>
             </div>
           </div>
