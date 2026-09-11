@@ -11,7 +11,7 @@ const leagueTypeEmojis: Record<string, string> = {
   'politics-on-the-beach': '🌴',
   'americans-turning-left': '🚗',
   'european-rocket-ships': '🏎️',
-  'tumult-in-the-turret': '🗡️',
+  'turret-mafia': '🗡️',
 }
 
 export default function CreateLeaguePage() {

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
-import { TrendingUp } from 'lucide-react'
+import { TrendingUp, Lock } from 'lucide-react'
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts'
@@ -43,7 +43,7 @@ const categoryLabelsByLeague: Record<string, Record<string, string>> = {
     zero_vote_finalist: '0-Vote Finalist',
     manual_adjustment: 'Manual Adjustment',
   },
-  'tumult-in-the-turret': {
+  'turret-mafia': {
     group_earns_5k: 'Group Earns $5,000',
     team_shield: 'Team Shield',
     personal_shield: 'Personal Shield',
@@ -68,7 +68,7 @@ const categoryLabelsByLeague: Record<string, Record<string, string>> = {
 const castawayTermByLeague: Record<string, string> = {
   'politics-on-the-beach': 'Castaway',
   'potb-demo': 'Castaway',
-  'tumult-in-the-turret': 'Castle-Goer',
+  'turret-mafia': 'Castle-Goer',
 }
 
 type EventDetail = {
@@ -199,12 +199,12 @@ useEffect(() => {
       }
       setIsFrozen(league.is_frozen ?? false)
       setIsPrivateLeague(league.is_private ?? false)
-      const isDemoLeague = type === 'potb-demo'
-      if (!isDemoLeague) {
-        if (!user) {
-          setAccess('denied')
-          return
-        }
+      const isDemoLeague = type === 'potb-demo' || type === 'turret-mafia-demo'
+if (!isDemoLeague) {
+  if (!user) {
+    setAccess('denied')
+    return
+  }
         const { data: membership } = await supabase
           .from('league_members')
           .select('tier_at_join')
@@ -279,7 +279,7 @@ useEffect(() => {
             notes: s.notes,
           })
         })
-        const row: CastawayChartRow = { episode: `TC ${ep}` }
+        const row: CastawayChartRow = { episode: `Rd. ${ep}` }
         names.forEach((n) => {
           row[n] = runningTotals[n]
         })
@@ -356,29 +356,49 @@ useEffect(() => {
           setValueReport(report)
         }
         const castawayOwner = new Map(
-          (picks ?? []).map((p) => [p.castaway_id, p.user_id])
-        )
-        const playerRunningTotals: Record<string, number> = {}
-        pNames.forEach((n) => (playerRunningTotals[n] = 0))
-        const playerRows: PlayerChartRow[] = []
-        episodeNumbers.forEach((ep) => {
-          const epScores = scores.filter((s) => s.episode_number === ep)
-          epScores.forEach((s) => {
-            const ownerId = castawayOwner.get(s.castaway_id)
-            if (!ownerId) return
-            const playerName = playerNameMap.get(ownerId)
-            if (!playerName) return
-            playerRunningTotals[playerName] += s.points * s.count
-          })
-          const ranked = [...pNames].sort(
-            (a, b) => playerRunningTotals[b] - playerRunningTotals[a]
-          )
-          const row: PlayerChartRow = { episode: `TC ${ep}` }
-          ranked.forEach((name, idx) => {
-            row[name] = idx + 1
-          })
-          playerRows.push(row)
-        })
+  (picks ?? []).map((p) => [p.castaway_id, p.user_id])
+)
+// Group castaway_ids by owning Player
+const castawaysByPlayer = new Map<string, number[]>()
+;(picks ?? []).forEach((p) => {
+  const existing = castawaysByPlayer.get(p.user_id) ?? []
+  existing.push(p.castaway_id)
+  castawaysByPlayer.set(p.user_id, existing)
+})
+
+// Track each individual castaway's running total (not each Player's)
+const castawayRunningTotals: Record<number, number> = {}
+castawayIds.forEach((id) => (castawayRunningTotals[id] = 0))
+
+const playerRows: PlayerChartRow[] = []
+episodeNumbers.forEach((ep) => {
+  const epScores = scores.filter((s) => s.episode_number === ep)
+  epScores.forEach((s) => {
+    castawayRunningTotals[s.castaway_id] = (castawayRunningTotals[s.castaway_id] ?? 0) + s.points * s.count
+  })
+
+  // For each Player, compute their top-3-of-however-many castaways, using totals as of this episode
+  const playerTotalsThisEpisode: Record<string, number> = {}
+  pNames.forEach((n) => (playerTotalsThisEpisode[n] = 0))
+
+  castawaysByPlayer.forEach((castawayIdsForPlayer, userId) => {
+    const playerName = playerNameMap.get(userId)
+    if (!playerName) return
+    const totals = castawayIdsForPlayer.map((cid) => castawayRunningTotals[cid] ?? 0)
+    const top3 = [...totals].sort((a, b) => b - a).slice(0, 3)
+    playerTotalsThisEpisode[playerName] = top3.reduce((sum, t) => sum + t, 0)
+  })
+
+  const ranked = [...pNames].sort(
+    (a, b) => playerTotalsThisEpisode[b] - playerTotalsThisEpisode[a]
+  )
+  const row: PlayerChartRow = { episode: `Rd. ${ep}` }
+  ranked.forEach((name, idx) => {
+    row[name] = idx + 1
+  })
+  playerRows.push(row)
+})
+setPlayerChartData(playerRows)
         setPlayerChartData(playerRows)
       }
     }
@@ -411,27 +431,43 @@ useEffect(() => {
   }
 
   if (access === 'denied') {
-    return (
-      <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#a0a0b0', fontFamily: 'Georgia, serif', gap: '16px', padding: '40px' }}>
-        <div style={{ fontSize: '2.5rem' }}>🔒</div>
-        <h1 style={{ color: '#f0b429', fontSize: '1.6rem' }}>Analytics is a Castaway+ perk.</h1>
-        <p style={{ maxWidth: '400px', textAlign: 'center' }}>
-          Upgrade your membership to unlock full-season analytics and track every player and {castawayTerm.toLowerCase()}&apos;s journey week by week.
-        </p>
-        <a href="/account" className="btn" style={{
-          backgroundColor: '#f0b429',
-          color: '#0a0a0f',
-          padding: '12px 28px',
-          borderRadius: '8px',
-          textDecoration: 'none',
-          fontWeight: 'bold'
+  return (
+    <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
+      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+        <a href={`/leagues/${type}/${instance}`} style={{
+          color: '#a0a0b0', fontSize: '0.85rem', textDecoration: 'none', display: 'inline-block', marginBottom: '24px'
         }}>
-          Upgrade Membership →
+          ← Back to Previous Page
         </a>
-      </main>
-    )
-  }
-
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textAlign: 'center',
+          gap: '16px',
+          padding: '80px 40px'
+        }}>
+          <Lock size={50} strokeWidth={2} color="#a0a0b0" />
+          <h1 style={{ color: '#f0b429', fontSize: '1.6rem' }}>Analytics is a Castaway+ perk.</h1>
+          <p style={{ maxWidth: '400px' }}>
+            Upgrade your membership to unlock full-season analytics and track every player and {castawayTerm.toLowerCase()}&apos;s journey week by week.
+          </p>
+          <a href="/account" className="btn" style={{
+            backgroundColor: '#f0b429',
+            color: '#0a0a0f',
+            padding: '12px 28px',
+            borderRadius: '8px',
+            textDecoration: 'none',
+            fontWeight: 'bold'
+          }}>
+            Upgrade Membership →
+          </a>
+        </div>
+      </div>
+    </main>
+  )
+}
   if (isFrozen) {
     return (
       <main style={{

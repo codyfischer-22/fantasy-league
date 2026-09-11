@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { containsEmoji } from '@/lib/validation'
+import { MailCheck } from 'lucide-react'
 
 export default function SignUp() {
   const [email, setEmail] = useState('')
@@ -17,6 +18,8 @@ export default function SignUp() {
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const [signedUp, setSignedUp] = useState(false)
+  const [emailOptIn, setEmailOptIn] = useState(true)
+  
   const router = useRouter()
 
   const calculateAge = (dob: string) => {
@@ -77,6 +80,7 @@ const { error } = await supabase.auth.signUp({
       date_of_birth: dob,
       agreed_to_terms: agreedToTerms,
       heard_about_us: heardAboutUs,
+      email_opt_in: emailOptIn,
     },
     emailRedirectTo: pendingInvite
       ? `${window.location.origin}${pendingInvite}`
@@ -130,14 +134,16 @@ if (error) {
           maxWidth: '420px',
           textAlign: 'center'
         }}>
-          <div style={{ fontSize: '3rem', marginBottom: '16px' }}>📬</div>
-          <h1 style={{ color: '#f0b429', fontSize: '1.6rem', marginBottom: '12px' }}>
-            Almost there!
-          </h1>
-          <p style={{ color: '#a0a0b0', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '20px' }}>
-            We&apos;ve sent a confirmation link to <strong style={{ color: '#ffffff' }}>{email}</strong>.
-            Click the link in that email to activate your account; then come back and sign in.
-          </p>
+       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
+  <MailCheck size={48} strokeWidth={1.5} color="#f0b429" />
+</div>
+<h1 style={{ color: '#f0b429', fontSize: '1.6rem', marginBottom: '12px' }}>
+  Almost there!
+</h1>
+       <p className="mobile-left-text" style={{ color: '#a0a0b0', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '20px' }}>
+  We&apos;ve sent a confirmation link to <strong style={{ color: '#ffffff' }}>{email}</strong>.
+  Click the link in that email to activate your account; then come back and sign in.
+</p>
           <a href="/login" className="btn" style={{
             display: 'inline-block',
             backgroundColor: '#f0b429',
@@ -246,6 +252,18 @@ if (error) {
   <a href="/privacy" target="_blank" style={{ color: '#f0b429' }}>Privacy Policy</a>.
 </span>
           </label>
+
+          <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '20px', cursor: 'pointer' }}>
+  <input
+    type="checkbox"
+    checked={emailOptIn}
+    onChange={(e) => setEmailOptIn(e.target.checked)}
+    style={{ marginTop: '3px' }}
+  />
+  <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
+    Keep me updated on new leagues, season starts, and website developments via email.
+  </span>
+</label>
           <button
             type="submit"
             disabled={loading}

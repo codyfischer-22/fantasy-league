@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/AuthContext'
 import { leagueTypeLabels } from '@/lib/leagueTypeLabels'
 import { Calculator } from 'lucide-react'
+import { Lock } from 'lucide-react'
 
 const categoryLabelsByLeague: Record<string, Record<string, string>> = {
   'politics-on-the-beach': {
@@ -42,13 +43,33 @@ const categoryLabelsByLeague: Record<string, Record<string, string>> = {
     zero_vote_finalist: '0-Vote Finalist',
     manual_adjustment: 'Manual Adjustment',
   },
-  'tumult-in-the-turret': {
+  'turret-mafia': {
     group_earns_5k: 'Group Earns $5K',
     team_shield: 'Team Shield',
     personal_shield: 'Personal Shield',
     win_dagger: 'Win Dagger',
     murdered_in_night: 'Murdered in the Night',
-    murdered_in_plain_site: "Murdered in Plain Sight",
+    murdered_in_plain_sight: "Murdered in Plain Sight",
+    escape_murder_with_shield: 'Escape Murder with Shield',
+    first_banished: 'First Castle-Goer Banished',
+    banished_round_table: 'Banished at Round Table',
+    survive_round_table_cycle: 'Survive Round Table Cycle',
+    successful_dagger_play: 'Successful Dagger Play',
+    make_fire_of_truth: 'Make Fire of Truth',
+    banished_fire_of_truth: 'Banished at Fire of Truth',
+    win_quartet: 'Win as a Quartet',
+    win_trio: 'Win as a Trio',
+    win_duo: 'Win as a Duo',
+    win_solo: 'Win the Game Solo',
+    manual_adjustment: 'Manual Adjustment',
+  },
+   'turret-mafia-demo': {
+    group_earns_5k: 'Group Earns $5K',
+    team_shield: 'Team Shield',
+    personal_shield: 'Personal Shield',
+    win_dagger: 'Win Dagger',
+    murdered_in_night: 'Murdered in the Night',
+    murdered_in_plain_sight: "Murdered in Plain Sight",
     escape_murder_with_shield: 'Escape Murder with Shield',
     first_banished: 'First Castle-Goer Banished',
     banished_round_table: 'Banished at Round Table',
@@ -67,7 +88,8 @@ const categoryLabelsByLeague: Record<string, Record<string, string>> = {
 const scoringLogIntro: Record<string, string> = {
   'politics-on-the-beach': 'Check out the fully-transparent points breakdown for Politics on the Beach! Please note episodes with more than one tribal council (e.g. premiere or finale) may be broken down into multiple "voting cycles" below.',
   'potb-demo': 'Check out the fully-transparent points breakdown for Politics on the Beach! Please note episodes with more than one tribal council (e.g. premiere or finale) may be broken down into multiple "voting cycles" below.',
-  'tumult-in-the-turret': 'Check out the fully-transparent points breakdown for Tumult in the Turret! Please note episodes with more than one round table may be broken down into multiple "voting cycles" below.',
+  'turret-mafia': 'Check out the fully-transparent points breakdown for Turret Mafia! Please note episodes with more than one round table may be broken down into multiple "voting cycles" below.',
+  'turret-mafia-demo': 'Check out the fully-transparent points breakdown for Turret Mafia! Please note episodes with more than one round table may be broken down into multiple "voting cycles" below.',
 }
 
 type ScoreEntry = {
@@ -112,14 +134,7 @@ export default function ScoringLogPage() {
         setLeagueName(league?.name ?? null)
         setIsFrozen(league?.is_frozen ?? false)
       }
-      
-      
-      
-      
-      
-      
-      
-      
+
      let leagueId: number | null = null
 if (fromInstance) {
   const { data: leagueRow } = await supabase
@@ -259,12 +274,14 @@ if ((scores && scores.length > 0) || (customEntries && customEntries.length > 0)
         gap: '16px',
         padding: '40px'
       }}>
-        <div style={{ fontSize: '2.5rem' }}>🔒</div>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+  <Lock size={50} strokeWidth={2} color="#a0a0b0" />
+</div>
 <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '10px' }}>
   <Calculator size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
   <span style={{ color: '#f0b429' }}>Episode</span>{' '}
   <span style={{ color: '#ffffff' }}>Scoring Log</span>
-</h1>        
+</h1>    
 <p style={{ maxWidth: '400px', textAlign: 'center' }}>
           Sign up for free to see episode-by-episode scoring breakdowns for this league.
         </p>
@@ -346,7 +363,7 @@ if ((scores && scores.length > 0) || (customEntries && customEntries.length > 0)
                           fontWeight: 'bold',
                           fontSize: '1rem'
                         }}>
-                          {castawayTotals[castawayName] > 0 ? '+' : ''}{castawayTotals[castawayName]} pts
+                          {castawayTotals[castawayName] > 0 ? '+' : ''}{castawayTotals[castawayName]} Pts.
                         </div>
                       </div>
                      {byCastaway[castawayName].map((entry, idx) => (
@@ -355,9 +372,9 @@ if ((scores && scores.length > 0) || (customEntries && customEntries.length > 0)
       <span style={{ color: '#f0b429', fontWeight: 'bold' }}>🎯 Custom: </span>
     )}
     {categoryLabels[entry.category] ?? entry.category}
-    {entry.count > 1 ? ` (×${entry.count})` : ''}
+{entry.count > 1 ? `\u00A0\u00A0(×${entry.count})` : ''}
     {' | '}
-    {entry.points > 0 ? '+' : ''}{entry.points}{entry.count > 1 ? ` each` : ''}
+    {entry.points > 0 ? '+' : ''}{entry.points}{entry.count > 1 ? ` Each` : ''}
     {entry.notes ? ` | ${entry.notes}` : ''}
   </div>
 ))}

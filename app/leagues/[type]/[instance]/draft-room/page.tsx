@@ -13,7 +13,8 @@ type Pick = { user_id: string; castaway_id: number }
 const draftCompleteTitleByLeague: Record<string, string> = {
   'politics-on-the-beach': '🔥 Tribes Are Set',
   'potb-demo': '🔥 Tribes Are Set',
-  'tumult-in-the-turret': '🗡️ Rosters Are Set',
+  'turret-mafia': '🗡️ Rosters Are Set',
+  'turret-mafia-demo': '🗡️ Rosters Are Set',
 }
 
 const draftInstructionsByLeague: Record<string, { countLine: string }> = {
@@ -23,15 +24,15 @@ const draftInstructionsByLeague: Record<string, { countLine: string }> = {
   'potb-demo': {
     countLine: 'There are 21 castaways in Survivor 51 so any league with over 5 players will have castaways "cloned" as necessary (e.g. 10 players → 40 castaways needed → clone each castaway twice for 42 selectable options).',
   },
-  'tumult-in-the-turret': {
-    countLine: 'There are 22 castle-goers in Tumult in the Turret so any league with over 5 players will have castle-goers "cloned" as necessary (e.g. 10 players → 40 castle-goers needed → clone each castle-goer twice for 44 selectable options).',
+  'turret-mafia': {
+    countLine: 'There are 22 castle-goers in Turret Mafia so any league with over 5 players will have castle-goers "cloned" as necessary (e.g. 10 players → 40 castle-goers needed → clone each castle-goer twice for 44 selectable options).',
   },
 }
 
 const castawayTermByLeague: Record<string, string> = {
   'politics-on-the-beach': 'Castaway',
   'potb-demo': 'Castaway',
-  'tumult-in-the-turret': 'Castle-Goer',
+  'turret-mafia': 'Castle-Goer',
 }
 
 export default function DraftRoomPage() {

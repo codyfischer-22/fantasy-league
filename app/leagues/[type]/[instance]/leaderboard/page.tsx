@@ -89,8 +89,9 @@ export default function LeaderboardPage() {
           castaway_name: castawayNameMap.get(p.castaway_id) ?? 'Unknown',
           total: castawayTotals.get(p.castaway_id) ?? 0,
         }))
-        const playerTotal = castawayBreakdown.reduce((sum, c) => sum + c.total, 0)
-        return {
+const top3 = [...castawayBreakdown].sort((a, b) => b.total - a.total).slice(0, 3)
+const playerTotal = top3.reduce((sum, c) => sum + c.total, 0)        
+return {
           user_id: profile.user_id,
           display_name: profile.display_name || 'Unnamed Player',
           total: playerTotal,
@@ -178,7 +179,7 @@ export default function LeaderboardPage() {
   <span style={{ color: '#ffffff' }}>Leaderboard</span>
 </h1>
       <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '32px' }}>
-  Where do you stack up on the leaderboard? Expand a player to see their {type === 'tumult-in-the-turret' ? 'roster' : 'tribe'} of 4!
+  Where do you stack up on the leaderboard? Expand a player to see their {type === 'turret-mafia' ? 'roster' : 'tribe'} of 4!
 </p>
         {standings.length === 0 ? (
           <p style={{ color: '#555570' }}>No players have joined this league yet.</p>
@@ -233,33 +234,49 @@ export default function LeaderboardPage() {
                   </div>
                 </button>
 
-                {expanded.has(player.user_id) && (
-                  <div style={{
-                    padding: '0 20px 16px 20px',
-                    borderTop: '1px solid #2a2a3e'
-                  }}>
-                    {player.castaways.length === 0 ? (
-                      <p style={{ color: '#555570', fontSize: '0.85rem', marginTop: '12px' }}>
-                        No castaways drafted yet.
-                      </p>
-                    ) : (
-                      player.castaways.map((c) => (
-                        <div key={c.castaway_id} style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          padding: '8px 0',
-                          fontSize: '0.85rem',
-                          color: '#a0a0b0'
-                        }}>
-                          <span>{c.castaway_name}</span>
-                          <span style={{ color: c.total < 0 ? '#ff6b6b' : '#f0b429', fontWeight: 'bold' }}>
-                            {c.total > 0 ? '+' : ''}{c.total} pts
-                          </span>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                )}
+
+
+               {expanded.has(player.user_id) && (
+  <div style={{
+    padding: '0 20px 16px 20px',
+    borderTop: '1px solid #2a2a3e'
+  }}>
+    {player.castaways.length === 0 ? (
+      <p style={{ color: '#555570', fontSize: '0.85rem', marginTop: '12px' }}>
+        No castaways drafted yet.
+      </p>
+    ) : (
+      (() => {
+        const sorted = [...player.castaways].sort((a, b) => b.total - a.total)
+        const benchId = sorted[3]?.castaway_id ?? null
+        return player.castaways.map((c) => {
+          const isBench = c.castaway_id === benchId
+          return (
+            <div key={c.castaway_id} style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              padding: '8px 0',
+              fontSize: '0.85rem',
+              color: isBench ? '#555570' : '#a0a0b0',
+              opacity: isBench ? 0.6 : 1
+            }}>
+              <span>
+                {c.castaway_name}
+                {isBench && <span style={{ fontSize: '0.7rem', marginLeft: '6px' }}>(Bench)</span>}
+              </span>
+              <span style={{ color: isBench ? '#555570' : (c.total < 0 ? '#ff6b6b' : '#f0b429'), fontWeight: 'bold' }}>
+                {c.total > 0 ? '+' : ''}{c.total} pts
+              </span>
+            </div>
+          )
+        })
+      })()
+    )}
+  </div>
+)}
+
+
+
               </div>
             ))}
           </div>

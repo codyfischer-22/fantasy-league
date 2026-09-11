@@ -48,8 +48,8 @@ const hubContent: Record<string, {
   rulesDescription: 'See the official point breakdown for challenges, idols, tribal councils, and the end game.',
   draftDescription: 'Study up on on draft windows, snake order, selection length, and trade rules.',
 },
-  'tumult-in-the-turret': {
-    title: 'Welcome to Tumult in the Turret!',
+  'turret-mafia': {
+    title: 'Welcome to Turret Mafia!',
     emoji: '🗡️',
     intro: [
       'Remember that game you used play at band camp? The one where someone is murdered every night and justice is doled out every morning? Well, multiply that by Fegan Floop from <em>Spy Kids</em>, and you have one of the hottest reality competition shows on television, <em>The Traitors</em>.',
@@ -61,6 +61,7 @@ const hubContent: Record<string, {
     ],
   rulesDescription: 'See the official point breakdown for missions, shields, round tables, and the end game.',
   draftDescription: 'Study up on on draft windows, snake order, selection length, and trade rules.',
+  demoHref: '/leagues/turret-mafia-demo/sample-league-turret',
 },
 }
 

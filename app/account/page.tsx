@@ -16,6 +16,7 @@ type Profile = {
   tier: string
   display_name: string | null
   is_global_admin: boolean
+  email_opt_in: boolean
 }
 
 function AccountContent() {
@@ -38,6 +39,26 @@ function AccountContent() {
   const [passwordMessage, setPasswordMessage] = useState('')
   const [showPasswordFields, setShowPasswordFields] = useState(false)
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
+  const [emailOptIn, setEmailOptIn] = useState(true)
+  const [emailOptInSaving, setEmailOptInSaving] = useState(false)
+
+const handleToggleEmailOptIn = async (checked: boolean) => {
+  if (!user) return
+  setEmailOptIn(checked)
+  setEmailOptInSaving(true)
+  const { error } = await supabase
+    .from('profiles')
+    .update({ email_opt_in: checked })
+    .eq('user_id', user.id)
+  setEmailOptInSaving(false)
+  if (error) {
+    console.error('Error updating email opt-in:', error)
+    setEmailOptIn(!checked) // revert on failure
+  } else {
+    setProfile((prev) => prev ? { ...prev, email_opt_in: checked } : prev)
+  }
+}
+
   const handleChangePassword = async () => {
     setPasswordMessage('')
     if (newPassword.length < 6) {
@@ -190,20 +211,22 @@ const handleUpgrade = async (tier: string) => {
     }
     if (user) {
       supabase
-        .from('profiles')
-        .select('email, tier, display_name, is_global_admin')
-        .eq('user_id', user.id)
-        .single()
-        .then(({ data, error }) => {
-          if (error) {
-console.error('Profile fetch error:', JSON.stringify(error, null, 2))          }
-          if (!error) {
-            setProfile(data)
-            setNameInput(data.display_name ?? '')
-            setIsGlobalAdmin(data.is_global_admin ?? false)
-          }
-          setProfileLoading(false)
-        })
+  .from('profiles')
+  .select('email, tier, display_name, is_global_admin, email_opt_in')
+  .eq('user_id', user.id)
+  .single()
+  .then(({ data, error }) => {
+    if (error) {
+      console.error('Profile fetch error:', JSON.stringify(error, null, 2))
+    }
+    if (!error) {
+      setProfile(data)
+      setNameInput(data.display_name ?? '')
+      setIsGlobalAdmin(data.is_global_admin ?? false)
+      setEmailOptIn(data.email_opt_in ?? true)
+    }
+    setProfileLoading(false)
+  })
     }
   }, [user, loading, router])
 
@@ -526,6 +549,25 @@ const handleSave = async () => {
             </div>
           )}
         </div>
+
+        <label style={{
+  display: 'flex',
+  alignItems: 'flex-start',
+  gap: '8px',
+  marginTop: '24px',
+  cursor: 'pointer'
+}}>
+  <input
+    type="checkbox"
+    checked={emailOptIn}
+    onChange={(e) => handleToggleEmailOptIn(e.target.checked)}
+    disabled={emailOptInSaving}
+    style={{ marginTop: '3px' }}
+  />
+  <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
+Keep me updated on new leagues, season starts, and website developments via email.  
+</span>
+</label>
 
         <button
   onClick={handleSignOut}

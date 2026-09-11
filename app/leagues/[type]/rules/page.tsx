@@ -1,6 +1,7 @@
 'use client'
 
 import { useParams } from 'next/navigation'
+import { ScrollText, Dices } from 'lucide-react'
 
 type ScoringRow = {
   event: string
@@ -123,10 +124,10 @@ const rulesContent: Record<string, {
       'In the event of a season-end tie (whether tribes have the same three scored players or different combinations), tie breakers will be as follows: 1) Whose first-round draft pick scored more points? 2) Second? 3) Third? 4) \u201cBench player\u201d?',
     ] 
   },
-  'tumult-in-the-turret': {
-  leagueName: 'Tumult in the Turret',
+  'turret-mafia': {
+  leagueName: 'Turret Mafia',
   intro: [
-    'Trekkon Fantasy Leagues is all about keeping our leagues simple and players\u2019 viewing experience pure. We do not want to – as a wise soul wrote – "murder to dissect," trying to annotate every pearl clutched, conversation overheard, and croissant eaten. Leave the tabulations to us, then, and focus on restocking your watch party\u2019s bean dip, enjoying the roundtable drama, and "Friday Morning Quarterbacking" in the group chat.',
+    'Trekkon Fantasy Leagues is all about keeping our leagues simple and players\u2019 viewing experience pure. Leave the tabulations to us, then, and focus on the roundtable drama, refilling your goblet, and "Friday Morning Quarterbacking" in the group chat.',
     'When the show throws us a twist we didn\u2019t see coming, please trust our team will arbitrate according to both the letter and spirit of the law.',
   ],
   sections: [
@@ -134,20 +135,20 @@ const rulesContent: Record<string, {
       title: 'Mission Performances',
       rows: [
         { event: 'Group Earns $5,000', 
-          points: '+5',
-          notes: ['Only applicable for your player\u2019s subgroup. This stacks with each additional $5,000.'],
+          points: '+2',
+          notes: ['Stacks with each $5K increment. Contestant must be in the group that earned the prize.'],
         },
-        {event: 'Team Shield',
+        {event: 'Shield (Team)',
           points: '+5',
-          notes: ['Applicable when an entire team wins shield immunity for a mission performance.']
+          notes: ['Shield earned by a team for a collective prize.']
         },
-        { event: 'Personal Shield', 
+        { event: 'Shield (Personal)', 
           points: '+10',
-          notes: ['Player finds and secures a shield token in the middle of a mission.']
+          notes: ['Player finds and secures immunity on a mission.']
          },
-        { event: 'Win Dagger',
+        { event: 'Dagger',
           points: '+10',
-          notes: ['Player finds and secures a dagger in the middle of a mission.']
+          notes: ['Player finds and secures extra vote on a mission.']
          },
       ],
     },
@@ -155,41 +156,38 @@ const rulesContent: Record<string, {
       title: 'Tumult in the Turret',
       rows: [
         {
-          event: 'Murdered in the Night',
+          event: 'Murdered',
           points: '\u22128'
         },
         {
           event: 'Murdered in Plain Sight',
-          points: '\u221215'
+          points: '\u221215',
+notes: ['Player must interact with or fall into traitor trap (not just name in hat or witness murder.)']
         },
            {
-          event: 'Escape Murder with Shield',
-          points: '+15'
+          event: 'Shielded from Murder',
+          points: '+15',
+          notes: ['Player would have died were it not for their shield.']
         }
       ],
     },
     {
-      title: 'Round Table Terrors',
+      title: 'Round Table Ramblings',
       rows: [
         {
-          event: 'First Castle-Goer Banished',
+          event: 'First Banished',
           points: '\u22125',
-          notes: ['In addition to the normal banishment penalty, regardless of whether player is faithful or traitor.']
+          notes: ['Stacks with the penalty below. It had to be someone but why\u2019d you let it be you?']
         },
         {
           event: 'Banished at Round Table',
           points: '\u221210',
           notes: ['Regardless of whether player is faithful or traitor.']
         },
-        {
-          event: 'Survive Round Table Cycle',
-          points: '+10',
-          notes: ['Awarded each cycle your player is not murdered or banished.'],
-        },
          {
-          event: 'Successful Dagger Play',
+          event: 'Successful Dagger',
           points: '+15',
-          notes: ['If extra vote is correctly cast on eliminated player, when it needed to be, whether faithful or traitor.']
+          notes: ['If extra vote makes the difference in a player going home.']
         }
       ],
     },
@@ -200,10 +198,10 @@ const rulesContent: Record<string, {
         {  event: 'Banished at Fire of Truth',
           points: '\u221210',
         },
-         {event: 'Win as a Quartet', points: '+10' },
-         {event: 'Win as a Trio', points: '+15' },
-         { event: 'Win as a Duo', points: '+30' },
-         { event: 'Win the Game Solo', points: '+45' },
+         {event: '4-Player Win', points: '+10' },
+         {event: '3-Player Win', points: '+15' },
+         { event: '2-Player Win', points: '+20' },
+         { event: '1-Player Win', points: '+25' },
       ],
     },
   ],
@@ -257,8 +255,9 @@ export default function RulesPage() {
           ← Back to {content.leagueName}
         </a>
 
-       <h1 style={{ fontSize: 'clamp(1.85rem, 8vw, 2.25rem)', marginBottom: '24px' }}>
-  📜 <span style={{ color: '#f0b429' }}>{content.leagueName}</span>{' '}
+       <h1 style={{ fontSize: 'clamp(1.85rem, 8vw, 2.25rem)', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+  <ScrollText size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
+  <span style={{ color: '#f0b429' }}>{content.leagueName}</span>{' '}
   <span style={{ color: '#ffffff' }}>Rules & Scoring</span>
 </h1>
 
@@ -305,7 +304,7 @@ export default function RulesPage() {
                       whiteSpace: 'nowrap',
                       marginLeft: '16px'
                     }}>
-                      {row.points} {row.points !== '0' ? 'points' : 'points'}
+                      {row.points} {row.points !== '0' ? 'Points' : 'Points'}
                     </div>
                   </div>
                   {row.notes && row.notes.map((note, ni) => (
@@ -326,9 +325,10 @@ export default function RulesPage() {
           padding: '20px',
           marginBottom: '32px'
         }}>
-          <h2 style={{ color: '#f0b429', fontSize: '1.1rem', marginBottom: '8px', textAlign: 'center' }}>
-            🤝 Tie Breaker Procedure
-          </h2>
+         <h2 style={{ color: '#f0b429', fontSize: '1.1rem', marginBottom: '8px', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+  <Dices size={22} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
+  Tie Breaker Procedure
+</h2>
       {content.tiebreaker.map((line, i) => {
   const [before, after] = line.split(/:(.+)/)
   return (

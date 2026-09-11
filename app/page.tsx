@@ -123,7 +123,7 @@ We inspire players to team up with their favorite on-screen personas in the hope
   }}
 >
   <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
-    🏝️ Politics on the Beach
+    <span style={{ fontSize: '1.25em' }}>🏝️</span> Politics on the Beach
   </h3>
   <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
     Set sail for this island adventure, going 25+ years strong, by drafting your tribe, winning challenges, and surviving the vote.
@@ -154,7 +154,7 @@ We inspire players to team up with their favorite on-screen personas in the hope
          {/* The Traitors */}
  <div
   className="league-card"
-  onClick={() => router.push('/leagues/tumult-in-the-turret')}
+  onClick={() => router.push('/leagues/turret-mafia')}
   style={{
     backgroundColor: '#1a1a2e',
     border: '3px solid rgb(245, 255, 156)',
@@ -165,7 +165,7 @@ We inspire players to team up with their favorite on-screen personas in the hope
   }}
   >
             <h3 style={{ color: 'rgb(245, 255, 156)', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
-    🗡️ Tumult in the Turret
+    <span style={{ fontSize: '1.25em' }}>🗡️</span> Turret Mafia
   </h3>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
     Scale the turret steps of Alan's Castle and decide who you'll back in this game of murder, banishment, and deception.
@@ -173,7 +173,7 @@ We inspire players to team up with their favorite on-screen personas in the hope
   <button
   onClick={(e) => {
     e.stopPropagation()
-    router.push('/leagues/tumult-in-the-turret')
+    router.push('/leagues/turret-mafia')
   }}
     style={{
       display: 'block',
@@ -203,8 +203,8 @@ We inspire players to team up with their favorite on-screen personas in the hope
     flex: '0 1 350px'
           }}>
             <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
-             🏎️ Rocket Ship Racing
-            </h3>
+  <span style={{ fontSize: '1.75em', position: 'relative', top: '-3px', display: 'inline-block' }}>🏎️</span> Rocket Ship Racing
+</h3>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
               Coming in 2027, travel the globe with world-class drivers up and down the grid over 24 weeks of high octane racing.
             </p>
@@ -238,7 +238,7 @@ We inspire players to team up with their favorite on-screen personas in the hope
     flex: '0 1 350px'
           }}>
             <h3 style={{ color: 'rgb(245, 255, 156)', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
-              🚗 Drive Fast, Turn Left
+              <span style={{ fontSize: '1.3em' }}>🚗</span> Drive Fast, Turn Left
             </h3>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
               Coming in 2027, climb through the cargo net for 36 weeks of American Thunder and race to the checkered flag.</p>
@@ -277,7 +277,7 @@ We inspire players to team up with their favorite on-screen personas in the hope
   }}
   >
             <h3 style={{ color: '#ffffff', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
-     💭 Suggest New League
+     <span style={{ fontSize: '1.1em' }}>💭</span> Suggest New League
   </h3>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
 Got an idea for a fantasy league we should build next? Send us your concept and help shape the future of Trekkon Fantasy Leagues. 

@@ -30,7 +30,7 @@ const resourcesByLeague: Record<string, { title: string; url: string }[]> = {
       url: 'https://youtube.com/playlist?list=PLG146qFvxINI&si=tff2kAJaFP2t814m',
     },
   ],
-  'tumult-in-the-turret': [
+  'turret-mafia': [
     {
       title: '3-Minute Snapshot (Cami Twomey)',
       url: 'https://youtube.com/shorts/QkLIOPvkSYU?si=x6-rYZA186CiqOng',
@@ -46,7 +46,7 @@ export default function ResourcesModal({ open, onClose, type }: { open: boolean;
   if (!open) return null
 
   const resources = resourcesByLeague[type] ?? []
-  const castawayTerm = type === 'tumult-in-the-turret' ? 'Castle-Goers' : 'Castaways'
+  const castawayTerm = type === 'turret-mafia' ? 'Castle-Goers' : 'Castaways'
 
   return (
     <div

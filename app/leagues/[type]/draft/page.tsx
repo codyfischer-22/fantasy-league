@@ -1,6 +1,7 @@
 'use client'
 
 import { useParams } from 'next/navigation'
+import { Lock, ListOrdered, RefreshCw, Calendar, ClipboardList } from 'lucide-react'
 
 type InfoRow = {
   label: string
@@ -60,8 +61,8 @@ const draftContent: Record<string, {
 '➤ If players are caught manipulating trades with multiple accounts or friends, they will be banned from current and future league participation.',
 ],
   },
-  'tumult-in-the-turret': {
-  leagueName: 'Tumult in the Turret',
+  'turret-mafia': {
+  leagueName: 'Turret Mafia',
   intro: [
     'Here\u2019s everything you need before the draft window \u2014 timing, format, and how trades work once your roster is set.',
   ],
@@ -149,10 +150,11 @@ export default function DraftPage() {
           ← Back to {content.leagueName}
         </a>
 
-        <h1 style={{ fontSize: 'clamp(1.9rem, 8vw, 2.25rem)', marginBottom: '4px' }}>
-          📋 <span style={{ color: '#f0b429' }}>{content.leagueName}</span>{' '}
-          <span style={{ color: '#ffffff' }}>Draft & Trading</span>
-        </h1>
+        <h1 style={{ fontSize: 'clamp(1.9rem, 8vw, 2.25rem)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+  <ClipboardList size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '-1px' }} />
+  <span style={{ color: '#f0b429' }}>{content.leagueName}</span>{' '}
+  <span style={{ color: '#ffffff' }}>Draft & Trading</span>
+</h1>
 
         <div style={{ marginBottom: '36px' }}>
           {content.intro.map((para, i) => (
@@ -163,9 +165,10 @@ export default function DraftPage() {
         </div>
 
         <div style={{ marginBottom: '32px' }}>
-          <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '12px' }}>
-            📅 Key League Dates
-          </h2>
+      <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+  <Calendar size={22} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
+  Key League Dates
+</h2>
 
           <div style={{
             backgroundColor: '#1a1a2e',
@@ -195,9 +198,10 @@ export default function DraftPage() {
           </p>
 
         <div style={{ marginBottom: '32px' }}>
-          <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '12px' }}>
-            🐍 Public Draft Procedures
-          </h2>
+          <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+  <ListOrdered size={22} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
+  Public Draft Procedures
+</h2>
           <div style={{
             backgroundColor: '#1a1a2e',
             border: '1px solid #2a2a3e',
@@ -221,9 +225,10 @@ export default function DraftPage() {
         </div>
 
         <div style={{ marginBottom: '32px' }}>
-          <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '12px' }}>
-            🔒 Private Draft Procedures
-          </h2>
+          <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+  <Lock size={22} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '-2px' }} />
+  Private Draft Procedures
+</h2>
           <div style={{
             backgroundColor: '#1a1a2e',
             border: '1px solid #2a2a3e',
@@ -239,9 +244,10 @@ export default function DraftPage() {
         </div>
 
         <div style={{ marginBottom: '32px' }}>
-          <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '12px' }}>
-            🔄 Trade Procedures
-          </h2>
+          <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+  <RefreshCw size={22} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '-.5px' }} />
+  Trade Procedures
+</h2>
           <div style={{
             backgroundColor: '#1a1a2e',
             border: '1px solid #2a2a3e',

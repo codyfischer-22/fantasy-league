@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import { Calculator } from 'lucide-react'
 
 type Castaway = {
   id: number
@@ -52,7 +53,7 @@ const categoriesByLeague: Record<string, CategoryDef[]> = {
     { key: 'sole_survivor', label: 'Won Sole Survivor', points: 25 },
     { key: 'zero_vote_finalist', label: '0-Vote Finalist', points: -10 },
   ],
-  'tumult-in-the-turret': [
+  'turret-mafia': [
     { key: 'group_earns_5k', label: 'Group Earns $5,000', points: 5, allowCount: true },
     { key: 'team_shield', label: 'Team Shield', points: 5 },
     { key: 'personal_shield', label: 'Personal Shield', points: 10 },
@@ -70,6 +71,24 @@ const categoriesByLeague: Record<string, CategoryDef[]> = {
     { key: 'win_trio', label: 'Win as a Trio', points: 15 },
     { key: 'win_duo', label: 'Win as a Duo', points: 30 },
     { key: 'win_solo', label: 'Win the Game Solo', points: 45 },
+  ],
+  'turret-mafia-demo': [
+    { key: 'group_earns_5k', label: 'Earn $5K Prize', points: 2, allowCount: true },
+    { key: 'team_shield', label: 'Acquire Shield (Team)', points: 5 },
+    { key: 'personal_shield', label: 'Acquire Shield', points: 10 },
+    { key: 'win_dagger', label: 'Acquire Dagger', points: 10 },
+    { key: 'murdered_in_night', label: 'Murdered', points: -8 },
+    { key: 'murdered_in_plain_sight', label: 'Murdered in Plain Sight', points: -15 },
+    { key: 'escape_murder_with_shield', label: 'Shielded from Murder', points: 15 },
+    { key: 'first_banished', label: 'First Banished', points: -5 },
+    { key: 'banished_round_table', label: 'Banished at Round Table', points: -10 },
+    { key: 'successful_dagger_play', label: 'Successful Dagger', points: 15 },
+    { key: 'make_fire_of_truth', label: 'Make Fire of Truth', points: 15 },
+    { key: 'banished_fire_of_truth', label: 'Banished at Fire of Truth', points: -10 },
+    { key: 'win_quartet', label: '4-Player Win', points: 10 },
+    { key: 'win_trio', label: '3-Player Win', points: 15 },
+    { key: 'win_duo', label: '2-Player Win', points: 20 },
+    { key: 'win_solo', label: '1-Player Win', points: 25 },
   ],
 }
 
@@ -239,14 +258,15 @@ const toggleEliminated = async (castaway: Castaway) => {
         const count = rowState[cat.key] ?? 0
         if (count > 0) {
           entries.push({
-            league_type: selectedLeagueType,
-season: selectedLeagueType === 'politics-on-the-beach' ? 'Survivor 51' : selectedLeagueType === 'tumult-in-the-turret' ? 'The Traitors: New Blood' : 'Demo Season',            episode_number: parseInt(episodeNumber),
-            castaway_id: castaway.id,
-            category: cat.key,
-            points: cat.points,
-            count,
-            notes: null,
-          })
+  league_type: selectedLeagueType,
+  season: selectedLeagueType === 'politics-on-the-beach' ? 'Survivor 51' : selectedLeagueType === 'tumult-in-the-turret' ? 'The Traitors: New Blood' : selectedLeagueType === 'turret-mafia-demo' ? 'The Traitors Season 4' : 'Demo Season',
+  episode_number: parseInt(episodeNumber),
+  castaway_id: castaway.id,
+  category: cat.key,
+  points: cat.points,
+  count,
+  notes: null,
+})
         }
       }
 
@@ -254,7 +274,7 @@ season: selectedLeagueType === 'politics-on-the-beach' ? 'Survivor 51' : selecte
       if (manual && manual.points && parseInt(manual.points) !== 0) {
         entries.push({
           league_type: selectedLeagueType,
-season: selectedLeagueType === 'politics-on-the-beach' ? 'Survivor 51' : selectedLeagueType === 'tumult-in-the-turret' ? 'The Traitors: New Blood' : 'Demo Season',          episode_number: parseInt(episodeNumber),
+season: selectedLeagueType === 'politics-on-the-beach' ? 'Survivor 51' : selectedLeagueType === 'turret-mafia' ? 'The Traitors: New Blood' : 'Demo Season',          episode_number: parseInt(episodeNumber),
           castaway_id: castaway.id,
           category: 'manual_adjustment',
           points: parseInt(manual.points),
@@ -336,8 +356,9 @@ setMessage(`Saved ${entries.length} scoring events for Episode ${episodeNumber}!
     <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
 
-        <h1 style={{ fontSize: '2rem', marginBottom: '16px' }}>
-  🧮 <span style={{ color: '#f0b429' }}>{selectedLeagueType === 'tumult-in-the-turret' ? 'Tumult in the Turret' : 'Politics on the Beach'}</span>{' '}
+<h1 style={{ fontSize: '2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+  <Calculator size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
+  <span style={{ color: '#f0b429' }}>{selectedLeagueType === 'tumult-in-the-turret' || selectedLeagueType === 'turret-mafia-demo' ? 'Turret Mafia' : 'Politics on the Beach'}</span>{' '}
   <span style={{ color: '#ffffff' }}>Episode Scoring Guide</span>
 </h1>
 
@@ -361,8 +382,9 @@ setMessage(`Saved ${entries.length} scoring events for Episode ${episodeNumber}!
 }}
 >
   <option value="politics-on-the-beach">Politics on the Beach (Season 51)</option>
-  <option value="potb-demo">Demo (Sample)</option>
-  <option value="tumult-in-the-turret">Tumult in the Turret (New Blood)</option>
+  <option value="potb-demo">Politics on the Beach (Demo)</option>
+  <option value="turret-mafia">Turret Mafia (New Blood)</option>
+  <option value="turret-mafia-demo">Turret Mafia (Demo)</option>
 </select>
         </div>
 

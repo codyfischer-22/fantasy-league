@@ -34,7 +34,7 @@ const tierLabelsMobile: Record<string, string> = {
 const rosterTermByLeague: Record<string, string> = {
   'politics-on-the-beach': 'Tribe',
   'potb-demo': 'Tribe',
-  'tumult-in-the-turret': 'Roster',
+  'turret-mafia': 'Roster',
 }
 
 export default function RosterPage() {

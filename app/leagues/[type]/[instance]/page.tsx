@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import ConfirmModal from '@/components/ConfirmModal'
-import { Cog, Palette, Trophy, Calculator, TrendingUp, Users, ClipboardList, RefreshCw, Puzzle, Microscope } from 'lucide-react'
+import { Cog, Palette, Trophy, Calculator, TrendingUp, Users, ClipboardList, RefreshCw, Puzzle, Microscope, Lock} from 'lucide-react'
 import ResourcesModal from '@/components/ResourcesModal'
 import { leagueTypeLabels } from '@/lib/leagueTypeLabels'
 
@@ -189,16 +189,16 @@ useEffect(() => {
     router.push(`/leagues/${type}/${instance}/draft-room`)
   }
 
-  const handleClimbAboard = () => {
-    if (!user) {
-      router.push('/login')
-      return
-    }
-    setShowJoinModal(true)
-    if (myTier !== 'stowaway') {
-      confirmJoin()
-    }
+ const handleClimbAboard = () => {
+  if (!user) {
+    router.push('/login')
+    return
   }
+  setShowJoinModal(true)
+  if (myTier === 'teamprincipal') {
+    confirmJoin()
+  }
+}
 
   const confirmJoin = async () => {
     if (!user || !league) return
@@ -405,9 +405,9 @@ useEffect(() => {
       { label: 'Draft Room', icon: Puzzle, href: `/leagues/${type}/${instance}/draft-room` },
       { label: 'Draft Research', icon: Microscope, href: null },
     ].filter((item) =>
-      !(item.label === 'Draft Room' && (!league.is_private || league.draft_status === 'completed' || type === 'potb-demo')) &&
-      !(item.label === 'Draft Research' && (league.draft_status === 'completed' || type === 'potb-demo'))
-    ),
+  !(item.label === 'Draft Room' && (!league.is_private || league.draft_status === 'completed' || type === 'potb-demo' || type === 'turret-mafia-demo')) &&
+  !(item.label === 'Draft Research' && (league.draft_status === 'completed' || type === 'potb-demo' || type === 'turret-mafia-demo'))
+),
   },
 ]
   return (
@@ -737,7 +737,9 @@ const content = (
                   fontWeight: 'bold',
                   fontSize: '1rem'
                 }}>
-                  <span style={{ fontSize: '2rem' }}>🔒</span>
+                  <div style={{ display: 'flex', justifyContent: 'center' }}>
+  <Lock size={32} strokeWidth={2} color="#f0b429" />
+</div>
                   <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
                     <span>See you next time!</span>
                     <span>Registration&apos;s closed.</span>
