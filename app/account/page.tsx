@@ -17,6 +17,7 @@ type Profile = {
   display_name: string | null
   is_global_admin: boolean
   email_opt_in: boolean
+  chat_digest_opt_in: boolean
 }
 
 function AccountContent() {
@@ -41,6 +42,26 @@ function AccountContent() {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
   const [emailOptIn, setEmailOptIn] = useState(true)
   const [emailOptInSaving, setEmailOptInSaving] = useState(false)
+
+  const [chatDigestOptIn, setChatDigestOptIn] = useState(false);
+const [chatDigestSaving, setChatDigestSaving] = useState(false);
+
+const handleToggleChatDigest = async (checked: boolean) => {
+  if (!user) return;
+  setChatDigestOptIn(checked);
+  setChatDigestSaving(true);
+  const { error } = await supabase
+    .from('profiles')
+    .update({ chat_digest_opt_in: checked })
+    .eq('user_id', user.id);
+  setChatDigestSaving(false);
+  if (error) {
+    console.error('Error updating chat digest opt-in:', error);
+    setChatDigestOptIn(!checked);
+  } else {
+    setProfile((prev) => prev ? { ...prev, chat_digest_opt_in: checked } : prev);
+  }
+};
 
 const handleToggleEmailOptIn = async (checked: boolean) => {
   if (!user) return
@@ -257,9 +278,9 @@ const handleUpgrade = async (tier: string) => {
       return
     }
     if (user) {
-      supabase
+   supabase
   .from('profiles')
-  .select('email, tier, display_name, is_global_admin, email_opt_in')
+  .select('email, tier, display_name, is_global_admin, email_opt_in, chat_digest_opt_in')
   .eq('user_id', user.id)
   .single()
   .then(({ data, error }) => {
@@ -271,6 +292,7 @@ const handleUpgrade = async (tier: string) => {
       setNameInput(data.display_name ?? '')
       setIsGlobalAdmin(data.is_global_admin ?? false)
       setEmailOptIn(data.email_opt_in ?? true)
+      setChatDigestOptIn(data.chat_digest_opt_in ?? false)
     }
     setProfileLoading(false)
   })
@@ -612,8 +634,26 @@ const handleSave = async () => {
     style={{ marginTop: '3px' }}
   />
   <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
-Keep me updated on new leagues, season starts, and website developments via email.  
+Email me with league notifications and deadlines, new seasons, and website developments.
 </span>
+</label>
+
+<label style={{
+  display: 'flex',
+  alignItems: 'flex-start',
+  gap: '8px',
+  marginTop: '8px',
+  cursor: 'pointer'
+}}>
+  <input
+    type="checkbox"
+    checked={chatDigestOptIn}
+    onChange={(e) => handleToggleChatDigest(e.target.checked)}
+    disabled={chatDigestSaving}
+    style={{ marginTop: '3px' }}
+  />
+  <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
+    Email me with weekly updates on community and league chats. </span>
 </label>
 
         <button

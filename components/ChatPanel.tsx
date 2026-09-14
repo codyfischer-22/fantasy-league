@@ -88,6 +88,34 @@ const [leagues, setLeagues] = useState<{ id: number; name: string; league_type: 
 const [reportReason, setReportReason] = useState('');
 const [reportSubmitting, setReportSubmitting] = useState(false);
 const [selectedIsShowChat, setSelectedIsShowChat] = useState<boolean>(false);
+const [showDigestModal, setShowDigestModal] = useState(false);
+const [digestOptInSaving, setDigestOptInSaving] = useState(false);
+
+useEffect(() => {
+  async function checkDigestPreference() {
+    if (!user) return;
+    const { data } = await supabase
+      .from('profiles')
+      .select('chat_digest_opt_in')
+      .eq('user_id', user.id)
+      .single();
+    if (data && data.chat_digest_opt_in === null) {
+      setShowDigestModal(true);
+    }
+  }
+  checkDigestPreference();
+}, [user]);
+
+async function handleDigestChoice(optIn: boolean) {
+  if (!user) return;
+  setDigestOptInSaving(true);
+  await supabase
+    .from('profiles')
+    .update({ chat_digest_opt_in: optIn })
+    .eq('user_id', user.id);
+  setDigestOptInSaving(false);
+  setShowDigestModal(false);
+}
 
 useEffect(() => {
   async function loadUnreadPerLeague() {
@@ -1013,7 +1041,73 @@ async function toggleReaction(messageId: string, emoji: string) {
           {reportSubmitting ? 'Sending...' : 'Submit Report'}
         </button>
       </div>
-          </div>
+       </div>
+        </div>
+)}
+
+{showDigestModal && (
+  <div
+    style={{
+      position: 'fixed',
+      top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.7)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 250
+    }}
+  >
+    <div
+      style={{
+        backgroundColor: '#1a1a2e',
+        border: '1px solid #f0b429',
+        borderRadius: '12px',
+        padding: '24px',
+        maxWidth: '360px',
+        width: '90%',
+        textAlign: 'center'
+      }}
+    >
+      <h3 style={{ color: '#f0b429', textAlign: 'left', fontSize: 'clamp(.9rem, 6vw, 1.5rem', marginBottom: '8px' }}>
+        Keep up with chat!
+      </h3>
+      <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', textAlign: 'left', marginBottom: '20px' }}>
+        Our site can't push notifications so the best way to keep up with chat is occasional email updates or visiting frequently.
+      </p>
+      <div style={{ display: 'flex', fontSize: '.9rem', gap: '10px', justifyContent: 'center' }}>
+        <button
+          onClick={() => handleDigestChoice(true)}
+          disabled={digestOptInSaving}
+          style={{
+            backgroundColor: '#f0b429',
+            color: '#0a0a0f',
+            padding: '5px 10px',
+            borderRadius: '6px',
+            border: 'none',
+            fontWeight: 'bold',
+            cursor: 'pointer'
+          }}
+        >
+          Yes, update me!
+        </button>
+        <button
+          onClick={() => handleDigestChoice(false)}
+          disabled={digestOptInSaving}
+          style={{
+            backgroundColor: 'transparent',
+            color: '#a0a0b0',
+            padding: '5px 10px',
+            borderRadius: '6px',
+            border: '1px solid #2a2a3e',
+            cursor: 'pointer'
+          }}
+        >
+          No, I'll check myself.
+        </button>
+      </div>
+    </div>
+
+
       </div>
     )}
     </div>

@@ -261,7 +261,7 @@ if (error) {
     style={{ marginTop: '3px' }}
   />
   <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
-    Keep me updated on new leagues, season starts, and website developments via email.
+    Email me with league notifications and deadlines, new seasons, and website developments.
   </span>
 </label>
           <button

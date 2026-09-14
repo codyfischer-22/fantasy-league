@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/send-chat-digest",
+      "schedule": "0 15 * * 1"
+    }
+  ]
+}
