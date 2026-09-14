@@ -318,19 +318,42 @@ season: selectedLeagueType === 'politics-on-the-beach' ? 'Survivor 51' : selecte
 
     const uniqueUserIds = [...new Set((allMembers ?? []).map((m) => m.user_id))]
 
-    if (uniqueUserIds.length > 0) {
-      const { error: notifError } = await supabase.from('notifications').insert(
-        uniqueUserIds.map((uid) => ({
-          user_id: uid,
-          message: `It's official! Tallies for Episode ${episodeNumber} are live! Check your roster.`,
-          link: `/leagues/${selectedLeagueType}/scoring-log`,
-        }))
-      )
+  if (uniqueUserIds.length > 0) {
+  const { error: notifError } = await supabase.from('notifications').insert(
+    uniqueUserIds.map((uid) => ({
+      user_id: uid,
+      message: `It's official! Tallies for Episode ${episodeNumber} are live! Check your roster.`,
+      link: `/leagues/${selectedLeagueType}/scoring-log`,
+    }))
+  )
 
-      if (notifError) {
-        console.error('Notification error:', notifError)
-      }
-    }
+  if (notifError) {
+    console.error('Notification error:', notifError)
+  }
+
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('email, display_name, email_opt_in')
+    .in('user_id', uniqueUserIds)
+    .eq('email_opt_in', true)
+
+  if (profiles && profiles.length > 0) {
+    await fetch('/api/send-notification-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        recipients: profiles.map((p) => ({
+          email: p.email,
+          playerName: p.display_name || 'Player',
+        })),
+        subject: `Episode ${episodeNumber} Scores Are Live!`,
+        message: `It's official! Tallies for Episode ${episodeNumber} are live! Check your roster to see how you did and then head to the chat to discuss with friends.`,
+        linkUrl: `https://trekkonleagues.com/leagues/${selectedLeagueType}/scoring-log`,
+        linkText: 'View Scoring Log →',
+      }),
+    })
+  }
+}
 
    setSaving(false)
 setMessage(`Saved ${entries.length} scoring events for Episode ${episodeNumber}!`)

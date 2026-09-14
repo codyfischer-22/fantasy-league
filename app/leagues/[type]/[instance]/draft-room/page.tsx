@@ -208,6 +208,30 @@ if (isDraftComplete) {
       link: `/leagues/${type}/${instance}`,
     }))
   )
+
+  const memberIds = members.map((m) => m.user_id)
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('email, display_name, email_opt_in')
+    .in('user_id', memberIds)
+    .eq('email_opt_in', true)
+
+  if (profiles && profiles.length > 0) {
+    await fetch('/api/send-notification-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        recipients: profiles.map((p) => ({
+          email: p.email,
+          playerName: p.display_name || 'Player',
+        })),
+        subject: `The draft for ${league.name} is complete!`,
+        message: `The draft for ${league.name} is complete. Check out your roster, make trade offers, and get ready for the season!`,
+        linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}`,
+        linkText: 'View League →',
+      }),
+    })
+  }
 }
 
 setPicking(false)
@@ -277,6 +301,29 @@ await supabase.from('notifications').insert({
   link: `/leagues/${type}/${instance}/draft-room`,
 })
 
+const { data: missedProfile } = await supabase
+  .from('profiles')
+  .select('email, display_name, email_opt_in')
+  .eq('user_id', missedUserId)
+  .single()
+
+if (missedProfile?.email_opt_in) {
+  await fetch('/api/send-notification-email', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      recipients: [{
+        email: missedProfile.email,
+        playerName: missedProfile.display_name || 'Player',
+      }],
+      subject: `You missed your pick in ${league.name}..`,
+      message: `You failed to draft a player before the timer went off in ${league.name}. Per the host-selected policy, the system randomly selected ${randomPick.name} for you.`,
+      linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}/draft-room`,
+      linkText: 'Go to Draft Room →',
+    }),
+  })
+}
+
 if (isDraftComplete) {
   await supabase.from('notifications').insert(
     members.map((m) => ({
@@ -284,6 +331,30 @@ if (isDraftComplete) {
       message: `The draft for ${league.name} is complete. Check out your roster, make trade offers, and get ready for the season!`,
     }))
   )
+
+  const memberIds = members.map((m) => m.user_id)
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('email, display_name, email_opt_in')
+    .in('user_id', memberIds)
+    .eq('email_opt_in', true)
+
+  if (profiles && profiles.length > 0) {
+    await fetch('/api/send-notification-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        recipients: profiles.map((p) => ({
+          email: p.email,
+          playerName: p.display_name || 'Player',
+        })),
+        subject: `The draft for ${league.name} is complete!`,
+        message: `The draft for ${league.name} is complete. Check out your roster, make trade offers, and get ready for the season!`,
+        linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}`,
+        linkText: 'View League →',
+      }),
+    })
+  }
 }
     } else {
   const newOrder = [...draftOrder]
@@ -309,6 +380,29 @@ if (isDraftComplete) {
     message: `You failed to draft a player before the timer went off in ${league.name}. Per the host-selected policy, this pick has been moved to the end of the draft.`,
     link: `/leagues/${type}/${instance}/draft-room`,
   })
+
+  const { data: bumpedProfile } = await supabase
+  .from('profiles')
+  .select('email, display_name, email_opt_in')
+  .eq('user_id', missedUserId)
+  .single()
+
+if (bumpedProfile?.email_opt_in) {
+  await fetch('/api/send-notification-email', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      recipients: [{
+        email: bumpedProfile.email,
+        playerName: bumpedProfile.display_name || 'Player',
+      }],
+      subject: `You missed your pick in ${league.name}..`,
+      message: `You failed to draft a player before the timer went off in ${league.name}. Per the host-selected policy, this pick has been moved to the end of the draft.`,
+      linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}/draft-room`,
+      linkText: 'Go to Draft Room →',
+    }),
+  })
+}
 }
 
     setHandlingMissedPick(false)

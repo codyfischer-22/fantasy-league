@@ -186,6 +186,31 @@ useEffect(() => {
         link: `/leagues/${type}/${instance}/draft-room`,
       }))
     )
+
+    const memberIds = orderedMembers.map((m) => m.user_id)
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('email, display_name, email_opt_in')
+      .in('user_id', memberIds)
+      .eq('email_opt_in', true)
+
+    if (profiles && profiles.length > 0) {
+      await fetch('/api/send-notification-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          recipients: profiles.map((p) => ({
+            email: p.email,
+            playerName: p.display_name || 'Player',
+          })),
+          subject: `${league.name} draft ${league.name} has started!`,
+          message: `That's right, silly season is upon us! The draft for ${league.name} has started. Head to the draft room and make your picks!`,
+          linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}/draft-room`,
+          linkText: 'Go to Draft Room →',
+        }),
+      })
+    }
+
     router.push(`/leagues/${type}/${instance}/draft-room`)
   }
 
@@ -287,6 +312,29 @@ useEffect(() => {
           message: `${profile?.display_name || 'A new Player'} has joined ${league.name}.`,
           link: `/leagues/${type}/${instance}`,
         })
+
+        const { data: hostProfile } = await supabase
+          .from('profiles')
+          .select('email, display_name, email_opt_in')
+          .eq('user_id', league.host_user_id)
+          .single()
+
+        if (hostProfile?.email_opt_in) {
+          await fetch('/api/send-notification-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              recipients: [{
+                email: hostProfile.email,
+                playerName: hostProfile.display_name || 'Host',
+              }],
+              subject: `A new player joined ${league.name}!`,
+              message: `${profile?.display_name || 'A new Player'} has joined ${league.name}. The competetion is on!`,
+              linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}`,
+              linkText: 'View League →',
+            }),
+          })
+        }
       } else if (!league.is_private) {
         const { data: admins } = await supabase
           .from('profiles')
@@ -341,6 +389,29 @@ useEffect(() => {
           message: `${leavingName} has left ${league.name}.`,
           link: `/leagues/${type}/${instance}`,
         })
+
+        const { data: hostProfile } = await supabase
+          .from('profiles')
+          .select('email, display_name, email_opt_in')
+          .eq('user_id', league.host_user_id)
+          .single()
+
+        if (hostProfile?.email_opt_in) {
+          await fetch('/api/send-notification-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              recipients: [{
+                email: hostProfile.email,
+                playerName: hostProfile.display_name || 'Host',
+              }],
+              subject: `A player left ${league.name}..`,
+              message: `${leavingName} has left ${league.name}. We just thought we should let you know!`,
+              linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}`,
+              linkText: 'View League →',
+            }),
+          })
+        }
       } else if (!league.is_private) {
         const { data: admins } = await supabase
           .from('profiles')

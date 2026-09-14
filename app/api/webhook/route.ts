@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
 
- if (event.type === 'checkout.session.completed') {
+if (event.type === 'checkout.session.completed') {
   const session = event.data.object as Stripe.Checkout.Session
   const userId = session.client_reference_id
   const tier = session.metadata?.tier
@@ -36,6 +36,65 @@ export async function POST(req: NextRequest) {
       .from('profiles')
       .update({ tier, stripe_customer_id: customerId })
       .eq('user_id', userId)
+
+    if (tier === 'crewchief' || tier === 'teamprincipal') {
+      const { data: hostedFrozenLeagues } = await supabaseAdmin
+        .from('leagues')
+        .select('id, name, league_type, slug')
+        .eq('host_user_id', userId)
+        .eq('is_private', true)
+        .eq('is_frozen', true)
+
+      if (hostedFrozenLeagues && hostedFrozenLeagues.length > 0) {
+        const leagueIds = hostedFrozenLeagues.map((l: { id: number }) => l.id)
+
+        await supabaseAdmin
+          .from('leagues')
+          .update({ is_frozen: false })
+          .in('id', leagueIds)
+
+        for (const league of hostedFrozenLeagues) {
+          const { data: members } = await supabaseAdmin
+            .from('league_members')
+            .select('user_id')
+            .eq('league_id', league.id)
+
+          if (members && members.length > 0) {
+            await supabaseAdmin.from('notifications').insert(
+              members.map((m: { user_id: string }) => ({
+                user_id: m.user_id,
+                message: `🚗 ${league.name} is back out onto the track! The host is back to full activity.`,
+                link: `/leagues/${league.league_type}/${league.slug}`,
+              }))
+            )
+
+            const memberIds = members.map((m: { user_id: string }) => m.user_id)
+            const { data: profiles } = await supabaseAdmin
+              .from('profiles')
+              .select('email, display_name, email_opt_in')
+              .in('user_id', memberIds)
+              .eq('email_opt_in', true)
+
+            if (profiles && profiles.length > 0) {
+              await fetch('https://trekkonleagues.com/api/send-notification-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  recipients: profiles.map((p: { email: string; display_name: string | null }) => ({
+                    email: p.email,
+                    playerName: p.display_name || 'Player',
+                  })),
+                  subject: `${league.name} is back on track!`,
+                  message: `Your league, ${league.name}, is back out onto the track! The host is back to full activity.`,
+                  linkUrl: `https://trekkonleagues.com/leagues/${league.league_type}/${league.slug}`,
+                  linkText: 'View League →',
+                }),
+              })
+            }
+          }
+        }
+      }
+    }
   }
 }
 
@@ -84,6 +143,30 @@ if (event.type === 'customer.subscription.deleted') {
                 link: `/leagues/${league.league_type}/${league.slug}`,
               }))
             )
+
+            const memberIds = members.map((m: { user_id: string }) => m.user_id)
+            const { data: profiles } = await supabaseAdmin
+              .from('profiles')
+              .select('email, display_name, email_opt_in')
+              .in('user_id', memberIds)
+              .eq('email_opt_in', true)
+
+            if (profiles && profiles.length > 0) {
+              await fetch('https://trekkonleagues.com/api/send-notification-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  recipients: profiles.map((p: { email: string; display_name: string | null }) => ({
+                    email: p.email,
+                    playerName: p.display_name || 'Player',
+                  })),
+                  subject: `${league.name} is in the pit lane...`,
+                  message: `Your league, ${league.name}, is in the pit lane because the host's membership dropped below Crew Chief. Activity will resume if they re-upgrade.`,
+                  linkUrl: `https://trekkonleagues.com/leagues/${league.league_type}/${league.slug}`,
+                  linkText: 'View League →',
+                }),
+              })
+            }
           }
         }
       }
@@ -91,5 +174,5 @@ if (event.type === 'customer.subscription.deleted') {
   }
 }
 
-  return NextResponse.json({ received: true })
+return NextResponse.json({ received: true })
 }

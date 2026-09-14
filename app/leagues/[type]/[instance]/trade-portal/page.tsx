@@ -355,7 +355,31 @@ export default function TradePortalPage() {
       message: `You've received a trade offer in ${leagueName}!`,
       link: `/leagues/${type}/${instance}/trade-portal`,
     })
-    setMessage('Trade offer sent!')
+
+const { data: targetProfile } = await supabase
+  .from('profiles')
+  .select('email, display_name, email_opt_in')
+  .eq('user_id', selectedTargetPlayer.user_id)
+  .single()
+
+if (targetProfile?.email_opt_in) {
+  await fetch('/api/send-notification-email', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      recipients: [{
+        email: targetProfile.email,
+        playerName: targetProfile.display_name || 'Player',
+      }],
+      subject: `You've received a trade offer in ${leagueName}!`,
+      message: `You've received a trade offer in ${leagueName}! Head to the Trade Portal to review it.`,
+      linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}/trade-portal`,
+      linkText: 'View Trade Portal →',
+    }),
+  })
+  }
+
+  setMessage('Trade offer sent!')
     setShowConfirm(false)
     setSelectedOfferedId(null)
     setSelectedTargetPlayer(null)
@@ -450,7 +474,30 @@ export default function TradePortalPage() {
         link: `/leagues/${type}/${instance}/trade-portal`,
       },
     ])
+
+const { data: tradeProfiles } = await supabase
+  .from('profiles')
+  .select('email, display_name, email_opt_in')
+  .in('user_id', [trade.proposing_user_id, trade.receiving_user_id])
+  .eq('email_opt_in', true)
+
+if (tradeProfiles && tradeProfiles.length > 0) {
+  await fetch('/api/send-notification-email', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      recipients: tradeProfiles.map((p) => ({
+        email: p.email,
+        playerName: p.display_name || 'Player',
+      })),
+      subject: `Trade accepted in ${leagueName}!`,
+      message: `Your trade offer in ${leagueName} was accepted!`,
+      linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}/trade-portal`,
+      linkText: 'View Trade Portal →',
+    }),
+  })
   }
+}
 
   async function handleAccept(trade: Trade) {
     if (requireHostApproval) {
@@ -485,6 +532,30 @@ export default function TradePortalPage() {
             link: `/leagues/${type}/${instance}/trade-portal`,
           }))
         )
+
+ const { data: approverProfiles } = await supabase
+    .from('profiles')
+    .select('email, display_name, email_opt_in')
+    .in('user_id', approverIds)
+    .eq('email_opt_in', true)
+
+  if (approverProfiles && approverProfiles.length > 0) {
+    await fetch('/api/send-notification-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        recipients: approverProfiles.map((p) => ({
+          email: p.email,
+          playerName: p.display_name || 'Player',
+        })),
+        subject: `A trade needs your approval in ${leagueName}!`,
+        message: `A trade in ${leagueName} is awaiting your approval.`,
+        linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}/trade-portal`,
+        linkText: 'Review Trade →',
+      }),
+    })
+  }
+
       }
     } else {
       await executeTrade(trade)
@@ -493,6 +564,12 @@ export default function TradePortalPage() {
   }
 
   async function handleDecline(tradeId: string) {
+ const { data: tradeData } = await supabase
+    .from('trades')
+    .select('proposing_user_id')
+    .eq('id', tradeId)
+    .single()
+
     const { error } = await supabase
       .from('trades')
       .update({ status: 'declined', declined_by: 'player', resolved_at: new Date().toISOString() })
@@ -501,6 +578,38 @@ export default function TradePortalPage() {
       console.error('Error declining trade:', JSON.stringify(error, null, 2))
       return
     }
+
+if (tradeData?.proposing_user_id) {
+    await supabase.from('notifications').insert({
+      user_id: tradeData.proposing_user_id,
+      message: `Your trade offer in ${leagueName} was declined.`,
+      link: `/leagues/${type}/${instance}/trade-portal`,
+    })
+
+     const { data: proposerProfile } = await supabase
+      .from('profiles')
+      .select('email, display_name, email_opt_in')
+      .eq('user_id', tradeData.proposing_user_id)
+      .single()
+
+    if (proposerProfile?.email_opt_in) {
+      await fetch('/api/send-notification-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          recipients: [{
+            email: proposerProfile.email,
+            playerName: proposerProfile.display_name || 'Player',
+          }],
+          subject: `Your trade offer was declined in ${leagueName}..`,
+          message: `Your trade offer in ${leagueName} was declined.`,
+          linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}/trade-portal`,
+          linkText: 'View Trade Portal →',
+        }),
+      })
+    }
+  }
+
     setReloadTrigger((prev) => prev + 1)
   }
 
@@ -530,6 +639,30 @@ export default function TradePortalPage() {
         link: `/leagues/${type}/${instance}/trade-portal`,
       },
     ])
+
+const { data: denyProfiles } = await supabase
+  .from('profiles')
+  .select('user_id, email, display_name, email_opt_in')
+  .in('user_id', [trade.proposing_user_id, trade.receiving_user_id])
+  .eq('email_opt_in', true)
+
+if (denyProfiles && denyProfiles.length > 0) {
+  await fetch('/api/send-notification-email', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      recipients: denyProfiles.map((p) => ({
+        email: p.email,
+        playerName: p.display_name || 'Player',
+      })),
+      subject: `A trade was denied in ${leagueName}..`,
+      message: `A trade in ${leagueName} was denied by the host.`,
+      linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}/trade-portal`,
+      linkText: 'View Trade Portal →',
+    }),
+  })
+}
+
     setReloadTrigger((prev) => prev + 1)
   }
 

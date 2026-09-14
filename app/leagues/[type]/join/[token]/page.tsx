@@ -101,6 +101,30 @@ if (league.is_frozen) {
     message: `${myProfile?.display_name || 'A new Player'} has joined ${league.name}.`,
     link: `/leagues/${type}/${league.slug}`,
   })
+
+const { data: hostProfile } = await supabase
+    .from('profiles')
+    .select('email, display_name, email_opt_in')
+    .eq('user_id', league.host_user_id)
+    .single()
+
+  if (hostProfile?.email_opt_in) {
+    await fetch('/api/send-notification-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        recipients: [{
+          email: hostProfile.email,
+          playerName: hostProfile.display_name || 'Host',
+        }],
+        subject: `New player joined ${league.name}!`,
+        message: `${myProfile?.display_name || 'A new Player'} has joined ${league.name}. The competition is on!`,
+        linkUrl: `https://trekkonleagues.com/leagues/${type}/${league.slug}`,
+        linkText: 'View League →',
+      }),
+    })
+  }
+
 }
 
       localStorage.removeItem('pendingInvitePath')

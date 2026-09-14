@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import ResourcesModal from '@/components/ResourcesModal'
-import { Search } from 'lucide-react'
+import { Search, ListOrdered } from 'lucide-react'
 
 type Castaway = {
   id: number
@@ -252,9 +252,10 @@ const handleTouchEnd = () => {
 
         {alreadyDrafted ? (
           <div style={{ textAlign: 'center' }}>
-            <h1 style={{ color: '#f0b429', fontSize: '2rem', marginBottom: '16px' }}>
-              🐍 This league has already drafted!
-            </h1>
+            <h1 style={{ color: '#f0b429', fontSize: '2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+  <ListOrdered size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '1px' }} />
+  This league has already drafted!
+</h1>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '24px' }}>
               Rankings are locked now that the draft has run. Check out the results below.
             </p>
@@ -286,8 +287,9 @@ const handleTouchEnd = () => {
           </div>
         ) : (
           <>
-           <h1 style={{ color: '#f0b429', fontSize: 'clamp(1.72rem, 6vw, 2.25rem)', marginBottom: '8px' }}>
-  🐍 Rank Your {castawayTerm}s
+           <h1 style={{ color: '#f0b429', fontSize: 'clamp(1.72rem, 6vw, 2.25rem)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+  <ListOrdered size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '1px' }} />
+  Rank Your {castawayTerm}s
 </h1>
            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '16px', lineHeight: '1.6' }}>
   Drag and drop your most-wanted {castawayTerm.toLowerCase()} to the top, and work your way down from there. If you need to make a tweak before the offline snake draft begins, just re-edit and save your rankings. Happy drafting, friends!

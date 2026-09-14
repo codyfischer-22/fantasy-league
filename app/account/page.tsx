@@ -129,7 +129,6 @@ const handleUpgrade = async (tier: string) => {
     setProfile((prev) => prev ? { ...prev, tier } : prev)
 
     if (tier === 'stowaway' || tier === 'castaway') {
-      // Freeze any private leagues this person hosts
       const { data: hostedLeagues } = await supabase
         .from('leagues')
         .select('id, name, league_type, slug')
@@ -159,13 +158,36 @@ const handleUpgrade = async (tier: string) => {
                 link: `/leagues/${league.league_type}/${league.slug}`,
               }))
             )
+
+            const memberIds = members.map((m) => m.user_id)
+            const { data: profiles } = await supabase
+              .from('profiles')
+              .select('email, display_name, email_opt_in')
+              .in('user_id', memberIds)
+              .eq('email_opt_in', true)
+
+            if (profiles && profiles.length > 0) {
+              await fetch('/api/send-notification-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  recipients: profiles.map((p) => ({
+                    email: p.email,
+                    playerName: p.display_name || 'Player',
+                  })),
+                  subject: `${league.name} is in the pit lane...`,
+                  message: `Your private league, ${league.name}, has been sent to the pit lane as the host's membership dropped below Crew Chief. Racing will resume once they re-upgrade.`,
+                  linkUrl: `https://trekkonleagues.com/leagues/${league.league_type}/${league.slug}`,
+                  linkText: 'View League →',
+                }),
+              })
+            }
           }
         }
       }
     }
 
     if (tier === 'crewchief' || tier === 'teamprincipal') {
-      // Unfreeze any private leagues this person hosts
       const { data: hostedFrozenLeagues } = await supabase
         .from('leagues')
         .select('id, name, league_type, slug')
@@ -195,6 +217,30 @@ const handleUpgrade = async (tier: string) => {
                 link: `/leagues/${league.league_type}/${league.slug}`,
               }))
             )
+
+            const memberIds = members.map((m) => m.user_id)
+            const { data: profiles } = await supabase
+              .from('profiles')
+              .select('email, display_name, email_opt_in')
+              .in('user_id', memberIds)
+              .eq('email_opt_in', true)
+
+            if (profiles && profiles.length > 0) {
+              await fetch('/api/send-notification-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  recipients: profiles.map((p) => ({
+                    email: p.email,
+                    playerName: p.display_name || 'Player',
+                  })),
+                  subject: `${league.name} is back on track!`,
+                  message: `Your league, ${league.name}, is back out onto the track! The host is back to full activity.`,
+                  linkUrl: `https://trekkonleagues.com/leagues/${league.league_type}/${league.slug}`,
+                  linkText: 'View League →',
+                }),
+              })
+            }
           }
         }
       }
@@ -203,6 +249,7 @@ const handleUpgrade = async (tier: string) => {
     console.error('Upgrade error:', error)
   }
 }
+    
 
   useEffect(() => {
     if (!loading && !user) {

@@ -39,7 +39,7 @@ const hubContent: Record<string, {
     intro: [
       'For 25 years, our screens and hearts have been graced with the iconic television series Survivor. This fantasy league emerged for Season 50, with its zany fan favorites, and continues today for a new generation of players in Fiji and on this platform.',
       'Whether or not you\u2019ve played fantasy leagues before, please trust we\u2019ll guide you through this process. We encourage you to immerse yourself in the league spirit and community. Draft tribes, make trades, watch episodes, and then get off your couch and live your own adventure!',
-      'To ensure your spot, register by September 13 (11:59 PM CT).',
+      'To ensure your spot, register by September 15 (11:59 PM CT).',
       'Drafts window is September 16-20 (7:00 PM CT).',
       'Each tribe drafts 4 real-life castaways with the top 3 point-scorers counted toward season totals.',
       'Island politics are dangerous business! Can you survive?!',

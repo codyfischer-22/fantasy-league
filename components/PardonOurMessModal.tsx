@@ -43,12 +43,9 @@ export default function PardonOurMessModal() {
          🔥 ALMOST GO TIME!
         </h3>
         <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '8px', lineHeight: '1.6' }}>
-          Welcome to the first season of Trekkon Fantasy Leagues!</p>
+          You have until Tuesday, September 15, 11:59 PM to sign up for our public <em>Survivor</em> and <em>Traitors</em> leagues. To confirm you are in, check under "Your Leagues" in Leagues.</p>
         <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '8px', lineHeight: '1.6' }}>
-Leagues are built and it's time to fill them before premiere season!
-</p>
-<p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '12px', lineHeight: '1.6' }}>
-  Share a league with your tribe and prepare for the trek!
+Keep an eye out for next steps on the draft process. In the meantime, share a league with your tribe and prepare for the trek!
 </p>
      <button onClick={handleDismiss} style={{
   backgroundColor: '#f0b429',

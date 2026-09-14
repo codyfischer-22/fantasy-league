@@ -139,6 +139,29 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
     link: `/leagues-overview`,
   })
 
+  const { data: ejectedProfile } = await supabase
+    .from('profiles')
+    .select('email, display_name, email_opt_in')
+    .eq('user_id', playerUserId)
+    .single()
+
+  if (ejectedProfile?.email_opt_in) {
+    await fetch('/api/send-notification-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        recipients: [{
+          email: ejectedProfile.email,
+          playerName: ejectedProfile.display_name || 'Player',
+        }],
+        subject: `You've been removed from ${league.name}..`,
+        message: `You've been removed from ${league.name} by the host. Reach out to your host personally with any questions.`,
+        linkUrl: `https://trekkonleagues.com/leagues-overview`,
+        linkText: 'View Your Leagues →',
+      }),
+    })
+  }
+
   await supabase
     .from('draft_rankings')
     .delete()
@@ -172,6 +195,31 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
         link: `/leagues-overview`,
       }))
     )
+
+ const memberIds = allMembers.map((m) => m.user_id)
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('email, display_name, email_opt_in')
+      .in('user_id', memberIds)
+      .eq('email_opt_in', true)
+
+    if (profiles && profiles.length > 0) {
+      await fetch('/api/send-notification-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          recipients: profiles.map((p) => ({
+            email: p.email,
+            playerName: p.display_name || 'Player',
+          })),
+          subject: `${league.name} has been canceled..`,
+          message: `${league.name} has been taken off track by the host and no longer exists. Reach out to your host personally with any questions.`,
+          linkUrl: `https://trekkonleagues.com/leagues-overview`,
+          linkText: 'View Your Leagues →',
+        }),
+      })
+    }
+
   }
 
   await supabase.from('draft_picks').delete().eq('league_id', league.id)
