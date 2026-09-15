@@ -92,7 +92,7 @@ useEffect(() => {
             .select('tier, display_name')
             .eq('user_id', leagueData.host_user_id)
             .single()
-          const cap = hostProfile?.tier === 'teamprincipal' ? 18 : 8
+const cap = leagueData.max_members ?? (hostProfile?.tier === 'teamprincipal' ? 18 : 8)
           setMaxMembers(cap)
         }
         const { count: pickCount } = await supabase
@@ -236,8 +236,7 @@ useEffect(() => {
         .select('tier')
         .eq('user_id', league.host_user_id)
         .single()
-      effectiveCap = hostProfile?.tier === 'teamprincipal' ? 18 : 8
-    }
+effectiveCap = league.max_members ?? (hostProfile?.tier === 'teamprincipal' ? 18 : 8)    }
     if (effectiveCap) {
       const { count } = await supabase
         .from('league_members')

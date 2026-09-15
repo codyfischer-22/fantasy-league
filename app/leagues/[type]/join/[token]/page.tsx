@@ -19,7 +19,7 @@ export default function JoinLeaguePage() {
     async function handleJoin() {
 const { data: league } = await supabase
   .from('leagues')
-  .select('id, name, slug, host_user_id, is_frozen')
+  .select('id, name, slug, host_user_id, is_frozen, max_members')
   .eq('invite_token', token)
   .eq('is_private', true)
   .single()
@@ -64,7 +64,7 @@ if (league.is_frozen) {
         .single()
 
       const hostTier = hostProfile?.tier
-      const maxMembers = hostTier === 'teamprincipal' ? 18 : 8
+const maxMembers = league.max_members ?? (hostTier === 'teamprincipal' ? 18 : 8)
 
       const { count: currentCount } = await supabase
         .from('league_members')
@@ -102,20 +102,20 @@ if (league.is_frozen) {
     link: `/leagues/${type}/${league.slug}`,
   })
 
-const { data: hostProfile } = await supabase
+const { data: hostNotifyProfile } = await supabase
     .from('profiles')
     .select('email, display_name, email_opt_in')
     .eq('user_id', league.host_user_id)
     .single()
 
-  if (hostProfile?.email_opt_in) {
+  if (hostNotifyProfile?.email_opt_in) {
     await fetch('/api/send-notification-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         recipients: [{
-          email: hostProfile.email,
-          playerName: hostProfile.display_name || 'Host',
+          email: hostNotifyProfile.email,
+          playerName: hostNotifyProfile.display_name || 'Host',
         }],
         subject: `New player joined ${league.name}!`,
         message: `${myProfile?.display_name || 'A new Player'} has joined ${league.name}. The competition is on!`,
