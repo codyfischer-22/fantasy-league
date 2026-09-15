@@ -508,14 +508,9 @@ async function handleSend() {
     return;
   }
 
-  console.log('Message sent:', trimmed);
-  console.log('League member list:', leagueMemberList);
-
   const mentionedMembers = leagueMemberList.filter(
     (m) => trimmed.includes(`@${m.display_name}`) && m.user_id !== user.id
   );
-
-  console.log('Mentioned members found:', mentionedMembers);
 
   if (mentionedMembers.length > 0) {
     const senderName = leagueMemberList.find((m) => m.user_id === user.id)?.display_name ?? 'Someone';
@@ -529,15 +524,11 @@ async function handleSend() {
     );
 
     const mentionedIds = mentionedMembers.map((m) => m.user_id);
-    const { data: profiles, error: profilesError } = await supabase
+    const { data: profiles } = await supabase
       .from('profiles')
       .select('email, display_name, email_opt_in')
       .in('user_id', mentionedIds)
       .eq('email_opt_in', true);
-
-      console.log('Mentioned IDs:', mentionedIds);
-console.log('Profiles found (opted in):', profiles);
-console.log('Profiles query error:', profilesError);
 
     if (profiles && profiles.length > 0) {
 

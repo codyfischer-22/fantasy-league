@@ -124,21 +124,21 @@ useEffect(() => {
     return () => clearInterval(pollInterval)
   }, [user])
 
-  useEffect(() => {
-    async function checkAdmin() {
-      if (!user) {
-        setIsAdmin(false)
-        return
-      }
-      const { data } = await supabase
-        .from('profiles')
-        .select('is_global_admin')
-        .eq('user_id', user.id)
-        .single()
-      setIsAdmin(data?.is_global_admin ?? false)
+ useEffect(() => {
+  async function checkAdmin() {
+    if (!user) {
+      setIsAdmin(false)
+      return
     }
-    checkAdmin()
-  }, [user])
+    const { data } = await supabase
+      .from('profiles')
+      .select('is_global_admin, is_league_admin')
+      .eq('user_id', user.id)
+      .single()
+    setIsAdmin((data?.is_global_admin || data?.is_league_admin) ?? false)
+  }
+  checkAdmin()
+}, [user])
 
   const unreadCount = notifications.filter((n) => !n.is_read).length
 

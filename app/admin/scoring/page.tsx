@@ -108,6 +108,29 @@ export default function ScoringAdminPage() {
   const [manualAdjust, setManualAdjust] = useState<Record<number, { points: string; notes: string }>>({})
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
+  const [isGlobalAdmin, setIsGlobalAdmin] = useState(false)
+  const [allowedLeagueTypes, setAllowedLeagueTypes] = useState<string[]>([])
+
+useEffect(() => {
+  if (!isGlobalAdmin && allowedLeagueTypes.length > 0 && !allowedLeagueTypes.includes(selectedLeagueType)) {
+    const firstAllowed = allowedLeagueTypes[0]
+    setSelectedLeagueType(firstAllowed)
+    loadCastaways(firstAllowed)
+    loadExistingScores(firstAllowed, episodeNumber)
+  }
+}, [isGlobalAdmin, allowedLeagueTypes])
+
+const allLeagueTypeOptions = [
+  { value: 'politics-on-the-beach', label: 'Politics on the Beach (Season 51)' },
+  { value: 'potb-demo', label: 'Politics on the Beach (Demo)' },
+  { value: 'turret-mafia', label: 'Turret Mafia (New Blood)' },
+  { value: 'turret-mafia-demo', label: 'Turret Mafia (Demo)' },
+]
+
+const visibleLeagueTypeOptions = isGlobalAdmin
+  ? allLeagueTypeOptions
+  : allLeagueTypeOptions.filter((opt) => allowedLeagueTypes.includes(opt.value))
+
 
 const loadExistingScores = async (leagueType: string, episode: string) => {
   if (!episode) {
@@ -193,16 +216,18 @@ const toggleEliminated = async (castaway: Castaway) => {
         return
       }
 
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('is_global_admin')
-        .eq('user_id', user.id)
-        .single()
+   const { data: profile } = await supabase
+  .from('profiles')
+  .select('is_global_admin, is_league_admin, admin_league_types')
+  .eq('user_id', user.id)
+  .single()
 
-      if (profile?.is_global_admin) {
-        setIsAdmin(true)
-        await loadCastaways(selectedLeagueType)
-      }
+if (profile?.is_global_admin || profile?.is_league_admin) {
+  setIsAdmin(true)
+  setIsGlobalAdmin(profile.is_global_admin ?? false)
+  setAllowedLeagueTypes(profile.admin_league_types ?? [])
+  await loadCastaways(selectedLeagueType)
+}
 
       setChecking(false)
     }
@@ -259,8 +284,7 @@ const toggleEliminated = async (castaway: Castaway) => {
         if (count > 0) {
           entries.push({
   league_type: selectedLeagueType,
-  season: selectedLeagueType === 'politics-on-the-beach' ? 'Survivor 51' : selectedLeagueType === 'tumult-in-the-turret' ? 'The Traitors: New Blood' : selectedLeagueType === 'turret-mafia-demo' ? 'The Traitors Season 4' : 'Demo Season',
-  episode_number: parseInt(episodeNumber),
+season: selectedLeagueType === 'politics-on-the-beach' ? 'Survivor 51' : selectedLeagueType === 'turret-mafia' ? 'The Traitors: New Blood' : selectedLeagueType === 'turret-mafia-demo' ? 'The Traitors: Season 4' : 'Demo Season',  episode_number: parseInt(episodeNumber),
   castaway_id: castaway.id,
   category: cat.key,
   points: cat.points,
@@ -274,7 +298,7 @@ const toggleEliminated = async (castaway: Castaway) => {
       if (manual && manual.points && parseInt(manual.points) !== 0) {
         entries.push({
           league_type: selectedLeagueType,
-season: selectedLeagueType === 'politics-on-the-beach' ? 'Survivor 51' : selectedLeagueType === 'turret-mafia' ? 'The Traitors: New Blood' : 'Demo Season',          episode_number: parseInt(episodeNumber),
+          season: selectedLeagueType === 'politics-on-the-beach' ? 'Survivor 51' : selectedLeagueType === 'turret-mafia' ? 'The Traitors: New Blood' : selectedLeagueType === 'turret-mafia-demo' ? 'The Traitors Season 4' : 'Demo Season',          episode_number: parseInt(episodeNumber),
           castaway_id: castaway.id,
           category: 'manual_adjustment',
           points: parseInt(manual.points),
@@ -381,35 +405,34 @@ setMessage(`Saved ${entries.length} scoring events for Episode ${episodeNumber}!
 
 <h1 style={{ fontSize: '2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
   <Calculator size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
-  <span style={{ color: '#f0b429' }}>{selectedLeagueType === 'tumult-in-the-turret' || selectedLeagueType === 'turret-mafia-demo' ? 'Turret Mafia' : 'Politics on the Beach'}</span>{' '}
+  <span style={{ color: '#f0b429' }}>{selectedLeagueType === 'turret-mafia' || selectedLeagueType === 'turret-mafia-demo' ? 'Turret Mafia' : 'Politics on the Beach'}</span>{' '}
   <span style={{ color: '#ffffff' }}>Episode Scoring Guide</span>
 </h1>
 
         <div style={{ marginBottom: '24px' }}>
-          <label style={{ color: '#a0a0b0', fontSize: '0.85rem', display: 'block', marginBottom: '6px' }}>
-            League
-          </label>
-          <select
-  value={selectedLeagueType}
-  onChange={(e) => {
-    setSelectedLeagueType(e.target.value)
-    loadCastaways(e.target.value)
-    loadExistingScores(e.target.value, episodeNumber)
-  }}
-  style={{
-  padding: '8px 12px',
-  borderRadius: '6px',
-  border: '1px solid #2a2a3e',
-  backgroundColor: '#12121a',
-  color: '#ffffff'
-}}
->
-  <option value="politics-on-the-beach">Politics on the Beach (Season 51)</option>
-  <option value="potb-demo">Politics on the Beach (Demo)</option>
-  <option value="turret-mafia">Turret Mafia (New Blood)</option>
-  <option value="turret-mafia-demo">Turret Mafia (Demo)</option>
-</select>
-        </div>
+  <label style={{ color: '#a0a0b0', fontSize: '0.85rem', display: 'block', marginBottom: '6px' }}>
+    League
+  </label>
+  <select
+    value={selectedLeagueType}
+    onChange={(e) => {
+      setSelectedLeagueType(e.target.value)
+      loadCastaways(e.target.value)
+      loadExistingScores(e.target.value, episodeNumber)
+    }}
+    style={{
+      padding: '8px 12px',
+      borderRadius: '6px',
+      border: '1px solid #2a2a3e',
+      backgroundColor: '#12121a',
+      color: '#ffffff'
+    }}
+  >
+    {visibleLeagueTypeOptions.map((opt) => (
+      <option key={opt.value} value={opt.value}>{opt.label}</option>
+    ))}
+  </select>
+</div>
 
         <div style={{ marginBottom: '24px' }}>
           <label style={{ color: '#a0a0b0', fontSize: '0.85rem', display: 'block', marginBottom: '6px' }}>

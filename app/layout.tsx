@@ -17,9 +17,29 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Trekkon Fantasy Leagues",
-  description: "Your Fantasy League Platform",
+  description: "Gather Buddies. Draft Teams. Make History.",
   icons: {
     icon: "/favicon.svg",
+  },
+  openGraph: {
+    title: "Trekkon Fantasy Leagues",
+    description: "Gather Buddies. Draft Teams. Make History.",
+    siteName: "Trekkon Fantasy Leagues",
+    images: [
+      {
+        url: "https://trekkonleagues.com/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Trekkon Fantasy Leagues",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Trekkon Fantasy Leagues",
+    description: "Gather Buddies. Draft Teams. Make History.",
+    images: ["https://trekkonleagues.com/og-image.png"],
   },
 };
 
