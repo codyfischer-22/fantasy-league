@@ -45,21 +45,21 @@ const hubContent: Record<string, {
       'Island politics are dangerous business! Can you survive?!',
     ],
       demoHref: '/leagues/potb-demo/sample-league',
-  rulesDescription: 'See the official point breakdown for challenges, idols, tribal councils, and the end game.',
+  rulesDescription: 'See the official points breakdown for challenges, idols, and tribal councils.',
   draftDescription: 'Study up on on draft windows, snake order, selection length, and trade rules.',
 },
   'turret-mafia': {
     title: 'Welcome to Turret Mafia!',
     emoji: '🗡️',
     intro: [
-      'Remember that game you used play at band camp? The one where someone is murdered every night and justice is doled out every morning? Well, multiply that by Fegan Floop from <em>Spy Kids</em>, and you have one of the hottest reality competition shows on television, <em>The Traitors</em>.',
+      'Remember that game you used play at band camp? The one where someone is murdered every night and justice is doled out every morning? Multiply that by Fegan Floop from <em>Spy Kids</em>, and you have an Emmy-winning reality competition show, <em>The Traitors</em>.',
       'Whether or not you\u2019ve played fantasy leagues before, please trust we\u2019ll guide you through this process. Draft teams, make trades, watch episodes, stir up chatter, and then get off your couch to live your own adventure!',
       'To ensure your spot, register by September 15 (11:59 PM CT).',
       'Drafts window is September 16-17 (7:00 PM CT).',
-      'Each player drafts 4 real-life faithful or traitors with the top 3 point-scorers counted toward season totals.',
+      'Each player drafts 4 faithful or traitors with the top 3 point-scorers counted toward season totals.',
       'As it turns out, Nessy isn\u2019t the scariest thing in Scotland! Can you survive the castle?!',
     ],
-  rulesDescription: 'See the official point breakdown for missions, shields, round tables, and the end game.',
+  rulesDescription: 'See the official points breakdown for missions, shields, daggers, and round tables.',
   draftDescription: 'Study up on on draft windows, snake order, selection length, and trade rules.',
   demoHref: '/leagues/turret-mafia-demo/sample-league-turret',
 },
@@ -334,7 +334,7 @@ if (!hubContent[type]) {
           </section>
 
           <p style={{ textAlign: 'center', color: '#555570', marginTop: '12px', fontSize: '1.0rem' }}>
-            See &quot;Pricing&quot; tab for full membership and benefits breakdown.
+            See &quot;Pricing&quot; for full membership and benefits breakdown.
           </p>
         </div>
 
