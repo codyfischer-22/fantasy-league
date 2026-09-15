@@ -185,13 +185,14 @@ useEffect(() => {
           fontSize: '1.0rem',
           letterSpacing: '.9px'
         }}>
-          Gather Buddies. Draft Teams. Make History.
+          Choose Fandoms. Draft Teams. Beat Buddies.
         </p>
       </a>
 
       <nav style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center' }}>
-        <a href="/#tiers" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Pricing</a>
-        <a href="/leagues-overview" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.2rem' }}>Leagues</a>
+         <a href="/leagues-overview" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.2rem' }}>Leagues</a>
+         <a href="/#tiers" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Pricing</a>
+       
         <a href="/contact" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Contact</a>
 
         <a href="/extras" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>

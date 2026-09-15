@@ -83,7 +83,7 @@ export default function ContactPage() {
   <Mail size={30} strokeWidth={2} style={{ position: 'relative', top: '1px' }} /> Contact Trekkon
 </h1>
           <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '28px', textAlign: 'center' }}>
-            We&apos;d love to hear from you with any questions, league suggestions, bugs discovered, or real-world inspirations!
+            We&apos;d love to hear from you with questions, league suggestions, bugs discovered, or real-world stories!
           </p>
 
           <label style={labelStyle}>Player Name:</label>
@@ -120,11 +120,11 @@ export default function ContactPage() {
               paddingRight: '36px'
             }}
           >
-            <option value="Other">Miscellaneous Question</option>
             <option value="Signup Question">Signup Question</option>
-            <option value="Billing Question">Billing Question</option>
             <option value="League Question (Already Member)">League Question (I&apos;m a Member)</option>
+            <option value="Billing Question">Billing Question</option>
             <option value="Suggest a New League">Suggest a New League</option>
+            <option value="Other">Miscellaneous Question</option>
           </select>
 
           <label style={labelStyle}>Message:</label>

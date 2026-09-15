@@ -113,7 +113,7 @@ export default function LeaguesOverviewPage() {
         <div className="leagues-grid">
 
           {/* TOP LEFT — Types of Leagues */}
-          <div>
+          <div className="quad-types">
             <h2 style={{ color: '#f0b429', fontSize: '1.2rem', marginBottom: '8px' }}>
               Types of Leagues
             </h2>
@@ -166,7 +166,7 @@ export default function LeaguesOverviewPage() {
           </div>
 
           {/* TOP RIGHT — Leagues You Host (Crew Chief+) or Your Leagues (everyone else) */}
-          <div>
+          <div className="quad-host-or-own">
             {user && (userTier === 'crewchief' || userTier === 'teamprincipal') ? (
               <>
                 <h2 style={{ color: '#f0b429', fontSize: '1.2rem', marginBottom: '8px' }}>
@@ -237,7 +237,7 @@ export default function LeaguesOverviewPage() {
           </div>
 
           {/* BOTTOM LEFT — Demo League */}
-          <div>
+          <div className="quad-demo">
             <h2 style={{ color: '#f0b429', fontSize: '1.2rem', marginBottom: '8px' }}>
               View a Demo League
             </h2>
@@ -275,7 +275,7 @@ export default function LeaguesOverviewPage() {
           </div>
 
           {/* BOTTOM RIGHT — Your Leagues (shown here for Crew Chief+ hosts, since "Leagues You Host" already occupies the top-right slot for them) */}
-          <div>
+          <div className="quad-own-for-hosts">
             {user && (userTier === 'crewchief' || userTier === 'teamprincipal') && (
               <>
                 <h2 style={{ color: '#f0b429', fontSize: '1.2rem', marginBottom: '8px' }}>

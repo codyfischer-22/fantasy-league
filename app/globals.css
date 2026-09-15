@@ -572,3 +572,14 @@ html, body {
     left: 0;
   }
 }
+
+@media (max-width: 600px) {
+  .leagues-grid {
+    display: flex;
+    flex-direction: column;
+  }
+  .quad-host-or-own { order: 1; }
+  .quad-own-for-hosts { order: 2; }
+  .quad-types { order: 3; }
+  .quad-demo { order: 4; }
+}

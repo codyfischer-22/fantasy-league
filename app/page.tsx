@@ -47,7 +47,7 @@ export default function Home() {
       marginBottom: '0px',
       letterSpacing: '.9px'
     }}>
-      Gather Buddies. Draft Teams. Make History.
+      Choose Fandoms. Draft Teams. Beat Buddies.
     </p>
   </div>
   
@@ -83,7 +83,7 @@ export default function Home() {
   lineHeight: '1.7'
 }}>
   <span style={{ fontStyle: 'italic' }}>Trekkon</span> is derived from the Ancient Greek <span style={{ fontStyle: 'italic' }}>"τρέχω,"</span> to race or run, and <span style={{ fontStyle: 'italic' }}>"ἀγών,"</span> a gathering place for games, competitions, or battles.
-We inspire players to team up with their favorite on-screen personas in the hopes they&apos;ll trek out and conquer their own battles.
+We inspire everyday people to team up with their on-screen favoritess in the hopes they&apos;ll trek out on their own adventures.
 </p>
 </section>
 
@@ -337,7 +337,7 @@ Got an idea for a fantasy league we should build next? Send us your concept and 
   marginBottom: '36px',
   fontSize: 'clamp(.85rem, 4.75vw, 1rem)',
 }}>
-  Prices shown <span style={{ fontWeight: 'bold' }}>per month</span> unless you opt for the yearlong pass (coming soon) good for all leagues.
+  Prices shown <span style={{ fontWeight: 'bold' }}>per month</span> unless you opt for the yearlong All-Access Pass.
 </p>
 
         <div className="home-tier-grid" style={{
@@ -373,7 +373,7 @@ Got an idea for a fantasy league we should build next? Send us your concept and 
               <li>✅ Basic Leaderboards</li>
       <li>✅ Trade Portal Access</li>
  <li>❌ No Analytics</li>
-              <li>❌ No Public Chat</li>
+              <li>❌ Public League Chat</li>
               <li>❌ No League Hosting</li>
               <li>❌ No Settings Controls</li>
             </ul>

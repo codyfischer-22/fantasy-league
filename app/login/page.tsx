@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { useAuth } from '@/lib/AuthContext'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -10,12 +11,34 @@ export default function Login() {
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const { user, loading: authLoading } = useAuth()
   const [showForgotPassword, setShowForgotPassword] = useState(false)
-const [resetEmail, setResetEmail] = useState('')
-const [resetMessage, setResetMessage] = useState('')
-const [resetLoading, setResetLoading] = useState(false)
+  const [resetEmail, setResetEmail] = useState('')
+  const [resetMessage, setResetMessage] = useState('')
+  const [resetLoading, setResetLoading] = useState(false)
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.push('/')
+    }
+  }, [user, authLoading, router])
 
 
+  if (authLoading || user) {
+    return (
+      <main style={{
+        backgroundColor: '#0a0a0f',
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: '#a0a0b0',
+        fontFamily: 'Georgia, serif'
+      }}>
+        Loading...
+      </main>
+    )
+  }
 
   const handleResetPassword = async () => {
   if (!resetEmail) {
