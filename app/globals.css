@@ -497,13 +497,13 @@ html, body {
   }
 }
 
-.emoji-potb { font-size: 1em; }
+.emoji-sotb { font-size: 1em; }
 .emoji-turret { font-size: 1em; }
 .emoji-drive { font-size: 1.3em; }
 .emoji-suggest { font-size: 1.1em; }
 
 @media (max-width: 600px) {
-  .emoji-potb,
+  .emoji-sotb,
   .emoji-turret,
   .emoji-drive,
   .emoji-suggest {

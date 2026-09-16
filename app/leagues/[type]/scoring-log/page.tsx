@@ -9,7 +9,7 @@ import { Calculator } from 'lucide-react'
 import { Lock } from 'lucide-react'
 
 const categoryLabelsByLeague: Record<string, Record<string, string>> = {
-  'politics-on-the-beach': {
+  'secrets-on-the-beach': {
     team_immunity_safety: 'Immunity Safety (Team)',
     team_immunity_win: 'Immunity Win (Team)',
     individual_immunity_win: 'Immunity Win (Individual)',
@@ -26,7 +26,7 @@ const categoryLabelsByLeague: Record<string, Record<string, string>> = {
     zero_vote_finalist: '0-Vote Finalist',
     manual_adjustment: 'Manual Adjustment',
   },
-  'potb-demo': {
+  'sotb-demo': {
     team_immunity_safety: 'Immunity Safety (Team)',
     team_immunity_win: 'Immunity Win (Team)',
     individual_immunity_win: 'Immunity Win (Individual)',
@@ -43,7 +43,7 @@ const categoryLabelsByLeague: Record<string, Record<string, string>> = {
     zero_vote_finalist: '0-Vote Finalist',
     manual_adjustment: 'Manual Adjustment',
   },
-  'turret-mafia': {
+  'uncharted-turretory': {
     group_earns_5k: 'Group Earns $5K',
     team_shield: 'Team Shield',
     personal_shield: 'Personal Shield',
@@ -63,7 +63,7 @@ const categoryLabelsByLeague: Record<string, Record<string, string>> = {
     win_solo: 'Win the Game Solo',
     manual_adjustment: 'Manual Adjustment',
   },
-   'turret-mafia-demo': {
+   'uncharted-turretory-demo': {
     group_earns_5k: 'Group Earns $5K',
     team_shield: 'Team Shield',
     personal_shield: 'Personal Shield',
@@ -86,10 +86,10 @@ const categoryLabelsByLeague: Record<string, Record<string, string>> = {
 }
 
 const scoringLogIntro: Record<string, string> = {
-  'politics-on-the-beach': 'Check out the fully-transparent points breakdown for Politics on the Beach! Please note episodes with more than one tribal council (e.g. premiere or finale) may be broken down into multiple "voting cycles" below.',
-  'potb-demo': 'Check out the fully-transparent points breakdown for Politics on the Beach! Please note episodes with more than one tribal council (e.g. premiere or finale) may be broken down into multiple "voting cycles" below.',
-  'turret-mafia': 'Check out the fully-transparent points breakdown for Turret Mafia! Please note episodes with more than one round table may be broken down into multiple "voting cycles" below.',
-  'turret-mafia-demo': 'Check out the fully-transparent points breakdown for Turret Mafia! Please note episodes with more than one round table may be broken down into multiple "voting cycles" below.',
+  'secrets-on-the-beach': 'Check out the fully-transparent points breakdown for Secrets on the Beach! Please note episodes with more than one tribal council (e.g. premiere or finale) may be broken down into multiple "voting cycles" below.',
+  'sotb-demo': 'Check out the fully-transparent points breakdown for Secrets on the Beach! Please note episodes with more than one tribal council (e.g. premiere or finale) may be broken down into multiple "voting cycles" below.',
+  'uncharted-turretory': 'Check out the fully-transparent points breakdown for Uncharted Turretory! Please note episodes with more than one round table may be broken down into multiple "voting cycles" below.',
+  'uncharted-turretory-demo': 'Check out the fully-transparent points breakdown for Uncharted Turretory! Please note episodes with more than one round table may be broken down into multiple "voting cycles" below.',
 }
 
 type ScoreEntry = {
@@ -120,7 +120,7 @@ export default function ScoringLogPage() {
 
   useEffect(() => {
     async function loadLog() {
-      if (!user && type !== 'potb-demo') {
+      if (!user && type !== 'sotb-demo') {
         setPageLoading(false)
         return
       }
@@ -260,7 +260,7 @@ if ((scores && scores.length > 0) || (customEntries && customEntries.length > 0)
     )
   }
 
-  if (!authLoading && !user && type !== 'potb-demo') {
+  if (!authLoading && !user && type !== 'sotb-demo') {
     return (
       <main style={{
         backgroundColor: '#0a0a0f',

@@ -8,10 +8,10 @@ import { useState, useEffect } from 'react'
 import { leagueTypeLabels } from '@/lib/leagueTypeLabels'
 
 const leagueTypeEmojis: Record<string, string> = {
-  'politics-on-the-beach': '🌴',
+  'secrets-on-the-beach': '🌴',
   'americans-turning-left': '🚗',
   'european-rocket-ships': '🏎️',
-  'turret-mafia': '🗡️',
+  'uncharted-turretory': '🗡️',
 }
 
 export default function CreateLeaguePage() {

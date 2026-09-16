@@ -11,28 +11,28 @@ type Castaway = { id: number; name: string }
 type Pick = { user_id: string; castaway_id: number }
 
 const draftCompleteTitleByLeague: Record<string, string> = {
-  'politics-on-the-beach': '🔥 Tribes Are Set',
-  'potb-demo': '🔥 Tribes Are Set',
-  'turret-mafia': '🗡️ Rosters Are Set',
-  'turret-mafia-demo': '🗡️ Rosters Are Set',
+  'secrets-on-the-beach': '🔥 Tribes Are Set',
+  'sotb-demo': '🔥 Tribes Are Set',
+  'uncharted-turretory': '🗡️ Rosters Are Set',
+  'uncharted-turretory-demo': '🗡️ Rosters Are Set',
 }
 
 const draftInstructionsByLeague: Record<string, { countLine: string }> = {
-  'politics-on-the-beach': {
+  'secrets-on-the-beach': {
     countLine: 'There are 21 castaways in Survivor 51 so any league with over 5 players will have castaways "cloned" as necessary (e.g. 10 players → 40 castaways needed → clone each castaway twice for 42 selectable options).',
   },
-  'potb-demo': {
+  'sotb-demo': {
     countLine: 'There are 21 castaways in Survivor 51 so any league with over 5 players will have castaways "cloned" as necessary (e.g. 10 players → 40 castaways needed → clone each castaway twice for 42 selectable options).',
   },
-  'turret-mafia': {
-    countLine: 'There are 22 castle-goers in Turret Mafia so any league with over 5 players will have castle-goers "cloned" as necessary (e.g. 10 players → 40 castle-goers needed → clone each castle-goer twice for 44 selectable options).',
+  'uncharted-turretory': {
+    countLine: 'There are 22 castle-goers in Uncharted Turretory so any league with over 5 players will have castle-goers "cloned" as necessary (e.g. 10 players → 40 castle-goers needed → clone each castle-goer twice for 44 selectable options).',
   },
 }
 
 const castawayTermByLeague: Record<string, string> = {
-  'politics-on-the-beach': 'Castaway',
-  'potb-demo': 'Castaway',
-  'turret-mafia': 'Castle-Goer',
+  'secrets-on-the-beach': 'Castaway',
+  'sotb-demo': 'Castaway',
+  'uncharted-turretory': 'Castle-Goer',
 }
 
 export default function DraftRoomPage() {
@@ -51,7 +51,7 @@ export default function DraftRoomPage() {
   const [now, setNow] = useState(Date.now())
   const previousStatusRef = useRef<string | null>(null)
   const draftCompleteTitle = draftCompleteTitleByLeague[type] ?? 'Draft Complete'
-  const draftInstructions = draftInstructionsByLeague[type] ?? draftInstructionsByLeague['politics-on-the-beach']
+  const draftInstructions = draftInstructionsByLeague[type] ?? draftInstructionsByLeague['secrets-on-the-beach']
 const castawayTerm = castawayTermByLeague[type] ?? 'Castaway'
 
   const loadDraftState = async () => {

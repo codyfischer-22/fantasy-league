@@ -159,7 +159,7 @@ const { data: hostNotifyProfile } = await supabase
         <>
           <div style={{ fontSize: '2.5rem' }}>⚠️</div>
           <p style={{ color: '#ff6b6b', textAlign: 'center', maxWidth: '400px' }}>{message}</p>
-          <a href={`/leagues/${type}`} style={{ color: '#f0b429' }}>← Back to 🏝️ Politics on the Beach</a>
+          <a href={`/leagues/${type}`} style={{ color: '#f0b429' }}>← Back to 🏝️ Secrets on the Beach</a>
         </>
       ) : (
         <p>Joining your league...</p>

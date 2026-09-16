@@ -493,8 +493,8 @@ effectiveCap = league.max_members ?? (hostProfile?.tier === 'teamprincipal' ? 18
       { label: 'Draft Room', icon: Puzzle, href: `/leagues/${type}/${instance}/draft-room` },
       { label: 'Draft Research', icon: Microscope, href: null },
     ].filter((item) =>
-  !(item.label === 'Draft Room' && (!league.is_private || league.draft_status === 'completed' || type === 'potb-demo' || type === 'turret-mafia-demo')) &&
-  !(item.label === 'Draft Research' && (league.draft_status === 'completed' || type === 'potb-demo' || type === 'turret-mafia-demo'))
+  !(item.label === 'Draft Room' && (!league.is_private || league.draft_status === 'completed' || type === 'sotb-demo' || type === 'uncharted-turretory-demo')) &&
+  !(item.label === 'Draft Research' && (league.draft_status === 'completed' || type === 'sotb-demo' || type === 'uncharted-turretory-demo'))
 ),
   },
 ]
@@ -507,14 +507,14 @@ effectiveCap = league.max_members ?? (hostProfile?.tier === 'teamprincipal' ? 18
       padding: '60px 40px'
     }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-        <a href={type === 'potb-demo' ? '/leagues/politics-on-the-beach' : `/leagues/${type}`} style={{
+        <a href={type === 'sotb-demo' ? '/leagues/secrets-on-the-beach' : `/leagues/${type}`} style={{
   color: '#a0a0b0',
   fontSize: '0.85rem',
   textDecoration: 'none',
   display: 'inline-block',
   marginBottom: '24px'
 }}>
-← Back to {leagueTypeLabels[type] ?? 'League'} Hub
+← Back to {leagueTypeLabels[type] ?? 'League'} Umbrella
 </a>
 
         <div style={{ textAlign: 'left', marginBottom: '12px' }}>
@@ -524,7 +524,7 @@ effectiveCap = league.max_members ?? (hostProfile?.tier === 'teamprincipal' ? 18
             marginBottom: '8px'
           }}>
             <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', margin: 0, lineHeight: '1.2' }}>
-              {type === 'potb-demo' && league.name.includes('Demo!') ? (
+              {type === 'sotb-demo' && league.name.includes('Demo!') ? (
                 <>
                   <span style={{ color: '#f0b429' }}>{league.name.replace('Demo!', '').trim()}</span>{' '}
                   <span style={{ color: '#ffffff' }}>Demo!</span>
@@ -940,7 +940,7 @@ const content = (
         open={showStartDraftConfirm}
         title="Start the Draft?"
         message={[
-          'The draft window for Politics on the Beach runs September 16-20 (7 PM CT). League hosts are responsible for communicating draft start times (anywhere in that window), selection time limits, consequences of missing picks, etc.',
+          'The draft window for Secrets on the Beach runs September 16-20 (7 PM CT). League hosts are responsible for communicating draft start times (anywhere in that window), selection time limits, consequences of missing picks, etc.',
           'Clicking "Start Draft" will immediately start the selection timer for the first player up.',
           'Note: All players should be actively engaged in your draft window (whether it lasts 60 minutes or 2 days).'
         ]}

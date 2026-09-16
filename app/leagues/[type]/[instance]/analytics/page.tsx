@@ -9,7 +9,7 @@ import {
 } from 'recharts'
 
 const categoryLabelsByLeague: Record<string, Record<string, string>> = {
-  'politics-on-the-beach': {
+  'secrets-on-the-beach': {
     team_immunity_safety: 'Immunity Safety (Team)',
     team_immunity_win: 'Immunity Win (Team)',
     individual_immunity_win: 'Immunity Win (Individual)',
@@ -26,7 +26,7 @@ const categoryLabelsByLeague: Record<string, Record<string, string>> = {
     zero_vote_finalist: '0-Vote Finalist',
     manual_adjustment: 'Manual Adjustment',
   },
-  'potb-demo': {
+  'sotb-demo': {
     team_immunity_safety: 'Immunity Safety (Team)',
     team_immunity_win: 'Immunity Win (Team)',
     individual_immunity_win: 'Immunity Win (Individual)',
@@ -43,7 +43,7 @@ const categoryLabelsByLeague: Record<string, Record<string, string>> = {
     zero_vote_finalist: '0-Vote Finalist',
     manual_adjustment: 'Manual Adjustment',
   },
-  'turret-mafia': {
+  'uncharted-turretory': {
     group_earns_5k: 'Group Earns $5,000',
     team_shield: 'Team Shield',
     personal_shield: 'Personal Shield',
@@ -66,9 +66,9 @@ const categoryLabelsByLeague: Record<string, Record<string, string>> = {
 }
 
 const castawayTermByLeague: Record<string, string> = {
-  'politics-on-the-beach': 'Castaway',
-  'potb-demo': 'Castaway',
-  'turret-mafia': 'Castle-Goer',
+  'secrets-on-the-beach': 'Castaway',
+  'sotb-demo': 'Castaway',
+  'uncharted-turretory': 'Castle-Goer',
 }
 
 type EventDetail = {
@@ -199,7 +199,7 @@ useEffect(() => {
       }
       setIsFrozen(league.is_frozen ?? false)
       setIsPrivateLeague(league.is_private ?? false)
-      const isDemoLeague = type === 'potb-demo' || type === 'turret-mafia-demo'
+      const isDemoLeague = type === 'sotb-demo' || type === 'uncharted-turretory-demo'
 if (!isDemoLeague) {
   if (!user) {
     setAccess('denied')

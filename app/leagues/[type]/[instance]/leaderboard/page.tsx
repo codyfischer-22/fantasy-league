@@ -179,7 +179,7 @@ return {
   <span style={{ color: '#ffffff' }}>Leaderboard</span>
 </h1>
       <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '32px' }}>
-  Where do you stack up on the leaderboard? Expand a player to see their {type === 'turret-mafia' ? 'roster' : 'tribe'} of 4!
+  Where do you stack up on the leaderboard? Expand a player to see their {type === 'uncharted-turretory' ? 'roster' : 'tribe'} of 4!
 </p>
         {standings.length === 0 ? (
           <p style={{ color: '#555570' }}>No players have joined this league yet.</p>

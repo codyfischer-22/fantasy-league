@@ -268,8 +268,8 @@ const applyFilter = async (type: string) => {
     <option value="tier-castaway">Tier: Castaway</option>
     <option value="tier-crewchief">Tier: Crew Chief</option>
     <option value="tier-teamprincipal">Tier: Team Principal</option>
-    <option value="leaguetype-politics-on-the-beach">League Type: Politics on the Beach</option>
-    <option value="leaguetype-turret-mafia">League Type: Turret Mafia</option>
+    <option value="leaguetype-secrets-on-the-beach">League Type: Secrets on the Beach</option>
+    <option value="leaguetype-uncharted-turretory">League Type: Uncharted Turretory</option>
   </select>
 
   <select

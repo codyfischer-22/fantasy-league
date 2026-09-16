@@ -16,8 +16,8 @@ const rulesContent: Record<string, {
   tiebreaker: string[]
   closing?: string
 }> = {
-  'politics-on-the-beach': {
-    leagueName: 'Politics on the Beach',
+  'secrets-on-the-beach': {
+    leagueName: 'Secrets on the Beach',
     intro: [
       'Trekkon Fantasy Leagues is all about keeping our leagues simple and players\u2019 viewing experience pure. We do not want to – as a wise soul once wrote – "murder to dissect," trying to annotate every worm eaten, tear shed, and blindside planned. Leave the tabulations to us, then, and focus on restocking your watch party\u2019s bean dip, enjoying the island politics, and "Thursday Morning Quarterbacking" in the group chat.',
       'When our beloved franchise throws us twists and turns – looking at you Billie Eilish – please trust our team will do our best to arbitrate according to both the letter and spirit of the law.',
@@ -124,8 +124,8 @@ const rulesContent: Record<string, {
       'In the event of a season-end tie (whether tribes have the same three scored players or different combinations), tie breakers will be as follows: 1) Whose first-round draft pick scored more points? 2) Second? 3) Third? 4) \u201cBench player\u201d?',
     ] 
   },
-  'turret-mafia': {
-  leagueName: 'Turret Mafia',
+  'uncharted-turretory': {
+  leagueName: 'Uncharted Turretory',
   intro: [
     'Trekkon Fantasy Leagues is all about keeping our leagues simple and players\u2019 viewing experience pure. Leave the tabulations to us, then, and focus on the roundtable drama, refilling your goblet, and "Friday Morning Quarterbacking" in the group chat.',
     'When the show throws us a twist we didn\u2019t see coming, please trust our team will arbitrate according to both the letter and spirit of the law.',

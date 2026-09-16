@@ -16,8 +16,8 @@ const draftContent: Record<string, {
   draftFormatPrivate: string[]
   trades: string[]
 }> = {
-  'politics-on-the-beach': {
-    leagueName: 'Politics on the Beach',
+  'secrets-on-the-beach': {
+    leagueName: 'Secrets on the Beach',
     intro: [
       'Here\u2019s everything you need before the draft window \u2014 timing, format, and how trades work once your roster is set.',
     ],
@@ -61,8 +61,8 @@ const draftContent: Record<string, {
 '➤ If players are caught manipulating trades with multiple accounts or friends, they will be banned from current and future league participation.',
 ],
   },
-  'turret-mafia': {
-  leagueName: 'Turret Mafia',
+  'uncharted-turretory': {
+  leagueName: 'Uncharted Turretory',
   intro: [
     'Here\u2019s everything you need before the draft window \u2014 timing, format, and how trades work once your roster is set.',
   ],
@@ -125,7 +125,7 @@ export default function DraftPage() {
         gap: '16px'
       }}>
         <p>Draft & trade info for this league isn&apos;t posted yet.</p>
-        <a href={`/leagues/${type}`} style={{ color: '#f0b429' }}>← Back to Politics on the Beach</a>
+        <a href={`/leagues/${type}`} style={{ color: '#f0b429' }}>← Back to Secrets on the Beach</a>
       </main>
     )
   }

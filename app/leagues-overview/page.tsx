@@ -21,9 +21,9 @@ export default function LeaguesOverviewPage() {
   const [showComingSoon, setShowComingSoon] = useState(false)
   const [userTier, setUserTier] = useState<string | null>(null)
   const leagueTypes = [
-    { name: 'Politics on the Beach', slug: 'politics-on-the-beach', emoji: '🏝️', color: '#f0b429', comingSoon: false },
-    { name: 'Turret Mafia', slug: 'turret-mafia', emoji: '🗡️', color: 'rgb(245, 255, 156)', comingSoon: false },
-    { name: 'Rocket Ship Racing', slug: 'rocket-ship-racing', emoji: '🏎️', color: '#f0b429', comingSoon: true },
+    { name: 'Secrets on the Beach', slug: 'secrets-on-the-beach', emoji: '🏝️', color: '#f0b429', comingSoon: false },
+    { name: 'Uncharted Turretory', slug: 'uncharted-turretory', emoji: '🗡️', color: 'rgb(245, 255, 156)', comingSoon: false },
+    { name: 'Paddock Politicks', slug: 'paddock-politicks', emoji: '🏎️', color: '#f0b429', comingSoon: true },
     { name: "Drive Fast, Turn Left", slug: 'drive-fast-turn-left', emoji: '🚗', color: 'rgb(245, 255, 156)', comingSoon: true },
   ]
 
@@ -140,8 +140,8 @@ export default function LeaguesOverviewPage() {
     gap: '4px'
   }}
 >
-<span className={lt.slug === 'rocket-ship-racing' ? 'emoji-f1-list' : ''}>{lt.emoji}</span>{'  '}
-<span className={lt.slug === 'rocket-ship-racing' ? 'text-f1-shift' : ''}>{lt.name}</span> →</button>
+<span className={lt.slug === 'paddock-politicks' ? 'emoji-f1-list' : ''}>{lt.emoji}</span>{'  '}
+<span className={lt.slug === 'paddock-politicks' ? 'text-f1-shift' : ''}>{lt.name}</span> →</button>
                 ) : (
                   <a
                     key={lt.slug}
@@ -242,7 +242,7 @@ export default function LeaguesOverviewPage() {
               View a Demo League
             </h2>
             <div className="btn" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <a href="/leagues/potb-demo/sample-league"
+              <a href="/leagues/sotb-demo/sample-league"
                 style={{
                   backgroundColor: '#1a1a2e',
                   border: '1px solid #f0b429',
@@ -254,10 +254,10 @@ export default function LeaguesOverviewPage() {
                   fontSize: '0.95rem'
                 }}
               >
-                <div>🧪{'  '}Politics on the Beach →</div>
+                <div>🧪{'  '}Secrets on the Beach →</div>
               </a>
               <a
-                href="/leagues/turret-mafia-demo/sample-league-turret"
+                href="/leagues/uncharted-turretory-demo/sample-league-turret"
                 style={{
                   backgroundColor: '#1a1a2e',
                   border: '1px solid rgb(245, 255, 156)',
@@ -269,7 +269,7 @@ export default function LeaguesOverviewPage() {
                   fontSize: '0.95rem'
                 }}
               >
-                <div>🧪{'  '}Turret Mafia →</div>
+                <div>🧪{'  '}Uncharted Turretory →</div>
               </a>
             </div>
           </div>

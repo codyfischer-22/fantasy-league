@@ -2,7 +2,7 @@
 import { Search, Play, X } from 'lucide-react'
 
 const resourcesByLeague: Record<string, { title: string; url: string }[]> = {
-  'politics-on-the-beach': [
+  'secrets-on-the-beach': [
     {
       title: '3-Minute Snapshot (Reality Sea)',
       url: 'https://www.facebook.com/reel/1598597491615056/',
@@ -16,7 +16,7 @@ const resourcesByLeague: Record<string, { title: string; url: string }[]> = {
       url: 'https://youtube.com/playlist?list=PLG146qFvxINI&si=tff2kAJaFP2t814m',
     },
   ],
-  'potb-demo': [
+  'sotb-demo': [
     {
       title: '3-Minute Snapshot (Reality Sea)',
       url: 'https://www.facebook.com/reel/1598597491615056/',
@@ -30,7 +30,7 @@ const resourcesByLeague: Record<string, { title: string; url: string }[]> = {
       url: 'https://youtube.com/playlist?list=PLG146qFvxINI&si=tff2kAJaFP2t814m',
     },
   ],
-  'turret-mafia': [
+  'uncharted-turretory': [
     {
       title: '3-Minute Snapshot (Cami Twomey)',
       url: 'https://youtube.com/shorts/QkLIOPvkSYU?si=x6-rYZA186CiqOng',
@@ -46,7 +46,7 @@ export default function ResourcesModal({ open, onClose, type }: { open: boolean;
   if (!open) return null
 
   const resources = resourcesByLeague[type] ?? []
-  const castawayTerm = type === 'turret-mafia' ? 'Castle-Goers' : 'Castaways'
+  const castawayTerm = type === 'uncharted-turretory' ? 'Castle-Goers' : 'Castaways'
 
   return (
     <div

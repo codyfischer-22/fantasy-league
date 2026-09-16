@@ -14,9 +14,9 @@ type Castaway = {
 }
 
 const castawayTermByLeague: Record<string, string> = {
-  'politics-on-the-beach': 'Castaway',
-  'potb-demo': 'Castaway',
-  'turret-mafia': 'Castle-Goer',
+  'secrets-on-the-beach': 'Castaway',
+  'sotb-demo': 'Castaway',
+  'uncharted-turretory': 'Castle-Goer',
 }
 
 export default function RankingsPage() {

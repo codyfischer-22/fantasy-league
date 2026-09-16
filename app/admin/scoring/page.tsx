@@ -21,7 +21,7 @@ type CategoryDef = {
 }
 
 const categoriesByLeague: Record<string, CategoryDef[]> = {
-  'politics-on-the-beach': [
+  'secrets-on-the-beach': [
     { key: 'team_immunity_safety', label: 'Immunity Safety (Team)', points: 5 },
     { key: 'team_immunity_win', label: 'Immunity Win (Team)', points: 8 },
     { key: 'individual_immunity_win', label: 'Immunity Win (Individual)', points: 15 },
@@ -37,7 +37,7 @@ const categoriesByLeague: Record<string, CategoryDef[]> = {
     { key: 'sole_survivor', label: 'Won Sole Survivor', points: 25 },
     { key: 'zero_vote_finalist', label: '0-Vote Finalist', points: -10 },
   ],
-  'potb-demo': [
+  'sotb-demo': [
     { key: 'team_immunity_safety', label: 'Immunity Safety (Team)', points: 5 },
     { key: 'team_immunity_win', label: 'Immunity Win (Team)', points: 8 },
     { key: 'individual_immunity_win', label: 'Immunity Win (Individual)', points: 15 },
@@ -53,7 +53,7 @@ const categoriesByLeague: Record<string, CategoryDef[]> = {
     { key: 'sole_survivor', label: 'Won Sole Survivor', points: 25 },
     { key: 'zero_vote_finalist', label: '0-Vote Finalist', points: -10 },
   ],
-  'turret-mafia': [
+  'uncharted-turretory': [
     { key: 'group_earns_5k', label: 'Group Earns $5,000', points: 5, allowCount: true },
     { key: 'team_shield', label: 'Team Shield', points: 5 },
     { key: 'personal_shield', label: 'Personal Shield', points: 10 },
@@ -72,7 +72,7 @@ const categoriesByLeague: Record<string, CategoryDef[]> = {
     { key: 'win_duo', label: 'Win as a Duo', points: 30 },
     { key: 'win_solo', label: 'Win the Game Solo', points: 45 },
   ],
-  'turret-mafia-demo': [
+  'uncharted-turretory-demo': [
     { key: 'group_earns_5k', label: 'Earn $5K Prize', points: 2, allowCount: true },
     { key: 'team_shield', label: 'Acquire Shield (Team)', points: 5 },
     { key: 'personal_shield', label: 'Acquire Shield', points: 10 },
@@ -100,7 +100,7 @@ export default function ScoringAdminPage() {
 
   const [isAdmin, setIsAdmin] = useState(false)
   const [checking, setChecking] = useState(true)
-  const [selectedLeagueType, setSelectedLeagueType] = useState('politics-on-the-beach')
+  const [selectedLeagueType, setSelectedLeagueType] = useState('secrets-on-the-beach')
   const categories = categoriesByLeague[selectedLeagueType] ?? []
   const [castaways, setCastaways] = useState<Castaway[]>([])
   const [episodeNumber, setEpisodeNumber] = useState('')
@@ -121,10 +121,10 @@ useEffect(() => {
 }, [isGlobalAdmin, allowedLeagueTypes])
 
 const allLeagueTypeOptions = [
-  { value: 'politics-on-the-beach', label: 'Politics on the Beach (Season 51)' },
-  { value: 'potb-demo', label: 'Politics on the Beach (Demo)' },
-  { value: 'turret-mafia', label: 'Turret Mafia (New Blood)' },
-  { value: 'turret-mafia-demo', label: 'Turret Mafia (Demo)' },
+  { value: 'secrets-on-the-beach', label: 'Secrets on the Beach (Season 51)' },
+  { value: 'sotb-demo', label: 'Secrets on the Beach (Demo)' },
+  { value: 'uncharted-turretory', label: 'Uncharted Turretory (New Blood)' },
+  { value: 'uncharted-turretory-demo', label: 'Uncharted Turretory (Demo)' },
 ]
 
 const visibleLeagueTypeOptions = isGlobalAdmin
@@ -284,7 +284,7 @@ if (profile?.is_global_admin || profile?.is_league_admin) {
         if (count > 0) {
           entries.push({
   league_type: selectedLeagueType,
-season: selectedLeagueType === 'politics-on-the-beach' ? 'Survivor 51' : selectedLeagueType === 'turret-mafia' ? 'The Traitors: New Blood' : selectedLeagueType === 'turret-mafia-demo' ? 'The Traitors: Season 4' : 'Demo Season',  episode_number: parseInt(episodeNumber),
+season: selectedLeagueType === 'secrets-on-the-beach' ? 'Survivor 51' : selectedLeagueType === 'uncharted-turretory' ? 'The Traitors: New Blood' : selectedLeagueType === 'uncharted-turretory-demo' ? 'The Traitors: Season 4' : 'Demo Season',  episode_number: parseInt(episodeNumber),
   castaway_id: castaway.id,
   category: cat.key,
   points: cat.points,
@@ -298,7 +298,7 @@ season: selectedLeagueType === 'politics-on-the-beach' ? 'Survivor 51' : selecte
       if (manual && manual.points && parseInt(manual.points) !== 0) {
         entries.push({
           league_type: selectedLeagueType,
-          season: selectedLeagueType === 'politics-on-the-beach' ? 'Survivor 51' : selectedLeagueType === 'turret-mafia' ? 'The Traitors: New Blood' : selectedLeagueType === 'turret-mafia-demo' ? 'The Traitors Season 4' : 'Demo Season',          episode_number: parseInt(episodeNumber),
+          season: selectedLeagueType === 'secrets-on-the-beach' ? 'Survivor 51' : selectedLeagueType === 'uncharted-turretory' ? 'The Traitors: New Blood' : selectedLeagueType === 'uncharted-turretory-demo' ? 'The Traitors Season 4' : 'Demo Season',          episode_number: parseInt(episodeNumber),
           castaway_id: castaway.id,
           category: 'manual_adjustment',
           points: parseInt(manual.points),
@@ -411,7 +411,7 @@ setMessage(`Saved ${entries.length} scoring events for Episode ${episodeNumber}!
 
 <h1 style={{ fontSize: '2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
   <Calculator size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
-  <span style={{ color: '#f0b429' }}>{selectedLeagueType === 'turret-mafia' || selectedLeagueType === 'turret-mafia-demo' ? 'Turret Mafia' : 'Politics on the Beach'}</span>{' '}
+  <span style={{ color: '#f0b429' }}>{selectedLeagueType === 'uncharted-turretory' || selectedLeagueType === 'uncharted-turretory-demo' ? 'Uncharted Turretory' : 'Secrets on the Beach'}</span>{' '}
   <span style={{ color: '#ffffff' }}>Episode Scoring Guide</span>
 </h1>
 

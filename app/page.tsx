@@ -67,8 +67,8 @@ export default function Home() {
   const showPersonalizedView = !loading && !leaguesLoading && user && hasRealLeagues
 
   const leagueTypeMeta: Record<string, string> = {
-    'politics-on-the-beach': 'politics-on-the-beach',
-    'turret-mafia': 'turret-mafia',
+    'secrets-on-the-beach': 'secrets-on-the-beach',
+    'uncharted-turretory': 'uncharted-turretory',
   }
 
   return (
@@ -181,7 +181,7 @@ export default function Home() {
         marginTop: '0px',
         marginBottom: '-20px'
       }}>
-        Hot route to your current league pages! Rules, procedures, and creation live in respective hubs.
+        Hot route to your active fantasy leagues! League rules, procedures, and creation live in the league umbrella.
       </p>
     </div>
   </section>
@@ -209,11 +209,11 @@ export default function Home() {
   margin: '0 auto'
 }}>
 
-          {/* Politics on the Beach */}
-          {!myLeagueTypes.has('politics-on-the-beach') && (
+          {/* Secrets on the Beach */}
+          {!myLeagueTypes.has('secrets-on-the-beach') && (
 <div
   className="league-card"
-  onClick={() => router.push('/leagues/politics-on-the-beach')}
+  onClick={() => router.push('/leagues/secrets-on-the-beach')}
   style={{
     backgroundColor: '#1a1a2e',
     border: '3px solid #f0b429',
@@ -224,7 +224,7 @@ export default function Home() {
   }}
 >
   <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
-  <span className="emoji-potb">🏝️</span> Politics on the Beach
+  <span className="emoji-sotb">🏝️</span> Secrets on the Beach
 </h3>
   <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
     Set sail for this island adventure, going 25+ years strong, by drafting your tribe, winning challenges, and surviving the vote.
@@ -232,7 +232,7 @@ export default function Home() {
  <button
   onClick={(e) => {
     e.stopPropagation()
-    router.push('/leagues/politics-on-the-beach')
+    router.push('/leagues/secrets-on-the-beach')
   }}
     style={{
       display: 'block',
@@ -254,10 +254,10 @@ export default function Home() {
           )}
 
          {/* The Traitors */}
-         {!myLeagueTypes.has('turret-mafia') && (
+         {!myLeagueTypes.has('uncharted-turretory') && (
  <div
   className="league-card"
-  onClick={() => router.push('/leagues/turret-mafia')}
+  onClick={() => router.push('/leagues/uncharted-turretory')}
   style={{
     backgroundColor: '#1a1a2e',
     border: '3px solid rgb(245, 255, 156)',
@@ -268,7 +268,7 @@ export default function Home() {
   }}
   >
             <h3 style={{ color: 'rgb(245, 255, 156)', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
-  <span className="emoji-turret">🗡️</span> Turret Mafia
+  <span className="emoji-turret">🗡️</span> Uncharted Turretory
 </h3>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
     Scale the turret steps of Alan's Castle and decide who you'll back in this game of murder, banishment, and deception.
@@ -276,7 +276,7 @@ export default function Home() {
   <button
   onClick={(e) => {
     e.stopPropagation()
-    router.push('/leagues/turret-mafia')
+    router.push('/leagues/uncharted-turretory')
   }}
     style={{
       display: 'block',
@@ -315,7 +315,7 @@ export default function Home() {
   gap: '6px',
   lineHeight: '1.2'
 }}>
-<span className="emoji-f1-home">🏎️</span> <span className="text-f1-shift-home">Rocket Ship Racing</span></h3>
+<span className="emoji-f1-home">🏎️</span> <span className="text-f1-shift-home">Paddock Politicks</span></h3>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
               Coming in 2027, travel the globe with world-class drivers up and down the grid over 24 weeks of high octane racing.
             </p>
@@ -349,7 +349,7 @@ export default function Home() {
     flex: '0 1 350px'
           }}>
             <h3 style={{ color: 'rgb(245, 255, 156)', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
-  <span className="emoji-drive">🚗</span> Drive Fast, Turn Left
+  <span className="emoji-drive">🚗</span> The Oval Offset
 </h3>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
               Coming in 2027, climb through the cargo net for 36 weeks of American Thunder and race to the checkered flag.</p>

@@ -33,8 +33,8 @@ const hubContent: Record<string, {
   rulesDescription: string
   draftDescription: string
 }> = {
-  'politics-on-the-beach': {
-    title: 'Welcome to Politics on the Beach!',
+  'secrets-on-the-beach': {
+    title: 'Welcome to the Beach!',
     emoji: '🏝️',
     intro: [
       'For 25 years, our screens and hearts have been graced with the iconic television series Survivor. This fantasy league emerged for Season 50, with its zany fan favorites, and continues today for a new generation of players in Fiji and on this platform.',
@@ -44,12 +44,12 @@ const hubContent: Record<string, {
       'Each tribe drafts 4 real-life castaways with the top 3 point-scorers counted toward season totals.',
       'Island politics are dangerous business! Can you survive?!',
     ],
-      demoHref: '/leagues/potb-demo/sample-league',
+      demoHref: '/leagues/sotb-demo/sample-league',
   rulesDescription: 'See the official points breakdown for challenges, idols, and tribal councils.',
   draftDescription: 'Study up on on draft windows, snake order, selection length, and trade rules.',
 },
-  'turret-mafia': {
-    title: 'Welcome to Turret Mafia!',
+  'uncharted-turretory': {
+    title: 'Welcome to the Turret',
     emoji: '🗡️',
     intro: [
       'Remember that game you used play at band camp? The one where someone is murdered every night and justice is doled out every morning? Multiply that by Fegan Floop from <em>Spy Kids</em>, and you have an Emmy-winning reality competition show, <em>The Traitors</em>.',
@@ -61,7 +61,7 @@ const hubContent: Record<string, {
     ],
   rulesDescription: 'See the official points breakdown for missions, shields, daggers, and round tables.',
   draftDescription: 'Study up on on draft windows, snake order, selection length, and trade rules.',
-  demoHref: '/leagues/turret-mafia-demo/sample-league-turret',
+  demoHref: '/leagues/uncharted-turretory-demo/sample-league-turret',
 },
 }
 
@@ -224,119 +224,27 @@ if (!hubContent[type]) {
     key={i}
     style={
       i === 2 || i === 3
-        ? { color: '#f0b429', fontSize: '1.2rem', lineHeight: '1.2', textAlign: 'center', marginBottom: i === 3 ? '24px' : '16px' }
-        : { color: '#a0a0b0', fontSize: '1.1rem', lineHeight: '1.2', marginBottom: i === (hubContent[type]?.intro.length ?? 1) - 1 ? '44px' : '24px' }
+        ? { color: '#f0b429', fontSize: '1.0rem', lineHeight: '1.2', textAlign: 'center', marginBottom: i === 3 ? '24px' : '16px' }
+        : { color: '#a0a0b0', fontSize: '1.0rem', lineHeight: '1.2', marginBottom: i === (hubContent[type]?.intro.length ?? 1) - 1 ? '44px' : '24px' }
     }
     dangerouslySetInnerHTML={{ __html: paragraph }}
   />
 ))}
 
-          <h2 className="mobile-center-heading" style={{ color: '#f0b429', fontSize: '1.4rem', textAlign: 'left', marginBottom: '10px' }}>
-            Membership Tiers
-          </h2>
 
-<section id="hub-tiers" style={{ backgroundColor: '#0a0a0f', marginBottom: '12px' }}>            <div className="tier-grid">
-              <div
-                className="tier-card"
-                onClick={() => router.push('/account?tier=stowaway')}
-                style={{
-                  backgroundColor: '#1a1a2e',
-                  border: '1px solid #2a2a3e',
-                  borderRadius: '10px',
-                  padding: '16px',
-                  textAlign: 'center'
-                }}
-              >
-                <h3 style={{ fontSize: '1.2rem', color: '#a0a0b0', marginBottom: '8px' }}>Stowaway</h3>
-            <ul style={{ color: '#a0a0b0', fontSize: '0.9rem', textAlign: 'left', lineHeight: '1.7', listStyle: 'none', padding: 0 }}>
-  <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rat size={14} strokeWidth={2} /> 1 Public League</li>
-  <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rat size={14} strokeWidth={2} /> Private Access</li>
-  <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rat size={14} strokeWidth={2} /> Basic Leaderboards</li>
-  <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rat size={14} strokeWidth={2} /> Trade Portal Access</li>
-  <div style={{ fontSize: '1.5rem', color: '#a0a0b0', textAlign: 'center', fontWeight: 'bold', marginBottom: '0px' }}>
-    $0.00
-  </div>
-</ul>
-              </div>
 
-              <div
-                className="tier-card"
-                onClick={() => router.push('/account?tier=castaway')}
-                style={{
-                  backgroundColor: '#1a1a2e',
-                  border: '1.75px solid #ffffff',
-                  borderRadius: '10px',
-                  padding: '16px',
-                  textAlign: 'center'
-                }}
-              >
-                <h3 style={{ fontSize: '1.2rem', color: '#ffffff', marginBottom: '8px' }}>Castaway</h3>
-                <ul style={{ color: '#a0a0b0', fontSize: '0.9rem', textAlign: 'left', lineHeight: '1.7', listStyle: 'none', padding: 0 }}>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Anchor size={14} strokeWidth={2} color="#ffffff" /> All Previous Perks</li>
-<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Anchor size={14} strokeWidth={2} color="#ffffff" /> 3 Public Leagues</li>
-<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Anchor size={14} strokeWidth={2} color="#ffffff" /> Public League Chat</li>
-<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Anchor size={14} strokeWidth={2} color="#ffffff" /> Tracking Analytics</li>
-                  <div style={{ fontSize: '1.5rem', color: '#ffffff', textAlign: 'center', fontWeight: 'bold', marginBottom: '0px' }}>
-                    $1.99
-                  </div>
-                </ul>
-              </div>
 
-              <div
-                className="tier-card"
-                onClick={() => router.push('/account?tier=crewchief')}
-                style={{
-                  backgroundColor: '#1a1a2e',
-                  border: '1.75px solid rgb(245, 255, 156)',
-                  borderRadius: '10px',
-                  padding: '16px',
-                  textAlign: 'center'
-                }}
-              >
-                <h3 style={{ fontSize: '1.2rem', color: 'rgb(245, 255, 156)', marginBottom: '8px' }}>Crew Chief</h3>
-                <ul style={{ color: '#a0a0b0', fontSize: '0.9rem', textAlign: 'left', lineHeight: '1.7', listStyle: 'none', padding: 0 }}>
-<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Drill size={14} strokeWidth={2} color="rgb(245, 255, 156)" /> All Previous Perks</li>
-<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Drill size={14} strokeWidth={2} color="rgb(245, 255, 156)" /> Host Private League</li>
-<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Drill size={14} strokeWidth={2} color="rgb(245, 255, 156)" /> 8-Player Capacity</li>
-<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Drill size={14} strokeWidth={2} color="rgb(245, 255, 156)" /> Customize Settings</li>
-                  <div style={{ fontSize: '1.5rem', color: 'rgb(245, 255, 156)', fontWeight: 'bold', textAlign: 'center', marginBottom: '0px' }}>
-                    $3.99
-                  </div>
-                </ul>
-              </div>
 
-              <div
-                className="tier-card"
-                onClick={() => router.push('/account?tier=teamprincipal')}
-                style={{
-                  backgroundColor: '#1a1a2e',
-                  border: '1.75px solid #e7ab1f',
-                  borderRadius: '10px',
-                  padding: '16px',
-                  textAlign: 'center',
-                  position: 'relative'
-                }}
-              >
-                <h3 style={{ fontSize: '1.2rem', color: '#f0b429', marginBottom: '10px' }}>
-                  Team Principal
-                </h3>
-                <ul style={{ color: '#a0a0b0', fontSize: '0.9rem', textAlign: 'left', lineHeight: '1.7', listStyle: 'none', padding: 0 }}>
-                 <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> All Previous Perks</li>
-<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> 3 18-Player Leagues</li>
-<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> Add Custom Scoring</li>
-<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> Highlighted Chats</li>
-                  <div style={{ fontSize: '1.5rem', color: '#f0b429', fontWeight: 'bold', textAlign: 'center', marginBottom: '0px' }}>
-                    $6.99
-                  </div>
-                </ul>
-              </div>
-            </div>
-          </section>
 
-          <p style={{ textAlign: 'center', color: '#555570', marginTop: '12px', fontSize: '1.0rem' }}>
-            See &quot;Features&quot; for full membership and benefits breakdown.
-          </p>
-        </div>
+
+
+
+    
+
+
+
+
+
 
         <h2 className="mobile-center-heading" style={{ color: '#f0b429', marginTop: '-8px', fontSize: '1.4rem', textAlign: 'left', marginBottom: '10px' }}>
           League Resources
@@ -505,7 +413,7 @@ if (!hubContent[type]) {
     padding: '24px',
     textDecoration: 'none',
     color: '#ffffff',
-    marginBottom: '0px'
+    marginBottom: '36px'
   }}>
     <h2 style={{ color: '#f0b429', fontSize: 'clamp(1.1rem, 6.6vw, 1.7rem)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
       <TestTubeDiagonal size={28} color="#ffffff" strokeWidth={2} style={{ flexShrink: 0 }} /> Demo League <span className="demo-arrow">→</span>
@@ -516,6 +424,117 @@ if (!hubContent[type]) {
   </a>
 )}
       </div>
+
+   <h2 className="mobile-center-heading" style={{ color: '#f0b429', fontSize: '1.4rem', textAlign: 'left', marginBottom: '10px', marginTop: '24px' }}>
+            Membership Tiers
+          </h2>
+
+<section id="hub-tiers" style={{ backgroundColor: '#0a0a0f', marginBottom: '12px' }}>            <div className="tier-grid">
+              <div
+                className="tier-card"
+                onClick={() => router.push('/account?tier=stowaway')}
+                style={{
+                  backgroundColor: '#1a1a2e',
+                  border: '1px solid #2a2a3e',
+                  borderRadius: '10px',
+                  padding: '16px',
+                  textAlign: 'center'
+                }}
+              >
+                <h3 style={{ fontSize: '1.2rem', color: '#a0a0b0', marginBottom: '8px' }}>Stowaway</h3>
+            <ul style={{ color: '#a0a0b0', fontSize: '0.9rem', textAlign: 'left', lineHeight: '1.7', listStyle: 'none', padding: 0 }}>
+  <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rat size={14} strokeWidth={2} /> 1 Public League</li>
+  <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rat size={14} strokeWidth={2} /> Private Access</li>
+  <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rat size={14} strokeWidth={2} /> Basic Leaderboards</li>
+  <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rat size={14} strokeWidth={2} /> Trade Portal Access</li>
+  <div style={{ fontSize: '1.5rem', color: '#a0a0b0', textAlign: 'center', fontWeight: 'bold', marginBottom: '0px' }}>
+    $0.00
+  </div>
+</ul>
+              </div>
+
+              <div
+                className="tier-card"
+                onClick={() => router.push('/account?tier=castaway')}
+                style={{
+                  backgroundColor: '#1a1a2e',
+                  border: '1.75px solid #ffffff',
+                  borderRadius: '10px',
+                  padding: '16px',
+                  textAlign: 'center'
+                }}
+              >
+                <h3 style={{ fontSize: '1.2rem', color: '#ffffff', marginBottom: '8px' }}>Castaway</h3>
+                <ul style={{ color: '#a0a0b0', fontSize: '0.9rem', textAlign: 'left', lineHeight: '1.7', listStyle: 'none', padding: 0 }}>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Anchor size={14} strokeWidth={2} color="#ffffff" /> All Previous Perks</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Anchor size={14} strokeWidth={2} color="#ffffff" /> 3 Public Leagues</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Anchor size={14} strokeWidth={2} color="#ffffff" /> Public League Chat</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Anchor size={14} strokeWidth={2} color="#ffffff" /> Tracking Analytics</li>
+                  <div style={{ fontSize: '1.5rem', color: '#ffffff', textAlign: 'center', fontWeight: 'bold', marginBottom: '0px' }}>
+                    $1.99
+                  </div>
+                </ul>
+              </div>
+
+              <div
+                className="tier-card"
+                onClick={() => router.push('/account?tier=crewchief')}
+                style={{
+                  backgroundColor: '#1a1a2e',
+                  border: '1.75px solid rgb(245, 255, 156)',
+                  borderRadius: '10px',
+                  padding: '16px',
+                  textAlign: 'center'
+                }}
+              >
+                <h3 style={{ fontSize: '1.2rem', color: 'rgb(245, 255, 156)', marginBottom: '8px' }}>Crew Chief</h3>
+                <ul style={{ color: '#a0a0b0', fontSize: '0.9rem', textAlign: 'left', lineHeight: '1.7', listStyle: 'none', padding: 0 }}>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Drill size={14} strokeWidth={2} color="rgb(245, 255, 156)" /> All Previous Perks</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Drill size={14} strokeWidth={2} color="rgb(245, 255, 156)" /> Host Private League</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Drill size={14} strokeWidth={2} color="rgb(245, 255, 156)" /> 8-Player Capacity</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Drill size={14} strokeWidth={2} color="rgb(245, 255, 156)" /> Customize Settings</li>
+                  <div style={{ fontSize: '1.5rem', color: 'rgb(245, 255, 156)', fontWeight: 'bold', textAlign: 'center', marginBottom: '0px' }}>
+                    $3.99
+                  </div>
+                </ul>
+              </div>
+
+              <div
+                className="tier-card"
+                onClick={() => router.push('/account?tier=teamprincipal')}
+                style={{
+                  backgroundColor: '#1a1a2e',
+                  border: '1.75px solid #e7ab1f',
+                  borderRadius: '10px',
+                  padding: '16px',
+                  textAlign: 'center',
+                  position: 'relative'
+                }}
+              >
+                <h3 style={{ fontSize: '1.2rem', color: '#f0b429', marginBottom: '10px' }}>
+                  Team Principal
+                </h3>
+                <ul style={{ color: '#a0a0b0', fontSize: '0.9rem', textAlign: 'left', lineHeight: '1.7', listStyle: 'none', padding: 0 }}>
+                 <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> All Previous Perks</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> 3 18-Player Leagues</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> Add Custom Scoring</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> Highlighted Chats</li>
+                  <div style={{ fontSize: '1.5rem', color: '#f0b429', fontWeight: 'bold', textAlign: 'center', marginBottom: '0px' }}>
+                    $6.99
+                  </div>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <p style={{ textAlign: 'center', color: '#555570', marginTop: '12px', fontSize: '1.0rem' }}>
+            See &quot;Features&quot; for full membership and benefits breakdown.
+          </p>
+        </div>
+
+
+
+
     </main>
   )
 }
