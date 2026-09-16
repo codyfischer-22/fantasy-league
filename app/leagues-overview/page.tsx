@@ -257,7 +257,7 @@ export default function LeaguesOverviewPage() {
                 <div>🧪{'  '}Secrets on the Beach →</div>
               </a>
               <a
-                href="/leagues/uncharted-turretory-demo/sample-league-turret"
+                href="/leagues/uncharted-turretory-demo/sample-league"
                 style={{
                   backgroundColor: '#1a1a2e',
                   border: '1px solid rgb(245, 255, 156)',
