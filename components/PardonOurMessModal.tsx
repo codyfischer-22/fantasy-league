@@ -6,12 +6,12 @@ import { Flame } from 'lucide-react'
 export default function PardonOurMessModal() {
   const [show, setShow] = useState(false)
 
-  useEffect(() => {
-    const dismissed = sessionStorage.getItem('pardonOurMessDismissed')
-    if (!dismissed) {
-      setShow(true)
-    }
-  }, [])
+const MODAL_ENABLED = false // flip to true to re-enable
+
+useEffect(() => {
+  if (!MODAL_ENABLED) return
+  sessionStorage.getItem('pardonOurMessDismissed') || setShow(true)
+}, [])
 
   const handleDismiss = () => {
     sessionStorage.setItem('pardonOurMessDismissed', 'true')
