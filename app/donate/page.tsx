@@ -52,12 +52,12 @@ function ExtrasContent() {
         </a>
 
 <h1 style={{ fontSize: '2.25rem', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-  <MicSignal size={32} strokeWidth={2} style={{ position: 'relative', top: '1px' }} />
+  <HandCoins size={38} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
   <span style={{ color: '#f0b429' }}>Trekkon</span>{' '}
-  <span style={{ color: '#ffffff' }}>Extras</span>
+  <span style={{ color: '#ffffff' }}>Donations</span>
 </h1>
         <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '30px', lineHeight: '1.6' }}>
-          As time goes on, keep an eye out for locally-sourced podcasts, blogs, special offers, and other fun features! In the meantime, consider a tip below!
+            What began as a hobby project turned into hundreds of hours of late-night coding and paying for various website hosting tools. Consider a one-time gift to help cover your league, support the platform, and keep the trek going!
         </p>
 
      {justTipped && (
@@ -110,12 +110,8 @@ function ExtrasContent() {
           padding: '28px',
           marginBottom: '24px'
         }}>
-          <h2 style={{ color: '#f0b429', fontSize: '1.4rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-  <HandCoins size={28} strokeWidth={2} style={{ position: 'relative', top: '0px' }} /> Tip Jar
-</h2>
           <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '20px', lineHeight: '1.6' }}>
-            What began as a hobby project turned into hundreds of hours of late-night coding and paying for various website hosting tools. Consider a one-time tip to help cover your league, support the platform, and keep the trek going!
-        </p>
+Choose gift amount to support your favorite league-hosting platform:        </p>
 
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '16px' }}>
             {presetAmounts.map((amt) => (
@@ -169,11 +165,11 @@ function ExtrasContent() {
               cursor: submitting ? 'not-allowed' : 'pointer'
             }}
           >
-            {submitting ? 'Redirecting...' : 'Leave a Tip →'}
+            {submitting ? 'Redirecting...' : 'Donate →'}
           </button>
 
           <p style={{ color: '#555570', fontSize: '0.85rem', marginTop: '16px' }}>
-            Please note tips are non-refundable and separate from any membership subscription.
+            Please note gifts are non-refundable and separate from any membership subscription.
           </p>
         </div>
 

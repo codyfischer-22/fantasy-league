@@ -514,7 +514,7 @@ effectiveCap = league.max_members ?? (hostProfile?.tier === 'teamprincipal' ? 18
   display: 'inline-block',
   marginBottom: '24px'
 }}>
-← Back to {leagueTypeLabels[type] ?? 'League'}
+← Back to {leagueTypeLabels[type] ?? 'League'} Hub
 </a>
 
         <div style={{ textAlign: 'left', marginBottom: '12px' }}>

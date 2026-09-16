@@ -1,15 +1,75 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { Rat, Anchor, Drill, Rocket, Wallet, Hourglass } from 'lucide-react'
 
+type MyLeague = {
+  name: string
+  type: string
+  slug: string
+  host_user_id?: string | null
+}
+
 export default function Home() {
   const { user, loading } = useAuth()
   const router = useRouter()
   const [showComingSoon, setShowComingSoon] = useState(false)
+  const [hostedLeagues, setHostedLeagues] = useState<MyLeague[]>([])
+  const [joinedLeagues, setJoinedLeagues] = useState<MyLeague[]>([])
+  const [myLeagueTypes, setMyLeagueTypes] = useState<Set<string>>(new Set())
+  const [leaguesLoading, setLeaguesLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadMyLeagues() {
+      if (!user) {
+        setLeaguesLoading(false)
+        return
+      }
+      const { data: memberRows } = await supabase
+        .from('league_members')
+        .select('league_id')
+        .eq('user_id', user.id)
+
+      const leagueIds = (memberRows ?? []).map((m) => m.league_id)
+      if (leagueIds.length === 0) {
+        setLeaguesLoading(false)
+        return
+      }
+
+      const { data: leagues } = await supabase
+        .from('leagues')
+        .select('name, league_type, slug, host_user_id, is_show_chat')
+        .in('id', leagueIds)
+
+      const realLeagues = (leagues ?? []).filter((l) => !l.is_show_chat)
+
+      const mapped = realLeagues.map((l) => ({
+        name: l.name,
+        type: l.league_type,
+        slug: l.slug,
+        host_user_id: l.host_user_id,
+      }))
+
+      setHostedLeagues(mapped.filter((l) => l.host_user_id === user.id))
+      setJoinedLeagues(mapped.filter((l) => l.host_user_id !== user.id))
+      setMyLeagueTypes(new Set(mapped.map((l) => l.type)))
+      setLeaguesLoading(false)
+    }
+    if (!loading) {
+      loadMyLeagues()
+    }
+  }, [user, loading])
+
+  const hasRealLeagues = hostedLeagues.length > 0 || joinedLeagues.length > 0
+  const showPersonalizedView = !loading && !leaguesLoading && user && hasRealLeagues
+
+  const leagueTypeMeta: Record<string, string> = {
+    'politics-on-the-beach': 'politics-on-the-beach',
+    'turret-mafia': 'turret-mafia',
+  }
 
   return (
 <main style={{
@@ -50,42 +110,82 @@ export default function Home() {
       Choose Fandoms. Draft Teams. Beat Buddies.
     </p>
   </div>
-  
 
-      {/* ─── HERO ─── */}
-      <section style={{
-        textAlign: 'center',
-        padding: '60px 40px',
-        background: 'linear-gradient(180deg, #12121a 0%, #0a0a0f 100%)'
-      }}>
-        <h2 style={{
-          fontSize: 'clamp(1.75rem, 8vw, 3rem)',
-          color: '#ffffff',
-          marginBottom: '14px',
-          letterSpacing: '1px'
+      {!showPersonalizedView && (
+        <section style={{
+          textAlign: 'center',
+          padding: '60px 40px',
+          background: 'linear-gradient(180deg, #12121a 0%, #0a0a0f 100%)'
         }}>
-          Fantasy without the Pigskin, <span style={{ color: '#f0b429' }}>Finally</span>
-        </h2>
-<p className="hero-text" style={{
-  color: '#a0a0b0',
-  fontSize: 'clamp(.85rem, 4.5vw, 1.2rem)',
-  maxWidth: '600px',
-  margin: '0 auto 16px auto',
-  lineHeight: '1.7'
-}}>
-  Move over, Football! Here comes a new wave of fantasy leagues for the cutthroat, the speed junkies, and the adventurous at heart.
-</p>
-<p className="hero-text" style={{
-  color: '#a0a0b0',
-  fontSize: 'clamp(.85rem, 4.5vw, 1.2rem)',
-  maxWidth: '800px',
-  margin: '0 auto 32px auto',
-  lineHeight: '1.7'
-}}>
-  <span style={{ fontStyle: 'italic' }}>Trekkon</span> is derived from the Ancient Greek <span style={{ fontStyle: 'italic' }}>"τρέχω,"</span> to race or run, and <span style={{ fontStyle: 'italic' }}>"ἀγών,"</span> a gathering place for games, competitions, or battles.
-We inspire everyday people to team up with their on-screen favoritess in the hopes they&apos;ll trek out on their own adventures.
-</p>
-</section>
+          <h2 style={{
+            fontSize: 'clamp(1.75rem, 8vw, 3rem)',
+            color: '#ffffff',
+            marginBottom: '14px',
+            letterSpacing: '1px'
+          }}>
+            Fantasy without the Pigskin, <span style={{ color: '#f0b429' }}>Finally</span>
+          </h2>
+          <p className="hero-text" style={{
+            color: '#a0a0b0',
+            fontSize: 'clamp(.85rem, 4.5vw, 1.2rem)',
+            maxWidth: '600px',
+            margin: '0 auto 16px auto',
+            lineHeight: '1.7'
+          }}>
+            Move over, Football! Here comes a new wave of fantasy leagues for the cutthroat, the speed junkies, and the adventurous at heart.
+          </p>
+          <p className="hero-text" style={{
+            color: '#a0a0b0',
+            fontSize: 'clamp(.85rem, 4.5vw, 1.2rem)',
+            maxWidth: '800px',
+            margin: '0 auto 32px auto',
+            lineHeight: '1.7'
+          }}>
+            <span style={{ fontStyle: 'italic' }}>Trekkon</span> is derived from the Ancient Greek <span style={{ fontStyle: 'italic' }}>"τρέχω,"</span> to race or run, and <span style={{ fontStyle: 'italic' }}>"ἀγών,"</span> a gathering place for games, competitions, or battles.
+            We inspire everyday people to team up with their on-screen favoritess in the hopes they&apos;ll trek out on their own adventures.
+          </p>
+        </section>
+      )}
+
+     {showPersonalizedView && (
+  <section style={{ padding: '50px 40px 20px 40px' }}>
+    <div style={{ maxWidth: '1100px', margin: '0 auto', marginTop: '8px' }}>
+<div className="league-circle-row" style={{
+  display: 'flex',
+  flexWrap: 'nowrap',
+  justifyContent: 'center',
+  gap: '24px',
+  overflowX: 'auto',
+  overflowY: 'visible',
+  padding: '24px 12px',
+}}>   {[...hostedLeagues, ...joinedLeagues].map((league) => {
+          const isHosted = hostedLeagues.some((h) => h.slug === league.slug && h.type === league.type)
+          return (
+            <a
+              key={`${league.type}-${league.slug}`}
+              href={`/leagues/${league.type}/${league.slug}`}
+              className="league-circle"
+              style={{
+                '--circle-color': isHosted ? '#ca29ca' : '#f0b429',
+              } as React.CSSProperties}
+            >
+              <span className="league-circle-text">{league.name}</span>
+            </a> 
+          )   
+        })}
+      </div>
+        <p style={{
+        color: '#555570',
+        fontSize: 'clamp(0.85rem, 3.5vw, 1rem)',
+        textAlign: 'center',
+        marginTop: '0px',
+        marginBottom: '-20px'
+      }}>
+        Hot route to your current league pages! Rules, procedures, and creation live in respective hubs.
+      </p>
+    </div>
+  </section>
+)}
 
       {/* ─── LEAGUES ─── */}
 <section id="leagues" className="scroll-offset" style={{ padding: '50px 40px' }}>
@@ -94,10 +194,10 @@ We inspire everyday people to team up with their on-screen favoritess in the hop
     color: '#f0b429',
     fontSize: 'clamp(1.75rem, 8vw, 2.25rem)',
     marginBottom: '16px',
-    marginTop: '-84px',
+    marginTop: showPersonalizedView ? '0px' : '-84px',
     letterSpacing: '2px'
   }}>
-  Choose Your League
+  {showPersonalizedView ? 'Explore More Leagues' : 'Explore League Types'}
   </h2>
 
         <div style={{
@@ -110,6 +210,7 @@ We inspire everyday people to team up with their on-screen favoritess in the hop
 }}>
 
           {/* Politics on the Beach */}
+          {!myLeagueTypes.has('politics-on-the-beach') && (
 <div
   className="league-card"
   onClick={() => router.push('/leagues/politics-on-the-beach')}
@@ -150,8 +251,10 @@ We inspire everyday people to team up with their on-screen favoritess in the hop
     Climb Aboard →
   </button>
 </div>
+          )}
 
          {/* The Traitors */}
+         {!myLeagueTypes.has('turret-mafia') && (
  <div
   className="league-card"
   onClick={() => router.push('/leagues/turret-mafia')}
@@ -192,6 +295,7 @@ We inspire everyday people to team up with their on-screen favoritess in the hop
     Cross the Loch →
   </button>
        </div>
+          )}
 
           {/* European Rocket Ships */}
           <div style={{
@@ -284,10 +388,10 @@ We inspire everyday people to team up with their on-screen favoritess in the hop
   }}
   >
             <h3 style={{ color: '#ffffff', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
-  <span className="emoji-suggest">💭</span> Suggest New League
+  <span className="emoji-suggest">💭</span> Suggest a Fandom
 </h3>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
-Got an idea for a fantasy league we should build next? Send us your concept and help shape the future of Trekkon Fantasy Leagues. 
+Got an idea for a league we should build next? Send us your concept and help shape the future of Trekkon Fantasy Leagues. 
 </p>
   <button
   onClick={(e) => {

@@ -334,7 +334,7 @@ if (!hubContent[type]) {
           </section>
 
           <p style={{ textAlign: 'center', color: '#555570', marginTop: '12px', fontSize: '1.0rem' }}>
-            See &quot;Pricing&quot; for full membership and benefits breakdown.
+            See &quot;Features&quot; for full membership and benefits breakdown.
           </p>
         </div>
 

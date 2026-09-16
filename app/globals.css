@@ -583,3 +583,51 @@ html, body {
   .quad-types { order: 3; }
   .quad-demo { order: 4; }
 }
+
+.league-circle {
+  box-sizing: border-box;
+  width: 210px;
+  min-height: 70px;
+  height: auto;
+  border-radius: 35px;
+  background-color: #1a1a2e;
+  border: 3px solid var(--circle-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  text-decoration: none;
+  padding: 14px 16px;
+  transition: box-shadow 0.25s ease, transform 0.15s ease;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.league-circle-text {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: clamp(0.9rem, 2.2vw, 1rem);
+  line-height: 1.3;
+}
+
+.league-circle:hover {
+  box-shadow: 0 0 14px var(--circle-color);
+  animation: league-shake 0.4s ease;
+}
+
+@keyframes league-shake {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  20% { transform: translate(-2px, 1px) rotate(-1deg); }
+  40% { transform: translate(2px, -1px) rotate(1deg); }
+  60% { transform: translate(-2px, -1px) rotate(-1deg); }
+  80% { transform: translate(2px, 1px) rotate(1deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+@media (max-width: 600px) {
+  .league-circle-row {
+    justify-content: flex-start !important;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}

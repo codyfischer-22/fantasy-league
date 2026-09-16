@@ -191,12 +191,12 @@ useEffect(() => {
 
       <nav style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center' }}>
          <a href="/leagues-overview" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.2rem' }}>Leagues</a>
-         <a href="/#tiers" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Pricing</a>
+         <a href="/#tiers" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Features</a>
        
         <a href="/contact" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Contact</a>
 
-        <a href="/extras" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>
-  Extras
+        <a href="/donate" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>
+  Donate
 </a>
 
         {loading ? null : user ? (
