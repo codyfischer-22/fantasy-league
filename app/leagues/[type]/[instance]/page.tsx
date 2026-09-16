@@ -195,9 +195,15 @@ const cap = leagueData.max_members ?? (hostProfile?.tier === 'teamprincipal' ? 1
       .eq('email_opt_in', true)
 
     if (profiles && profiles.length > 0) {
-      await fetch('/api/send-notification-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+  const { data: { session } } = await supabase.auth.getSession()
+  const accessToken = session?.access_token
+
+  await fetch('/api/send-notification-email', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
+    },
         body: JSON.stringify({
           recipients: profiles.map((p) => ({
             email: p.email,
@@ -319,9 +325,15 @@ effectiveCap = league.max_members ?? (hostProfile?.tier === 'teamprincipal' ? 18
           .single()
 
         if (hostProfile?.email_opt_in) {
-          await fetch('/api/send-notification-email', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            const { data: { session } } = await supabase.auth.getSession()
+  const accessToken = session?.access_token
+
+  await fetch('/api/send-notification-email', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
+    },
             body: JSON.stringify({
               recipients: [{
                 email: hostProfile.email,
@@ -395,11 +407,17 @@ effectiveCap = league.max_members ?? (hostProfile?.tier === 'teamprincipal' ? 18
           .eq('user_id', league.host_user_id)
           .single()
 
-        if (hostProfile?.email_opt_in) {
-          await fetch('/api/send-notification-email', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
+       if (hostProfile?.email_opt_in) {
+  const { data: { session } } = await supabase.auth.getSession()
+  const accessToken = session?.access_token
+
+  await fetch('/api/send-notification-email', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({
               recipients: [{
                 email: hostProfile.email,
                 playerName: hostProfile.display_name || 'Host',

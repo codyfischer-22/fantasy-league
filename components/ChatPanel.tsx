@@ -531,22 +531,24 @@ async function handleSend() {
       .eq('email_opt_in', true);
 
     if (profiles && profiles.length > 0) {
+  const { data: { session } } = await supabase.auth.getSession()
+  const accessToken = session?.access_token
 
       await fetch('/api/send-notification-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          recipients: profiles.map((p) => ({
-            email: p.email,
-            playerName: p.display_name || 'Player',
-          })),
-          subject: `${senderName} tagged you in a league chat!`,
-          message: `${senderName} tagged you in the ${league?.name ?? 'league'} Chat! The message reads: "${trimmed}"`,
-          linkUrl: `https://trekkonleagues.com/leagues/${league?.league_type}/${league?.slug}`,
-          linkText: 'View Chat →',
-        }),
-      })
-    }
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({
+      recipients: profiles.map((p) => ({ email: p.email, playerName: p.display_name || 'Player' })),
+      subject: `${senderName} tagged you in a league chat!`,
+      message: `${senderName} tagged you in the ${league?.name ?? 'league'} Chat! The message reads: "${trimmed}"`,
+      linkUrl: `https://trekkonleagues.com/leagues/${league?.league_type}/${league?.slug}`,
+      linkText: 'View Chat →',
+    }),
+  })
+}
   }
   setNewMessage('');
 }

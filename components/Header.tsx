@@ -346,7 +346,7 @@ useEffect(() => {
             )}
 
             {isAdmin && (
-  <a href="/admin/scoring" className="btn" style={{ color: '#ffffff', textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+  <a href="/admin/dashboard" className="btn" style={{ color: '#ffffff', textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
     <Settings size={24} strokeWidth={2} />
   </a>
 )}

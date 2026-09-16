@@ -9,6 +9,11 @@ type Recipient = {
 }
 
 export async function POST(req: Request) {
+  const passcode = req.headers.get('x-trekkon-passcode')
+  if (passcode !== process.env.NOTIFICATION_EMAIL_PASSCODE) {
+    return Response.json({ error: 'Unauthorized.' }, { status: 401 })
+  }
+
   const { recipients, subject, message, linkUrl, linkText } = await req.json() as {
     recipients: Recipient[]
     subject: string
@@ -21,9 +26,14 @@ export async function POST(req: Request) {
     return Response.json({ error: 'No recipients provided.' }, { status: 400 })
   }
 
-  const results = await Promise.allSettled(
-    recipients.map((r) =>
-      resend.emails.send({
+  if (recipients.length > 100) {
+    return Response.json({ error: 'Too many recipients for a single request.' }, { status: 400 })
+  }
+
+  const results = []
+  for (const r of recipients) {
+    try {
+      const res = await resend.emails.send({
         from: 'Trekkon Fantasy Leagues <notifications@trekkonleagues.com>',
         replyTo: 'hello@trekkonleagues.com',
         to: [r.email],
@@ -35,10 +45,14 @@ export async function POST(req: Request) {
           linkText,
         }),
       })
-    )
-  )
+      results.push(res)
+    } catch (err) {
+      results.push({ error: err })
+    }
+    await new Promise((resolve) => setTimeout(resolve, 550))
+  }
 
-  const failures = results.filter((r) => r.status === 'rejected')
+  const failures = results.filter((r: any) => r.error)
   if (failures.length > 0) {
     console.error('Some emails failed to send:', failures)
   }

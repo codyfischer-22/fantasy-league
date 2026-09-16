@@ -217,9 +217,15 @@ if (isDraftComplete) {
     .eq('email_opt_in', true)
 
   if (profiles && profiles.length > 0) {
-    await fetch('/api/send-notification-email', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      const { data: { session } } = await supabase.auth.getSession()
+  const accessToken = session?.access_token
+
+  await fetch('/api/send-notification-email', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
+    },
       body: JSON.stringify({
         recipients: profiles.map((p) => ({
           email: p.email,
@@ -308,9 +314,15 @@ const { data: missedProfile } = await supabase
   .single()
 
 if (missedProfile?.email_opt_in) {
+    const { data: { session } } = await supabase.auth.getSession()
+  const accessToken = session?.access_token
+
   await fetch('/api/send-notification-email', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
+    },
     body: JSON.stringify({
       recipients: [{
         email: missedProfile.email,
@@ -340,9 +352,15 @@ if (isDraftComplete) {
     .eq('email_opt_in', true)
 
   if (profiles && profiles.length > 0) {
-    await fetch('/api/send-notification-email', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      const { data: { session } } = await supabase.auth.getSession()
+  const accessToken = session?.access_token
+
+  await fetch('/api/send-notification-email', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
+    },
       body: JSON.stringify({
         recipients: profiles.map((p) => ({
           email: p.email,
@@ -388,9 +406,15 @@ if (isDraftComplete) {
   .single()
 
 if (bumpedProfile?.email_opt_in) {
+    const { data: { session } } = await supabase.auth.getSession()
+  const accessToken = session?.access_token
+
   await fetch('/api/send-notification-email', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
+    },
     body: JSON.stringify({
       recipients: [{
         email: bumpedProfile.email,

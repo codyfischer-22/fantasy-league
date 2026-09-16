@@ -2,11 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { createClient } from '@supabase/supabase-js'
 import Stripe from 'stripe'
+import { Resend } from 'resend'
+import { NotificationEmail } from '@/components/emails/NotificationEmail'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
+
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(req: NextRequest) {
   const body = await req.text()
@@ -76,21 +80,26 @@ if (event.type === 'checkout.session.completed') {
               .eq('email_opt_in', true)
 
             if (profiles && profiles.length > 0) {
-              await fetch('https://trekkonleagues.com/api/send-notification-email', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  recipients: profiles.map((p: { email: string; display_name: string | null }) => ({
-                    email: p.email,
-                    playerName: p.display_name || 'Player',
-                  })),
-                  subject: `${league.name} is back on track!`,
-                  message: `Your league, ${league.name}, is back out onto the track! The host is back to full activity.`,
-                  linkUrl: `https://trekkonleagues.com/leagues/${league.league_type}/${league.slug}`,
-                  linkText: 'View League →',
-                }),
-              })
-            }
+  for (const p of profiles) {
+    try {
+      await resend.emails.send({
+        from: 'Trekkon Fantasy Leagues <notifications@trekkonleagues.com>',
+        replyTo: 'hello@trekkonleagues.com',
+        to: [p.email],
+        subject: `${league.name} is back on track!`,
+        react: NotificationEmail({
+          playerName: p.display_name || 'Player',
+          message: `Your league, ${league.name}, is back out onto the track! The host is back to full activity.`,
+          linkUrl: `https://trekkonleagues.com/leagues/${league.league_type}/${league.slug}`,
+          linkText: 'View League →',
+        }),
+      })
+    } catch (err) {
+      console.error('Error sending unfreeze email:', err)
+    }
+    await new Promise((resolve) => setTimeout(resolve, 550))
+  }
+}
           }
         }
       }
@@ -152,21 +161,26 @@ if (event.type === 'customer.subscription.deleted') {
               .eq('email_opt_in', true)
 
             if (profiles && profiles.length > 0) {
-              await fetch('https://trekkonleagues.com/api/send-notification-email', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  recipients: profiles.map((p: { email: string; display_name: string | null }) => ({
-                    email: p.email,
-                    playerName: p.display_name || 'Player',
-                  })),
-                  subject: `${league.name} is in the pit lane...`,
-                  message: `Your league, ${league.name}, is in the pit lane because the host's membership dropped below Crew Chief. Activity will resume if they re-upgrade.`,
-                  linkUrl: `https://trekkonleagues.com/leagues/${league.league_type}/${league.slug}`,
-                  linkText: 'View League →',
-                }),
-              })
-            }
+  for (const p of profiles) {
+    try {
+      await resend.emails.send({
+        from: 'Trekkon Fantasy Leagues <notifications@trekkonleagues.com>',
+        replyTo: 'hello@trekkonleagues.com',
+        to: [p.email],
+        subject: `${league.name} is in the pit lane...`,
+        react: NotificationEmail({
+          playerName: p.display_name || 'Player',
+          message: `Your league, ${league.name}, is in the pit lane because the host's membership dropped below Crew Chief. Activity will resume if they re-upgrade.`,
+          linkUrl: `https://trekkonleagues.com/leagues/${league.league_type}/${league.slug}`,
+          linkText: 'View League →',
+        }),
+      })
+    } catch (err) {
+      console.error('Error sending freeze email:', err)
+    }
+    await new Promise((resolve) => setTimeout(resolve, 550))
+  }
+}
           }
         }
       }

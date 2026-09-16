@@ -363,9 +363,15 @@ const { data: targetProfile } = await supabase
   .single()
 
 if (targetProfile?.email_opt_in) {
+  const { data: { session } } = await supabase.auth.getSession()
+  const accessToken = session?.access_token
+
   await fetch('/api/send-notification-email', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
+    },
     body: JSON.stringify({
       recipients: [{
         email: targetProfile.email,
@@ -482,9 +488,15 @@ const { data: tradeProfiles } = await supabase
   .eq('email_opt_in', true)
 
 if (tradeProfiles && tradeProfiles.length > 0) {
+  const { data: { session } } = await supabase.auth.getSession()
+  const accessToken = session?.access_token
+
   await fetch('/api/send-notification-email', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
+    },
     body: JSON.stringify({
       recipients: tradeProfiles.map((p) => ({
         email: p.email,
@@ -540,9 +552,14 @@ if (tradeProfiles && tradeProfiles.length > 0) {
     .eq('email_opt_in', true)
 
   if (approverProfiles && approverProfiles.length > 0) {
-    await fetch('/api/send-notification-email', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+  const { data: { session } } = await supabase.auth.getSession()
+  const accessToken = session?.access_token
+
+  await fetch('/api/send-notification-email', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`, },
       body: JSON.stringify({
         recipients: approverProfiles.map((p) => ({
           email: p.email,
@@ -593,9 +610,15 @@ if (tradeData?.proposing_user_id) {
       .single()
 
     if (proposerProfile?.email_opt_in) {
-      await fetch('/api/send-notification-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+  const { data: { session } } = await supabase.auth.getSession()
+  const accessToken = session?.access_token
+
+  await fetch('/api/send-notification-email', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
+    },
         body: JSON.stringify({
           recipients: [{
             email: proposerProfile.email,
@@ -647,9 +670,15 @@ const { data: denyProfiles } = await supabase
   .eq('email_opt_in', true)
 
 if (denyProfiles && denyProfiles.length > 0) {
+  const { data: { session } } = await supabase.auth.getSession()
+  const accessToken = session?.access_token
+
   await fetch('/api/send-notification-email', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
+    },
     body: JSON.stringify({
       recipients: denyProfiles.map((p) => ({
         email: p.email,

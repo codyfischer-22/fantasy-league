@@ -109,9 +109,15 @@ const { data: hostNotifyProfile } = await supabase
     .single()
 
   if (hostNotifyProfile?.email_opt_in) {
-    await fetch('/api/send-notification-email', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      const { data: { session } } = await supabase.auth.getSession()
+  const accessToken = session?.access_token
+
+  await fetch('/api/send-notification-email', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
+    },
       body: JSON.stringify({
         recipients: [{
           email: hostNotifyProfile.email,
