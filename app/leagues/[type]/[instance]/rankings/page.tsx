@@ -289,7 +289,7 @@ const handleTouchEnd = () => {
           <>
            <h1 style={{ color: '#f0b429', fontSize: 'clamp(1.72rem, 6vw, 2.25rem)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
   <ListOrdered size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '1px' }} />
-  Rank Your {castawayTerm}s
+  Rank {castawayTerm}s
 </h1>
            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '16px', lineHeight: '1.6' }}>
   Drag and drop your most-wanted {castawayTerm.toLowerCase()} to the top, and work your way down from there. If you need to make a tweak before the offline snake draft begins, just re-edit and save your rankings. Happy drafting, friends!
