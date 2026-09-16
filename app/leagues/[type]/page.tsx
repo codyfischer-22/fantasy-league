@@ -24,6 +24,37 @@ export default function LeagueHubPage() {
   const { user } = useAuth()
   const [userTier, setUserTier] = useState<string | null>(null)
   const [myPrivateLeagues, setMyPrivateLeagues] = useState<League[]>([])
+const [isMemberOfThisType, setIsMemberOfThisType] = useState(false)
+
+useEffect(() => {
+  async function checkMembership() {
+    if (!user) {
+      setIsMemberOfThisType(false)
+      return
+    }
+    const { data: memberships } = await supabase
+      .from('league_members')
+      .select('league_id')
+      .eq('user_id', user.id)
+
+    const leagueIds = (memberships ?? []).map((m) => m.league_id)
+    if (leagueIds.length === 0) {
+      setIsMemberOfThisType(false)
+      return
+    }
+
+    const { count } = await supabase
+      .from('leagues')
+      .select('*', { count: 'exact', head: true })
+      .eq('league_type', type)
+      .eq('is_show_chat', false)
+      .in('id', leagueIds)
+
+    setIsMemberOfThisType((count ?? 0) > 0)
+  }
+  checkMembership()
+}, [user, type])
+
 
 const hubContent: Record<string, {
   title: string
@@ -49,7 +80,7 @@ const hubContent: Record<string, {
   draftDescription: 'Study up on on draft windows, snake order, selection length, and trade rules.',
 },
   'uncharted-turretory': {
-    title: 'Welcome to the Turret',
+    title: 'Welcome to the Turret!',
     emoji: '🗡️',
     intro: [
       'Remember that game you used play at band camp? The one where someone is murdered every night and justice is doled out every morning? Multiply that by Fegan Floop from <em>Spy Kids</em>, and you have an Emmy-winning reality competition show, <em>The Traitors</em>.',
@@ -212,43 +243,34 @@ if (!hubContent[type]) {
           ← Back to Trekkon Fantasy Leagues
         </a>
 
-        <div style={{ textAlign: 'left', marginBottom: '48px', maxWidth: '900px', marginLeft: 'auto', marginRight: 'auto' }}>
-         <h1 style={{ color: '#f0b429', fontSize: 'clamp(2.0rem, 6vw, 3rem)', marginBottom: '24px' }}>
+        <h1 style={{ color: '#f0b429', fontSize: 'clamp(2.0rem, 6vw, 3rem)', marginBottom: '24px', maxWidth: '900px', marginLeft: 'auto', marginRight: 'auto' }}>
   {hubContent[type]?.emoji} {hubContent[type]?.title ?? 'Welcome!'}
 </h1>
-          <h2 className="mobile-center-heading" style={{ color: '#f0b429', fontSize: '1.4rem', textAlign: 'left', marginBottom: '4px' }}>
-            Introduction
-          </h2>
-       {(hubContent[type]?.intro ?? []).map((paragraph, i) => (
-  <p
-    key={i}
-    style={
-      i === 2 || i === 3
-        ? { color: '#f0b429', fontSize: '1.0rem', lineHeight: '1.2', textAlign: 'center', marginBottom: i === 3 ? '24px' : '16px' }
-        : { color: '#a0a0b0', fontSize: '1.0rem', lineHeight: '1.2', marginBottom: i === (hubContent[type]?.intro.length ?? 1) - 1 ? '44px' : '24px' }
-    }
-    dangerouslySetInnerHTML={{ __html: paragraph }}
-  />
-))}
 
+{!isMemberOfThisType && (
+  <div style={{ textAlign: 'left', marginBottom: '48px', maxWidth: '900px', marginLeft: 'auto', marginRight: 'auto' }}>
+    <h2 className="mobile-center-heading" style={{ color: '#f0b429', fontSize: '1.4rem', textAlign: 'left', marginBottom: '4px' }}>
+      Introduction
+    </h2>
+  {(hubContent[type]?.intro ?? []).map((paragraph, i) => (
+    <p
+      key={i}
+      style={
+        i === 2 || i === 3
+          ? { color: '#f0b429', fontSize: '1.0rem', lineHeight: '1.2', textAlign: 'center', marginBottom: i === 3 ? '24px' : '16px' }
+          : { color: '#a0a0b0', fontSize: '1.0rem', lineHeight: '1.2', marginBottom: i === (hubContent[type]?.intro.length ?? 1) - 1 ? '44px' : '24px' }
+      }
+      dangerouslySetInnerHTML={{ __html: paragraph }}
+    />
+  ))}
+  </div>
+)}
 
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-        <h2 className="mobile-center-heading" style={{ color: '#f0b429', marginTop: '-8px', fontSize: '1.4rem', textAlign: 'left', marginBottom: '10px' }}>
-          League Resources
-        </h2>
+        {!isMemberOfThisType && (
+  <h2 className="mobile-center-heading" style={{ color: '#f0b429', marginTop: '-8px', fontSize: '1.4rem', textAlign: 'left', marginBottom: '10px' }}>
+    League Resources
+  </h2>
+)}
 
         <div style={{
           display: 'grid',
@@ -423,7 +445,6 @@ if (!hubContent[type]) {
     </p>
   </a>
 )}
-      </div>
 
    <h2 className="mobile-center-heading" style={{ color: '#f0b429', fontSize: '1.4rem', textAlign: 'left', marginBottom: '10px', marginTop: '24px' }}>
             Membership Tiers
@@ -530,10 +551,7 @@ if (!hubContent[type]) {
           <p style={{ textAlign: 'center', color: '#555570', marginTop: '12px', fontSize: '1.0rem' }}>
             See &quot;Features&quot; for full membership and benefits breakdown.
           </p>
-        </div>
-
-
-
+          </div>
 
     </main>
   )

@@ -46,7 +46,7 @@ function ExtrasContent() {
           fontSize: '0.85rem',
           textDecoration: 'none',
           display: 'inline-block',
-          marginBottom: '24px'
+          marginBottom: '24px',
         }}>
           ← Back to Trekkon Fantasy Leagues
         </a>
@@ -54,7 +54,7 @@ function ExtrasContent() {
 <h1 style={{ fontSize: '2.25rem', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '10px' }}>
   <HandCoins size={38} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
   <span style={{ color: '#f0b429' }}>Trekkon</span>{' '}
-  <span style={{ color: '#ffffff' }}>Donations</span>
+  <span style={{ color: '#ffffff' }}>Tip Jar</span>
 </h1>
         <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '30px', lineHeight: '1.6' }}>
             What began as a hobby project turned into hundreds of hours of late-night coding and paying for various website hosting tools. Consider a one-time gift to help cover your league, support the platform, and keep the trek going!
@@ -68,7 +68,7 @@ function ExtrasContent() {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 100
+    zIndex: 100,
   }}>
     <div style={{
       backgroundColor: '#1a1a2e',
@@ -76,7 +76,7 @@ function ExtrasContent() {
       borderRadius: '12px',
       padding: '20px',
       maxWidth: '380px',
-      textAlign: 'left'
+      textAlign: 'left',
     }}>
       <h3 style={{ color: '#f0b429', fontSize: '1.6rem', marginBottom: '12px' }}>
         ⚜️ Thanks for your support!
@@ -104,12 +104,14 @@ function ExtrasContent() {
 )}
 
         <div style={{
-          backgroundColor: '#1a1a2e',
-          border: '1px solid #f0b429',
-          borderRadius: '12px',
-          padding: '28px',
-          marginBottom: '24px'
-        }}>
+  backgroundColor: '#1a1a2e',
+  border: '1px solid #f0b429',
+  borderRadius: '12px',
+  padding: '20px 28px',
+  marginBottom: '24px',
+  maxWidth: '500px',
+  boxSizing: 'border-box'
+}}>
           <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '20px', lineHeight: '1.6' }}>
 Choose gift amount to support your favorite league-hosting platform:        </p>
 
@@ -165,7 +167,7 @@ Choose gift amount to support your favorite league-hosting platform:        </p>
               cursor: submitting ? 'not-allowed' : 'pointer'
             }}
           >
-            {submitting ? 'Redirecting...' : 'Donate →'}
+            {submitting ? 'Redirecting...' : 'Support Trekkon →'}
           </button>
 
           <p style={{ color: '#555570', fontSize: '0.85rem', marginTop: '16px' }}>

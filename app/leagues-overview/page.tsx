@@ -24,7 +24,7 @@ export default function LeaguesOverviewPage() {
     { name: 'Secrets on the Beach', slug: 'secrets-on-the-beach', emoji: '🏝️', color: '#f0b429', comingSoon: false },
     { name: 'Uncharted Turretory', slug: 'uncharted-turretory', emoji: '🗡️', color: 'rgb(245, 255, 156)', comingSoon: false },
     { name: 'Paddock Politicks', slug: 'paddock-politicks', emoji: '🏎️', color: '#f0b429', comingSoon: true },
-    { name: "Drive Fast, Turn Left", slug: 'drive-fast-turn-left', emoji: '🚗', color: 'rgb(245, 255, 156)', comingSoon: true },
+    { name: 'The Oval Offset', slug: 'the-oval-offset', emoji: '🚗', color: 'rgb(245, 255, 156)', comingSoon: true },
   ]
 
   useEffect(() => {
@@ -141,7 +141,7 @@ export default function LeaguesOverviewPage() {
   }}
 >
 <span className={lt.slug === 'paddock-politicks' ? 'emoji-f1-list' : ''}>{lt.emoji}</span>{'  '}
-<span className={lt.slug === 'paddock-politicks' ? 'text-f1-shift' : ''}>{lt.name}</span> →</button>
+<span className={lt.slug === 'paddock-politicks' ? 'text-f1-shift' : ''}>{lt.name}</span>→</button>
                 ) : (
                   <a
                     key={lt.slug}
@@ -241,37 +241,39 @@ export default function LeaguesOverviewPage() {
             <h2 style={{ color: '#f0b429', fontSize: '1.2rem', marginBottom: '8px' }}>
               View a Demo League
             </h2>
-            <div className="btn" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <a href="/leagues/sotb-demo/sample-league"
-                style={{
-                  backgroundColor: '#1a1a2e',
-                  border: '1px solid #f0b429',
-                  borderRadius: '10px',
-                  padding: '16px 22px',
-                  textDecoration: 'none',
-                  color: '#ffffff',
-                  fontWeight: 'bold',
-                  fontSize: '0.95rem'
-                }}
-              >
-                <div>🧪{'  '}Secrets on the Beach →</div>
-              </a>
-              <a
-                href="/leagues/uncharted-turretory-demo/sample-league"
-                style={{
-                  backgroundColor: '#1a1a2e',
-                  border: '1px solid rgb(245, 255, 156)',
-                  borderRadius: '10px',
-                  padding: '16px 22px',
-                  textDecoration: 'none',
-                  color: '#ffffff',
-                  fontWeight: 'bold',
-                  fontSize: '0.95rem'
-                }}
-              >
-                <div>🧪{'  '}Uncharted Turretory →</div>
-              </a>
-            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+  <a href="/leagues/sotb-demo/sample-league"
+    className="btn"
+    style={{
+      backgroundColor: '#1a1a2e',
+      border: '1px solid #f0b429',
+      borderRadius: '10px',
+      padding: '16px 22px',
+      textDecoration: 'none',
+      color: '#ffffff',
+      fontWeight: 'bold',
+      fontSize: '0.95rem'
+    }}
+  >
+    <div>🧪{'  '}Secrets on the Beach →</div>
+  </a>
+  <a
+    href="/leagues/uncharted-turretory-demo/sample-league"
+    className="btn"
+    style={{
+      backgroundColor: '#1a1a2e',
+      border: '1px solid rgb(245, 255, 156)',
+      borderRadius: '10px',
+      padding: '16px 22px',
+      textDecoration: 'none',
+      color: '#ffffff',
+      fontWeight: 'bold',
+      fontSize: '0.95rem'
+    }}
+  >
+    <div>🧪{'  '}Uncharted Turretory →</div>
+  </a>
+</div>
           </div>
 
           {/* BOTTOM RIGHT — Your Leagues (shown here for Crew Chief+ hosts, since "Leagues You Host" already occupies the top-right slot for them) */}

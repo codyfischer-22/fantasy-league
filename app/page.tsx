@@ -181,7 +181,7 @@ export default function Home() {
         marginTop: '0px',
         marginBottom: '-20px'
       }}>
-        Hot route to your active fantasy leagues! League rules, procedures, and creation live in the league umbrella.
+        Hot route to your active fantasy leagues! League rules, procedures, and creation live in league hubs.
       </p>
     </div>
   </section>

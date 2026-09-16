@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
             currency: 'usd',
             product_data: {
               name: 'Enjoying Trekkon Fantasy Leagues? Leave a tip!',
-              description: 'What began as a hobby project turned into hundreds of hours of late-night coding and paying for various website hosting tools. Consider a one-time tip to help cover your league, support the platform, and keep the trek going!',
+              description: 'What began as a hobby project turned into hundreds of hours of late-night coding and paying for various website hosting tools. Consider a one-time gift to help cover your league, support the platform, and keep the trek going!',
             },
             unit_amount: Math.round(amount * 100),
           },

@@ -34,7 +34,7 @@ export default function Footer() {
   <a href="/privacy" style={{ color: '#4c4c55', textDecoration: 'underline' }}>Privacy Policy</a>
   <span className="footer-extras-link">
     {'  •  '}
-    <a href="/donate" style={{ color: '#4c4c55', textDecoration: 'underline' }}>Donate</a>
+    <a href="/tip-jar" style={{ color: '#4c4c55', textDecoration: 'underline' }}>Tip Jar</a>
   </span>
 </p>
     </footer>

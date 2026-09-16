@@ -507,14 +507,17 @@ effectiveCap = league.max_members ?? (hostProfile?.tier === 'teamprincipal' ? 18
       padding: '60px 40px'
     }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-        <a href={type === 'sotb-demo' ? '/leagues/secrets-on-the-beach' : `/leagues/${type}`} style={{
+        <a href={type === 'sotb-demo' ? '/leagues/secrets-on-the-beach' :
+        type === 'uncharted-turretory-demo' ? '/leagues/uncharted-turretory' :
+         `/leagues/${type}`} 
+        style={{
   color: '#a0a0b0',
   fontSize: '0.85rem',
   textDecoration: 'none',
   display: 'inline-block',
   marginBottom: '24px'
 }}>
-← Back to {leagueTypeLabels[type] ?? 'League'} Umbrella
+← Back to {leagueTypeLabels[type] ?? 'League'} Hub
 </a>
 
         <div style={{ textAlign: 'left', marginBottom: '12px' }}>

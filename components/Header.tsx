@@ -195,8 +195,8 @@ useEffect(() => {
        
         <a href="/contact" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Contact</a>
 
-        <a href="/donate" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>
-  Donate
+        <a href="/tip-jar" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>
+  Tip Jar
 </a>
 
         {loading ? null : user ? (
