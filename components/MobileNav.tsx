@@ -244,10 +244,12 @@ export default function MobileNav() {
           </button>
         )}
 
-        <a href="/media" style={navItemStyle}>
-  <MicSignal size={22} strokeWidth={2} />
-  <span style={navLabelStyle}>Media</span>
-</a>
+        {user && (
+  <a href="/media" style={navItemStyle}>
+    <MicSignal size={22} strokeWidth={2} />
+    <span style={navLabelStyle}>Media</span>
+  </a>
+)}
 
 {!user && (
   <a href="/leagues/all/rules" style={navItemStyle}>
@@ -386,6 +388,12 @@ export default function MobileNav() {
           <a href="/#tiers" style={hamburgerLinkStyle}>
           <Wallet size={22} strokeWidth={1} /> Features
           </a>
+
+          {!user && (
+  <a href="/media" style={hamburgerLinkStyle}>
+    <MicSignal size={22} strokeWidth={1} /> Media
+  </a>
+)}
 
          <a href="/tip-jar" style={hamburgerLinkStyle}>
          <HandCoins size={22} strokeWidth={1} /> Support Us
