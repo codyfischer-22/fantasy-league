@@ -233,7 +233,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     marginTop: '-36px',
     letterSpacing: '2px'
   }}> 
-  Explore League Types
+  Explore Fandoms
   </h2>
 
         <div style={{
