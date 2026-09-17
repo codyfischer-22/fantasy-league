@@ -245,7 +245,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     flex: '0 1 350px'
   }}
 >
-  <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.6rem, 6vw, 1.65rem)', marginBottom: '8px' }}>
+  <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.4rem, 6vw, 1.65rem)', marginBottom: '8px' }}>
     <span className="emoji-sotb">🏝️</span> Secrets on the Beach
   </h3>
   <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
@@ -360,7 +360,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     flex: '0 1 350px'
   }}
 >
-  <h3 style={{ color: 'rgb(245, 255, 156)', fontSize: 'clamp(1.6rem, 6vw, 1.65rem)', marginBottom: '8px' }}>
+  <h3 style={{ color: 'rgb(245, 255, 156)', fontSize: 'clamp(1.4rem, 6vw, 1.65rem)', marginBottom: '8px' }}>
     <span className="emoji-turret">🗡️</span> Uncharted Turretory
   </h3>
   <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
@@ -476,7 +476,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
 }}>
   <h3 style={{
     color: '#f0b429',
-    fontSize: 'clamp(1.6rem, 6vw, 1.7rem)',
+    fontSize: 'clamp(1.4rem, 6vw, 1.7rem)',
     marginBottom: '8px',
     display: 'flex',
     alignItems: 'center',
@@ -507,7 +507,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
   padding: '28px',
   flex: '0 1 350px'
 }}>
-  <h3 style={{ color: 'rgb(245, 255, 156)', fontSize: 'clamp(1.6rem, 6vw, 1.7rem)', marginBottom: '8px' }}>
+  <h3 style={{ color: 'rgb(245, 255, 156)', fontSize: 'clamp(1.4rem, 6vw, 1.7rem)', marginBottom: '8px' }}>
     <span className="emoji-drive">🚗</span> The Oval Offset
   </h3>
   <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
@@ -538,7 +538,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     flex: '0 1 350px'
   }}
   >
-            <h3 style={{ color: '#ffffff', fontSize: 'clamp(1.6rem, 6vw, 1.7rem)', marginBottom: '7px', marginTop: '-3px' }}>
+            <h3 style={{ color: '#ffffff', fontSize: 'clamp(1.4rem, 6vw, 1.7rem)', marginBottom: '7px', marginTop: '-3px' }}>
   <span className="emoji-suggest">💭</span> Suggest a Fandom
 </h3>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '15.5px' }}>
