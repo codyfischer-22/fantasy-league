@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useRef } from 'react'
 import ChatPanel from '@/components/ChatPanel'
-import { MessageCircle, Bell, Settings, Menu, Mail, HandCoins, UserPen } from 'lucide-react'
+import { MessageCircle, Bell, Settings, Menu, Mail, HandCoins, UserPen, MicSignal } from 'lucide-react'
 
 type Notification = {
   id: number
@@ -251,6 +251,20 @@ useEffect(() => {
           <UserPen size={20} strokeWidth={1.5} /> My Account
         </a>
       )}
+
+      <a href="/media" style={{
+        padding: '10px 12px',
+        textDecoration: 'none',
+        color: '#ffffff',
+        fontSize: '1rem',
+        borderRadius: '6px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px'
+      }}>
+        <MicSignal size={20} strokeWidth={1.5} /> Original Media
+      </a>
+
       <a href="/contact" style={{
         padding: '10px 12px',
         textDecoration: 'none',

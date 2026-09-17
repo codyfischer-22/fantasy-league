@@ -236,13 +236,13 @@ This is your arena to compete with friends, family, and on-screen stars on beach
   Explore Fandoms
   </h2>
 
+       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
         <div style={{
   display: 'flex',
   flexWrap: 'wrap',
   justifyContent: 'center',
   gap: '16px',
-  maxWidth: '1100px',
-  margin: '0 auto'
+  marginBottom: '16px'
 }}>
 
           {/* Secrets on the Beach */}
@@ -477,8 +477,13 @@ This is your arena to compete with friends, family, and on-screen stars on beach
   </button>
 </div>
 
-<div style={{ flexBasis: '100%', height: 0 }}></div>
-
+</div>
+<div style={{
+  display: 'flex',
+  flexWrap: 'wrap',
+  justifyContent: 'center',
+  gap: '16px'
+}}>
 {/* Paddock Politicks */}
 <div style={{
   backgroundColor: '#1a1a2e',
@@ -579,6 +584,7 @@ Got an idea for a league we should build next? Send us your concept and help sha
   >
     Contact Our Team →
   </button>
+</div>
 </div>
 </div>
 

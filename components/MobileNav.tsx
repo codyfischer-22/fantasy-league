@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import ChatPanel from '@/components/ChatPanel'
-import { Home, MessageCircle, Bell, KeyRound, Menu, UserPen, Mail, HandCoins, Settings, ScrollText, ClipboardList, Wallet } from 'lucide-react'
+import { Home, MessageCircle, Bell, KeyRound, Menu, UserPen, Mail, HandCoins, Settings, ScrollText, ClipboardList, Wallet, MicSignal } from 'lucide-react'
 
 export default function MobileNav() {
   const { user } = useAuth()
@@ -243,6 +243,11 @@ export default function MobileNav() {
             <span style={navLabelStyle}>Alerts</span>
           </button>
         )}
+
+        <a href="/media" style={navItemStyle}>
+  <MicSignal size={22} strokeWidth={2} />
+  <span style={navLabelStyle}>Media</span>
+</a>
 
 {!user && (
   <a href="/leagues/all/rules" style={navItemStyle}>
