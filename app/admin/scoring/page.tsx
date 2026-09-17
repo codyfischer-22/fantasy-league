@@ -377,7 +377,7 @@ season: selectedLeagueType === 'secrets-on-the-beach' ? 'Survivor 51' : selected
           playerName: p.display_name || 'Player',
         })),
         subject: `Episode ${episodeNumber} Scores Are Live!`,
-        message: `It's official! Tallies for Episode ${episodeNumber} are live! Check your roster to see how you did and then head to the chat to discuss with friends.`,
+        message: `It's official! Tallies for Episode ${episodeNumber} are live! Check your roster to see how you did, and then head to the chat to discuss with friends.`,
         linkUrl: `https://trekkonleagues.com/leagues/${selectedLeagueType}/scoring-log`,
         linkText: 'View Scoring Log →',
       }),

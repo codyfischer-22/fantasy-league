@@ -309,14 +309,15 @@ export default function Home() {
             <h3 style={{
   color: '#f0b429',
   fontSize: 'clamp(1.35rem, 6vw, 1.6rem)',
-  marginBottom: '8px',
+  marginBottom: '5.25px',
+  marginTop: '-3.8px',
   display: 'flex',
   alignItems: 'center',
   gap: '6px',
   lineHeight: '1.2'
 }}>
 <span className="emoji-f1-home">🏎️</span> <span className="text-f1-shift-home">Paddock Politicks</span></h3>
-            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
+            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '14px' }}>
               Coming in 2027, travel the globe with world-class drivers up and down the grid over 24 weeks of high octane racing.
             </p>
             <button
@@ -348,10 +349,10 @@ export default function Home() {
             padding: '28px',
     flex: '0 1 350px'
           }}>
-            <h3 style={{ color: 'rgb(245, 255, 156)', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
+            <h3 style={{ color: 'rgb(245, 255, 156)', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '4.5px', marginTop: '-8.5px' }}>
   <span className="emoji-drive">🚗</span> The Oval Offset
 </h3>
-            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
+            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '14px' }}>
               Coming in 2027, climb through the cargo net for 36 weeks of American Thunder and race to the checkered flag.</p>
 
             <button
@@ -387,10 +388,10 @@ export default function Home() {
     flex: '0 1 350px'
   }}
   >
-            <h3 style={{ color: '#ffffff', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
+            <h3 style={{ color: '#ffffff', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '7px', marginTop: '-3px' }}>
   <span className="emoji-suggest">💭</span> Suggest a Fandom
 </h3>
-            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
+            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '15.5px' }}>
 Got an idea for a league we should build next? Send us your concept and help shape the future of Trekkon Fantasy Leagues. 
 </p>
   <button
