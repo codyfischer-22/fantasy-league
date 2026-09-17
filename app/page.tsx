@@ -164,7 +164,7 @@ useEffect(() => {
             margin: '0 auto 0px auto',
             lineHeight: '1.7'
           }}>
-This is your arena to compete with friends, family, and on-screen stars on beaches, in castles, and at 200 MPH. Please trust we&apos;ll walk with you to draft teams, make trades, and build community. After the show, get off your couch and live you own adventure!
+This is your arena to compete with friends, family, and on-screen stars on beaches, in castles, and at 200 MPH. Please trust we&apos;ll walk with you to draft teams, make trades, and build community. After the show, get off your couch and live your own adventure!
 </p>
         </section>
 )}
