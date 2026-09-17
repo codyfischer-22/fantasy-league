@@ -161,7 +161,7 @@ useEffect(() => {
             color: '#a0a0b0',
             fontSize: 'clamp(.85rem, 4.5vw, 1.2rem)',
             maxWidth: '800px',
-            margin: '0 auto 16px auto',
+            margin: '0 auto -55px auto',
             lineHeight: '1.7'
           }}>
 This is your arena to compete with friends, family, and on-screen stars on beaches, in castles, and at 200 MPH. Please trust we&apos;ll walk with you to draft teams, make trades, and build community. After the show, get off your couch and live you own adventure!
@@ -178,7 +178,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
   display: 'flex',
   flexWrap: 'nowrap',
   justifyContent: 'center',
-  gap: '24px',
+  gap: '16px',
   overflowX: 'auto',
   overflowY: 'visible',
   padding: '24px 12px',
@@ -218,7 +218,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     color: '#f0b429',
     fontSize: 'clamp(1.75rem, 8vw, 2.25rem)',
     marginBottom: '16px',
-    marginTop: showPersonalizedView ? '0px' : '-84px',
+    marginTop: '0px',
     letterSpacing: '2px'
   }}> 
   Explore League Types
@@ -228,7 +228,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
   display: 'flex',
   flexWrap: 'wrap',
   justifyContent: 'center',
-  gap: '24px',
+  gap: '16px',
   maxWidth: '1100px',
   margin: '0 auto'
 }}>

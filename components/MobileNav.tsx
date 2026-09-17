@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import ChatPanel from '@/components/ChatPanel'
-import { Home, MessageCircle, Bell, User, KeyRound, Menu, UserPen, Mail, HandCoins, Settings, ScrollText, ClipboardList, Wallet } from 'lucide-react'
+import { Home, MessageCircle, Bell, KeyRound, Menu, UserPen, Mail, HandCoins, Settings, ScrollText, ClipboardList, Wallet } from 'lucide-react'
 
 export default function MobileNav() {
   const { user } = useAuth()
@@ -189,7 +189,7 @@ export default function MobileNav() {
         padding: '8px 4px',
         zIndex: 150
       }}>
-        <a href="/" style={navItemStyle}>
+        <a href="#leagues" style={navItemStyle}>
           <Home size={22} strokeWidth={2} />
           <span style={navLabelStyle}>Leagues</span>
         </a>
@@ -250,6 +250,13 @@ export default function MobileNav() {
           <Menu size={22} strokeWidth={2} />
           <span style={navLabelStyle}>More</span>
         </button>
+
+        {!user && (
+  <a href="/login" style={navItemStyle}>
+    <KeyRound size={22} strokeWidth={2} />
+    <span style={navLabelStyle}>Sign In</span>
+  </a>
+)}
         
       </nav>
 
@@ -323,47 +330,54 @@ export default function MobileNav() {
 
       {showHamburgerMenu && (
         <div ref={hamburgerRef} className="mobile-notif-panel" style={{
-          position: 'fixed',
-          bottom: '56px',
-          left: '8px',
-          right: '8px',
+          position: 'absolute',
+          bottom: '58px',
+          right: '100px',
+          width: '185px',
           backgroundColor: '#1a1a2e',
           border: '1px solid #f0b429',
           borderRadius: '10px',
-          maxHeight: '400px',
+          maxHeight: '300px',
           overflowY: 'auto',
           zIndex: 200,
           padding: '8px',
           display: 'flex',
           flexDirection: 'column',
-          gap: '4px'
+          gap: '2px'
         }}>
-<a href="/leagues/all/rules" style={hamburgerLinkStyle}>
-            <ScrollText size={22} strokeWidth={1} /> Rules & Scoring
-          </a>
-<a href="/leagues/all/draft" style={hamburgerLinkStyle}>
-            <ClipboardList size={22} strokeWidth={1} /> Draft, Trading & Dates
-          </a>
-          <a href="/#tiers" style={hamburgerLinkStyle}>
-            <Wallet size={22} strokeWidth={1} /> Features & Pricing
-          </a>
-{user && (
+
+            {user && (
             <a href="/account" style={hamburgerLinkStyle}>
-              <UserPen size={22} strokeWidth={1} /> My Account
+              <UserPen size={22} strokeWidth={1} /> Account
             </a>
-          )}
-<a href="/tip-jar" style={hamburgerLinkStyle}>
-            <HandCoins size={22} strokeWidth={1} /> Support Trekkon
+             )}
+
+            <a href="/leagues/all/rules" style={hamburgerLinkStyle}>
+            <ScrollText size={22} strokeWidth={1} /> Scoring
+            </a>
+
+           <a href="/leagues/all/draft" style={hamburgerLinkStyle}>
+          <ClipboardList size={22} strokeWidth={1} /> Deadlines
+          </a>
+
+          <a href="/#tiers" style={hamburgerLinkStyle}>
+          <Wallet size={22} strokeWidth={1} /> Features
+          </a>
+
+         <a href="/tip-jar" style={hamburgerLinkStyle}>
+         <HandCoins size={22} strokeWidth={1} /> Tip Jar
           </a>
           
- <a href="/contact" style={hamburgerLinkStyle}>
-            <Mail size={22} strokeWidth={1} /> Contact Us
+          <a href="/contact" style={hamburgerLinkStyle}>
+         <Mail size={22} strokeWidth={1} /> Contact
           </a>
-{isAdmin && (
+
+        {isAdmin && (
             <a href="/admin/dashboard" style={hamburgerLinkStyle}>
-              <Settings size={22} strokeWidth={1} /> Admin Dashboard
+              <Settings size={22} strokeWidth={1} /> Dashboard
             </a>
           )}
+
         </div>
       )}
           
