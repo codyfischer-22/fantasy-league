@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
-import { Rat, Anchor, Drill, Rocket, Earth, Lock, TestTubeDiagonal, Hammer } from 'lucide-react'
+import { Rat, Anchor, Drill, Rocket, Earth, Lock, TestTubeDiagonal, Hammer, CornerLeftUp } from 'lucide-react'
 
 type MyLeague = {
   name: string
@@ -197,17 +197,29 @@ This is your arena to compete with friends, family, and on-screen stars on beach
             </a> 
           )   
         })}
-      </div>
-        <p style={{
-        color: '#555570',
-        fontSize: 'clamp(0.85rem, 3.5vw, 1rem)',
-        textAlign: 'center',
-        marginTop: '0px',
-        marginBottom: '0px'
-      }}>
-        Hot route to your active leagues:
-      </p>
-    </div>
+   </div>
+  <p style={{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '6px',
+    color: '#555570',
+    fontSize: 'clamp(0.85rem, 3.5vw, 1rem)',
+    textAlign: 'center',
+    marginTop: '4.5px',
+    marginBottom: '0px'
+  }}>
+   <span style={{ 
+      display: 'inline-flex', 
+      alignItems: 'center',
+      position: 'relative',
+      top: '-6px' // Adjust (-Npx moves UP, +Npx moves DOWN)
+    }}>
+      <CornerLeftUp size={16} />
+    </span>
+    Hot route to your active leagues
+  </p> 
+</div>
   </section>
 )}
 
