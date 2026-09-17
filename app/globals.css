@@ -233,13 +233,7 @@ html, body {
 
 @media (max-width: 600px) {
   .mobile-home-title ~ section:first-of-type {
-    margin-top: -36px;
-  }
-}
-
-@media (max-width: 600px) {
-  .mobile-page-content {
-    margin-top: 100px !important;
+    padding-top: 10px !important;
   }
 }
 
