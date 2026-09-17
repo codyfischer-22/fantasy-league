@@ -168,11 +168,6 @@ useEffect(() => {
     setNotifications((prev) => prev.filter((n) => n.id !== id))
   }
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    router.push('/')
-  }
-
   return (
     <header style={{
       backgroundColor: '#12121a',
@@ -441,17 +436,6 @@ useEffect(() => {
                 )}
               </div>
             )}
-
-            <button onClick={handleSignOut} style={{
-              backgroundColor: 'transparent',
-              color: '#f0b429',
-              padding: '8px 16px',
-              borderRadius: '6px',
-              border: '1px solid #f0b429',
-              fontWeight: 'bold',
-              fontSize: '1.1rem',
-              cursor: 'pointer'
-            }}>Sign Out</button>
           </>
         ) : (
           <a href="/login" className="btn" style={{

@@ -189,7 +189,7 @@ export default function MobileNav() {
         padding: '8px 4px',
         zIndex: 150
       }}>
-        <a href="#leagues" style={navItemStyle}>
+        <a href="/" style={navItemStyle}>
           <Home size={22} strokeWidth={2} />
           <span style={navLabelStyle}>Leagues</span>
         </a>
@@ -243,6 +243,21 @@ export default function MobileNav() {
             <span style={navLabelStyle}>Alerts</span>
           </button>
         )}
+
+{!user && (
+  <a href="/leagues/all/rules" style={navItemStyle}>
+    <ScrollText size={22} strokeWidth={2} />
+    <span style={navLabelStyle}>Scoring</span>
+  </a>
+)}
+
+{!user && (
+  <a href="/leagues/all/draft" style={navItemStyle}>
+    <ClipboardList size={22} strokeWidth={2} />
+    <span style={navLabelStyle}>Deadlines</span>
+  </a>
+)}
+
         <button
           onClick={() => { setShowHamburgerMenu(!showHamburgerMenu); setShowNotifications(false); setIsChatOpen(false) }}
           style={navItemStyle}
@@ -329,22 +344,22 @@ export default function MobileNav() {
       )}
 
       {showHamburgerMenu && (
-        <div ref={hamburgerRef} className="mobile-notif-panel" style={{
-          position: 'absolute',
-          bottom: '58px',
-          right: '100px',
-          width: '185px',
-          backgroundColor: '#1a1a2e',
-          border: '1px solid #f0b429',
-          borderRadius: '10px',
-          maxHeight: '300px',
-          overflowY: 'auto',
-          zIndex: 200,
-          padding: '8px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '2px'
-        }}>
+  <div ref={hamburgerRef} className="mobile-notif-panel" style={{
+    position: 'fixed',
+    bottom: '58px',
+    right: '16px',
+    width: '185px',
+    backgroundColor: '#1a1a2e',
+    border: '1px solid #f0b429',
+    borderRadius: '10px',
+    maxHeight: '400px',
+    overflowY: 'auto',
+    zIndex: 200,
+    padding: '8px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '2px'
+  }}>
 
             {user && (
             <a href="/account" style={hamburgerLinkStyle}>
@@ -352,24 +367,27 @@ export default function MobileNav() {
             </a>
              )}
 
-            <a href="/leagues/all/rules" style={hamburgerLinkStyle}>
-            <ScrollText size={22} strokeWidth={1} /> Scoring
-            </a>
-
-           <a href="/leagues/all/draft" style={hamburgerLinkStyle}>
-          <ClipboardList size={22} strokeWidth={1} /> Deadlines
-          </a>
+            {user && (
+  <a href="/leagues/all/rules" style={hamburgerLinkStyle}>
+    <ScrollText size={22} strokeWidth={1} /> Scoring
+  </a>
+)}
+{user && (
+  <a href="/leagues/all/draft" style={hamburgerLinkStyle}>
+    <ClipboardList size={22} strokeWidth={1} /> Deadlines
+  </a>
+)}
 
           <a href="/#tiers" style={hamburgerLinkStyle}>
           <Wallet size={22} strokeWidth={1} /> Features
           </a>
 
          <a href="/tip-jar" style={hamburgerLinkStyle}>
-         <HandCoins size={22} strokeWidth={1} /> Tip Jar
+         <HandCoins size={22} strokeWidth={1} /> Support Us
           </a>
           
           <a href="/contact" style={hamburgerLinkStyle}>
-         <Mail size={22} strokeWidth={1} /> Contact
+         <Mail size={22} strokeWidth={1} /> Contact Us
           </a>
 
         {isAdmin && (

@@ -213,11 +213,11 @@ This is your arena to compete with friends, family, and on-screen stars on beach
       display: 'inline-flex', 
       alignItems: 'center',
       position: 'relative',
-      top: '-6px' // Adjust (-Npx moves UP, +Npx moves DOWN)
+      top: '-4px' // Adjust (-Npx moves UP, +Npx moves DOWN)
     }}>
       <CornerLeftUp size={16} />
     </span>
-    Hot route to your active leagues
+    Hot Route to Active Leagues
   </p> 
 </div>
   </section>

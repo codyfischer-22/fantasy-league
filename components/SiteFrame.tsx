@@ -16,14 +16,14 @@ export default function SiteFrame({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener('resize', checkWidth)
   }, [])
 
-return (
-  <>
-    {!isMobileWidth && <Header />}
-  <div style={{ flex: isMobileWidth ? '0 0 auto' : 1, paddingBottom: 0 }}>
-  {children}
-</div>
-    <Footer />
-    {isMobileWidth && <MobileNav />}
-  </>
-)
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      {!isMobileWidth && <Header />}
+      <div style={{ flex: 1, paddingBottom: isMobileWidth ? 135 : 0 }}>
+        {children}
+      </div>
+      <Footer />
+      {isMobileWidth && <MobileNav />}
+    </div>
+  )
 }

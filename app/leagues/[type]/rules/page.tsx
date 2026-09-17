@@ -234,9 +234,8 @@ export default function RulesPage() {
   }
 
   return (
-    <main style={{
+        <main style={{
       backgroundColor: '#0a0a0f',
-      minHeight: '100vh',
       fontFamily: 'Georgia, serif',
       color: '#ffffff',
       padding: '60px 40px'
