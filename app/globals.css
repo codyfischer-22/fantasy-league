@@ -582,10 +582,9 @@ html, body {
 
 .league-circle {
   box-sizing: border-box;
-  width: 210px;
-  min-height: 70px;
-  height: auto;
-  border-radius: 35px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
   background-color: #1a1a2e;
   border: 3px solid var(--circle-color);
   display: flex;
@@ -593,10 +592,11 @@ html, body {
   justify-content: center;
   text-align: center;
   text-decoration: none;
-  padding: 14px 16px;
+  padding: 12px;
   transition: box-shadow 0.25s ease, transform 0.15s ease;
   cursor: pointer;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .league-circle-text {

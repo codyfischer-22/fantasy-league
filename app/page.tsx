@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
-import { Rat, Anchor, Drill, Rocket, Wallet, Hourglass } from 'lucide-react'
+import { Rat, Anchor, Drill, Rocket, Earth, Lock, TestTubeDiagonal, Hammer } from 'lucide-react'
 
 type MyLeague = {
   name: string
@@ -161,7 +161,7 @@ useEffect(() => {
             color: '#a0a0b0',
             fontSize: 'clamp(.85rem, 4.5vw, 1.2rem)',
             maxWidth: '800px',
-            margin: '0 auto -55px auto',
+            margin: '0 auto 0px auto',
             lineHeight: '1.7'
           }}>
 This is your arena to compete with friends, family, and on-screen stars on beaches, in castles, and at 200 MPH. Please trust we&apos;ll walk with you to draft teams, make trades, and build community. After the show, get off your couch and live you own adventure!
@@ -203,9 +203,9 @@ This is your arena to compete with friends, family, and on-screen stars on beach
         fontSize: 'clamp(0.85rem, 3.5vw, 1rem)',
         textAlign: 'center',
         marginTop: '0px',
-        marginBottom: '-20px'
+        marginBottom: '0px'
       }}>
-        Hot route to your active fantasy leagues!
+        Hot route to your active leagues:
       </p>
     </div>
   </section>
@@ -218,7 +218,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     color: '#f0b429',
     fontSize: 'clamp(1.75rem, 8vw, 2.25rem)',
     marginBottom: '16px',
-    marginTop: '0px',
+    marginTop: '-36px',
     letterSpacing: '2px'
   }}> 
   Explore League Types
@@ -274,6 +274,8 @@ This is your arena to compete with friends, family, and on-screen stars on beach
   >
     View Public League →
   </button>
+
+  
 
   <button
   onClick={(e) => {
@@ -507,7 +509,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
   padding: '28px',
   flex: '0 1 350px'
 }}>
-  <h3 style={{ color: 'rgb(245, 255, 156)', fontSize: 'clamp(1.4rem, 6vw, 1.7rem)', marginBottom: '8px' }}>
+  <h3 style={{ color: 'rgb(245, 255, 156)', fontSize: 'clamp(1.4rem, 6vw, 1.7rem)', marginTop: '-5px', marginBottom: '8px' }}>
     <span className="emoji-drive">🚗</span> The Oval Offset
   </h3>
   <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
@@ -538,10 +540,10 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     flex: '0 1 350px'
   }}
   >
-            <h3 style={{ color: '#ffffff', fontSize: 'clamp(1.4rem, 6vw, 1.7rem)', marginBottom: '7px', marginTop: '-3px' }}>
+            <h3 style={{ color: '#ffffff', fontSize: 'clamp(1.4rem, 6vw, 1.7rem)', marginBottom: '11px', marginTop: '0px' }}>
   <span className="emoji-suggest">💭</span> Suggest a Fandom
 </h3>
-            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '15.5px' }}>
+            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '21.5px' }}>
 Got an idea for a league we should build next? Send us your concept and help shape the future of Trekkon Fantasy Leagues. 
 </p>
   <button
@@ -581,7 +583,7 @@ Got an idea for a league we should build next? Send us your concept and help sha
           color: '#f0b429',
           fontSize: 'clamp(1.75rem, 8vw, 2.25rem)',
           marginBottom: '0px',
-          marginTop: '-12px',
+          marginTop: '0px',
           letterSpacing: '2px'
         }}>
         Membership Tiers

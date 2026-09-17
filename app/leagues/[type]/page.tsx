@@ -291,6 +291,8 @@ if (!hubContent[type]) {
             <h2 style={{ color: '#f0b429', fontSize: 'clamp(1.1rem, 6.6vw, 1.7rem)', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
   <Earth size={28} color="#ffffff" strokeWidth={2} style={{ flexShrink: 0 }} /> Public Leagues
 </h2>
+
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {instances.length === 0 ? (
                 <p style={{ color: '#555570', fontSize: '0.9rem' }}>No public leagues available yet.</p>
