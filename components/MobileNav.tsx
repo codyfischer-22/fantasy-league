@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import ChatPanel from '@/components/ChatPanel'
-import { Home, Swords, MessageCircle, Bell, User, KeyRound } from 'lucide-react'
+import { Home, MessageCircle, Bell, User, KeyRound, Menu, UserPen, Mail, HandCoins, Settings, ScrollText, ClipboardList, Wallet } from 'lucide-react'
 
 export default function MobileNav() {
   const { user } = useAuth()
@@ -13,6 +13,37 @@ export default function MobileNav() {
   const [showNotifications, setShowNotifications] = useState(false)
   const [notifications, setNotifications] = useState<{ id: number; message: string; link: string | null; is_read: boolean }[]>([])
   const notifRef = useRef<HTMLDivElement | null>(null)
+  const [showHamburgerMenu, setShowHamburgerMenu] = useState(false)
+  const hamburgerRef = useRef<HTMLDivElement | null>(null)
+  const [isAdmin, setIsAdmin] = useState(false)
+
+  useEffect(() => {
+    async function checkAdmin() {
+      if (!user) {
+        setIsAdmin(false)
+        return
+      }
+      const { data } = await supabase
+        .from('profiles')
+        .select('is_global_admin, is_league_admin')
+        .eq('user_id', user.id)
+        .single()
+      setIsAdmin((data?.is_global_admin || data?.is_league_admin) ?? false)
+    }
+    checkAdmin()
+  }, [user])
+
+  useEffect(() => {
+    function handleClickOutsideHamburger(e: MouseEvent) {
+      if (hamburgerRef.current && !hamburgerRef.current.contains(e.target as Node)) {
+        setShowHamburgerMenu(false)
+      }
+    }
+    if (showHamburgerMenu) {
+      document.addEventListener('mousedown', handleClickOutsideHamburger)
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutsideHamburger)
+  }, [showHamburgerMenu])
 
   useEffect(() => {
     async function loadNotifications() {
@@ -133,6 +164,17 @@ export default function MobileNav() {
     fontWeight: 'normal'
   }
 
+  const hamburgerLinkStyle: React.CSSProperties = {
+    padding: '10px 12px',
+    textDecoration: 'none',
+    color: '#ffffff',
+    fontSize: '0.95rem',
+    borderRadius: '6px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px'
+  }
+
   return (
     <>
       <nav className="mobile-bottom-nav" style={{
@@ -148,21 +190,17 @@ export default function MobileNav() {
         zIndex: 150
       }}>
         <a href="/" style={navItemStyle}>
-  <Home size={22} strokeWidth={2} />
-  <span style={navLabelStyle}>Home</span>
-</a>
-<a href="/leagues-overview" style={navItemStyle}>
-  <Swords size={22} strokeWidth={2} />
-  <span style={navLabelStyle}>Leagues</span>
-</a>
+          <Home size={22} strokeWidth={2} />
+          <span style={navLabelStyle}>Leagues</span>
+        </a>
         {user && (
           <button
-            onClick={() => { setIsChatOpen(!isChatOpen); setShowNotifications(false) }}
+            onClick={() => { setIsChatOpen(!isChatOpen); setShowNotifications(false); setShowHamburgerMenu(false) }}
             style={navItemStyle}
           >
             <span style={{ position: 'relative' }}>
-  <MessageCircle size={22} strokeWidth={2} />
-  {hasUnreadChat && (
+              <MessageCircle size={22} strokeWidth={2} />
+              {hasUnreadChat && (
                 <span style={{
                   position: 'absolute',
                   top: '-2px',
@@ -179,12 +217,12 @@ export default function MobileNav() {
         )}
         {user && (
           <button
-            onClick={() => { setShowNotifications(!showNotifications); setIsChatOpen(false) }}
+            onClick={() => { setShowNotifications(!showNotifications); setIsChatOpen(false); setShowHamburgerMenu(false) }}
             style={navItemStyle}
           >
             <span style={{ position: 'relative' }}>
-  <Bell size={22} strokeWidth={2} />
-  {unreadCount > 0 && (
+              <Bell size={22} strokeWidth={2} />
+              {unreadCount > 0 && (
                 <span style={{
                   position: 'absolute',
                   top: '-4px',
@@ -205,10 +243,14 @@ export default function MobileNav() {
             <span style={navLabelStyle}>Alerts</span>
           </button>
         )}
-        <a href={user ? '/account' : '/login'} style={navItemStyle}>
-  {user ? <User size={22} strokeWidth={2} /> : <KeyRound size={22} strokeWidth={2} />}
-  <span style={navLabelStyle}>{user ? 'Account' : 'Sign In'}</span>
-</a>
+        <button
+          onClick={() => { setShowHamburgerMenu(!showHamburgerMenu); setShowNotifications(false); setIsChatOpen(false) }}
+          style={navItemStyle}
+        >
+          <Menu size={22} strokeWidth={2} />
+          <span style={navLabelStyle}>More</span>
+        </button>
+        
       </nav>
 
       {showNotifications && (
@@ -279,6 +321,52 @@ export default function MobileNav() {
         </div>
       )}
 
+      {showHamburgerMenu && (
+        <div ref={hamburgerRef} className="mobile-notif-panel" style={{
+          position: 'fixed',
+          bottom: '56px',
+          left: '8px',
+          right: '8px',
+          backgroundColor: '#1a1a2e',
+          border: '1px solid #f0b429',
+          borderRadius: '10px',
+          maxHeight: '400px',
+          overflowY: 'auto',
+          zIndex: 200,
+          padding: '8px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '4px'
+        }}>
+<a href="/leagues/all/rules" style={hamburgerLinkStyle}>
+            <ScrollText size={22} strokeWidth={1} /> Rules & Scoring
+          </a>
+<a href="/leagues/all/draft" style={hamburgerLinkStyle}>
+            <ClipboardList size={22} strokeWidth={1} /> Draft, Trading & Dates
+          </a>
+          <a href="/#tiers" style={hamburgerLinkStyle}>
+            <Wallet size={22} strokeWidth={1} /> Features & Pricing
+          </a>
+{user && (
+            <a href="/account" style={hamburgerLinkStyle}>
+              <UserPen size={22} strokeWidth={1} /> My Account
+            </a>
+          )}
+<a href="/tip-jar" style={hamburgerLinkStyle}>
+            <HandCoins size={22} strokeWidth={1} /> Support Trekkon
+          </a>
+          
+ <a href="/contact" style={hamburgerLinkStyle}>
+            <Mail size={22} strokeWidth={1} /> Contact Us
+          </a>
+{isAdmin && (
+            <a href="/admin/dashboard" style={hamburgerLinkStyle}>
+              <Settings size={22} strokeWidth={1} /> Admin Dashboard
+            </a>
+          )}
+        </div>
+      )}
+          
       {isChatOpen && <ChatPanel onClose={() => setIsChatOpen(false)} />}
     </>
   )

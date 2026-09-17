@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useRef } from 'react'
 import ChatPanel from '@/components/ChatPanel'
-import { MessageCircle, Bell, Settings } from 'lucide-react'
+import { MessageCircle, Bell, Settings, Menu, Mail, HandCoins, UserPen } from 'lucide-react'
 
 type Notification = {
   id: number
@@ -25,6 +25,20 @@ export default function Header() {
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [hasUnreadChat, setHasUnreadChat] = useState(false)
   const notifRef = useRef<HTMLDivElement | null>(null)
+  const [showHamburgerMenu, setShowHamburgerMenu] = useState(false)
+const hamburgerRef = useRef<HTMLDivElement | null>(null)
+
+useEffect(() => {
+  function handleClickOutsideHamburger(e: MouseEvent) {
+    if (hamburgerRef.current && !hamburgerRef.current.contains(e.target as Node)) {
+      setShowHamburgerMenu(false)
+    }
+  }
+  if (showHamburgerMenu) {
+    document.addEventListener('mousedown', handleClickOutsideHamburger)
+  }
+  return () => document.removeEventListener('mousedown', handleClickOutsideHamburger)
+}, [showHamburgerMenu])
 
 useEffect(() => {
   function handleClickOutside(e: MouseEvent) {
@@ -190,19 +204,102 @@ useEffect(() => {
       </a>
 
       <nav style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center' }}>
-         <a href="/leagues-overview" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.2rem' }}>Leagues</a>
-         <a href="/#tiers" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Features</a>
-       
-        <a href="/contact" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Contact</a>
+<a href="/#leagues" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.2rem' }}>Leagues</a>         <a href="/#tiers" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Features</a>
+<a href="/leagues/all/rules" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Scoring</a>
+<a href="/leagues/all/draft" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Timelines</a>
 
-        <a href="/tip-jar" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>
-  Tip Jar
-</a>
+<div ref={hamburgerRef} style={{ position: 'relative' }}>
+  <button
+    onClick={() => {
+      setShowHamburgerMenu(!showHamburgerMenu)
+      setShowNotifications(false)
+      setIsChatOpen(false)
+    }}
+    style={{
+      background: 'none',
+      border: 'none',
+      cursor: 'pointer',
+      color: '#ffffff',
+      display: 'flex',
+      alignItems: 'center'
+    }}
+  >
+    <Menu size={24} strokeWidth={2} />
+  </button>
+
+  {showHamburgerMenu && (
+    <div style={{
+      position: 'absolute',
+      top: '36px',
+      right: 0,
+      backgroundColor: '#1a1a2e',
+      border: '1px solid #f0b429',
+      borderRadius: '10px',
+      minWidth: '220px',
+      zIndex: 200,
+      padding: '8px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '4px'
+    }}>
+      {user && (
+        <a href="/account" style={{
+          padding: '10px 12px',
+          textDecoration: 'none',
+          color: '#ffffff',
+          fontSize: '1rem',
+          borderRadius: '6px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px'
+        }}>
+          <UserPen size={20} strokeWidth={1.5} /> My Account
+        </a>
+      )}
+      <a href="/contact" style={{
+        padding: '10px 12px',
+        textDecoration: 'none',
+        color: '#ffffff',
+        fontSize: '1rem',
+        borderRadius: '6px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px'
+      }}>
+        <Mail size={20} strokeWidth={1.5} /> Contact Us
+      </a>
+      <a href="/tip-jar" style={{
+        padding: '10px 12px',
+        textDecoration: 'none',
+        color: '#ffffff',
+        fontSize: '1rem',
+        borderRadius: '6px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px'
+      }}>
+        <HandCoins size={22} strokeWidth={1.5} /> Support Trekkon
+      </a>
+      {isAdmin && (
+        <a href="/admin/dashboard" style={{
+          padding: '10px 12px',
+          textDecoration: 'none',
+          color: '#ffffff',
+          fontSize: '1rem',
+          borderRadius: '6px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px'
+        }}>
+          <Settings size={20} strokeWidth={1.5} /> Admin Dashboard
+        </a>
+      )}
+    </div>
+  )}
+</div>
 
         {loading ? null : user ? (
           <>
-            <a href="/account" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Account</a>
-
             {user && (
              <button
   onClick={() => {
@@ -345,11 +442,6 @@ useEffect(() => {
               </div>
             )}
 
-            {isAdmin && (
-  <a href="/admin/dashboard" className="btn" style={{ color: '#ffffff', textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-    <Settings size={24} strokeWidth={2} />
-  </a>
-)}
             <button onClick={handleSignOut} style={{
               backgroundColor: 'transparent',
               color: '#f0b429',

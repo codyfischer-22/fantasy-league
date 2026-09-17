@@ -7,7 +7,6 @@ import { supabase } from '@/lib/supabase'
 import ConfirmModal from '@/components/ConfirmModal'
 import { Cog, Palette, Trophy, Calculator, TrendingUp, Users, ClipboardList, RefreshCw, Puzzle, Microscope, Lock} from 'lucide-react'
 import ResourcesModal from '@/components/ResourcesModal'
-import { leagueTypeLabels } from '@/lib/leagueTypeLabels'
 
 type League = {
   id: number
@@ -506,19 +505,16 @@ effectiveCap = league.max_members ?? (hostProfile?.tier === 'teamprincipal' ? 18
       color: '#ffffff',
       padding: '60px 40px'
     }}>
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-        <a href={type === 'sotb-demo' ? '/leagues/secrets-on-the-beach' :
-        type === 'uncharted-turretory-demo' ? '/leagues/uncharted-turretory' :
-         `/leagues/${type}`} 
-        style={{
-  color: '#a0a0b0',
-  fontSize: '0.85rem',
-  textDecoration: 'none',
-  display: 'inline-block',
-  marginBottom: '24px'
-}}>
-← Back to {leagueTypeLabels[type] ?? 'League'} Hub
-</a>
+<div style={{ maxWidth: '800px', margin: '0 auto' }}>
+  <a href="/" style={{
+    color: '#a0a0b0',
+    fontSize: '0.85rem',
+    textDecoration: 'none',
+    display: 'inline-block',
+    marginBottom: '24px'
+  }}>
+    ← Back to Trekkon Fantasy Leagues
+  </a>
 
         <div style={{ textAlign: 'left', marginBottom: '12px' }}>
           <div style={{

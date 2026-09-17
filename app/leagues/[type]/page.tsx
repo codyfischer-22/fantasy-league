@@ -278,43 +278,6 @@ if (!hubContent[type]) {
           gap: '20px',
           marginBottom: '20px'
         }}>
-          <a href={`/leagues/${type}/rules`} style={{
-            backgroundColor: '#1a1a2e',
-            border: '3px solid #f0b429',
-            borderRadius: '12px',
-            padding: '24px',
-            textDecoration: 'none',
-            color: '#ffffff',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center'
-          }}>
-           <h2 style={{ color: '#f0b429', fontSize: 'clamp(1.1rem, 6.6vw, 1.7rem)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-  <ScrollText size={28} strokeWidth={2} color="#ffffff" style={{ flexShrink: 0 }} /> Rules & Scoring <span className="demo-arrow">→</span>
-</h2>
-            <p style={{ color: '#a0a0b0', fontSize: '1rem', lineHeight: '1.5' }}>
-  {hubContent[type]?.rulesDescription}
-</p>
-          </a>
-
-          <a href={`/leagues/${type}/draft`} style={{
-            backgroundColor: '#1a1a2e',
-            border: '3px solid #f0b429',
-            borderRadius: '12px',
-            padding: '24px',
-            textDecoration: 'none',
-            color: '#ffffff',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center'
-          }}>
-            <h2 style={{ color: '#f0b429', fontSize: 'clamp(1.1rem, 6.6vw, 1.7rem)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-  <ClipboardList size={28} strokeWidth={2} color="#ffffff" style={{ flexShrink: 0 }} /> Draft & Trading <span className="demo-arrow">→</span>
-</h2>
-         <p style={{ color: '#a0a0b0', fontSize: '1rem', lineHeight: '1.5' }}>
-  {hubContent[type]?.draftDescription}
-</p>
-          </a>
 
           <div style={{
             backgroundColor: '#1a1a2e',

@@ -67,7 +67,8 @@ if (!leagueTypeLabels[type]) {
       gap: '16px'
     }}>
       <p>This league doesn&apos;t exist.</p>
-      <a href="/" style={{ color: '#f0b429' }}>← Back to Trekkon Fantasy Leagues</a>
+      <a href="/
+    " style={{ color: '#f0b429' }}>← Back to Trekkon Fantasy Leagues</a>
     </main>
   )
 }
@@ -208,14 +209,14 @@ if (!isAdmin) {
         width: '100%',
         maxWidth: '480px'
       }}>
-        <a href={`/leagues/${type}`} style={{
+<a href="/" style={{
   color: '#a0a0b0',
   fontSize: '0.85rem',
   textDecoration: 'none',
   display: 'inline-block',
   marginBottom: '38px'
 }}>
-← Back to {leagueTypeLabels[type] ?? 'League'}
+← Back to Trekkon Fantasy Leagues
 </a>
         
         <h1 style={{ color: '#f0b429', fontSize: '1.8rem', marginBottom: '12px', textAlign: 'center' }}>

@@ -11,6 +11,7 @@ type MyLeague = {
   type: string
   slug: string
   host_user_id?: string | null
+  is_private?: boolean
 }
 
 export default function Home() {
@@ -21,6 +22,28 @@ export default function Home() {
   const [joinedLeagues, setJoinedLeagues] = useState<MyLeague[]>([])
   const [myLeagueTypes, setMyLeagueTypes] = useState<Set<string>>(new Set())
   const [leaguesLoading, setLeaguesLoading] = useState(true)
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+  const [userTier, setUserTier] = useState<string | null>(null)
+  const [showPrivateLeaguesModal, setShowPrivateLeaguesModal] = useState<string | null>(null)
+const relevantLeagues = [...hostedLeagues, ...joinedLeagues].filter(
+  (l) => l.type === showPrivateLeaguesModal && l.is_private === true
+)
+
+useEffect(() => {
+  async function loadUserTier() {
+    if (!user) {
+      setUserTier(null)
+      return
+    }
+    const { data } = await supabase
+      .from('profiles')
+      .select('tier')
+      .eq('user_id', user.id)
+      .single()
+    setUserTier(data?.tier ?? 'stowaway')
+  }
+  loadUserTier()
+}, [user])
 
   useEffect(() => {
     async function loadMyLeagues() {
@@ -39,19 +62,19 @@ export default function Home() {
         return
       }
 
-      const { data: leagues } = await supabase
-        .from('leagues')
-        .select('name, league_type, slug, host_user_id, is_show_chat')
-        .in('id', leagueIds)
-
+     const { data: leagues } = await supabase
+  .from('leagues')
+  .select('name, league_type, slug, host_user_id, is_show_chat, is_private')
+  .in('id', leagueIds)
       const realLeagues = (leagues ?? []).filter((l) => !l.is_show_chat)
 
       const mapped = realLeagues.map((l) => ({
-        name: l.name,
-        type: l.league_type,
-        slug: l.slug,
-        host_user_id: l.host_user_id,
-      }))
+  name: l.name,
+  type: l.league_type,
+  slug: l.slug,
+  host_user_id: l.host_user_id,
+  is_private: l.is_private,
+}))
 
       setHostedLeagues(mapped.filter((l) => l.host_user_id === user.id))
       setJoinedLeagues(mapped.filter((l) => l.host_user_id !== user.id))
@@ -123,29 +146,30 @@ export default function Home() {
             marginBottom: '14px',
             letterSpacing: '1px'
           }}>
-            Fantasy without the Pigskin, <span style={{ color: '#f0b429' }}>Finally</span>
+            Fantasy without the Football, <span style={{ color: '#f0b429' }}>Finally</span>
           </h2>
           <p className="hero-text" style={{
             color: '#a0a0b0',
             fontSize: 'clamp(.85rem, 4.5vw, 1.2rem)',
-            maxWidth: '600px',
+            maxWidth: '800px',
             margin: '0 auto 16px auto',
             lineHeight: '1.7'
           }}>
-            Move over, Football! Here comes a new wave of fantasy leagues for the cutthroat, the speed junkies, and the adventurous at heart.
+            Here comes a new wave of fantasy leagues for the cutthroat, the speed junkies, and the adventurous at heart. <span style={{ fontStyle: 'italic' }}>Trekkon</span> is inspired by the Ancient Greek <span style={{ fontStyle: 'italic' }}>"τρέχω,"</span> to race or run, and <span style={{ fontStyle: 'italic' }}>"ἀγών,"</span> a gathering place for games, competitions, or battles.
           </p>
           <p className="hero-text" style={{
             color: '#a0a0b0',
             fontSize: 'clamp(.85rem, 4.5vw, 1.2rem)',
             maxWidth: '800px',
-            margin: '0 auto 32px auto',
+            margin: '0 auto 16px auto',
             lineHeight: '1.7'
           }}>
-            <span style={{ fontStyle: 'italic' }}>Trekkon</span> is derived from the Ancient Greek <span style={{ fontStyle: 'italic' }}>"τρέχω,"</span> to race or run, and <span style={{ fontStyle: 'italic' }}>"ἀγών,"</span> a gathering place for games, competitions, or battles.
-            We inspire everyday people to team up with their on-screen favoritess in the hopes they&apos;ll trek out on their own adventures.
-          </p>
+This is your arena to compete with friends, family, and on-screen stars on beaches, in castles, and at 200 MPH. Please trust we&apos;ll walk with you to draft teams, make trades, and build community. After the show, get off your couch and live you own adventure!
+</p>
         </section>
-      )}
+)}
+
+          
 
      {showPersonalizedView && (
   <section style={{ padding: '50px 40px 20px 40px' }}>
@@ -181,7 +205,7 @@ export default function Home() {
         marginTop: '0px',
         marginBottom: '-20px'
       }}>
-        Hot route to your active fantasy leagues! League rules, procedures, and creation live in league hubs.
+        Hot route to your active fantasy leagues!
       </p>
     </div>
   </section>
@@ -196,8 +220,8 @@ export default function Home() {
     marginBottom: '16px',
     marginTop: showPersonalizedView ? '0px' : '-84px',
     letterSpacing: '2px'
-  }}>
-  {showPersonalizedView ? 'Explore More Leagues' : 'Explore League Types'}
+  }}> 
+  Explore League Types
   </h2>
 
         <div style={{
@@ -210,10 +234,8 @@ export default function Home() {
 }}>
 
           {/* Secrets on the Beach */}
-          {!myLeagueTypes.has('secrets-on-the-beach') && (
 <div
   className="league-card"
-  onClick={() => router.push('/leagues/secrets-on-the-beach')}
   style={{
     backgroundColor: '#1a1a2e',
     border: '3px solid #f0b429',
@@ -223,17 +245,18 @@ export default function Home() {
     flex: '0 1 350px'
   }}
 >
-  <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
-  <span className="emoji-sotb">🏝️</span> Secrets on the Beach
-</h3>
-  <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
+  <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.6rem, 6vw, 1.65rem)', marginBottom: '8px' }}>
+    <span className="emoji-sotb">🏝️</span> Secrets on the Beach
+  </h3>
+  <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
     Set sail for this island adventure, going 25+ years strong, by drafting your tribe, winning challenges, and surviving the vote.
   </p>
- <button
-  onClick={(e) => {
-    e.stopPropagation()
-    router.push('/leagues/secrets-on-the-beach')
-  }}
+
+  <button
+    onClick={(e) => {
+      e.stopPropagation()
+      router.push('/leagues/secrets-on-the-beach/sotb-public')
+    }}
     style={{
       display: 'block',
       width: '100%',
@@ -245,19 +268,89 @@ export default function Home() {
       border: 'none',
       fontWeight: 'bold',
       fontSize: '0.9rem',
+      cursor: 'pointer',
+      marginBottom: '10px'
+    }}
+  >
+    View Public League →
+  </button>
+
+  <button
+  onClick={(e) => {
+    e.stopPropagation()
+    setShowPrivateLeaguesModal('secrets-on-the-beach')
+  }}
+  style={{
+    display: 'block',
+    width: '100%',
+    textAlign: 'center',
+    backgroundColor: '#f0b429',
+    color: '#0a0a0f',
+    padding: '10px',
+    borderRadius: '6px',
+    border: 'none',
+    fontWeight: 'bold',
+    fontSize: '0.9rem',
+    cursor: 'pointer',
+    marginBottom: '10px'
+  }}
+>
+  My Private Leagues →
+</button>
+
+  <button
+  onClick={(e) => {
+    e.stopPropagation()
+    if (userTier === 'crewchief' || userTier === 'teamprincipal') {
+      router.push('/leagues/secrets-on-the-beach/create')
+    } else {
+      setShowUpgradeModal(true)
+    }
+  }}
+  style={{
+    display: 'block',
+    width: '100%',
+    textAlign: 'center',
+    backgroundColor: 'transparent',
+    color: '#f0b429',
+    padding: '10px',
+    borderRadius: '6px',
+    border: '1px solid #f0b429',
+    fontWeight: 'bold',
+    fontSize: '0.9rem',
+    cursor: 'pointer',
+    marginBottom: '10px'
+  }}
+>
+  Host Private League →
+</button>
+
+  <button
+    onClick={(e) => {
+      e.stopPropagation()
+      router.push('/leagues/sotb-demo/sample-league')
+    }}
+    style={{
+      display: 'block',
+      width: '100%',
+      textAlign: 'center',
+      backgroundColor: 'transparent',
+      color: '#a0a0b0',
+      padding: '10px',
+      borderRadius: '6px',
+      border: '1px solid #2a2a3e',
+      fontWeight: 'bold',
+      fontSize: '0.9rem',
       cursor: 'pointer'
     }}
   >
-    Climb Aboard →
+    Explore Demo League →
   </button>
 </div>
-          )}
 
-         {/* The Traitors */}
-         {!myLeagueTypes.has('uncharted-turretory') && (
- <div
+        {/* Uncharted Turretory */}
+<div
   className="league-card"
-  onClick={() => router.push('/leagues/uncharted-turretory')}
   style={{
     backgroundColor: '#1a1a2e',
     border: '3px solid rgb(245, 255, 156)',
@@ -266,114 +359,171 @@ export default function Home() {
     padding: '28px',
     flex: '0 1 350px'
   }}
-  >
-            <h3 style={{ color: 'rgb(245, 255, 156)', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '8px' }}>
-  <span className="emoji-turret">🗡️</span> Uncharted Turretory
-</h3>
-            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '16px' }}>
+>
+  <h3 style={{ color: 'rgb(245, 255, 156)', fontSize: 'clamp(1.6rem, 6vw, 1.65rem)', marginBottom: '8px' }}>
+    <span className="emoji-turret">🗡️</span> Uncharted Turretory
+  </h3>
+  <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
     Scale the turret steps of Alan's Castle and decide who you'll back in this game of murder, banishment, and deception.
   </p>
+
   <button
-  onClick={(e) => {
-    e.stopPropagation()
-    router.push('/leagues/uncharted-turretory')
-  }}
+    onClick={(e) => {
+      e.stopPropagation()
+      router.push('/leagues/uncharted-turretory/uncharted-turretory-public')
+    }}
     style={{
       display: 'block',
       width: '100%',
       textAlign: 'center',
-      backgroundColor: '#f0b429',
+      backgroundColor: 'rgb(245, 255, 156)',
       color: '#0a0a0f',
       padding: '10px',
       borderRadius: '6px',
       border: 'none',
       fontWeight: 'bold',
       fontSize: '0.9rem',
+      cursor: 'pointer',
+      marginBottom: '10px'
+    }}
+  >
+    View Public League →
+  </button>
+
+  <button
+  onClick={(e) => {
+    e.stopPropagation()
+    setShowPrivateLeaguesModal('uncharted-turretory')
+  }}
+  style={{
+    display: 'block',
+    width: '100%',
+    textAlign: 'center',
+    backgroundColor: 'rgb(245, 255, 156)',
+    color: '#0a0a0f',
+    padding: '10px',
+    borderRadius: '6px',
+    border: 'none',
+    fontWeight: 'bold',
+    fontSize: '0.9rem',
+    cursor: 'pointer',
+    marginBottom: '10px'
+  }}
+>
+  My Private Leagues →
+</button>
+
+  <button
+    onClick={(e) => {
+      e.stopPropagation()
+      if (userTier === 'crewchief' || userTier === 'teamprincipal') {
+        router.push('/leagues/uncharted-turretory/create')
+      } else {
+        setShowUpgradeModal(true)
+      }
+    }}
+    style={{
+      display: 'block',
+      width: '100%',
+      textAlign: 'center',
+      backgroundColor: 'transparent',
+      color: 'rgb(245, 255, 156)',
+      padding: '10px',
+      borderRadius: '6px',
+      border: '1px solid rgb(245, 255, 156)',
+      fontWeight: 'bold',
+      fontSize: '0.9rem',
+      cursor: 'pointer',
+      marginBottom: '10px'
+    }}
+  >
+    Host Private League →
+  </button>
+
+  <button
+    onClick={(e) => {
+      e.stopPropagation()
+      router.push('/leagues/uncharted-turretory-demo/sample-league-turret')
+    }}
+    style={{
+      display: 'block',
+      width: '100%',
+      textAlign: 'center',
+      backgroundColor: 'transparent',
+      color: '#a0a0b0',
+      padding: '10px',
+      borderRadius: '6px',
+      border: '1px solid #2a2a3e',
+      fontWeight: 'bold',
+      fontSize: '0.9rem',
       cursor: 'pointer'
     }}
   >
-    Cross the Loch →
+    Explore Demo League →
   </button>
-       </div>
-          )}
+</div>
 
-          {/* European Rocket Ships */}
-          <div style={{
-            backgroundColor: '#1a1a2e',
-            border: '3px solid #f0b429',
-            borderTop: '3px solid #f0b429',
-            borderRadius: '12px',
-            padding: '28px',
-    flex: '0 1 350px'
-          }}>
-            <h3 style={{
-  color: '#f0b429',
-  fontSize: 'clamp(1.35rem, 6vw, 1.6rem)',
-  marginBottom: '5.25px',
-  marginTop: '-3.8px',
-  display: 'flex',
-  alignItems: 'center',
-  gap: '6px',
-  lineHeight: '1.2'
+<div style={{ flexBasis: '100%', height: 0 }}></div>
+
+{/* Paddock Politicks */}
+<div style={{
+  backgroundColor: '#1a1a2e',
+  border: '3px solid #f0b429',
+  borderTop: '3px solid #f0b429',
+  borderRadius: '12px',
+  padding: '28px',
+  flex: '0 1 350px'
 }}>
-<span className="emoji-f1-home">🏎️</span> <span className="text-f1-shift-home">Paddock Politicks</span></h3>
-            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '14px' }}>
-              Coming in 2027, travel the globe with world-class drivers up and down the grid over 24 weeks of high octane racing.
-            </p>
-            <button
-  onClick={() => setShowComingSoon(true)}
-  style={{
-    display: 'block',
-    width: '100%',
-    textAlign: 'center',
-    backgroundColor: '#2a2a3e',
-    color: '#a0a0b0',
-    padding: '10px',
-    borderRadius: '6px',
-    border: '1px solid #3a3a5e',
-    fontSize: '0.9rem',
-    fontWeight: 'bold',
-    cursor: 'pointer'
-  }}
->
-  Red Lights Out →
-</button>
-          </div>
+  <h3 style={{
+    color: '#f0b429',
+    fontSize: 'clamp(1.6rem, 6vw, 1.7rem)',
+    marginBottom: '8px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px'
+  }}>
+    <span className="emoji-f1-home">🏎️</span> <span className="text-f1-shift-home">Paddock Politicks</span>
+  </h3>
+  <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
+    Coming in 2027, travel the globe with world-class drivers up and down the grid over 24 weeks of high octane racing.
+  </p>
 
-          {/* Americans Turning Left */}
-          <div style={{
-            backgroundColor: '#1a1a2e',
-            border: '3px solid rgb(245, 255, 156)',
-            borderTop: '3px solid rgb(245, 255, 156)',
-            borderRadius: '12px',
-            padding: '28px',
-    flex: '0 1 350px'
-          }}>
-            <h3 style={{ color: 'rgb(245, 255, 156)', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '4.5px', marginTop: '-8.5px' }}>
-  <span className="emoji-drive">🚗</span> The Oval Offset
-</h3>
-            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '14px' }}>
-              Coming in 2027, climb through the cargo net for 36 weeks of American Thunder and race to the checkered flag.</p>
+  <button onClick={() => setShowComingSoon(true)} style={{
+    display: 'block', width: '100%', textAlign: 'center',
+    backgroundColor: '#2a2a3e', color: '#a0a0b0', padding: '10px',
+    borderRadius: '6px', border: '1px solid #3a3a5e', fontWeight: 'bold',
+    fontSize: '0.9rem', cursor: 'pointer', marginBottom: '10px'
+  }}>
+    On Formation Lap →
+  </button>
+</div>
 
-            <button
-  onClick={() => setShowComingSoon(true)}
-  style={{
-    display: 'block',
-    width: '100%',
-    textAlign: 'center',
-    backgroundColor: '#2a2a3e',
-    color: '#a0a0b0',
-    padding: '10px',
-    borderRadius: '6px',
-    border: '1px solid #3a3a5e',
-    fontSize: '0.9rem',
-    fontWeight: 'bold',
-    cursor: 'pointer'
-  }}
->
-  Start Your Engines →
-</button>
-          </div>
+{/* The Oval Offset */}
+<div style={{
+  backgroundColor: '#1a1a2e',
+  border: '3px solid rgb(245, 255, 156)',
+  borderTop: '3px solid rgb(245, 255, 156)',
+  borderRadius: '12px',
+  padding: '28px',
+  flex: '0 1 350px'
+}}>
+  <h3 style={{ color: 'rgb(245, 255, 156)', fontSize: 'clamp(1.6rem, 6vw, 1.7rem)', marginBottom: '8px' }}>
+    <span className="emoji-drive">🚗</span> The Oval Offset
+  </h3>
+  <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
+    Coming in 2027, climb through the cargo net for 36 weeks of American Thunder and race to the checkered flag.
+  </p>
+
+  <button onClick={() => setShowComingSoon(true)} style={{
+    display: 'block', width: '100%', textAlign: 'center',
+    backgroundColor: '#2a2a3e', color: '#a0a0b0', padding: '10px',
+    borderRadius: '6px', border: '1px solid #3a3a5e', fontWeight: 'bold',
+    fontSize: '0.9rem', cursor: 'pointer', marginBottom: '10px'
+  }}>
+    Stuck in Pit Lane →
+  </button>
+
+</div>
 
 {/* Suggest a New League */}
  <div
@@ -388,7 +538,7 @@ export default function Home() {
     flex: '0 1 350px'
   }}
   >
-            <h3 style={{ color: '#ffffff', fontSize: 'clamp(1.35rem, 6vw, 1.6rem)', marginBottom: '7px', marginTop: '-3px' }}>
+            <h3 style={{ color: '#ffffff', fontSize: 'clamp(1.6rem, 6vw, 1.7rem)', marginBottom: '7px', marginTop: '-3px' }}>
   <span className="emoji-suggest">💭</span> Suggest a Fandom
 </h3>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '15.5px' }}>
@@ -641,6 +791,133 @@ Got an idea for a league we should build next? Send us your concept and help sha
         </div>
         </div>
 </section>
+
+{showUpgradeModal && (
+  <div style={{
+    position: 'fixed',
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 100
+  }}>
+    <div style={{
+      backgroundColor: '#1a1a2e',
+      border: '1px solid #f0b429',
+      borderRadius: '12px',
+      padding: '24px',
+      maxWidth: '380px',
+      textAlign: 'left'
+    }}>
+      <h3 style={{ color: '#f0b429', fontWeight: 'bold', fontSize: '1.3rem', marginBottom: '12px' }}>
+        Crew Chief+ Required
+      </h3>
+      <p style={{ color: '#a0a0b0', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '24px' }}>
+        You must be a Crew Chief or Team Principal to host private leagues. Upgrade your membership to start your own league!
+      </p>
+      <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-start' }}>
+        <button
+          onClick={() => router.push('/account?tier=crewchief')}
+          style={{
+            backgroundColor: '#f0b429',
+            color: '#0a0a0f',
+            padding: '10px 20px',
+            borderRadius: '6px',
+            border: 'none',
+            fontWeight: 'bold',
+            cursor: 'pointer'
+          }}
+        >
+          Upgrade Now
+        </button>
+        <button
+          onClick={() => setShowUpgradeModal(false)}
+          style={{
+            backgroundColor: 'transparent',
+            color: '#a0a0b0',
+            padding: '10px 20px',
+            borderRadius: '6px',
+            border: '1px solid #2a2a3e',
+            cursor: 'pointer'
+          }}
+        >
+          Maybe Later
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+{showPrivateLeaguesModal && (() => {
+  const relevantLeagues = [...hostedLeagues, ...joinedLeagues].filter(
+    (l) => l.type === showPrivateLeaguesModal && l.is_private === true
+  )
+  return (
+    <div style={{
+      position: 'fixed',
+      top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.7)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 100
+    }}>
+      <div style={{
+        backgroundColor: '#1a1a2e',
+        border: '1px solid #f0b429',
+        borderRadius: '12px',
+        padding: '24px',
+        maxWidth: '380px',
+        width: '90%',
+        textAlign: 'left'
+      }}>
+        <h3 style={{ color: '#f0b429', fontWeight: 'bold', fontSize: '1.3rem', marginBottom: '16px' }}>
+          Your Private Leagues
+        </h3>
+        {relevantLeagues.length === 0 ? (
+          <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
+            You&apos;re not in any private leagues for this fandom.
+          </p>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
+            {relevantLeagues.map((league) => (
+              <a
+                key={league.slug}
+                href={`/leagues/${league.type}/${league.slug}`}
+                style={{
+                  backgroundColor: '#12121a',
+                  borderRadius: '8px',
+                  padding: '12px 16px',
+                  textDecoration: 'none',
+                  color: '#ffffff',
+                  fontSize: '0.9rem',
+                  fontWeight: 'bold'
+                }}
+              >
+                {league.name} →
+              </a>
+            ))}
+          </div>
+        )}
+        <button
+          onClick={() => setShowPrivateLeaguesModal(null)}
+          style={{
+            backgroundColor: 'transparent',
+            color: '#a0a0b0',
+            padding: '10px 20px',
+            borderRadius: '6px',
+            border: '1px solid #2a2a3e',
+            cursor: 'pointer',
+            width: '100%'
+          }}
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  )
+})()}
 
 {showComingSoon && (
   <div style={{

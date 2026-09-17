@@ -109,7 +109,7 @@ function ExtrasContent() {
   borderRadius: '12px',
   padding: '20px 28px',
   marginBottom: '24px',
-  maxWidth: '500px',
+  maxWidth: '575px',
   boxSizing: 'border-box'
 }}>
           <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '20px', lineHeight: '1.6' }}>

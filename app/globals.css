@@ -36,10 +36,6 @@ body {
   transition: transform 0.15s ease, border-color 0.15s ease;
 }
 
-.league-card:hover {
-  animation: wiggle 0.3s ease-in-out;
-}
-
 .tier-card {
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;

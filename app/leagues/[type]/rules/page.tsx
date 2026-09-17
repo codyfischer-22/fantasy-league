@@ -1,6 +1,7 @@
 'use client'
 
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { ScrollText, Dices } from 'lucide-react'
 
 type ScoringRow = {
@@ -40,7 +41,6 @@ const rulesContent: Record<string, {
             event: 'Immunity Challenge Win (Team)',
             points: '+8'
           },
-          
           {
             event: 'Immunity Challenge Win (Individual)',
             points: '+15',
@@ -122,117 +122,115 @@ const rulesContent: Record<string, {
     ],
     tiebreaker: [
       'In the event of a season-end tie (whether tribes have the same three scored players or different combinations), tie breakers will be as follows: 1) Whose first-round draft pick scored more points? 2) Second? 3) Third? 4) \u201cBench player\u201d?',
-    ] 
+    ]
   },
   'uncharted-turretory': {
-  leagueName: 'Uncharted Turretory',
-  intro: [
-    'Trekkon Fantasy Leagues is all about keeping our leagues simple and players\u2019 viewing experience pure. Leave the tabulations to us, then, and focus on the roundtable drama, refilling your goblet, and "Friday Morning Quarterbacking" in the group chat.',
-    'When the show throws us a twist we didn\u2019t see coming, please trust our team will arbitrate according to both the letter and spirit of the law.',
-  ],
-  sections: [
-    {
-      title: 'Mission Performances',
-      rows: [
-        { event: 'Group Earns $5,000', 
-          points: '+2',
-          notes: ['Stacks with each $5K increment. Contestant must be in the group that earned the prize.'],
-        },
-        {event: 'Shield (Team)',
-          points: '+5',
-          notes: ['Shield earned by a team for a collective prize.']
-        },
-        { event: 'Shield (Personal)', 
-          points: '+10',
-          notes: ['Player finds and secures immunity on a mission.']
-         },
-        { event: 'Dagger',
-          points: '+10',
-          notes: ['Player finds and secures extra vote on a mission.']
-         },
-      ],
-    },
-    {
-      title: 'Tumult in the Turret',
-      rows: [
-        {
-          event: 'Murdered',
-          points: '\u22128'
-        },
-        {
-          event: 'Murdered in Plain Sight',
-          points: '\u221215',
-notes: ['Player must interact with or fall into traitor trap (not just name in hat or witness murder.)']
-        },
-           {
-          event: 'Shielded from Murder',
-          points: '+15',
-          notes: ['Player would have died were it not for their shield.']
-        }
-      ],
-    },
-    {
-      title: 'Round Table Ramblings',
-      rows: [
-        {
-          event: 'First Banished',
-          points: '\u22125',
-          notes: ['Stacks with the penalty below. It had to be someone but why\u2019d you let it be you?']
-        },
-        {
-          event: 'Banished at Round Table',
-          points: '\u221210',
-          notes: ['Regardless of whether player is faithful or traitor.']
-        },
-         {
-          event: 'Successful Dagger',
-          points: '+15',
-          notes: ['If extra vote makes the difference in a player going home.']
-        }
-      ],
-    },
-    {
-      title: 'End Game',
-      rows: [
-        { event: 'Make Fire of Truth', points: '+15' },
-        {  event: 'Banished at Fire of Truth',
-          points: '\u221210',
-        },
-         {event: '4-Player Win', points: '+10' },
-         {event: '3-Player Win', points: '+15' },
-         { event: '2-Player Win', points: '+20' },
-         { event: '1-Player Win', points: '+25' },
-      ],
-    },
-  ],
-  tiebreaker: [
-    'In the event of a season-end tie, tie breakers will be as follows: 1) Whose first-round draft pick scored more points? 2) Second? 3) Third? 4) \u201cBench player\u201d?',
-  ],
-},
+    leagueName: 'Uncharted Turretory',
+    intro: [
+      'Trekkon Fantasy Leagues is all about keeping our leagues simple and players\u2019 viewing experience pure. Leave the tabulations to us, then, and focus on the roundtable drama, refilling your goblet, and "Friday Morning Quarterbacking" in the group chat.',
+      'When the show throws us a twist we didn\u2019t see coming, please trust our team will arbitrate according to both the letter and spirit of the law.',
+    ],
+    sections: [
+      {
+        title: 'Mission Performances',
+        rows: [
+          { event: 'Group Earns $5,000',
+            points: '+2',
+            notes: ['Stacks with each $5K increment. Contestant must be in the group that earned the prize.'],
+          },
+          {event: 'Shield (Team)',
+            points: '+5',
+            notes: ['Shield earned by a team for a collective prize.']
+          },
+          { event: 'Shield (Personal)',
+            points: '+10',
+            notes: ['Player finds and secures immunity on a mission.']
+          },
+          { event: 'Dagger',
+            points: '+10',
+            notes: ['Player finds and secures extra vote on a mission.']
+          },
+        ],
+      },
+      {
+        title: 'Tumult in the Turret',
+        rows: [
+          {
+            event: 'Murdered',
+            points: '\u22128'
+          },
+          {
+            event: 'Murdered in Plain Sight',
+            points: '\u221215',
+            notes: ['Player must interact with or fall into traitor trap (not just name in hat or witness murder.)']
+          },
+          {
+            event: 'Shielded from Murder',
+            points: '+15',
+            notes: ['Player would have died were it not for their shield.']
+          }
+        ],
+      },
+      {
+        title: 'Round Table Ramblings',
+        rows: [
+          {
+            event: 'First Banished',
+            points: '\u22125',
+            notes: ['Stacks with the penalty below. It had to be someone but why\u2019d you let it be you?']
+          },
+          {
+            event: 'Banished at Round Table',
+            points: '\u221210',
+            notes: ['Regardless of whether player is faithful or traitor.']
+          },
+          {
+            event: 'Successful Dagger',
+            points: '+15',
+            notes: ['If extra vote makes the difference in a player going home.']
+          }
+        ],
+      },
+      {
+        title: 'End Game',
+        rows: [
+          { event: 'Make Fire of Truth', points: '+15' },
+          { event: 'Banished at Fire of Truth',
+            points: '\u221210',
+          },
+          {event: '4-Player Win', points: '+10' },
+          {event: '3-Player Win', points: '+15' },
+          { event: '2-Player Win', points: '+20' },
+          { event: '1-Player Win', points: '+25' },
+        ],
+      },
+    ],
+    tiebreaker: [
+      'In the event of a season-end tie, tie breakers will be as follows: 1) Whose first-round draft pick scored more points? 2) Second? 3) Third? 4) \u201cBench player\u201d?',
+    ],
+  },
 }
 
+const ruleTypeOptions = [
+  { value: 'secrets-on-the-beach', label: '🏝️ Secrets on the Beach', comingSoon: false },
+  { value: 'uncharted-turretory', label: '🗡️ Uncharted Turretory', comingSoon: false },
+  { value: 'paddock-politicks', label: '🏎️ Paddock Politicks', comingSoon: true },
+  { value: 'the-oval-offset', label: '🚗 The Oval Offset', comingSoon: true },
+]
 export default function RulesPage() {
   const params = useParams()
-  const type = params.type as string
-  const content = rulesContent[type]
+  const router = useRouter()
+  const type = params.type as string | undefined
+  const content = type ? rulesContent[type] : null
+  const [showComingSoon, setShowComingSoon] = useState(false)
 
-  if (!content) {
-    return (
-      <main style={{
-        backgroundColor: '#0a0a0f',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: '#a0a0b0',
-        fontFamily: 'Georgia, serif',
-        gap: '16px'
-      }}>
-        <p>Rules for this league aren&apos;t posted yet.</p>
-<a href={`/leagues/${type}`} style={{ color: '#f0b429' }}>← Back to League</a>
-      </main>
-    )
+  const handleRuleTypeChange = (selectedType: string) => {
+    const option = ruleTypeOptions.find((opt) => opt.value === selectedType)
+    if (option?.comingSoon) {
+      setShowComingSoon(true)
+      return
+    }
+    router.push(`/leagues/${selectedType}/rules`)
   }
 
   return (
@@ -245,105 +243,210 @@ export default function RulesPage() {
     }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
 
-        <a href={`/leagues/${type}`} style={{
+        <a href="/" style={{
           color: '#a0a0b0',
           fontSize: '0.85rem',
           textDecoration: 'none',
           display: 'inline-block',
           marginBottom: '24px'
         }}>
-          ← Back to {content.leagueName}
+          ← Back to Trekkon Fantasy Leagues
         </a>
 
-       <h1 style={{ fontSize: 'clamp(1.85rem, 8vw, 2.25rem)', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-  <ScrollText size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
-  <span style={{ color: '#f0b429' }}>{content.leagueName}</span>{' '}
+        <h1 style={{
+  fontSize: 'clamp(1.6rem, 8vw, 2.25rem)',
+  marginBottom: '16px',
+  display: 'flex',
+  alignItems: 'center',
+  flexWrap: 'wrap',
+  gap: '8px 10px'
+}}>
+  <ScrollText size={32} strokeWidth={2} color="#f0b429" style={{ flexShrink: 0 }} />
+  <span style={{ color: '#f0b429' }}>Trekkon</span>
   <span style={{ color: '#ffffff' }}>Rules & Scoring</span>
 </h1>
 
-        <div style={{ marginBottom: '36px' }}>
-          {content.intro.map((para, i) => (
-            <p key={i} style={{ color: '#a0a0b0', fontSize: '0.95rem', lineHeight: '1.7', marginBottom: '12px' }}>
-              {para}
-            </p>
-          ))}
+{!content && (
+        <div style={{ marginBottom: '32px' }}>
+          <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '8px' }}>
+            View "Rules & Scoring" for the following league:
+          </label>
+         <select
+  value={type === 'all' ? '' : type ?? ''}
+  onChange={(e) => handleRuleTypeChange(e.target.value)}
+  style={{
+    padding: '10px 14px',
+    borderRadius: '6px',
+    border: '1px solid #2a2a3e',
+    backgroundColor: '#12121a',
+    color: '#ffffff',
+    fontSize: '1rem',
+    width: '100%',
+    maxWidth: '320px'
+  }}
+>
+          <option value="" disabled>Select League...</option>
+  {ruleTypeOptions.map((opt) => (
+    <option key={opt.value} value={opt.value}>
+      {opt.label}{opt.comingSoon ? ' (Coming Soon)' : ''}
+    </option>
+  ))}
+</select>
         </div>
+)}
 
-        {content.sections.map((section) => (
-          <div key={section.title} style={{ marginBottom: '32px' }}>
-            <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '12px' }}>
-              {section.title}
-            </h2>
-            <div style={{
-              backgroundColor: '#1a1a2e',
-              border: '1px solid #2a2a3e',
-              borderRadius: '10px',
-              overflow: 'hidden'
-            }}>
-              {section.rows.map((row, i) => (
-                <div key={row.event} style={{
-                  padding: '14px 20px',
-                  borderBottom: i < section.rows.length - 1 ? '1px solid #2a2a3e' : 'none'
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ fontSize: '0.95rem' }}>
-  {row.event.includes('|') ? (
-    <>
-      {row.event.split('|')[0].trim()}
-      {' | '}
-      <em>{row.event.split('|')[1].trim()}</em>
-    </>
-  ) : (
-    row.event
-  )}
+        {!content ? null : (
+  <>
+    <div style={{ marginBottom: '14px' }}>
+  {content.intro.map((para, i) => (
+    <p key={i} style={{ color: '#a0a0b0', fontSize: '0.95rem', lineHeight: '1.7', marginBottom: '12px' }}>
+      {para}
+    </p>
+  ))}
 </div>
-                    <div style={{
-                      color: row.points.startsWith('\u2212') ? '#ff6b6b' : row.points === '0' ? '#a0a0b0' : '#f0b429',
-                      fontWeight: 'bold',
-                      fontSize: '1.05rem',
-                      whiteSpace: 'nowrap',
-                      marginLeft: '16px'
+
+<div style={{ marginBottom: '32px' }}>
+  <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '6px' }}>
+        Check out "Rules & Scoring" for another league:
+      </label>
+      <select
+        value={type ?? ''}
+        onChange={(e) => handleRuleTypeChange(e.target.value)}
+        style={{
+          padding: '10px 14px',
+          borderRadius: '6px',
+          border: '1px solid #2a2a3e',
+          backgroundColor: '#12121a',
+          color: '#ffffff',
+          fontSize: '1rem',
+          width: '100%',
+          maxWidth: '320px'
+        }}
+      >
+        <option value="" disabled>Select League...</option>
+        {ruleTypeOptions.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}{opt.comingSoon ? ' (Coming Soon)' : ''}
+          </option>
+        ))}
+      </select>
+    </div>
+
+            {content.sections.map((section) => (
+              <div key={section.title} style={{ marginBottom: '32px' }}>
+                <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '12px' }}>
+                  {section.title}
+                </h2>
+                <div style={{
+                  backgroundColor: '#1a1a2e',
+                  border: '1px solid #2a2a3e',
+                  borderRadius: '10px',
+                  overflow: 'hidden'
+                }}>
+                  {section.rows.map((row, i) => (
+                    <div key={row.event} style={{
+                      padding: '14px 20px',
+                      borderBottom: i < section.rows.length - 1 ? '1px solid #2a2a3e' : 'none'
                     }}>
-                      {row.points} {row.points !== '0' ? 'Points' : 'Points'}
-                    </div>
-                  </div>
-                  {row.notes && row.notes.map((note, ni) => (
-                    <div key={ni} style={{ color: '#555570', fontSize: '0.8rem', marginTop: '4px', paddingLeft: '4px' }}>
-                      — {note}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ fontSize: '0.95rem' }}>
+                          {row.event.includes('|') ? (
+                            <>
+                              {row.event.split('|')[0].trim()}
+                              {' | '}
+                              <em>{row.event.split('|')[1].trim()}</em>
+                            </>
+                          ) : (
+                            row.event
+                          )}
+                        </div>
+                        <div style={{
+                          color: row.points.startsWith('\u2212') ? '#ff6b6b' : row.points === '0' ? '#a0a0b0' : '#f0b429',
+                          fontWeight: 'bold',
+                          fontSize: '1.05rem',
+                          whiteSpace: 'nowrap',
+                          marginLeft: '16px'
+                        }}>
+                          {row.points} {row.points !== '0' ? 'Points' : 'Points'}
+                        </div>
+                      </div>
+                      {row.notes && row.notes.map((note, ni) => (
+                        <div key={ni} style={{ color: '#555570', fontSize: '0.8rem', marginTop: '4px', paddingLeft: '4px' }}>
+                          — {note}
+                        </div>
+                      ))}
                     </div>
                   ))}
                 </div>
-              ))}
+              </div>
+            ))}
+
+            <div style={{
+              backgroundColor: '#1a1a2e',
+              border: '1px solid #f0b429',
+              borderRadius: '10px',
+              padding: '20px',
+              marginBottom: '32px'
+            }}>
+              <h2 style={{ color: '#f0b429', fontSize: '1.1rem', marginBottom: '8px', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                <Dices size={22} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
+                Tie Breaker Procedure
+              </h2>
+              {content.tiebreaker.map((line, i) => {
+                const [before, after] = line.split(/:(.+)/)
+                return (
+                  <p key={i} style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '6px' }}>
+                    {before}:{after ? <em>{after}</em> : null}
+                  </p>
+                )
+              })}
             </div>
-          </div>
-        ))}
 
-        <div style={{
-          backgroundColor: '#1a1a2e',
-          border: '1px solid #f0b429',
-          borderRadius: '10px',
-          padding: '20px',
-          marginBottom: '32px'
-        }}>
-         <h2 style={{ color: '#f0b429', fontSize: '1.1rem', marginBottom: '8px', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-  <Dices size={22} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
-  Tie Breaker Procedure
-</h2>
-      {content.tiebreaker.map((line, i) => {
-  const [before, after] = line.split(/:(.+)/)
-  return (
-    <p key={i} style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '6px' }}>
-      {before}:{after ? <em>{after}</em> : null}
-    </p>
-  )
-})}
-        </div>
-
-        <p style={{ color: '#555570', fontSize: '0.9rem', textAlign: 'center' }}>
-          {content.closing}
-        </p>
+            <p style={{ color: '#555570', fontSize: '0.9rem', textAlign: 'center' }}>
+              {content.closing}
+            </p>
+          </>
+        )}
 
       </div>
+
+      {showComingSoon && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.7)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 100
+        }}>
+          <div style={{
+            backgroundColor: '#1a1a2e',
+            border: '1px solid #f0b429',
+            borderRadius: '12px',
+            padding: '20px',
+            maxWidth: '380px',
+            textAlign: 'center'
+          }}>
+            <p style={{ color: '#a0a0b0', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '24px' }}>
+              We&apos;re sorry! The track is still being paved. Try back soon for our new racing leagues!      </p>
+
+            <button onClick={() => setShowComingSoon(false)} style={{
+              backgroundColor: '#f0b429',
+              color: '#0a0a0f',
+              padding: '10px 28px',
+              borderRadius: '6px',
+              border: 'none',
+              fontWeight: 'bold',
+              fontSize: '0.9rem',
+              cursor: 'pointer'
+            }}>
+              Got it!
+            </button>
+          </div>
+        </div>
+      )}
+
     </main>
   )
 }
