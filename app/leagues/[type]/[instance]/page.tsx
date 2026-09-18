@@ -492,9 +492,9 @@ effectiveCap = league.max_members ?? (hostProfile?.tier === 'teamprincipal' ? 18
       { label: 'Draft Room', icon: Puzzle, href: `/leagues/${type}/${instance}/draft-room` },
       { label: 'Draft Research', icon: Microscope, href: null },
     ].filter((item) =>
-  !(item.label === 'Draft Room' && (!league.is_private || league.draft_status === 'completed' || type === 'sotb-demo' || type === 'uncharted-turretory-demo')) &&
-  !(item.label === 'Draft Research' && (league.draft_status === 'completed' || type === 'sotb-demo' || type === 'uncharted-turretory-demo'))
-),
+      !(item.label === 'Draft Room' && (!league.is_private || league.draft_status === 'completed' || type === 'sotb-demo' || type === 'uncharted-turretory-demo')) &&
+      !(item.label === 'Draft Research' && (hasDrafted || type === 'sotb-demo' || type === 'uncharted-turretory-demo'))
+    ),
   },
 ]
   return (

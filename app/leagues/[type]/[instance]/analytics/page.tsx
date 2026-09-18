@@ -87,27 +87,30 @@ type PlayerChartRow = {
 }
 type ValuePick = {
   castaway_name: string
-  rank_position: number
+  round: number
   points: number
-  value_score: number
+  expected_points: number
 }
 type PlayerValue = {
   player_name: string
-  total_value_score: number
   total_points: number
+  expected_total: number
   efficiency_percent: number
   grade: string
   best_pick: ValuePick | null
-  all_picks: ValuePick[]
 }
 
 function gradeForPercent(p: number): string {
-  if (p >= 95) return 'A+'
-  if (p >= 90) return 'A'
-  if (p >= 85) return 'B+'
-  if (p >= 80) return 'B'
-  if (p >= 70) return 'C'
-  if (p >= 60) return 'D'
+  if (p >= 140) return 'A+'
+  if (p >= 125) return 'A'
+  if (p >= 115) return 'A-'
+  if (p >= 108) return 'B+'
+  if (p >= 100) return 'B'
+  if (p >= 92) return 'B-'
+  if (p >= 85) return 'C+'
+  if (p >= 75) return 'C'
+  if (p >= 65) return 'C-'
+  if (p >= 55) return 'D'
   return 'F'
 }
 
@@ -226,7 +229,7 @@ if (!isDemoLeague) {
       setLeagueName(league.name)
       const { data: picks } = await supabase
         .from('draft_picks')
-        .select('user_id, castaway_id')
+        .select('user_id, castaway_id, round')
         .eq('league_id', league.id)
       const castawayIds = [...new Set((picks ?? []).map((p) => p.castaway_id))]
       if (castawayIds.length === 0) return
@@ -306,55 +309,61 @@ if (!isDemoLeague) {
           .from('draft_rankings')
           .select('user_id, castaway_id, rank_position')
           .eq('league_id', league.id)
-        if (rankings && rankings.length > 0) {
-          const rankMap = new Map(
-            rankings.map((r) => [`${r.user_id}-${r.castaway_id}`, r.rank_position])
-          )
-          const castawayPointsMap = new Map<number, number>()
-          scores.forEach((s) => {
-            const current = castawayPointsMap.get(s.castaway_id) ?? 0
-            castawayPointsMap.set(s.castaway_id, current + s.points * s.count)
-          })
-          const valueByPlayer = new Map<string, ValuePick[]>()
-          ;(picks ?? []).forEach((p) => {
-            const rank = rankMap.get(`${p.user_id}-${p.castaway_id}`)
-            if (!rank) return
-            const points = castawayPointsMap.get(p.castaway_id) ?? 0
-            const castawayName = nameMap.get(p.castaway_id) ?? 'Unknown'
-            const pick: ValuePick = {
-              castaway_name: castawayName,
-              rank_position: rank,
-              points,
-              value_score: points * rank,
-            }
-            const existing = valueByPlayer.get(p.user_id) ?? []
-            existing.push(pick)
-            valueByPlayer.set(p.user_id, existing)
-          })
-          const rawReport = Array.from(valueByPlayer.entries()).map(([uid, picksForPlayer]) => {
-            const sorted = [...picksForPlayer].sort((a, b) => b.value_score - a.value_score)
-            const totalValue = picksForPlayer.reduce((sum, p) => sum + p.value_score, 0)
-            const totalPoints = picksForPlayer.reduce((sum, p) => sum + p.points, 0)
-            return {
-              player_name: playerNameMap.get(uid) ?? 'Unnamed Player',
-              total_value_score: totalValue,
-              total_points: totalPoints,
-              best_pick: sorted[0] ?? null,
-              all_picks: sorted,
-            }
-          })
-          const maxScore = Math.max(...rawReport.map((r) => r.total_value_score), 1)
-          const report: PlayerValue[] = rawReport.map((r) => {
-            const pct = Math.max(0, Math.min(100, Math.round((r.total_value_score / maxScore) * 100)))
-            return {
-              ...r,
-              efficiency_percent: pct,
-              grade: gradeForPercent(pct),
-            }
-          })
-          report.sort((a, b) => b.total_value_score - a.total_value_score)
-          setValueReport(report)
-        }
+   if (picks && picks.length > 0) {
+  const castawayPointsMap = new Map<number, number>()
+  scores.forEach((s) => {
+    const current = castawayPointsMap.get(s.castaway_id) ?? 0
+    castawayPointsMap.set(s.castaway_id, current + s.points * s.count)
+  })
+
+  const roundAverages = new Map<number, number>()
+  const roundGroups = new Map<number, number[]>()
+  picks.forEach((p) => {
+    const points = castawayPointsMap.get(p.castaway_id) ?? 0
+    const existing = roundGroups.get(p.round) ?? []
+    existing.push(points)
+    roundGroups.set(p.round, existing)
+  })
+  roundGroups.forEach((pointsList, round) => {
+    const avg = pointsList.reduce((sum, v) => sum + v, 0) / pointsList.length
+    roundAverages.set(round, avg)
+  })
+
+  const picksByPlayer = new Map<string, ValuePick[]>()
+  picks.forEach((p) => {
+    const points = castawayPointsMap.get(p.castaway_id) ?? 0
+    const castawayName = nameMap.get(p.castaway_id) ?? 'Unknown'
+    const expected = roundAverages.get(p.round) ?? 0
+    const pick: ValuePick = {
+      castaway_name: castawayName,
+      round: p.round,
+      points,
+      expected_points: Math.round(expected * 10) / 10,
+    }
+    const existing = picksByPlayer.get(p.user_id) ?? []
+    existing.push(pick)
+    picksByPlayer.set(p.user_id, existing)
+  })
+
+  const report: PlayerValue[] = Array.from(picksByPlayer.entries()).map(([uid, picksForPlayer]) => {
+    const totalPoints = picksForPlayer.reduce((sum, p) => sum + p.points, 0)
+    const expectedTotal = picksForPlayer.reduce((sum, p) => sum + p.expected_points, 0)
+    const pct = expectedTotal > 0 ? Math.round((totalPoints / expectedTotal) * 100) : 0
+    const bestPick = [...picksForPlayer].sort(
+      (a, b) => (b.points - b.expected_points) - (a.points - a.expected_points)
+    )[0] ?? null
+    return {
+      player_name: playerNameMap.get(uid) ?? 'Unnamed Player',
+      total_points: totalPoints,
+      expected_total: Math.round(expectedTotal * 10) / 10,
+      efficiency_percent: pct,
+      grade: gradeForPercent(pct),
+      best_pick: bestPick,
+    }
+  })
+  report.sort((a, b) => b.efficiency_percent - a.efficiency_percent)
+  setValueReport(report)
+}
         const castawayOwner = new Map(
   (picks ?? []).map((p) => [p.castaway_id, p.user_id])
 )
@@ -515,8 +524,8 @@ setPlayerChartData(playerRows)
               Draft Value Report
             </h2>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '20px', textAlign: 'left' }}>
-              Ready to see your report card for Draft School? Your grade rewards squeezing big points out of low-ranked picks. This grade is measured against the best value roster in the league so it can shift as the season plays out.
-            </p>
+  Ready to see your report card for Draft School? Your grade compares your roster's total points to the league-wide average for the rounds you drafted in. Can you beat expectations across the board?
+</p>
             {valueReport.length === 0 ? (
               <p style={{ color: '#555570', marginBottom: '48px' }}>
                 No draft rankings on record yet. Check back once the draft has run!
@@ -557,12 +566,12 @@ setPlayerChartData(playerRows)
                         </div>
                       </div>
                       {pv.best_pick && (
-                        <p style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
-                          Best pick: <strong style={{ color: '#ffffff' }}>{pv.best_pick.castaway_name}</strong>
-                          <span className="best-pick-break">{' '}</span>
-                          (Ranked #{pv.best_pick.rank_position}, {pv.best_pick.points > 0 ? '+' : ''}{pv.best_pick.points} Pts.)
-                        </p>
-                      )}
+  <p style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
+    Best pick: <strong style={{ color: '#ffffff' }}>{pv.best_pick.castaway_name}</strong>
+    <span className="best-pick-break">{' '}</span>
+    (Round {pv.best_pick.round}, {pv.best_pick.points} Pts. vs. {pv.best_pick.expected_points} Avg.)
+  </p>
+)}
                     </div>
                   ))}
                 </div>
@@ -607,12 +616,12 @@ setPlayerChartData(playerRows)
                         <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>{searchedPlayer.efficiency_percent}%</span>
                       </div>
                     </div>
-                    {searchedPlayer.best_pick && (
-                      <p style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
-                        Best Pick: <strong style={{ color: '#ffffff' }}>{searchedPlayer.best_pick.castaway_name}</strong>
-                        {' '}(ranked #{searchedPlayer.best_pick.rank_position}, {searchedPlayer.best_pick.points > 0 ? '+' : ''}{searchedPlayer.best_pick.points} pts)
-                      </p>
-                    )}
+                 {searchedPlayer.best_pick && (
+  <p style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
+    Best Pick: <strong style={{ color: '#ffffff' }}>{searchedPlayer.best_pick.castaway_name}</strong>
+    {' '}(Round {searchedPlayer.best_pick.round}, {searchedPlayer.best_pick.points} pts vs {searchedPlayer.best_pick.expected_points} avg)
+  </p>
+)}
                   </div>
                 )}
                 {valueSearch && !searchedPlayer && (

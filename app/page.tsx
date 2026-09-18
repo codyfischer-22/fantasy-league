@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
-import { Rat, Anchor, Drill, Rocket, Earth, Lock, TestTubeDiagonal, Hammer, CornerLeftUp } from 'lucide-react'
+import { Rat, Anchor, Drill, Rocket, Earth, Lock, TestTubeDiagonal, Hammer, CornerLeftUp, Mail, Hourglass } from 'lucide-react'
 
 type MyLeague = {
   name: string
@@ -260,37 +260,15 @@ This is your arena to compete with friends, family, and on-screen stars on beach
   </p>
 
   <button
-    onClick={(e) => {
-      e.stopPropagation()
-      router.push('/leagues/secrets-on-the-beach/sotb-public')
-    }}
-    style={{
-      display: 'block',
-      width: '100%',
-      textAlign: 'center',
-      backgroundColor: '#f0b429',
-      color: '#0a0a0f',
-      padding: '10px',
-      borderRadius: '6px',
-      border: 'none',
-      fontWeight: 'bold',
-      fontSize: '0.9rem',
-      cursor: 'pointer',
-      marginBottom: '10px'
-    }}
-  >
-    View Public League →
-  </button>
-
-  
-
-  <button
   onClick={(e) => {
     e.stopPropagation()
-    setShowPrivateLeaguesModal('secrets-on-the-beach')
+    router.push('/leagues/secrets-on-the-beach/sotb-public')
   }}
   style={{
-    display: 'block',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
     width: '100%',
     textAlign: 'center',
     backgroundColor: '#f0b429',
@@ -304,10 +282,36 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     marginBottom: '10px'
   }}
 >
-  My Private Leagues →
+  <Earth size={16} strokeWidth={2} /> View Public League →
 </button>
 
-  <button
+<button
+  onClick={(e) => {
+    e.stopPropagation()
+    setShowPrivateLeaguesModal('secrets-on-the-beach')
+  }}
+  style={{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    width: '100%',
+    textAlign: 'center',
+    backgroundColor: '#f0b429',
+    color: '#0a0a0f',
+    padding: '10px',
+    borderRadius: '6px',
+    border: 'none',
+    fontWeight: 'bold',
+    fontSize: '0.9rem',
+    cursor: 'pointer',
+    marginBottom: '10px'
+  }}
+>
+  <Lock size={16} strokeWidth={2} /> My Private Leagues →
+</button>
+
+<button
   onClick={(e) => {
     e.stopPropagation()
     if (userTier === 'crewchief' || userTier === 'teamprincipal') {
@@ -317,7 +321,10 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     }
   }}
   style={{
-    display: 'block',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
     width: '100%',
     textAlign: 'center',
     backgroundColor: 'transparent',
@@ -331,30 +338,33 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     marginBottom: '10px'
   }}
 >
-  Host Private League →
+  <Hammer size={16} strokeWidth={2} /> Host Private League →
 </button>
 
-  <button
-    onClick={(e) => {
-      e.stopPropagation()
-      router.push('/leagues/sotb-demo/sample-league')
-    }}
-    style={{
-      display: 'block',
-      width: '100%',
-      textAlign: 'center',
-      backgroundColor: 'transparent',
-      color: '#a0a0b0',
-      padding: '10px',
-      borderRadius: '6px',
-      border: '1px solid #2a2a3e',
-      fontWeight: 'bold',
-      fontSize: '0.9rem',
-      cursor: 'pointer'
-    }}
-  >
-    Explore Demo League →
-  </button>
+<button
+  onClick={(e) => {
+    e.stopPropagation()
+    router.push('/leagues/sotb-demo/sample-league')
+  }}
+  style={{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    width: '100%',
+    textAlign: 'center',
+    backgroundColor: 'transparent',
+    color: '#a0a0b0',
+    padding: '10px',
+    borderRadius: '6px',
+    border: '1px solid #2a2a3e',
+    fontWeight: 'bold',
+    fontSize: '0.9rem',
+    cursor: 'pointer'
+  }}
+>
+  <TestTubeDiagonal size={16} strokeWidth={2} /> Explore Demo League →
+</button>
 </div>
 
         {/* Uncharted Turretory */}
@@ -377,35 +387,15 @@ This is your arena to compete with friends, family, and on-screen stars on beach
   </p>
 
   <button
-    onClick={(e) => {
-      e.stopPropagation()
-      router.push('/leagues/uncharted-turretory/uncharted-turretory-public')
-    }}
-    style={{
-      display: 'block',
-      width: '100%',
-      textAlign: 'center',
-      backgroundColor: 'rgb(245, 255, 156)',
-      color: '#0a0a0f',
-      padding: '10px',
-      borderRadius: '6px',
-      border: 'none',
-      fontWeight: 'bold',
-      fontSize: '0.9rem',
-      cursor: 'pointer',
-      marginBottom: '10px'
-    }}
-  >
-    View Public League →
-  </button>
-
-  <button
   onClick={(e) => {
     e.stopPropagation()
-    setShowPrivateLeaguesModal('uncharted-turretory')
+    router.push('/leagues/uncharted-turretory/uncharted-turretory-public')
   }}
   style={{
-    display: 'block',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
     width: '100%',
     textAlign: 'center',
     backgroundColor: 'rgb(245, 255, 156)',
@@ -419,57 +409,89 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     marginBottom: '10px'
   }}
 >
-  My Private Leagues →
+  <Earth size={16} strokeWidth={2} /> View Public League →
 </button>
 
-  <button
-    onClick={(e) => {
-      e.stopPropagation()
-      if (userTier === 'crewchief' || userTier === 'teamprincipal') {
-        router.push('/leagues/uncharted-turretory/create')
-      } else {
-        setShowUpgradeModal(true)
-      }
-    }}
-    style={{
-      display: 'block',
-      width: '100%',
-      textAlign: 'center',
-      backgroundColor: 'transparent',
-      color: 'rgb(245, 255, 156)',
-      padding: '10px',
-      borderRadius: '6px',
-      border: '1px solid rgb(245, 255, 156)',
-      fontWeight: 'bold',
-      fontSize: '0.9rem',
-      cursor: 'pointer',
-      marginBottom: '10px'
-    }}
-  >
-    Host Private League →
-  </button>
+<button
+  onClick={(e) => {
+    e.stopPropagation()
+    setShowPrivateLeaguesModal('uncharted-turretory')
+  }}
+  style={{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    width: '100%',
+    textAlign: 'center',
+    backgroundColor: 'rgb(245, 255, 156)',
+    color: '#0a0a0f',
+    padding: '10px',
+    borderRadius: '6px',
+    border: 'none',
+    fontWeight: 'bold',
+    fontSize: '0.9rem',
+    cursor: 'pointer',
+    marginBottom: '10px'
+  }}
+>
+  <Lock size={16} strokeWidth={2} /> My Private Leagues →
+</button>
 
-  <button
-    onClick={(e) => {
-      e.stopPropagation()
-      router.push('/leagues/uncharted-turretory-demo/sample-league-turret')
-    }}
-    style={{
-      display: 'block',
-      width: '100%',
-      textAlign: 'center',
-      backgroundColor: 'transparent',
-      color: '#a0a0b0',
-      padding: '10px',
-      borderRadius: '6px',
-      border: '1px solid #2a2a3e',
-      fontWeight: 'bold',
-      fontSize: '0.9rem',
-      cursor: 'pointer'
-    }}
-  >
-    Explore Demo League →
-  </button>
+<button
+  onClick={(e) => {
+    e.stopPropagation()
+    if (userTier === 'crewchief' || userTier === 'teamprincipal') {
+      router.push('/leagues/uncharted-turretory/create')
+    } else {
+      setShowUpgradeModal(true)
+    }
+  }}
+  style={{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    width: '100%',
+    textAlign: 'center',
+    backgroundColor: 'transparent',
+    color: 'rgb(245, 255, 156)',
+    padding: '10px',
+    borderRadius: '6px',
+    border: '1px solid rgb(245, 255, 156)',
+    fontWeight: 'bold',
+    fontSize: '0.9rem',
+    cursor: 'pointer',
+    marginBottom: '10px'
+  }}
+>
+  <Hammer size={16} strokeWidth={2} /> Host Private League →
+</button>
+
+<button
+  onClick={(e) => {
+    e.stopPropagation()
+    router.push('/leagues/uncharted-turretory-demo/sample-league-turret')
+  }}
+  style={{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    width: '100%',
+    textAlign: 'center',
+    backgroundColor: 'transparent',
+    color: '#a0a0b0',
+    padding: '10px',
+    borderRadius: '6px',
+    border: '1px solid #2a2a3e',
+    fontWeight: 'bold',
+    fontSize: '0.9rem',
+    cursor: 'pointer'
+  }}
+>
+  <TestTubeDiagonal size={16} strokeWidth={2} /> Explore Demo League →
+</button>
 </div>
 
 </div>
@@ -503,13 +525,14 @@ This is your arena to compete with friends, family, and on-screen stars on beach
   </p>
 
   <button onClick={() => setShowComingSoon(true)} style={{
-    display: 'block', width: '100%', textAlign: 'center',
-    backgroundColor: '#2a2a3e', color: '#a0a0b0', padding: '10px',
-    borderRadius: '6px', border: '1px solid #3a3a5e', fontWeight: 'bold',
-    fontSize: '0.9rem', cursor: 'pointer', marginBottom: '10px'
-  }}>
-    On Formation Lap →
-  </button>
+  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+  width: '100%', textAlign: 'center',
+  backgroundColor: '#2a2a3e', color: '#a0a0b0', padding: '10px',
+  borderRadius: '6px', border: '1px solid #3a3a5e', fontWeight: 'bold',
+  fontSize: '0.9rem', cursor: 'pointer', marginBottom: '10px'
+}}>
+  <Hourglass size={16} strokeWidth={2} /> On Formation Lap →
+</button>
 </div>
 
 {/* The Oval Offset */}
@@ -529,13 +552,14 @@ This is your arena to compete with friends, family, and on-screen stars on beach
   </p>
 
   <button onClick={() => setShowComingSoon(true)} style={{
-    display: 'block', width: '100%', textAlign: 'center',
-    backgroundColor: '#2a2a3e', color: '#a0a0b0', padding: '10px',
-    borderRadius: '6px', border: '1px solid #3a3a5e', fontWeight: 'bold',
-    fontSize: '0.9rem', cursor: 'pointer', marginBottom: '10px'
-  }}>
-    Stuck in Pit Lane →
-  </button>
+  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+  width: '100%', textAlign: 'center',
+  backgroundColor: '#2a2a3e', color: '#a0a0b0', padding: '10px',
+  borderRadius: '6px', border: '1px solid #3a3a5e', fontWeight: 'bold',
+  fontSize: '0.9rem', cursor: 'pointer', marginBottom: '10px'
+}}>
+  <Hourglass size={16} strokeWidth={2} /> Stuck in Pit Lane →
+</button>
 
 </div>
 
@@ -563,22 +587,25 @@ Got an idea for a league we should build next? Send us your concept and help sha
     e.stopPropagation()
     router.push('/contact')
   }}
-    style={{
-      display: 'block',
-      width: '100%',
-      textAlign: 'center',
-      backgroundColor: '#f0b429',
-      color: '#0a0a0f',
-      padding: '10px',
-      borderRadius: '6px',
-      border: 'none',
-      fontWeight: 'bold',
-      fontSize: '0.9rem',
-      cursor: 'pointer'
-    }}
-  >
-    Contact Our Team →
-  </button>
+  style={{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    width: '100%',
+    textAlign: 'center',
+    backgroundColor: '#f0b429',
+    color: '#0a0a0f',
+    padding: '10px',
+    borderRadius: '6px',
+    border: 'none',
+    fontWeight: 'bold',
+    fontSize: '0.9rem',
+    cursor: 'pointer'
+  }}
+>
+  <Mail size={16} strokeWidth={2} /> Contact Our Team →
+</button>
 </div>
 </div>
 </div>
