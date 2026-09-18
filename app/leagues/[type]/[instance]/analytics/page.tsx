@@ -282,7 +282,7 @@ if (!isDemoLeague) {
             notes: s.notes,
           })
         })
-        const row: CastawayChartRow = { episode: `Rd. ${ep}` }
+        const row: CastawayChartRow = { episode: `Ep. ${ep}` }
         names.forEach((n) => {
           row[n] = runningTotals[n]
         })
@@ -401,7 +401,7 @@ episodeNumbers.forEach((ep) => {
   const ranked = [...pNames].sort(
     (a, b) => playerTotalsThisEpisode[b] - playerTotalsThisEpisode[a]
   )
-  const row: PlayerChartRow = { episode: `Rd. ${ep}` }
+  const row: PlayerChartRow = { episode: `Ep. ${ep}` }
   ranked.forEach((name, idx) => {
     row[name] = idx + 1
   })

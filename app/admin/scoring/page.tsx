@@ -142,7 +142,7 @@ const loadExistingScores = async (leagueType: string, episode: string) => {
     .from('episode_scores')
     .select('castaway_id, category, points, count, notes')
     .eq('league_type', leagueType)
-    .eq('episode_number', parseInt(episode))
+    .eq('episode_number', parseFloat(episode))
 
   const newRows: Record<number, RowState> = {}
   const newManual: Record<number, { points: string; notes: string }> = {}
@@ -178,7 +178,7 @@ const toggleEliminated = async (castaway: Castaway) => {
     }
   } else {
     if (!episodeNumber) {
-      setMessage('Enter an voting cycle number so we know when they were voted out.')
+      setMessage('Enter an episode number so we know when they were voted out.')
       return
     }
 
@@ -186,7 +186,7 @@ const toggleEliminated = async (castaway: Castaway) => {
     .from('castaways')
     .update({
       status: 'eliminated',
-      eliminated_episode: parseInt(episodeNumber),
+      eliminated_episode: parseFloat(episodeNumber),
     })
     .eq('id', castaway.id)
 
@@ -259,7 +259,7 @@ if (profile?.is_global_admin || profile?.is_league_admin) {
 
   const handleSave = async () => {
     if (!episodeNumber) {
-      setMessage('Enter a voting cycle number first.')
+      setMessage('Enter an episode number first.')
       return
     }
 
@@ -284,7 +284,7 @@ if (profile?.is_global_admin || profile?.is_league_admin) {
         if (count > 0) {
           entries.push({
   league_type: selectedLeagueType,
-season: selectedLeagueType === 'secrets-on-the-beach' ? 'Survivor 51' : selectedLeagueType === 'uncharted-turretory' ? 'The Traitors: New Blood' : selectedLeagueType === 'uncharted-turretory-demo' ? 'The Traitors: Season 4' : 'Demo Season',  episode_number: parseInt(episodeNumber),
+season: selectedLeagueType === 'secrets-on-the-beach' ? 'Survivor 51' : selectedLeagueType === 'uncharted-turretory' ? 'The Traitors: New Blood' : selectedLeagueType === 'uncharted-turretory-demo' ? 'The Traitors: Season 4' : 'Demo Season',  episode_number: parseFloat(episodeNumber),
   castaway_id: castaway.id,
   category: cat.key,
   points: cat.points,
@@ -298,7 +298,7 @@ season: selectedLeagueType === 'secrets-on-the-beach' ? 'Survivor 51' : selected
       if (manual && manual.points && parseInt(manual.points) !== 0) {
         entries.push({
           league_type: selectedLeagueType,
-          season: selectedLeagueType === 'secrets-on-the-beach' ? 'Survivor 51' : selectedLeagueType === 'uncharted-turretory' ? 'The Traitors: New Blood' : selectedLeagueType === 'uncharted-turretory-demo' ? 'The Traitors Season 4' : 'Demo Season',          episode_number: parseInt(episodeNumber),
+          season: selectedLeagueType === 'secrets-on-the-beach' ? 'Survivor 51' : selectedLeagueType === 'uncharted-turretory' ? 'The Traitors: New Blood' : selectedLeagueType === 'uncharted-turretory-demo' ? 'The Traitors Season 4' : 'Demo Season',          episode_number: parseFloat(episodeNumber),
           castaway_id: castaway.id,
           category: 'manual_adjustment',
           points: parseInt(manual.points),
@@ -314,11 +314,11 @@ season: selectedLeagueType === 'secrets-on-the-beach' ? 'Survivor 51' : selected
       return
     }
 
-    await supabase
-      .from('episode_scores')
-      .delete()
-      .eq('league_type', selectedLeagueType)
-      .eq('episode_number', parseInt(episodeNumber))
+await supabase
+  .from('episode_scores')
+  .delete()
+  .eq('league_type', selectedLeagueType)
+  .eq('episode_number', parseFloat(episodeNumber))
 
     const { error } = await supabase.from('episode_scores').insert(entries)
 
@@ -442,11 +442,12 @@ setMessage(`Saved ${entries.length} scoring events for Episode ${episodeNumber}!
 
         <div style={{ marginBottom: '24px' }}>
           <label style={{ color: '#a0a0b0', fontSize: '0.85rem', display: 'block', marginBottom: '6px' }}>
-            Voting Cycle
+            Episode
           </label>
           <input
   type="number"
   min="1"
+  step="0.5"
   value={episodeNumber}
   onChange={(e) => {
     const newEpisode = e.target.value
@@ -529,10 +530,10 @@ setMessage(`Saved ${entries.length} scoring events for Episode ${episodeNumber}!
             </thead>
             <tbody>
               {castaways.map((castaway) => {
-  const isEliminatedThisEpisode =
-    castaway.status === 'eliminated' &&
-    castaway.eliminated_episode !== null &&
-    parseInt(episodeNumber || '0') > castaway.eliminated_episode
+const isEliminatedThisEpisode =
+  castaway.status === 'eliminated' &&
+  castaway.eliminated_episode !== null &&
+  parseFloat(episodeNumber || '0') > castaway.eliminated_episode
 
   return (
     <tr key={castaway.id} style={{ borderBottom: '1px solid #2a2a3e', opacity: isEliminatedThisEpisode ? 0.3 : 1 }}>
