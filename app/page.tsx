@@ -297,7 +297,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     gap: '8px',
     width: '100%',
     textAlign: 'center',
-    backgroundColor: '#f0b429',
+    backgroundColor: 'rgb(245, 255, 156)',
     color: '#0a0a0f',
     padding: '10px',
     borderRadius: '6px',
@@ -372,14 +372,14 @@ This is your arena to compete with friends, family, and on-screen stars on beach
   className="league-card"
   style={{
     backgroundColor: '#1a1a2e',
-    border: '3px solid rgb(245, 255, 156)',
-    borderTop: '3px solid rgb(245, 255, 156)',
+    border: '3px solid #f0b429',
+    borderTop: '3px solid #f0b429',
     borderRadius: '12px',
     padding: '28px',
     flex: '0 1 350px'
   }}
 >
-  <h3 style={{ color: 'rgb(245, 255, 156)', fontSize: 'clamp(1.4rem, 6vw, 1.65rem)', marginBottom: '8px' }}>
+  <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.4rem, 6vw, 1.65rem)', marginBottom: '8px' }}>
     <span className="emoji-turret">🗡️</span> Uncharted Turretory
   </h3>
   <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
@@ -398,7 +398,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     gap: '8px',
     width: '100%',
     textAlign: 'center',
-    backgroundColor: 'rgb(245, 255, 156)',
+    backgroundColor: '#f0b429',
     color: '#0a0a0f',
     padding: '10px',
     borderRadius: '6px',
@@ -455,10 +455,10 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     width: '100%',
     textAlign: 'center',
     backgroundColor: 'transparent',
-    color: 'rgb(245, 255, 156)',
+    color: '#f0b429',
     padding: '10px',
     borderRadius: '6px',
-    border: '1px solid rgb(245, 255, 156)',
+    border: '1px solid #f0b429',
     fontWeight: 'bold',
     fontSize: '0.9rem',
     cursor: 'pointer',
@@ -538,8 +538,8 @@ This is your arena to compete with friends, family, and on-screen stars on beach
 {/* The Oval Offset */}
 <div style={{
   backgroundColor: '#1a1a2e',
-  border: '3px solid rgb(245, 255, 156)',
-  borderTop: '3px solid rgb(245, 255, 156)',
+  border: '3px solid #f0b429',
+  borderTop: '3px solid #f0b429',
   borderRadius: '12px',
   padding: '28px',
   flex: '0 1 350px'
