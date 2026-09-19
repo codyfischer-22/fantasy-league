@@ -292,7 +292,7 @@ setAllCastaways(allCastawayList ?? [])
        Who do you think will be eliminated next episode?
     </p>
     <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '6px' }}>
-       Whoever has the most correct predictions before the finale gets to split the +50 point bonus.
+       Whoever has the most correct predictions gets to split the +50 point bonus.
     </p>
     <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '14px' }}>
        You can still play after all roster players poof!

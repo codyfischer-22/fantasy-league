@@ -32,7 +32,8 @@ const rulesContent: Record<string, {
             points: '0',
             notes: ['Correctly predict which castaway leaves the show each week (via vote-off, medevac, etc.) to compete for bonus.',
             '1 vote per week (regardless of how many players are actually eliminated); cannot be changed after submission.',
-          'Prediction window closes at air (Wednesday 7 PM CT) and opens for next episode 24 hours later',]
+          'Prediction window closes at air (Wednesday 7 PM CT) and opens for next episode 24 hours later',
+        'In finale, castaways who makes final tribal cannot be considered eliminated.']
           },
           {
             event: 'Most Correct Predictions',
@@ -159,7 +160,8 @@ const rulesContent: Record<string, {
             points: '0',
             notes: ['Correctly predict which castle-goer leaves the show each week (via murder, banishment, etc.) to compete for bonus.',
             '1 vote per week (regardless of how many players are actually eliminated); cannot be changed after submission.',
-          'Prediction window closes at air (Thursday 7 PM CT) and opens for next episode 24 hours later.',]
+          'Prediction window closes at air (Thursday 7 PM CT) and opens for next episode 24 hours later.',
+          'In finale episode, anyone who survives fire of truth is not considered eliminated.']
           },
           {
             event: 'Most Correct Predictions',
