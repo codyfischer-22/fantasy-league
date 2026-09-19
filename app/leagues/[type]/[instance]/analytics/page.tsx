@@ -507,12 +507,20 @@ setPlayerChartData(playerRows)
         }}>
           ← Back to {leagueName ?? 'League'}
         </a>
-     <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-  <TrendingUp size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
-  <span style={{ color: '#f0b429' }}>
-    {(leagueName ?? 'League').replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '').trim()}
-  </span>{' '}
-  <span style={{ color: '#ffffff' }}>Analytics</span>
+<h1 style={{
+  fontSize: 'clamp(1.75rem, 6vw, 2.25rem)',
+  marginBottom: '4px',
+  display: 'flex',
+  alignItems: 'flex-start',
+  gap: '10px'
+}}>
+  <TrendingUp size={36} strokeWidth={2} color="#f0b429" style={{ flexShrink: 0, marginTop: '2px' }} />
+  <span style={{ flex: 1, minWidth: 0 }}>
+    <span style={{ color: '#f0b429' }}>
+      League
+    </span>{' '}
+    <span style={{ color: '#ffffff' }}>Analytics</span>
+  </span>
 </h1>
 <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '36px' }}>
   Paid members get exclusive access to league analytic charts to visual process along the way! Please note episodes with more than one elimination (e.g. tribal council) may be broken down into multiple entries (e.g. Ep. 4 and Ep. 4.5).

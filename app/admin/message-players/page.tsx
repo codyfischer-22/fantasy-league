@@ -212,7 +212,7 @@ const applyFilter = async (type: string) => {
     setSending(false)
 
     const parts: string[] = []
-    if (sendAsNotification) parts.push(`${notifSuccess} in-app notification(s) sent`)
+    if (sendAsNotification) parts.push(`${notifSuccess} Notification(s) Sent`)
     if (sendAsEmail) {
       parts.push(`${emailSuccess} Email(s) Sent${emailFailed > 0 ? `, ${emailFailed} Failed` : ''}${emailSkipped > 0 ? `, ${emailSkipped} Skipped (Not Opted In)` : ''}`)
     }
