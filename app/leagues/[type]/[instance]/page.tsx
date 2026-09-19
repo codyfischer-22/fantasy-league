@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase'
 import ConfirmModal from '@/components/ConfirmModal'
 import { Cog, Palette, Trophy, Calculator, TrendingUp, Users, ClipboardList, RefreshCw, Puzzle, Microscope, Lock} from 'lucide-react'
 import ResourcesModal from '@/components/ResourcesModal'
+import PredictionCard from '@/components/PredictionCard'
 
 type League = {
   id: number
@@ -181,7 +182,7 @@ const cap = leagueData.max_members ?? (hostProfile?.tier === 'teamprincipal' ? 1
     await supabase.from('notifications').insert(
       orderedMembers.map((m) => ({
         user_id: m.user_id,
-        message: `The draft for ${league.name} has started! That\u2019s right, silly season is upon us. Head to the draft room and make your pick.`,
+        message: `The draft for ${league.name} has started! That\u2019s right: silly season is upon us. Head to the draft room and make your pick.`,
         link: `/leagues/${type}/${instance}/draft-room`,
       }))
     )
@@ -197,24 +198,31 @@ const cap = leagueData.max_members ?? (hostProfile?.tier === 'teamprincipal' ? 1
   const { data: { session } } = await supabase.auth.getSession()
   const accessToken = session?.access_token
 
-  await fetch('/api/send-notification-email', {
+  const emailResponse = await fetch('/api/send-notification-email', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${accessToken}`,
     },
-        body: JSON.stringify({
-          recipients: profiles.map((p) => ({
-            email: p.email,
-            playerName: p.display_name || 'Player',
-          })),
-          subject: `${league.name} draft ${league.name} has started!`,
-          message: `That's right, silly season is upon us! The draft for ${league.name} has started. Head to the draft room and make your picks!`,
-          linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}/draft-room`,
-          linkText: 'Go to Draft Room →',
-        }),
-      })
-    }
+    body: JSON.stringify({
+      recipients: profiles.map((p) => ({
+        email: p.email,
+        playerName: p.display_name || 'Player',
+      })),
+      subject: `${league.name} draft ${league.name} has started!`,
+      message: `That's right, silly season is upon us! The draft for ${league.name} has started. Head to the draft room and make your picks!`,
+      linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}/draft-room`,
+      linkText: 'Go to Draft Room →',
+    }),
+  })
+
+  if (!emailResponse.ok) {
+    const errorData = await emailResponse.json().catch(() => null)
+    console.error('Draft start email failed:', emailResponse.status, errorData)
+  }
+} else {
+  console.log('No opted-in profiles found — skipping draft start email.')
+}
 
     router.push(`/leagues/${type}/${instance}/draft-room`)
   }
@@ -684,9 +692,15 @@ effectiveCap = league.max_members ?? (hostProfile?.tier === 'teamprincipal' ? 18
 >
                  {group.items.map((page) => {
 const Icon = page.icon
+const isDraftRoomTile = page.label === 'Draft Room'
+const shouldPulse = isDraftRoomTile && league.draft_status === 'in_progress'
+
 const content = (
   <>
-    <div style={{ marginBottom: '4px', display: 'flex', justifyContent: 'center' }}>
+    <div
+      className={shouldPulse ? 'draft-room-emoji' : ''}
+      style={{ marginBottom: '4px', display: 'flex', justifyContent: 'center' }}
+    >
       <Icon size={50} strokeWidth={1.5} color="rgb(245, 255, 156)" />
     </div>
     <div style={{ fontSize: '1rem', textAlign: 'center' }}>{page.label}</div>
@@ -701,8 +715,6 @@ const content = (
   flex: isMobileWidth ? '0 0 40%' : '0 0 auto',
   maxWidth: isMobileWidth ? '40%' : 'none',
 }
-  const isDraftRoomTile = page.label === 'Draft Room'
-  const shouldPulse = isDraftRoomTile && league.draft_status === 'in_progress'
 
   if (page.label === 'Draft Research') {
     return (
@@ -737,15 +749,18 @@ const content = (
             ))}
           </div>
 
-          <div style={{
-            border: 'none',
-            borderRadius: '10px',
-            padding: '0px',
-            maxWidth: '600px'
-          }}>
-            {isMember ? (
-              <div>
-                <p className="league-welcome-text" style={{
+
+        <div style={{
+    border: 'none',
+    borderRadius: '10px',
+    padding: '0px',
+    maxWidth: '800px'
+  }}>
+    {isMember ? (
+      <div>
+<PredictionCard leagueId={league.id} leagueType={type} instanceSlug={instance} />
+
+        <p className="league-welcome-text" style={{
                   color: '#f0b429',
                   fontSize: 'clamp(1.4rem, 5vw, 1.5rem)',
                   fontWeight: 'bold',

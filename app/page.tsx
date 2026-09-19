@@ -12,6 +12,7 @@ type MyLeague = {
   slug: string
   host_user_id?: string | null
   is_private?: boolean
+  draft_status?: string | null
 }
 
 export default function Home() {
@@ -64,7 +65,7 @@ useEffect(() => {
 
      const { data: leagues } = await supabase
   .from('leagues')
-  .select('name, league_type, slug, host_user_id, is_show_chat, is_private')
+  .select('name, league_type, slug, host_user_id, is_show_chat, is_private, draft_status')
   .in('id', leagueIds)
       const realLeagues = (leagues ?? []).filter((l) => !l.is_show_chat)
 
@@ -74,10 +75,12 @@ useEffect(() => {
   slug: l.slug,
   host_user_id: l.host_user_id,
   is_private: l.is_private,
+  draft_status: l.draft_status,
 }))
 
       setHostedLeagues(mapped.filter((l) => l.host_user_id === user.id))
       setJoinedLeagues(mapped.filter((l) => l.host_user_id !== user.id))
+      console.log('Mapped leagues:', mapped)
       setMyLeagueTypes(new Set(mapped.map((l) => l.type)))
       setLeaguesLoading(false)
     }
@@ -177,21 +180,26 @@ This is your arena to compete with friends, family, and on-screen stars on beach
   overflowX: 'auto',
   overflowY: 'visible',
   padding: '24px 12px',
-}}>   {[...hostedLeagues, ...joinedLeagues].map((league) => {
-          const isHosted = hostedLeagues.some((h) => h.slug === league.slug && h.type === league.type)
-          return (
-            <a
-              key={`${league.type}-${league.slug}`}
-              href={`/leagues/${league.type}/${league.slug}`}
-              className="league-circle"
-              style={{
-                '--circle-color': isHosted ? '#ca29ca' : '#f0b429',
-              } as React.CSSProperties}
-            >
-              <span className="league-circle-text">{league.name}</span>
-            </a> 
-          )   
-        })}
+}}>  
+{[...hostedLeagues, ...joinedLeagues].map((league) => {
+  const isHosted = hostedLeagues.some((h) => h.slug === league.slug && h.type === league.type)
+  const isLive = league.draft_status === 'in_progress'
+  return (
+    <a
+      key={`${league.type}-${league.slug}`}
+      href={`/leagues/${league.type}/${league.slug}`}
+      className={`league-circle ${isLive ? 'draft-pulse' : ''}`}
+      style={{
+        '--circle-color': isHosted ? '#ca29ca' : '#f0b429',
+        position: 'relative',
+      } as React.CSSProperties}
+    >
+      <span className={`league-circle-text ${isLive ? 'draft-room-emoji' : ''}`}>
+        {league.name}
+      </span>
+    </a>
+  )
+})}
    </div>
   <p style={{
     display: 'flex',
@@ -471,7 +479,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
 <button
   onClick={(e) => {
     e.stopPropagation()
-    router.push('/leagues/uncharted-turretory-demo/sample-league-turret')
+    router.push('/leagues/uncharted-turretory-demo/sample-league')
   }}
   style={{
     display: 'flex',

@@ -223,7 +223,7 @@ setNotes('')
           <span style={{ color: '#ffffff' }}>Custom Scoring</span>
         </h1>
         <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '28px', lineHeight: '1.6' }}>
-          Here's your chance to create up to 3 custom scoring categories for your league! Episodes with multiple elimination events (e.g. tribal council or round table) may be broken into multiple <strong>voting cycles;</strong> you are responsible for ensuring submissions match host voting cycles. Players can see these entries in the Scoring Log, alongside standard categories.
+          Here's your chance to create up to 3 custom scoring categories for your league! Episodes with multiple elimination events (e.g. tribal council or round table) may be broken into multiple may be broken down into multiple entries (e.g. Ep. 4 and Ep. 4.5). Players can see these entries in the Scoring Log, alongside standard categories.
         </p>
 
 
@@ -244,7 +244,7 @@ setNotes('')
             ))}
           </select>
 
-          <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '4px' }}> Voting Cycle Number</label>
+          <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '4px' }}> Episode Number</label>
           <input
             type="number"
             min="1"
@@ -354,7 +354,7 @@ setNotes('')
             }}>
               <div style={{ fontSize: '0.85rem' }}>
                 <strong style={{ color: '#f0b429' }}>{castawayNames[entry.castaway_id] ?? 'Unknown'}</strong>
-                {' | '}Voting Cycle {entry.episode_number} | {entry.category_label}: {entry.points > 0 ? '+' : ''}{entry.points}
+                {' | '}Episode {entry.episode_number} | {entry.category_label}: {entry.points > 0 ? '+' : ''}{entry.points}
                 {entry.notes && <div style={{ color: '#a0a0b0', marginTop: '2px' }}>{entry.notes}</div>}
               </div>
              <button

@@ -147,7 +147,7 @@ function CustomTooltip({ active, payload, label }: any) {
       <p style={{ color: '#f0b429', fontWeight: 'bold', marginBottom: '8px' }}>{label}</p>
       {sorted.map((entry: any) => (
         <p key={entry.name} style={{ color: entry.color, fontSize: '0.85rem', margin: '2px 0' }}>
-          {entry.name}: {entry.value} pts
+          {entry.name}: {entry.value} Pts.
         </p>
       ))}
     </div>
@@ -515,7 +515,7 @@ setPlayerChartData(playerRows)
   <span style={{ color: '#ffffff' }}>Analytics</span>
 </h1>
 <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '36px' }}>
-  Paid members get exclusive access to league analytic charts to visual process along the way! Please note episodes with more than one elimination (e.g. tribal council) may be broken down into multiple "voting cycles" below.
+  Paid members get exclusive access to league analytic charts to visual process along the way! Please note episodes with more than one elimination (e.g. tribal council) may be broken down into multiple entries (e.g. Ep. 4 and Ep. 4.5).
 </p>
 
         {!isPrivateLeague && (
@@ -619,7 +619,7 @@ setPlayerChartData(playerRows)
                  {searchedPlayer.best_pick && (
   <p style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
     Best Pick: <strong style={{ color: '#ffffff' }}>{searchedPlayer.best_pick.castaway_name}</strong>
-    {' '}(Round {searchedPlayer.best_pick.round}, {searchedPlayer.best_pick.points} pts vs {searchedPlayer.best_pick.expected_points} avg)
+    {' '}(Round {searchedPlayer.best_pick.round}, {searchedPlayer.best_pick.points} Pts. vs. {searchedPlayer.best_pick.expected_points} Avg.)
   </p>
 )}
                   </div>

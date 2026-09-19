@@ -13,8 +13,8 @@ type Pick = { user_id: string; castaway_id: number }
 const draftCompleteTitleByLeague: Record<string, string> = {
   'secrets-on-the-beach': '🔥 Tribes Are Set',
   'sotb-demo': '🔥 Tribes Are Set',
-  'uncharted-turretory': '🗡️ Rosters Are Set',
-  'uncharted-turretory-demo': '🗡️ Rosters Are Set',
+  'turret-mafia': '🗡️ Rosters Are Set',
+  'turret-mafia-demo': '🗡️ Rosters Are Set',
 }
 
 const draftInstructionsByLeague: Record<string, { countLine: string }> = {
@@ -24,7 +24,7 @@ const draftInstructionsByLeague: Record<string, { countLine: string }> = {
   'sotb-demo': {
     countLine: 'There are 21 castaways in Survivor 51 so any league with over 5 players will have castaways "cloned" as necessary (e.g. 10 players → 40 castaways needed → clone each castaway twice for 42 selectable options).',
   },
-  'uncharted-turretory': {
+  'turret-mafia': {
     countLine: 'There are 22 castle-goers in Uncharted Turretory so any league with over 5 players will have castle-goers "cloned" as necessary (e.g. 10 players → 40 castle-goers needed → clone each castle-goer twice for 44 selectable options).',
   },
 }
@@ -32,7 +32,7 @@ const draftInstructionsByLeague: Record<string, { countLine: string }> = {
 const castawayTermByLeague: Record<string, string> = {
   'secrets-on-the-beach': 'Castaway',
   'sotb-demo': 'Castaway',
-  'uncharted-turretory': 'Castle-Goer',
+  'turret-mafia': 'Castle-Goer',
 }
 
 export default function DraftRoomPage() {

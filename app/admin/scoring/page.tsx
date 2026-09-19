@@ -110,6 +110,74 @@ export default function ScoringAdminPage() {
   const [message, setMessage] = useState('')
   const [isGlobalAdmin, setIsGlobalAdmin] = useState(false)
   const [allowedLeagueTypes, setAllowedLeagueTypes] = useState<string[]>([])
+const [resolvingPredictions, setResolvingPredictions] = useState(false)
+const [predictionMessage, setPredictionMessage] = useState('')
+
+const handleResolvePredictions = async () => {
+  if (!episodeNumber) {
+    setPredictionMessage('Enter an episode/voting cycle number first.')
+    return
+  }
+
+  setResolvingPredictions(true)
+  setPredictionMessage('')
+
+  const targetEpisode = Math.floor(parseFloat(episodeNumber))
+
+  const eliminatedIds = castaways
+    .filter((c) => c.status === 'eliminated' && c.eliminated_episode !== null && Math.floor(c.eliminated_episode) === targetEpisode)
+    .map((c) => c.id)
+
+  if (eliminatedIds.length === 0) {
+    setPredictionMessage(`No one is marked eliminated for Episode ${targetEpisode} yet. Toggle their skull first.`)
+    setResolvingPredictions(false)
+    return
+  }
+
+  const { data: leagues } = await supabase
+    .from('leagues')
+    .select('id')
+    .eq('league_type', selectedLeagueType)
+
+  if (!leagues || leagues.length === 0) {
+    setPredictionMessage('No leagues found for this league type.')
+    setResolvingPredictions(false)
+    return
+  }
+
+  const leagueIds = leagues.map((l) => l.id)
+
+  const { data: predictionRows } = await supabase
+    .from('predictions')
+    .select('id, predicted_castaway_id')
+    .in('league_id', leagueIds)
+    .eq('episode_number', targetEpisode)
+
+  if (!predictionRows || predictionRows.length === 0) {
+    setPredictionMessage(`No predictions found for Episode ${targetEpisode}.`)
+    setResolvingPredictions(false)
+    return
+  }
+
+  let updatedCount = 0
+  for (const row of predictionRows) {
+    const isCorrect = eliminatedIds.includes(row.predicted_castaway_id)
+    const { error } = await supabase
+      .from('predictions')
+      .update({
+        is_correct: isCorrect,
+        actual_eliminated_castaway_id: eliminatedIds[0],
+      })
+      .eq('id', row.id)
+    if (!error) updatedCount++
+  }
+
+  setResolvingPredictions(false)
+  setPredictionMessage(
+    `Resolved ${updatedCount} prediction(s) for Episode ${targetEpisode}. Eliminated: ${castaways.filter((c) => eliminatedIds.includes(c.id)).map((c) => c.name).join(', ')}.`
+  )
+}
+
 
 useEffect(() => {
   if (!isGlobalAdmin && allowedLeagueTypes.length > 0 && !allowedLeagueTypes.includes(selectedLeagueType)) {
@@ -178,7 +246,7 @@ const toggleEliminated = async (castaway: Castaway) => {
     }
   } else {
     if (!episodeNumber) {
-      setMessage('Enter an episode number so we know when they were voted out.')
+      setMessage('Enter an episode number so we know when player was voted out.')
       return
     }
 
@@ -194,7 +262,7 @@ const toggleEliminated = async (castaway: Castaway) => {
     setMessage('Something went wrong marking them eliminated.')
   } else {
     await loadCastaways(selectedLeagueType)
-    setMessage('Castaway marked as voted out.')
+    setMessage('Marked as eliminated.')
   }
 }
 }
@@ -346,7 +414,7 @@ await supabase
   const { error: notifError } = await supabase.from('notifications').insert(
     uniqueUserIds.map((uid) => ({
       user_id: uid,
-      message: `It's official! Tallies for Episode ${episodeNumber} are live! Check your roster.`,
+      message: `It's official! Tallies for Episode ${episodeNumber} are live! Check Leaderboard and Analytics to see how you stack up. Then head to the chat to gloat or pout! 36 hours after episode airs, you can predict who will be eliminated next week; whoever has the most correct predictions wins 50 bonus points!`,
       link: `/leagues/${selectedLeagueType}/scoring-log`,
     }))
   )
@@ -377,8 +445,7 @@ await supabase
           playerName: p.display_name || 'Player',
         })),
         subject: `Episode ${episodeNumber} Scores Are Live!`,
-        message: `It's official! Tallies for Episode ${episodeNumber} are live! Check your roster to see how you did, and then head to the chat to discuss with friends.`,
-        linkUrl: `https://trekkonleagues.com/leagues/${selectedLeagueType}/scoring-log`,
+message: `It's official! Tallies for Episode ${episodeNumber} are live! Check Leaderboard and Analytics to see how you stack up. Then head to the chat to gloat or pout! 36 hours after episode airs, you can predict who will be eliminated next week; whoever has the most correct predictions wins 50 bonus points!`,        linkUrl: `https://trekkonleagues.com/leagues/${selectedLeagueType}/scoring-log`,
         linkText: 'View Scoring Log →',
       }),
     })
@@ -653,6 +720,39 @@ const isEliminatedThisEpisode =
         >
           {saving ? 'Saving...' : 'Save Episode Scores'}
         </button>
+
+        <div style={{
+  marginTop: '32px',
+  backgroundColor: '#1a1a2e',
+  border: '1px solid #2a2a3e',
+  borderRadius: '10px',
+  padding: '20px'
+}}>
+  <h3 style={{ color: '#f0b429', fontSize: '1.1rem', marginBottom: '10px' }}>
+    Weekly Predictions Mini Game
+  </h3>
+  <p style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '16px' }}>
+    Automatically scores every player's prediction for this episode using whoever's marked eliminated (💀) above.
+  </p>
+  <button
+    onClick={handleResolvePredictions}
+    disabled={resolvingPredictions}
+    style={{
+      backgroundColor: '#f0b429',
+      color: '#0a0a0f',
+      padding: '10px 20px',
+      borderRadius: '6px',
+      border: 'none',
+      fontWeight: 'bold',
+      cursor: resolvingPredictions ? 'not-allowed' : 'pointer'
+    }}
+  >
+    {resolvingPredictions ? 'Resolving...' : 'Resolve Predictions'}
+  </button>
+  {predictionMessage && (
+    <p style={{ color: '#f0b429', fontSize: '0.9rem', marginTop: '10px' }}>{predictionMessage}</p>
+  )}
+</div>
 
         {message && (
           <p style={{ color: '#f0b429', fontWeight: 'bold', marginTop: '16px' }}>

@@ -226,7 +226,7 @@ return {
                       fontWeight: 'bold',
                       fontSize: '1.1rem'
                     }}>
-                      {player.total > 0 ? '+' : ''}{player.total} pts
+                      {player.total > 0 ? '+' : ''}{player.total} Pts.
                     </span>
                     <span style={{ color: '#555570', fontSize: '0.8rem' }}>
                       {expanded.has(player.user_id) ? '▲' : '▼'}
@@ -265,7 +265,7 @@ return {
                 {isBench && <span style={{ fontSize: '0.7rem', marginLeft: '6px' }}>(Bench)</span>}
               </span>
               <span style={{ color: isBench ? '#555570' : (c.total < 0 ? '#ff6b6b' : '#f0b429'), fontWeight: 'bold' }}>
-                {c.total > 0 ? '+' : ''}{c.total} pts
+                {c.total > 0 ? '+' : ''}{c.total} Pts.
               </span>
             </div>
           )

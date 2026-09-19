@@ -25,6 +25,26 @@ const rulesContent: Record<string, {
     ],
     sections: [
       {
+        title: 'Weekly Elimination Mini-Game',
+        rows: [
+          {
+            event: 'Correct Weekly Prediction (League Page)',
+            points: '0',
+            notes: ['Correctly predict which castaway leaves the show each week (via vote-off, medevac, etc.) to compete for bonus.',
+            '1 vote per week (regardless of how many players are actually eliminated); cannot be changed after submission.',
+          'Prediction window closes at air (Wednesday 7 PM CT) and opens for next episode 24 hours later',]
+          },
+          {
+            event: 'Most Correct Predictions',
+            points: 'Split +50',
+            notes: ['Consistenty, game smarts, and luck pay off if you end the season with the most correct predictions.',
+              'If multiple player tie, they will split the +50 points (so just win it alone).',
+              'All\u2019s fair in love and Survivor! If you overtake the leader with this bonus, you are rightful winner!',
+            ],
+          },
+        ],
+      },
+      {
         title: 'Challenge Performances',
         rows: [
           {
@@ -132,6 +152,26 @@ const rulesContent: Record<string, {
     ],
     sections: [
       {
+        title: 'Weekly Elimination Mini-Game',
+        rows: [
+          {
+            event: 'Correct Weekly Prediction (League Page)',
+            points: '0',
+            notes: ['Correctly predict which castle-goer leaves the show each week (via murder, banishment, etc.) to compete for bonus.',
+            '1 vote per week (regardless of how many players are actually eliminated); cannot be changed after submission.',
+          'Prediction window closes at air (Thursday 7 PM CT) and opens for next episode 24 hours later.',]
+          },
+          {
+            event: 'Most Correct Predictions',
+            points: 'Split +50',
+            notes: ['Consistenty, game smarts, and luck pay off if you end the season with the most correct predictions.',
+              'If multiple player tie, they will split the +50 points (so just win it alone).',
+              'All\u2019s fair in love and The Traitors! If you overtake the leader with this bonus, you are rightful winner!',
+            ],
+          },
+        ],
+      },
+      {
         title: 'Mission Performances',
         rows: [
           { event: 'Group Earns $5,000',
@@ -200,8 +240,8 @@ const rulesContent: Record<string, {
           },
           {event: '4-Player Win', points: '+10' },
           {event: '3-Player Win', points: '+15' },
-          { event: '2-Player Win', points: '+20' },
-          { event: '1-Player Win', points: '+25' },
+          { event: '2-Player Win', points: '+30' },
+          { event: '1-Player Win', points: '+45' },
         ],
       },
     ],

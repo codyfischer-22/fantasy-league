@@ -86,10 +86,10 @@ const categoryLabelsByLeague: Record<string, Record<string, string>> = {
 }
 
 const scoringLogIntro: Record<string, string> = {
-  'secrets-on-the-beach': 'Check out the fully-transparent points breakdown for Secrets on the Beach! Please note episodes with more than one tribal council (e.g. premiere or finale) may be broken down into multiple "voting cycles" below.',
-  'sotb-demo': 'Check out the fully-transparent points breakdown for Secrets on the Beach! Please note episodes with more than one tribal council (e.g. premiere or finale) may be broken down into multiple "voting cycles" below.',
-  'uncharted-turretory': 'Check out the fully-transparent points breakdown for Uncharted Turretory! Please note episodes with more than one round table may be broken down into multiple "voting cycles" below.',
-  'uncharted-turretory-demo': 'Check out the fully-transparent points breakdown for Uncharted Turretory! Please note episodes with more than one round table may be broken down into multiple "voting cycles" below.',
+  'secrets-on-the-beach': 'Check out the fully-transparent points breakdown for Secrets on the Beach! Please note episodes with more than one tribal council (e.g. premiere or finale) may be broken down into multiple entries (e.g. Ep. 4 and Ep. 4.5).',
+  'sotb-demo': 'Check out the fully-transparent points breakdown for Secrets on the Beach! Please note episodes with more than one tribal council (e.g. premiere or finale) may be broken down into multiple multiple entries (e.g. Ep. 4 and Ep. 4.5).',
+  'uncharted-turretory': 'Check out the fully-transparent points breakdown for Uncharted Turretory! Please note episodes with more than one round table may be broken down into multiple multiple entries (e.g. Ep. 4 and Ep. 4.5).',
+  'uncharted-turretory-demo': 'Check out the fully-transparent points breakdown for Uncharted Turretory! Please note episodes with more than one round table may be broken down into multiple multiple entries (e.g. Ep. 4 and Ep. 4.5).',
 }
 
 type ScoreEntry = {
@@ -327,7 +327,7 @@ if ((scores && scores.length > 0) || (customEntries && customEntries.length > 0)
 </p>
 
         {episodes.length === 0 ? (
-          <p style={{ color: '#555570', fontSize: 'clamp(.7rem, 5vw, .85rem)' }}>No voting cycle scores have been submitted yet.</p>
+          <p style={{ color: '#555570', fontSize: 'clamp(.7rem, 5vw, .85rem)' }}>No episode scores have been submitted yet.</p>
         ) : (
           episodes.map((ep) => {
             const castawayTotals: Record<string, number> = {}
@@ -343,7 +343,7 @@ if ((scores && scores.length > 0) || (customEntries && customEntries.length > 0)
             return (
               <div key={ep.episode_number} style={{ marginBottom: '40px' }}>
                 <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '12px' }}>
-                  Voting Cycle {ep.episode_number}
+                  Episode {ep.episode_number}
                 </h2>
                 <div style={{
                   backgroundColor: '#1a1a2e',
