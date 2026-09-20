@@ -262,7 +262,7 @@ backgroundPosition: 'center',
     flex: '0 1 350px'
   }}
 >
-  <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.4rem, 6vw, 1.65rem)', marginBottom: '8px' }}>
+  <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.3rem, 6vw, 1.65rem)', marginBottom: '8px' }}>
     <span className="emoji-sotb">🏝️</span> Secrets on the Beach
   </h3>
   <p style={{ color: '#ffffff', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
@@ -392,7 +392,7 @@ backgroundPosition: 'center',
     flex: '0 1 350px'
   }}
 >
-  <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.4rem, 6vw, 1.65rem)', marginBottom: '8px' }}>
+  <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.3rem, 6vw, 1.65rem)', marginBottom: '8px' }}>
     <span className="emoji-turret">🗡️</span> Uncharted Turretory
   </h3>
   <p style={{ color: '#ffffff', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
