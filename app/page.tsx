@@ -248,11 +248,13 @@ This is your arena to compete with friends, family, and on-screen stars on beach
   marginBottom: '16px'
 }}>
 
-          {/* Secrets on the Beach */}
+            {/* Secrets on the Beach */}
 <div
   className="league-card"
   style={{
-    backgroundColor: '#1a1a2e',
+    backgroundImage: `linear-gradient(rgba(26,26,46,.5), rgba(26,26,46,0.5)), url('/textures/sand.jpg')`,
+backgroundSize: 'cover',
+backgroundPosition: 'center',
     border: '3px solid #f0b429',
     borderTop: '3px solid #f0b429',
     borderRadius: '12px',
@@ -260,10 +262,10 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     flex: '0 1 350px'
   }}
 >
-  <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.4rem, 6vw, 1.65rem)', marginBottom: '8px' }}>
+  <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.5rem, 6vw, 1.65rem)', marginBottom: '8px' }}>
     <span className="emoji-sotb">🏝️</span> Secrets on the Beach
   </h3>
-  <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
+  <p style={{ color: '#ffffff', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
     Set sail for this island adventure, going 25+ years strong, by drafting your tribe, winning challenges, and surviving the vote.
   </p>
 
@@ -283,14 +285,14 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     color: '#0a0a0f',
     padding: '10px',
     borderRadius: '6px',
-    border: 'none',
+    border: '1px solid #0a0a0f',
     fontWeight: 'bold',
     fontSize: '0.9rem',
     cursor: 'pointer',
     marginBottom: '10px'
   }}
 >
-  <Earth size={16} strokeWidth={2} /> View Public League →
+  <Earth size={18} strokeWidth={2} /> View Public League →
 </button>
 
 <button
@@ -309,14 +311,14 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     color: '#0a0a0f',
     padding: '10px',
     borderRadius: '6px',
-    border: 'none',
+    border: '1px solid #0a0a0f',
     fontWeight: 'bold',
     fontSize: '0.9rem',
     cursor: 'pointer',
     marginBottom: '10px'
   }}
 >
-  <Lock size={16} strokeWidth={2} /> My Private Leagues →
+  <Lock size={18} strokeWidth={2} /> My Private Leagues →
 </button>
 
 <button
@@ -328,25 +330,25 @@ This is your arena to compete with friends, family, and on-screen stars on beach
       setShowUpgradeModal(true)
     }
   }}
-  style={{
-    display: 'flex',
+ style={{
+  display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     gap: '8px',
     width: '100%',
     textAlign: 'center',
-    backgroundColor: 'transparent',
-    color: '#f0b429',
+    backgroundColor: '#ffffff',
+    color: '#0a0a0f',
     padding: '10px',
     borderRadius: '6px',
-    border: '1px solid #f0b429',
+    border: '1px solid #0a0a0f',
     fontWeight: 'bold',
     fontSize: '0.9rem',
     cursor: 'pointer',
     marginBottom: '10px'
   }}
 >
-  <Hammer size={16} strokeWidth={2} /> Host Private League →
+  <Hammer size={18} strokeWidth={2} /> Host Private League →
 </button>
 
 <button
@@ -365,21 +367,24 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     color: '#a0a0b0',
     padding: '10px',
     borderRadius: '6px',
-    border: '1px solid #2a2a3e',
+    border: '1px solid #a0a0b0',
     fontWeight: 'bold',
     fontSize: '0.9rem',
     cursor: 'pointer'
   }}
 >
-  <TestTubeDiagonal size={16} strokeWidth={2} /> Explore Demo League →
+  <TestTubeDiagonal size={18} strokeWidth={2} /> Explore Demo League →
 </button>
+
 </div>
 
         {/* Uncharted Turretory */}
 <div
   className="league-card"
   style={{
-    backgroundColor: '#1a1a2e',
+    backgroundImage: `linear-gradient(rgba(26,26,46,.5), rgba(26,26,46,0.75)), url('/textures/traitors.jpg')`,
+backgroundSize: 'cover',
+backgroundPosition: 'center',
     border: '3px solid #f0b429',
     borderTop: '3px solid #f0b429',
     borderRadius: '12px',
@@ -387,10 +392,10 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     flex: '0 1 350px'
   }}
 >
-  <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.4rem, 6vw, 1.65rem)', marginBottom: '8px' }}>
+  <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.5rem, 6vw, 1.65rem)', marginBottom: '8px' }}>
     <span className="emoji-turret">🗡️</span> Uncharted Turretory
   </h3>
-  <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
+  <p style={{ color: '#ffffff', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
     Scale the turret steps of Alan's Castle and decide who you'll back in this game of murder, banishment, and deception.
   </p>
 
@@ -410,7 +415,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     color: '#0a0a0f',
     padding: '10px',
     borderRadius: '6px',
-    border: 'none',
+    border: '1px solid #0a0a0f',
     fontWeight: 'bold',
     fontSize: '0.9rem',
     cursor: 'pointer',
@@ -436,7 +441,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     color: '#0a0a0f',
     padding: '10px',
     borderRadius: '6px',
-    border: 'none',
+    border: '1px solid #0a0a0f',
     fontWeight: 'bold',
     fontSize: '0.9rem',
     cursor: 'pointer',
@@ -456,17 +461,17 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     }
   }}
   style={{
-    display: 'flex',
+  display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     gap: '8px',
     width: '100%',
     textAlign: 'center',
-    backgroundColor: 'transparent',
-    color: '#f0b429',
+    backgroundColor: '#ffffff',
+    color: '#0a0a0f',
     padding: '10px',
     borderRadius: '6px',
-    border: '1px solid #f0b429',
+    border: '1px solid #0a0a0f',
     fontWeight: 'bold',
     fontSize: '0.9rem',
     cursor: 'pointer',
@@ -492,7 +497,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     color: '#a0a0b0',
     padding: '10px',
     borderRadius: '6px',
-    border: '1px solid #2a2a3e',
+    border: '1px solid #a0a0b0',
     fontWeight: 'bold',
     fontSize: '0.9rem',
     cursor: 'pointer'
@@ -511,16 +516,18 @@ This is your arena to compete with friends, family, and on-screen stars on beach
 }}>
 {/* Paddock Politicks */}
 <div style={{
-  backgroundColor: '#1a1a2e',
-  border: '3px solid #f0b429',
-  borderTop: '3px solid #f0b429',
-  borderRadius: '12px',
-  padding: '28px',
+  backgroundImage: `linear-gradient(rgba(26,26,46,.5), rgba(26,26,46,0.75)), url('/textures/paddock.jpg')`,
+backgroundSize: 'cover',
+backgroundPosition: 'center',
+    border: '3px solid #f0b429',
+    borderTop: '3px solid #f0b429',
+    borderRadius: '12px',
+    padding: '28px',
   flex: '0 1 350px'
 }}>
   <h3 style={{
     color: '#f0b429',
-    fontSize: 'clamp(1.4rem, 6vw, 1.7rem)',
+    fontSize: 'clamp(1.5rem, 6vw, 1.7rem)',
     marginBottom: '8px',
     display: 'flex',
     alignItems: 'center',
@@ -528,15 +535,20 @@ This is your arena to compete with friends, family, and on-screen stars on beach
   }}>
     <span className="emoji-f1-home">🏎️</span> <span className="text-f1-shift-home">Paddock Politicks</span>
   </h3>
-  <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
+  <p style={{ color: '#ffffff', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
     Coming in 2027, travel the globe with world-class drivers up and down the grid over 24 weeks of high octane racing.
   </p>
 
   <button onClick={() => setShowComingSoon(true)} style={{
-  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-  width: '100%', textAlign: 'center',
-  backgroundColor: '#2a2a3e', color: '#a0a0b0', padding: '10px',
-  borderRadius: '6px', border: '1px solid #3a3a5e', fontWeight: 'bold',
+  display: 'flex',
+  alignItems: 'center', 
+  justifyContent: 'center',
+   gap: '8px',
+  width: '100%', 
+  textAlign: 'center',
+  backgroundColor: 'transparent',
+   color: '#a0a0b0', padding: '10px',
+  borderRadius: '6px', border: '1px solid #a0a0b0', fontWeight: 'bold',
   fontSize: '0.9rem', cursor: 'pointer', marginBottom: '10px'
 }}>
   <Hourglass size={16} strokeWidth={2} /> On Formation Lap →
@@ -545,25 +557,36 @@ This is your arena to compete with friends, family, and on-screen stars on beach
 
 {/* The Oval Offset */}
 <div style={{
-  backgroundColor: '#1a1a2e',
-  border: '3px solid #f0b429',
-  borderTop: '3px solid #f0b429',
-  borderRadius: '12px',
-  padding: '28px',
+   backgroundImage: `linear-gradient(rgba(26,26,46,.5), rgba(26,26,46,0.75)), url('/textures/oval.jpg')`,
+backgroundSize: 'cover',
+backgroundPosition: 'center',
+    border: '3px solid #f0b429',
+    borderTop: '3px solid #f0b429',
+    borderRadius: '12px',
+    padding: '28px',
   flex: '0 1 350px'
 }}>
-  <h3 style={{ color: 'rgb(245, 255, 156)', fontSize: 'clamp(1.4rem, 6vw, 1.7rem)', marginTop: '-5px', marginBottom: '8px' }}>
-    <span className="emoji-drive">🚗</span> The Oval Offset
-  </h3>
-  <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
+  <h3 style={{
+  color: '#f0b429',
+  fontSize: 'clamp(1.4rem, 6vw, 1.7rem)',
+  marginBottom: '10.5px',
+  marginTop: '4px',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '8px'
+}}>
+  <img src="/icons/stockcar.png" alt="The Oval Offset" style={{ height: '20px', width: 'auto', objectFit: 'contain', marginTop: '4px', flexShrink: 0 }} />
+  <span>The Oval Offset</span>
+</h3>
+  <p style={{ color: '#ffffff', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
     Coming in 2027, climb through the cargo net for 36 weeks of American Thunder and race to the checkered flag.
   </p>
 
   <button onClick={() => setShowComingSoon(true)} style={{
   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
   width: '100%', textAlign: 'center',
-  backgroundColor: '#2a2a3e', color: '#a0a0b0', padding: '10px',
-  borderRadius: '6px', border: '1px solid #3a3a5e', fontWeight: 'bold',
+  backgroundColor: 'transparent', color: '#a0a0b0', padding: '10px',
+  borderRadius: '6px', border: '1px solid #a0a0b0', fontWeight: 'bold',
   fontSize: '0.9rem', cursor: 'pointer', marginBottom: '10px'
 }}>
   <Hourglass size={16} strokeWidth={2} /> Stuck in Pit Lane →
@@ -576,18 +599,20 @@ This is your arena to compete with friends, family, and on-screen stars on beach
   className="league-card"
   onClick={() => router.push('/contact')}
   style={{
-    backgroundColor: '#1a1a2e',
-    border: '3px solid #ffffff',
-    borderTop: '3px solid #ffffff',
+    backgroundImage: `linear-gradient(rgba(26,26,46,.5), rgba(26,26,46,0.95)), url('/textures/suggest.jpg')`,
+backgroundSize: 'cover',
+backgroundPosition: 'center',
+    border: '3px solid #f0b429',
+    borderTop: '3px solid #f0b429',
     borderRadius: '12px',
     padding: '28px',
-    flex: '0 1 350px'
+  flex: '0 1 350px'
   }}
   >
-            <h3 style={{ color: '#ffffff', fontSize: 'clamp(1.4rem, 6vw, 1.7rem)', marginBottom: '11px', marginTop: '0px' }}>
+            <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.5rem, 6vw, 1.7rem)', marginBottom: '11px', marginTop: '0px' }}>
   <span className="emoji-suggest">💭</span> Suggest a Fandom
 </h3>
-            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '21.5px' }}>
+            <p style={{ color: '#ffffff', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '21.5px' }}>
 Got an idea for a league we should build next? Send us your concept and help shape the future of Trekkon Fantasy Leagues. 
 </p>
   <button
@@ -606,7 +631,7 @@ Got an idea for a league we should build next? Send us your concept and help sha
     color: '#0a0a0f',
     padding: '10px',
     borderRadius: '6px',
-    border: 'none',
+    border: '1px solid #0a0a0f',
     fontWeight: 'bold',
     fontSize: '0.9rem',
     cursor: 'pointer'

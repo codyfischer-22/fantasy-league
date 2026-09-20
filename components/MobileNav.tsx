@@ -381,7 +381,7 @@ export default function MobileNav() {
 )}
 {user && (
   <a href="/leagues/all/draft" style={hamburgerLinkStyle}>
-    <ClipboardList size={22} strokeWidth={1} /> Deadlines
+    <ClipboardList size={22} strokeWidth={1} /> Timelines
   </a>
 )}
 
