@@ -15,6 +15,19 @@ type MyLeague = {
   draft_status?: string | null
 }
 
+const leagueCircleBackgrounds: Record<string, React.CSSProperties> = {
+  'secrets-on-the-beach': {
+    backgroundImage: `url('/textures/torches.jpg')`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+  },
+  'uncharted-turretory': {
+    backgroundImage: `url('/textures/cloaks.jpg')`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+  },
+}
+
 export default function Home() {
   const { user, loading } = useAuth()
   const router = useRouter()
@@ -192,6 +205,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
       style={{
         '--circle-color': isHosted ? '#ca29ca' : '#f0b429',
         position: 'relative',
+        ...(leagueCircleBackgrounds[league.type] ?? {}),
       } as React.CSSProperties}
     >
       <span className={`league-circle-text ${isLive ? 'draft-room-emoji' : ''}`}>
@@ -566,17 +580,15 @@ backgroundPosition: 'center',
     padding: '28px',
   flex: '0 1 350px'
 }}>
-  <h3 style={{
+   <h3 style={{
   color: '#f0b429',
   fontSize: 'clamp(1.4rem, 6vw, 1.7rem)',
-  marginBottom: '10.5px',
-  marginTop: '4px',
+  marginBottom: '8px',
   display: 'flex',
   alignItems: 'center',
   gap: '8px'
 }}>
-  <img src="/icons/stockcar.png" alt="The Oval Offset" style={{ height: '20px', width: 'auto', objectFit: 'contain', marginTop: '4px', flexShrink: 0 }} />
-  <span>The Oval Offset</span>
+  <span>🚗</span> <span>The Oval Offset</span>
 </h3>
   <p style={{ color: '#ffffff', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
     Coming in 2027, climb through the cargo net for 36 weeks of American Thunder and race to the checkered flag.
