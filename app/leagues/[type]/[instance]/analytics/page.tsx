@@ -526,7 +526,6 @@ setPlayerChartData(playerRows)
   Paid members get exclusive access to league analytic charts to visual process along the way! Please note episodes with more than one elimination (e.g. tribal council) may be broken down into multiple entries (e.g. Ep. 4 and Ep. 4.5).
 </p>
 
-        {!isPrivateLeague && (
           <>
             <h2 style={{ color: '#f0b429', fontSize: '1.5rem', marginBottom: '4px', textAlign: 'left' }}>
               Draft Value Report
@@ -640,7 +639,6 @@ setPlayerChartData(playerRows)
               </>
             )}
           </>
-        )}
 
         <h2 style={{ color: '#f0b429', fontSize: '1.5rem', marginBottom: '2px', textAlign: 'left' }}>
           Player Standings

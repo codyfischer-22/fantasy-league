@@ -83,6 +83,7 @@ const [leagues, setLeagues] = useState<{ id: number; name: string; league_type: 
   const [mentionCandidates, setMentionCandidates] = useState<{ user_id: string; display_name: string }[]>([]);
   const [leagueMemberList, setLeagueMemberList] = useState<{ user_id: string; display_name: string }[]>([]);
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [isNearTop, setIsNearTop] = useState(false);
   const [reportingMessageId, setReportingMessageId] = useState<string | null>(null);
 const [reportReason, setReportReason] = useState('');
@@ -90,6 +91,13 @@ const [reportSubmitting, setReportSubmitting] = useState(false);
 const [selectedIsShowChat, setSelectedIsShowChat] = useState<boolean>(false);
 const [showDigestModal, setShowDigestModal] = useState(false);
 const [digestOptInSaving, setDigestOptInSaving] = useState(false);
+
+useEffect(() => {
+  const el = textareaRef.current;
+  if (!el) return;
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}, [newMessage]);
 
 useEffect(() => {
   async function checkDigestPreference() {
@@ -459,7 +467,7 @@ useEffect(() => {
     return;
   }
   messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-}, [messages]);
+}, [messages, reactions]);
 
 async function loadOlderMessages() {
   if (!selectedLeagueId || messages.length === 0 || loadingOlder) return;
@@ -888,7 +896,8 @@ async function toggleReaction(messageId: string, emoji: string) {
                 >
                   😎
                 </button>
-              <input
+             <textarea
+  ref={textareaRef}
   value={newMessage}
   onChange={(e) => {
     const value = e.target.value;
@@ -908,9 +917,13 @@ async function toggleReaction(messageId: string, emoji: string) {
     }
   }}
   onKeyDown={(e) => {
-    if (e.key === 'Enter' && !showMentionPicker) handleSend();
+    if (e.key === 'Enter' && !e.shiftKey && !showMentionPicker) {
+      e.preventDefault();
+      handleSend();
+    }
   }}
   placeholder="Type a message..."
+  rows={1}
   style={{
     flex: '0 1 200px',
     minWidth: 0,
@@ -918,8 +931,12 @@ async function toggleReaction(messageId: string, emoji: string) {
     color: '#e0e0e8',
     border: '1px solid #333350',
     borderRadius: '6px',
-    padding: '4px 8px',
-    fontSize: '0.9rem'
+    padding: '6px 8px',
+    fontSize: '0.9rem',
+    fontFamily: 'inherit',
+    resize: 'none',
+    overflowY: 'auto',
+    lineHeight: '1.3'
   }}
 />
 {showMentionPicker && mentionCandidates.length > 0 && (

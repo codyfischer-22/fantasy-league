@@ -13,6 +13,7 @@ type PlayerStanding = {
   user_id: string
   display_name: string
   total: number
+  bonusPoints: number
   castaways: CastawayScore[]
 }
 
@@ -73,6 +74,16 @@ export default function LeaderboardPage() {
         .from('custom_scoring_entries')
         .select('castaway_id, points')
         .eq('league_id', league.id)
+        const { data: bonusRows } = await supabase
+  .from('player_bonus_points')
+  .select('user_id, points')
+  .eq('league_id', league.id)
+
+const bonusByUser = new Map<string, number>()
+;(bonusRows ?? []).forEach((b) => {
+  const current = bonusByUser.get(b.user_id) ?? 0
+  bonusByUser.set(b.user_id, current + Number(b.points))
+})
       const castawayTotals = new Map<number, number>()
       ;(scores ?? []).forEach((s) => {
         const current = castawayTotals.get(s.castaway_id) ?? 0
@@ -83,21 +94,23 @@ export default function LeaderboardPage() {
         castawayTotals.set(c.castaway_id, current + c.points)
       })
       const playerStandings: PlayerStanding[] = (profiles ?? []).map((profile) => {
-        const userPicks = (picks ?? []).filter((p) => p.user_id === profile.user_id)
-        const castawayBreakdown: CastawayScore[] = userPicks.map((p) => ({
-          castaway_id: p.castaway_id,
-          castaway_name: castawayNameMap.get(p.castaway_id) ?? 'Unknown',
-          total: castawayTotals.get(p.castaway_id) ?? 0,
-        }))
-const top3 = [...castawayBreakdown].sort((a, b) => b.total - a.total).slice(0, 3)
-const playerTotal = top3.reduce((sum, c) => sum + c.total, 0)        
-return {
-          user_id: profile.user_id,
-          display_name: profile.display_name || 'Unnamed Player',
-          total: playerTotal,
-          castaways: castawayBreakdown,
-        }
-      })
+  const userPicks = (picks ?? []).filter((p) => p.user_id === profile.user_id)
+  const castawayBreakdown: CastawayScore[] = userPicks.map((p) => ({
+    castaway_id: p.castaway_id,
+    castaway_name: castawayNameMap.get(p.castaway_id) ?? 'Unknown',
+    total: castawayTotals.get(p.castaway_id) ?? 0,
+  }))
+  const top3 = [...castawayBreakdown].sort((a, b) => b.total - a.total).slice(0, 3)
+  const bonusPoints = bonusByUser.get(profile.user_id) ?? 0
+  const playerTotal = top3.reduce((sum, c) => sum + c.total, 0) + bonusPoints
+  return {
+    user_id: profile.user_id,
+    display_name: profile.display_name || 'Unnamed Player',
+    total: playerTotal,
+    bonusPoints,
+    castaways: castawayBreakdown,
+  }
+})
       playerStandings.sort((a, b) => b.total - a.total)
       setStandings(playerStandings)
       setPageLoading(false)
@@ -233,10 +246,7 @@ return {
                     </span>
                   </div>
                 </button>
-
-
-
-               {expanded.has(player.user_id) && (
+              {expanded.has(player.user_id) && (
   <div style={{
     padding: '0 20px 16px 20px',
     borderTop: '1px solid #2a2a3e'
@@ -271,6 +281,21 @@ return {
           )
         })
       })()
+    )}
+
+    {player.bonusPoints > 0 && (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        padding: '8px 0',
+        fontSize: '0.85rem',
+        color: '#f0b429',
+        borderTop: '1px dashed #2a2a3e',
+        marginTop: '4px'
+      }}>
+        <span>Prediction Bonus</span>
+        <span style={{ fontWeight: 'bold' }}>+{player.bonusPoints} Pts.</span>
+      </div>
     )}
   </div>
 )}

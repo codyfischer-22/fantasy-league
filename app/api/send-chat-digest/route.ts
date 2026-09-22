@@ -52,7 +52,7 @@ export async function GET(req: Request) {
 
     const summaryLines = (leagues ?? [])
       .filter((l) => messagesByLeague[l.id])
-      .map((l) => `${l.name}: ${messagesByLeague[l.id]} New Messages${messagesByLeague[l.id] === 1 ? '' : 's'}`)
+      .map((l) => `${l.name}: ${messagesByLeague[l.id]} New Message${messagesByLeague[l.id] === 1 ? '' : 's'}`)
       .join('\n')
 
     if (!summaryLines) continue
