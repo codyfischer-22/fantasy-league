@@ -48,10 +48,7 @@ export default function ExtrasPage() {
           <div style={{
             backgroundColor: '#1a1a2e',
             border: '1px solid #2a2a3e',
-            borderRadius: '10px',
-            padding: '20px',
-  boxSizing: 'border-box',
-  overflow: 'hidden'
+            borderRadius: '10px'
           }}>
         <iframe
   style={{ borderRadius: '12px' }}
