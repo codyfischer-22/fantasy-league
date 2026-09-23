@@ -55,9 +55,9 @@ export default function ExtrasPage() {
           }}>
         <iframe
   style={{ borderRadius: '12px' }}
-  src="https://open.spotify.com/embed/show/7HR9XTBY9tbnZWciUOM0NZ?utm_source=generator"
+  src="https://open.spotify.com/embed/episode/2TySJRYa217E2uAtfky4Z8?utm_source=generator&si=cc688b0065e54193"
   width="100%"
-  height="232"
+  height="152"
   frameBorder="0"
   allowFullScreen
   allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
