@@ -299,29 +299,26 @@ const leaderboardLink = `/leagues/${league.league_type}/${league.slug}/predictio
       }))
     )
 
-    // Email — skip entirely for the sandbox league to avoid emailing real test/admin accounts
-    if (selectedLeagueType !== 'sandbox') {
-      const optedInProfiles = (profiles ?? []).filter((p) => p.email_opt_in)
-      if (optedInProfiles.length > 0) {
-        await fetch('/api/send-notification-email', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify({
-            recipients: optedInProfiles.map((p) => ({
-              email: p.email,
-              playerName: p.display_name || 'Player',
-            })),
-            subject: `Weekly Prediction Bonus Awarded — ${league.name}`,
-            message: announcementMessage,
-            linkUrl: `https://trekkonleagues.com${leaderboardLink}`,
-            linkText: 'View Prediction Leaderboard →',
-          }),
-        })
-      }
-    }
+    const optedInProfiles = (profiles ?? []).filter((p) => p.email_opt_in)
+  if (optedInProfiles.length > 0) {
+    await fetch('/api/send-notification-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({
+        recipients: optedInProfiles.map((p) => ({
+          email: p.email,
+          playerName: p.display_name || 'Player',
+        })),
+        subject: `Weekly Prediction Bonus | ${league.name}`,
+        message: announcementMessage,
+        linkUrl: `https://trekkonleagues.com${leaderboardLink}`,
+        linkText: 'View Prediction Leaderboard →',
+      }),
+    })
+  }
 
     awardedCount++
   }
@@ -427,7 +424,7 @@ const loadCastaways = async (leagueType: string) => {
     .select('id, name, status, eliminated_episode')
     .eq('league_type', leagueType)
     .order('id')
-    
+
   setCastaways(castawayList ?? [])
 }
 

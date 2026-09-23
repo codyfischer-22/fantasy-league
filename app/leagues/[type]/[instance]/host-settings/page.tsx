@@ -186,7 +186,6 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
   const handleCancelLeague = async () => {
   if (!user || !league) return
 
-
   const { data: allMembers } = await supabase
     .from('league_members')
     .select('user_id')
@@ -202,7 +201,7 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
       }))
     )
 
- const memberIds = allMembers.map((m) => m.user_id)
+    const memberIds = allMembers.map((m) => m.user_id)
     const { data: profiles } = await supabase
       .from('profiles')
       .select('email, display_name, email_opt_in')
@@ -210,15 +209,15 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
       .eq('email_opt_in', true)
 
     if (profiles && profiles.length > 0) {
-        const { data: { session } } = await supabase.auth.getSession()
-  const accessToken = session?.access_token
+      const { data: { session } } = await supabase.auth.getSession()
+      const accessToken = session?.access_token
 
-  await fetch('/api/send-notification-email', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${accessToken}`,
-    },
+      await fetch('/api/send-notification-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
         body: JSON.stringify({
           recipients: profiles.map((p) => ({
             email: p.email,
@@ -231,13 +230,13 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
         }),
       })
     }
-
   }
 
-  await supabase.from('draft_picks').delete().eq('league_id', league.id)
-  await supabase.from('draft_rankings').delete().eq('league_id', league.id)
-  await supabase.from('league_members').delete().eq('league_id', league.id)
-  const { error } = await supabase.from('leagues').delete().eq('id', league.id)
+  const { error } = await supabase
+    .from('leagues')
+    .update({ is_archived: true })
+    .eq('id', league.id)
+
   if (error) {
     alert('Something went wrong canceling this league. Please try again.')
   } else {
@@ -503,7 +502,7 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
 <ConfirmModal
   open={showScrapConfirm}
   title="Scrap League?"
-  message="Are you sure you want to permanently cancel/delete this league? This cannot be undone and data will not be archived."
+  message="Are you sure you want to permanently cancel/delete this league? This cannot be undone and data may not be archived."
   confirmText="Scrap League"
   danger
   onConfirm={() => { setShowScrapConfirm(false); handleCancelLeague() }}
