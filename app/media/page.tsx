@@ -51,11 +51,18 @@ export default function ExtrasPage() {
             borderRadius: '10px',
             padding: '20px'
           }}>
-            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6' }}>
-              Our podcast is in the works. Check back soon for episode drops!
-            </p>
-          </div>
-        </div>
+        <iframe
+  style={{ borderRadius: '12px' }}
+  src="https://open.spotify.com/embed/show/7HR9XTBY9tbnZWciUOM0NZ?utm_source=generator"
+  width="100%"
+  height="152"
+  frameBorder="0"
+  allowFullScreen
+  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+  loading="lazy"
+></iframe>
+  </div>
+</div>
 
         {/* Blog Section */}
         <div style={{ marginBottom: '0px' }}>
