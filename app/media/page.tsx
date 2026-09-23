@@ -49,13 +49,15 @@ export default function ExtrasPage() {
             backgroundColor: '#1a1a2e',
             border: '1px solid #2a2a3e',
             borderRadius: '10px',
-            padding: '20px'
+            padding: '20px',
+  boxSizing: 'border-box',
+  overflow: 'hidden'
           }}>
         <iframe
   style={{ borderRadius: '12px' }}
   src="https://open.spotify.com/embed/show/7HR9XTBY9tbnZWciUOM0NZ?utm_source=generator"
   width="100%"
-  height="152"
+  height="352"
   frameBorder="0"
   allowFullScreen
   allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
