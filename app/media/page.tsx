@@ -42,20 +42,19 @@ export default function ExtrasPage() {
         {/* Podcast Section */}
 <div style={{ marginBottom: '32px' }}>
   <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-    <Radio size={22} strokeWidth={2} color="#f0b429" />
+    <MicSignal size={22} strokeWidth={2} color="#f0b429" />
     Talkin' with Trekkon
   </h2>
   <iframe
     style={{ borderRadius: '12px' }}
-    src="https://open.spotify.com/embed/show/7HR9XTBY9tbnZWciUOM0NZ?utm_source=generator"
+    src="https://open.spotify.com/embed/show/7HR9XTBY9tbnZWciUOM0NZ?utm_source=generator&si=3f1b815174f745f2"
     width="100%"
-    height="352"
+    height="152"
     frameBorder="0"
     allowFullScreen
     allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
     loading="lazy"
   ></iframe>
-</div>
 </div>
 
         {/* Blog Section */}
