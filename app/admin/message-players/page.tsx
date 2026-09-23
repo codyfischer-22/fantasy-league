@@ -356,7 +356,7 @@ const applyFilter = async (type: string) => {
         />
 
         <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '6px' }}>
-          Link URL (optional)
+          Link URL (Optional)
         </label>
         <input
           type="text"
@@ -367,7 +367,7 @@ const applyFilter = async (type: string) => {
         />
 
         <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '6px' }}>
-          Link Text (optional)
+          Link Text (Optional)
         </label>
         <input
           type="text"
