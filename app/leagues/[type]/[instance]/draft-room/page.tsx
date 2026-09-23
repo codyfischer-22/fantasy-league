@@ -15,6 +15,7 @@ const draftCompleteTitleByLeague: Record<string, string> = {
   'sotb-demo': '🔥 Tribes Are Set',
   'turret-mafia': '🗡️ Rosters Are Set',
   'turret-mafia-demo': '🗡️ Rosters Are Set',
+  'sandbox': '🧪 Sandbox Draft Complete',
 }
 
 const draftInstructionsByLeague: Record<string, { countLine: string }> = {
@@ -27,12 +28,17 @@ const draftInstructionsByLeague: Record<string, { countLine: string }> = {
   'turret-mafia': {
     countLine: 'There are 22 castle-goers in Uncharted Turretory so any league with over 5 players will have castle-goers "cloned" as necessary (e.g. 10 players → 40 castle-goers needed → clone each castle-goer twice for 44 selectable options).',
   },
+  'sandbox': {
+    countLine: 'This is a sandbox testing environment with 20 fake contestants. Clone math works the same as a real league.',
+  },
 }
 
 const castawayTermByLeague: Record<string, string> = {
   'secrets-on-the-beach': 'Castaway',
   'sotb-demo': 'Castaway',
   'turret-mafia': 'Castle-Goer',
+  'turret-mafia-demo': 'Castle-Goer',
+  'sandbox': 'Contestant',
 }
 
 export default function DraftRoomPage() {

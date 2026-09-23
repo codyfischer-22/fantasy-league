@@ -18,7 +18,9 @@ type LogEntry = {
 const castawayTermByLeague: Record<string, string> = {
   'secrets-on-the-beach': 'Castaway',
   'sotb-demo': 'Castaway',
-  'uncharted-turretory': 'Contestant',
+  'uncharted-turretory': 'Castle-Goer',
+  'uncharted-turretory-demo': 'Castle-Goer',
+  'sandbox': 'Contestant',
 }
 
 export default function DraftLogPage() {

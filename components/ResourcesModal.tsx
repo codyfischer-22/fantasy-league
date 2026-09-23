@@ -40,6 +40,16 @@ const resourcesByLeague: Record<string, { title: string; url: string }[]> = {
       url: 'https://ew.com/the-traitors-new-blood-first-ever-all-civilian-cast-revealed-exclusive-12056293',
     },   
   ],
+    'uncharted-turretory-demo': [
+    {
+      title: '3-Minute Snapshot (Cami Twomey)',
+      url: 'https://youtube.com/shorts/QkLIOPvkSYU?si=x6-rYZA186CiqOng',
+    },
+    {
+      title: 'Breakdown Article (EW)',
+      url: 'https://ew.com/the-traitors-new-blood-first-ever-all-civilian-cast-revealed-exclusive-12056293',
+    },   
+  ],
 }
 
 export default function ResourcesModal({ open, onClose, type }: { open: boolean; onClose: () => void; type: string }) {

@@ -22,6 +22,7 @@ const castawayTermByLeague: Record<string, string> = {
   'sotb-demo': 'Castaway',
   'uncharted-turretory': 'Castle-Goer',
   'uncharted-turretory-demo': 'Castle-Goer',
+  'sandbox': 'Contestant',
 }
 
 const episodeAirTimeByLeague: Record<string, { dayOfWeek: number; hour: number }> = {
@@ -88,7 +89,7 @@ function isPastLockTime(leagueType: string): boolean {
 
 const locked = isLocked(leagueType)
 
-  useEffect(() => {
+useEffect(() => {
     async function loadPredictionState() {
       if (!user) {
         setLoading(false)
@@ -107,14 +108,14 @@ const locked = isLocked(leagueType)
       setCurrentEpisode(nextEpisode)
 
       const { data: castawayList } = await supabase
-        .from('castaways')
-        .select('id, name, status')
-        .eq('league_type', leagueType)
-        .eq('status', 'active')
-        .order('name')
-      setActiveCastaways(castawayList ?? [])
+  .from('castaways')
+  .select('id, name, status')
+  .eq('league_type', leagueType)
+  .eq('status', 'active')
+  .order('name')
+setActiveCastaways(castawayList ?? [])
 
-      const { data: allCastawayList } = await supabase
+     const { data: allCastawayList } = await supabase
   .from('castaways')
   .select('id, name, status')
   .eq('league_type', leagueType)
@@ -132,7 +133,7 @@ setAllCastaways(allCastawayList ?? [])
       setLoading(false)
     }
     loadPredictionState()
-  }, [user, leagueId, leagueType])
+  }, [user, leagueId, leagueType, instanceSlug])
 
   const handleSubmit = async () => {
     if (!user || !selectedCastawayId || !currentEpisode) return

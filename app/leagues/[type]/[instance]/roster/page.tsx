@@ -35,6 +35,8 @@ const rosterTermByLeague: Record<string, string> = {
   'secrets-on-the-beach': 'Tribe',
   'sotb-demo': 'Tribe',
   'uncharted-turretory': 'Roster',
+    'uncharted-turretory-demo': 'Roster',
+  'sandbox': 'Roster',
 }
 
 export default function RosterPage() {

@@ -293,7 +293,7 @@ const bonusByUser = new Map<string, number>()
         borderTop: '1px dashed #2a2a3e',
         marginTop: '4px'
       }}>
-        <span>Prediction Bonus</span>
+        <span>Weekly Prediction Bonus</span>
         <span style={{ fontWeight: 'bold' }}>+{player.bonusPoints} Pts.</span>
       </div>
     )}

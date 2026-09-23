@@ -37,6 +37,22 @@ const categoriesByLeague: Record<string, CategoryDef[]> = {
     { key: 'sole_survivor', label: 'Won Sole Survivor', points: 25 },
     { key: 'zero_vote_finalist', label: '0-Vote Finalist', points: -10 },
   ],
+    'sandbox': [
+    { key: 'team_immunity_safety', label: 'Immunity Safety (Team)', points: 5 },
+    { key: 'team_immunity_win', label: 'Immunity Win (Team)', points: 8 },
+    { key: 'individual_immunity_win', label: 'Immunity Win (Individual)', points: 15 },
+    { key: 'idol_found', label: 'Idol Found', points: 10 },
+    { key: 'successful_idol_play', label: 'Successful Idol Play', points: 15 },
+    { key: 'idol_in_pocket', label: 'Left with Idol in Pocket', points: -20 },
+    { key: 'first_off_starter_tribe', label: 'First Off Starter Tribe', points: -10 },
+    { key: 'first_boot', label: 'First Boot (Voted Off)', points: -10 },
+    { key: 'votes_against', label: 'Votes Against', points: -2, allowCount: true },
+    { key: 'survived_tribal_cycle', label: 'Survived Tribal Cycle', points: 5 },
+    { key: 'make_merge', label: 'Made the Merge', points: 10 },
+    { key: 'make_final_tribal', label: 'Made Final Tribal', points: 20 },
+    { key: 'sole_survivor', label: 'Won Sole Survivor', points: 25 },
+    { key: 'zero_vote_finalist', label: '0-Vote Finalist', points: -10 },
+  ],
   'sotb-demo': [
     { key: 'team_immunity_safety', label: 'Immunity Safety (Team)', points: 5 },
     { key: 'team_immunity_win', label: 'Immunity Win (Team)', points: 8 },
@@ -112,6 +128,8 @@ export default function ScoringAdminPage() {
   const [allowedLeagueTypes, setAllowedLeagueTypes] = useState<string[]>([])
 const [resolvingPredictions, setResolvingPredictions] = useState(false)
 const [predictionMessage, setPredictionMessage] = useState('')
+const [awardingBonus, setAwardingBonus] = useState(false)
+const [bonusMessage, setBonusMessage] = useState('')
 
 const handleResolvePredictions = async () => {
   if (!episodeNumber) {
@@ -135,9 +153,9 @@ const handleResolvePredictions = async () => {
   }
 
   const { data: leagues } = await supabase
-    .from('leagues')
-    .select('id')
-    .eq('league_type', selectedLeagueType)
+  .from('leagues')
+  .select('id')
+  .eq('league_type', selectedLeagueType)
 
   if (!leagues || leagues.length === 0) {
     setPredictionMessage('No leagues found for this league type.')
@@ -178,6 +196,141 @@ const handleResolvePredictions = async () => {
   )
 }
 
+const handleAwardSeasonBonus = async () => {
+  if (!isGlobalAdmin) return
+
+  setAwardingBonus(true)
+  setBonusMessage('')
+
+    const { data: leagues } = await supabase
+    .from('leagues')
+    .select('id, name, league_type, slug')
+    .eq('league_type', selectedLeagueType)
+
+  if (!leagues || leagues.length === 0) {
+    setBonusMessage('No leagues found for this league type.')
+    setAwardingBonus(false)
+    return
+  }
+
+  const { data: { session } } = await supabase.auth.getSession()
+  const accessToken = session?.access_token
+
+  let awardedCount = 0
+  let skippedAlready = 0
+  let skippedNoWinner = 0
+
+  for (const league of leagues) {
+    const { data: existingBonus } = await supabase
+      .from('player_bonus_points')
+      .select('id')
+      .eq('league_id', league.id)
+      .eq('reason', 'Weekly Prediction Mini-Game | Season Winner')
+      .limit(1)
+
+    if (existingBonus && existingBonus.length > 0) {
+      skippedAlready++
+      continue
+    }
+
+    const { data: members } = await supabase
+      .from('league_members')
+      .select('user_id')
+      .eq('league_id', league.id)
+
+    if (!members || members.length === 0) continue
+
+    const correctCounts = new Map<string, number>()
+    members.forEach((m) => correctCounts.set(m.user_id, 0))
+
+    const { data: predictions } = await supabase
+      .from('predictions')
+      .select('user_id, is_correct')
+      .eq('league_id', league.id)
+      .not('is_correct', 'is', null)
+
+    ;(predictions ?? []).forEach((p) => {
+      if (p.is_correct) {
+        correctCounts.set(p.user_id, (correctCounts.get(p.user_id) ?? 0) + 1)
+      }
+    })
+
+    const topScore = Math.max(...Array.from(correctCounts.values()))
+    if (topScore <= 0) {
+      skippedNoWinner++
+      continue
+    }
+
+    const winners = Array.from(correctCounts.entries())
+      .filter(([, count]) => count === topScore)
+      .map(([uid]) => uid)
+    const splitAmount = Math.ceil(50 / winners.length)
+
+    await supabase.from('player_bonus_points').insert(
+      winners.map((uid) => ({
+        league_id: league.id,
+        user_id: uid,
+        points: splitAmount,
+        reason: 'Weekly Prediction Mini-Game | Season Winner',
+      }))
+    )
+
+    // Fetch names/emails for this league's members
+    const memberIds = members.map((m) => m.user_id)
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('user_id, display_name, email, email_opt_in')
+      .in('user_id', memberIds)
+
+    const winnerNames = winners.map((uid) => {
+      const p = profiles?.find((prof) => prof.user_id === uid)
+      return p?.display_name || 'Unnamed Player'
+    })
+
+const announcementMessage = `🏆 Congrats to ${winnerNames.join(', ')} on winning the +50 bonus for the most correct weekly elimination predictions (${topScore})!`
+const leaderboardLink = `/leagues/${league.league_type}/${league.slug}/predictions`
+
+    // In-app notification to all league members
+    await supabase.from('notifications').insert(
+      memberIds.map((uid) => ({
+        user_id: uid,
+        message: announcementMessage,
+        link: leaderboardLink,
+      }))
+    )
+
+    // Email — skip entirely for the sandbox league to avoid emailing real test/admin accounts
+    if (selectedLeagueType !== 'sandbox') {
+      const optedInProfiles = (profiles ?? []).filter((p) => p.email_opt_in)
+      if (optedInProfiles.length > 0) {
+        await fetch('/api/send-notification-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({
+            recipients: optedInProfiles.map((p) => ({
+              email: p.email,
+              playerName: p.display_name || 'Player',
+            })),
+            subject: `Weekly Prediction Bonus Awarded — ${league.name}`,
+            message: announcementMessage,
+            linkUrl: `https://trekkonleagues.com${leaderboardLink}`,
+            linkText: 'View Prediction Leaderboard →',
+          }),
+        })
+      }
+    }
+
+    awardedCount++
+  }
+
+    setAwardingBonus(false)
+  setBonusMessage(
+    `Awarded bonuses in ${awardedCount} league(s). Skipped ${skippedAlready} (Already Awarded), ${skippedNoWinner} (None Correct).`
+  )
+}
 
 useEffect(() => {
   if (!isGlobalAdmin && allowedLeagueTypes.length > 0 && !allowedLeagueTypes.includes(selectedLeagueType)) {
@@ -193,6 +346,7 @@ const allLeagueTypeOptions = [
   { value: 'sotb-demo', label: 'Secrets on the Beach (Demo)' },
   { value: 'uncharted-turretory', label: 'Uncharted Turretory (New Blood)' },
   { value: 'uncharted-turretory-demo', label: 'Uncharted Turretory (Demo)' },
+  { value: 'sandbox', label: 'Sand Box League (Testing)' },
 ]
 
 const visibleLeagueTypeOptions = isGlobalAdmin
@@ -267,13 +421,13 @@ const toggleEliminated = async (castaway: Castaway) => {
 }
 }
 
-  const loadCastaways = async (leagueType: string) => {
+const loadCastaways = async (leagueType: string) => {
   const { data: castawayList } = await supabase
     .from('castaways')
     .select('id, name, status, eliminated_episode')
     .eq('league_type', leagueType)
     .order('id')
-
+    
   setCastaways(castawayList ?? [])
 }
 
@@ -345,14 +499,15 @@ if (profile?.is_global_admin || profile?.is_league_admin) {
       notes: string | null
     }[] = []
 
-    for (const castaway of castaways) {
+   for (const castaway of castaways) {
       const rowState = rows[castaway.id] ?? {}
       for (const cat of categories) {
         const count = rowState[cat.key] ?? 0
         if (count > 0) {
           entries.push({
   league_type: selectedLeagueType,
-season: selectedLeagueType === 'secrets-on-the-beach' ? 'Survivor 51' : selectedLeagueType === 'uncharted-turretory' ? 'The Traitors: New Blood' : selectedLeagueType === 'uncharted-turretory-demo' ? 'The Traitors: Season 4' : 'Demo Season',  episode_number: parseFloat(episodeNumber),
+  season: selectedLeagueType === 'secrets-on-the-beach' ? 'Survivor 51' : selectedLeagueType === 'uncharted-turretory' ? 'The Traitors: New Blood' : selectedLeagueType === 'uncharted-turretory-demo' ? 'The Traitors Season 4' : selectedLeagueType === 'sandbox' ? 'Sand Box Season' : 'Demo Season',
+  episode_number: parseFloat(episodeNumber),
   castaway_id: castaway.id,
   category: cat.key,
   points: cat.points,
@@ -362,18 +517,19 @@ season: selectedLeagueType === 'secrets-on-the-beach' ? 'Survivor 51' : selected
         }
       }
 
-      const manual = manualAdjust[castaway.id]
-      if (manual && manual.points && parseInt(manual.points) !== 0) {
-        entries.push({
-          league_type: selectedLeagueType,
-          season: selectedLeagueType === 'secrets-on-the-beach' ? 'Survivor 51' : selectedLeagueType === 'uncharted-turretory' ? 'The Traitors: New Blood' : selectedLeagueType === 'uncharted-turretory-demo' ? 'The Traitors Season 4' : 'Demo Season',          episode_number: parseFloat(episodeNumber),
-          castaway_id: castaway.id,
-          category: 'manual_adjustment',
-          points: parseInt(manual.points),
-          count: 1,
-          notes: manual.notes || null,
-        })
-      }
+    const manual = manualAdjust[castaway.id]
+if (manual && manual.points && parseInt(manual.points) !== 0) {
+  entries.push({
+ league_type: selectedLeagueType,
+  season: selectedLeagueType === 'secrets-on-the-beach' ? 'Survivor 51' : selectedLeagueType === 'uncharted-turretory' ? 'The Traitors: New Blood' : selectedLeagueType === 'uncharted-turretory-demo' ? 'The Traitors Season 4' : selectedLeagueType === 'sandbox' ? 'Sand Box Season' : 'Demo Season',
+    episode_number: parseFloat(episodeNumber),
+    castaway_id: castaway.id,
+    category: 'manual_adjustment',
+    points: parseInt(manual.points),
+    count: 1,
+    notes: manual.notes || null,
+  })
+}
     }
 
     if (entries.length === 0) {
@@ -414,7 +570,7 @@ await supabase
   const { error: notifError } = await supabase.from('notifications').insert(
     uniqueUserIds.map((uid) => ({
       user_id: uid,
-      message: `It's official! Tallies for Episode ${episodeNumber} are live! Check Leaderboard and Analytics to see how you stack up. Then head to the chat to gloat or pout! 36 hours after episode airs, you can predict who will be eliminated next week; whoever has the most correct predictions wins 50 bonus points!`,
+      message: `It's official! Tallies for Episode ${episodeNumber} are live! Check Leaderboard and Analytics to see how you stack up. Then head to the chat to gloat or pout! 24 hours after episode airs, you can predict who will be eliminated next week; whoever has the most correct predictions splits +50 bonus points!`,
       link: `/leagues/${selectedLeagueType}/scoring-log`,
     }))
   )
@@ -445,7 +601,7 @@ await supabase
           playerName: p.display_name || 'Player',
         })),
         subject: `Episode ${episodeNumber} Scores Are Live!`,
-message: `It's official! Tallies for Episode ${episodeNumber} are live! Check Leaderboard and Analytics to see how you stack up. Then head to the chat to gloat or pout! 36 hours after episode airs, you can predict who will be eliminated next week; whoever has the most correct predictions wins 50 bonus points!`,        linkUrl: `https://trekkonleagues.com/leagues/${selectedLeagueType}/scoring-log`,
+message: `It's official! Tallies for Episode ${episodeNumber} are live! Check Leaderboard and Analytics to see how you stack up. Then head to the chat to gloat or pout! 24 hours after episode airs, you can predict who will be eliminated next week; whoever has the most correct predictions splits +50 bonus points!`,        linkUrl: `https://trekkonleagues.com/leagues/${selectedLeagueType}/scoring-log`,
         linkText: 'View Scoring Log →',
       }),
     })
@@ -743,16 +899,41 @@ const isEliminatedThisEpisode =
       padding: '10px 20px',
       borderRadius: '6px',
       border: 'none',
+      marginRight: '16px',
       fontWeight: 'bold',
       cursor: resolvingPredictions ? 'not-allowed' : 'pointer'
     }}
   >
     {resolvingPredictions ? 'Resolving...' : 'Resolve Predictions'}
   </button>
+
+{isGlobalAdmin && (
+    <button
+      onClick={handleAwardSeasonBonus}
+      disabled={awardingBonus}
+      style={{
+        backgroundColor: 'transparent',
+        color: '#f0b429',
+        padding: '10px 20px',
+        borderRadius: '6px',
+        border: '1px solid #f0b429',
+        fontWeight: 'bold',
+        cursor: awardingBonus ? 'not-allowed' : 'pointer'
+      }}
+    >
+      {awardingBonus ? 'Awarding...' : 'Award Bonus (+50)'}
+    </button>
+  )}
+
+
   {predictionMessage && (
     <p style={{ color: '#f0b429', fontSize: '0.9rem', marginTop: '10px' }}>{predictionMessage}</p>
   )}
 </div>
+
+{bonusMessage && (
+  <p style={{ color: '#f0b429', fontSize: '0.9rem', marginTop: '10px' }}>{bonusMessage}</p>
+)}
 
         {message && (
           <p style={{ color: '#f0b429', fontWeight: 'bold', marginTop: '16px' }}>

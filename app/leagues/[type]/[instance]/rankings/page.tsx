@@ -17,6 +17,8 @@ const castawayTermByLeague: Record<string, string> = {
   'secrets-on-the-beach': 'Castaway',
   'sotb-demo': 'Castaway',
   'uncharted-turretory': 'Castle-Goer',
+  'uncharted-turretory-demo': 'Castle-Goer',
+  'sandbox': 'Contestant',
 }
 
 export default function RankingsPage() {
