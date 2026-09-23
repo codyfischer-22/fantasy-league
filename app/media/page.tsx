@@ -40,27 +40,22 @@ export default function ExtrasPage() {
         </p>
 
         {/* Podcast Section */}
-        <div style={{ marginBottom: '24px' }}>
-          <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <MicSignal size={22} strokeWidth={2} color="#f0b429" />
-            Podcasts
-          </h2>
-          <div style={{
-            backgroundColor: '#1a1a2e',
-            border: '1px solid #2a2a3e',
-            borderRadius: '10px'
-          }}>
-        <iframe
-  style={{ borderRadius: '12px' }}
-  src="https://open.spotify.com/embed/episode/2TySJRYa217E2uAtfky4Z8?utm_source=generator&si=cc688b0065e54193"
-  width="100%"
-  height="152"
-  frameBorder="0"
-  allowFullScreen
-  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-  loading="lazy"
-></iframe>
-  </div>
+<div style={{ marginBottom: '32px' }}>
+  <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+    <Radio size={22} strokeWidth={2} color="#f0b429" />
+    Talkin' with Trekkon
+  </h2>
+  <iframe
+    style={{ borderRadius: '12px' }}
+    src="https://open.spotify.com/embed/show/7HR9XTBY9tbnZWciUOM0NZ?utm_source=generator"
+    width="100%"
+    height="352"
+    frameBorder="0"
+    allowFullScreen
+    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+    loading="lazy"
+  ></iframe>
+</div>
 </div>
 
         {/* Blog Section */}
