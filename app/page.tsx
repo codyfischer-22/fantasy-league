@@ -80,6 +80,8 @@ useEffect(() => {
   .from('leagues')
   .select('name, league_type, slug, host_user_id, is_show_chat, is_private, draft_status')
   .in('id', leagueIds)
+  .eq('is_archived', false)
+
       const realLeagues = (leagues ?? []).filter((l) => !l.is_show_chat)
 
       const mapped = realLeagues.map((l) => ({

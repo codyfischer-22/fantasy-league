@@ -50,11 +50,32 @@ export default function LeagueSettingsPage() {
       if (!leagueData || leagueData.host_user_id !== user.id) {
         router.push(`/leagues/${type}/${instance}`)
         return
+      }
+      if (leagueData.is_archived) {
+        router.push(`/leagues/${type}`)
+        return
+      }
+if (leagueData?.league_type === 'sandbox') {
+  if (!user) {
+    router.push('/')
+    return
+  }
+  const { data: profileCheck } = await supabase
+    .from('profiles')
+    .select('is_global_admin')
+    .eq('user_id', user.id)
+    .single()
+  if (!profileCheck?.is_global_admin) {
+    router.push('/')
+    return
+  }
 }
-if (leagueData.is_frozen) {
-  router.push(`/leagues/${type}/${instance}`)
-  return
-}
+
+
+      if (leagueData.is_frozen) {
+        router.push(`/leagues/${type}/${instance}`)
+        return
+      }
       setLeague(leagueData)
       setIsHost(true)
       setPickTimerSeconds(leagueData.pick_timer_seconds ? String(leagueData.pick_timer_seconds) : '')

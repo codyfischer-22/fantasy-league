@@ -48,7 +48,7 @@ export default function RankingsPage() {
 
       const { data: league } = await supabase
         .from('leagues')
-        .select('id, name, league_type')
+        .select('id, name, league_type, is_archived')
         .eq('league_type', type)
         .eq('slug', instance)
         .single()
@@ -57,6 +57,11 @@ export default function RankingsPage() {
         setPageLoading(false)
         return
       }
+
+if (league?.is_archived) {   // or leagueData?.is_archived — match whatever variable name that file uses
+  router.push(`/leagues/${type}`)
+  return
+}
 
       const { data: membership } = await supabase
         .from('league_members')
@@ -69,6 +74,21 @@ export default function RankingsPage() {
         router.push(`/leagues/${type}/${instance}`)
         return
       }
+
+      if (league.league_type === 'sandbox') {
+        if (!user) {
+          router.push('/')
+          return
+        }
+        const { data: profileCheck } = await supabase
+          .from('profiles')
+          .select('is_global_admin')
+          .eq('user_id', user.id)
+          .single()
+        if (!profileCheck?.is_global_admin) {
+          router.push('/')
+          return
+        }}
 
       const { count: pickCount } = await supabase
         .from('draft_picks')

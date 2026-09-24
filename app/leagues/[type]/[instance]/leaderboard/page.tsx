@@ -1,7 +1,8 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { useAuth } from '@/lib/AuthContext'
 import { Trophy } from 'lucide-react'
 
 type CastawayScore = {
@@ -19,6 +20,7 @@ type PlayerStanding = {
 
 export default function LeaderboardPage() {
   const params = useParams()
+  const { user, loading: authLoading } = useAuth()
   const type = params.type as string
   const instance = params.instance as string
   const [leagueName, setLeagueName] = useState('')
@@ -26,21 +28,45 @@ export default function LeaderboardPage() {
   const [pageLoading, setPageLoading] = useState(true)
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
   const [isFrozen, setIsFrozen] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
     async function loadLeaderboard() {
-      const { data: league } = await supabase
-        .from('leagues')
-        .select('id, name, league_type, is_frozen')
-        .eq('league_type', type)
-        .eq('slug', instance)
-        .single()
-      if (!league) {
-        setPageLoading(false)
-        return
-      }
-      setLeagueName(league.name)
-      setIsFrozen(league.is_frozen ?? false)
+      if (authLoading) return
+
+  const { data: league } = await supabase
+  .from('leagues')
+  .select('id, name, league_type, is_frozen, is_archived')
+  .eq('league_type', type)
+  .eq('slug', instance)
+  .single()
+if (!league) {
+  setPageLoading(false)
+  return
+}
+if (league.is_archived) {
+  router.push(`/leagues/${type}`)
+  return
+}
+
+if (league?.league_type === 'sandbox') {
+  if (!user) {
+    router.push('/')
+    return
+  }
+  const { data: profileCheck } = await supabase
+    .from('profiles')
+    .select('is_global_admin')
+    .eq('user_id', user.id)
+    .single()
+  if (!profileCheck?.is_global_admin) {
+    router.push('/')
+    return
+  }
+}
+
+setLeagueName(league.name)
+setIsFrozen(league.is_frozen ?? false)
       const { data: members } = await supabase
         .from('league_members')
         .select('user_id')
@@ -115,8 +141,8 @@ const bonusByUser = new Map<string, number>()
       setStandings(playerStandings)
       setPageLoading(false)
     }
-    loadLeaderboard()
-  }, [type, instance])
+        loadLeaderboard()
+  }, [type, instance, authLoading, user])
 
   const toggleExpand = (userId: string) => {
     setExpanded((prev) => {

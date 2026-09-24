@@ -70,6 +70,27 @@ useEffect(() => {
         .eq('league_type', type)
         .eq('slug', instance)
         .single()
+
+if (leagueData?.is_archived) {
+  router.push(`/leagues/${type}`)
+  return
+}
+
+if (leagueData?.league_type === 'sandbox') {
+        if (!user) {
+          router.push('/')
+          return
+        }
+        const { data: profileCheck } = await supabase
+          .from('profiles')
+          .select('is_global_admin')
+          .eq('user_id', user.id)
+          .single()
+        if (!profileCheck?.is_global_admin) {
+          router.push('/')
+          return
+        }
+      }
       setLeague(leagueData)
       if (leagueData && user && leagueData.host_user_id === user.id) {
         setIsHost(true)
@@ -182,7 +203,7 @@ const cap = leagueData.max_members ?? (hostProfile?.tier === 'teamprincipal' ? 1
     await supabase.from('notifications').insert(
       orderedMembers.map((m) => ({
         user_id: m.user_id,
-        message: `The draft for ${league.name} has started! That\u2019s right: silly season is upon us. Head to the draft room and make your pick.`,
+        message: `The draft for ${league.name} has started! That\u2019s right: silly season is upon us. Head to the draft room and make your picks!`,
         link: `/leagues/${type}/${instance}/draft-room`,
       }))
     )

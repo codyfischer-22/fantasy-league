@@ -1,9 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { ClipboardList } from 'lucide-react'
+import { useAuth } from '@/lib/AuthContext'
 
 type LogEntry = {
   pick_number: number
@@ -25,6 +26,8 @@ const castawayTermByLeague: Record<string, string> = {
 
 export default function DraftLogPage() {
   const params = useParams()
+  const router = useRouter()
+  const { user, loading: authLoading } = useAuth()
   const type = params.type as string
   const instance = params.instance as string
   const [draftDate, setDraftDate] = useState<string | null>(null)
@@ -34,11 +37,12 @@ export default function DraftLogPage() {
   const [isPrivateLeague, setIsPrivateLeague] = useState(false)
   const castawayTerm = castawayTermByLeague[type] ?? 'Contestant'
 
-  useEffect(() => {
+useEffect(() => {
     async function loadLog() {
+      if (authLoading) return
    const { data: league } = await supabase
   .from('leagues')
-  .select('id, name, is_private')
+  .select('id, name, is_private, is_archived, league_type')
   .eq('league_type', type)
   .eq('slug', instance)
   .single()
@@ -47,6 +51,26 @@ export default function DraftLogPage() {
         setPageLoading(false)
         return
       }
+
+      if (league?.is_archived) {
+  router.push(`/leagues/${type}`)
+  return
+}
+if (league.league_type === 'sandbox') {
+  if (!user) {
+    router.push('/')
+    return
+  }
+  const { data: profileCheck } = await supabase
+    .from('profiles')
+    .select('is_global_admin')
+    .eq('user_id', user.id)
+    .single()
+  if (!profileCheck?.is_global_admin) {
+    router.push('/')
+    return
+  }
+}
 
       setLeagueName(league.name)
       setIsPrivateLeague(league.is_private ?? false)
@@ -127,7 +151,7 @@ const castawayIds = [...new Set(safePicks.map((p) => p.castaway_id))]
     }
 
     loadLog()
-  }, [type, instance])
+  }, [type, instance, user, authLoading])
 
   if (pageLoading) {
     return (
@@ -183,11 +207,11 @@ const castawayIds = [...new Set(safePicks.map((p) => p.castaway_id))]
     borderRadius: '10px',
     overflow: 'hidden'
   }}>
-    {log.map((entry, i) => (
-      <div key={entry.pick_number} style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
+{log.map((entry, i) => (
+  <div key={`${entry.pick_number}-${entry.event_type}`} style={{
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
         padding: '14px 20px',
         borderBottom: i < log.length - 1 ? '1px solid #2a2a3e' : 'none'
       }}>

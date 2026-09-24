@@ -1,5 +1,5 @@
 'use client'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
@@ -33,8 +33,35 @@ const castawayTermByLeague: Record<string, string> = {
   'sandbox': 'Contestant',
 }
 
+const episodeAirTimeByLeague: Record<string, { dayOfWeek: number; hour: number }> = {
+  'secrets-on-the-beach': { dayOfWeek: 3, hour: 19 }, // Wednesday, 7 PM CT
+  'uncharted-turretory': { dayOfWeek: 4, hour: 19 }, // Thursday, 7 PM CT
+}
+
+function isTradeFrozen(leagueType: string): boolean {
+  const config = episodeAirTimeByLeague[leagueType]
+  if (!config) return false
+
+  const now = new Date()
+  const centralTimeString = now.toLocaleString('en-US', { timeZone: 'America/Chicago' })
+  const centralNow = new Date(centralTimeString)
+
+  const daysSinceAirDay = (centralNow.getDay() - config.dayOfWeek + 7) % 7
+  const mostRecentAirTime = new Date(centralNow)
+  mostRecentAirTime.setDate(centralNow.getDate() - daysSinceAirDay)
+  mostRecentAirTime.setHours(config.hour, 0, 0, 0)
+
+  if (mostRecentAirTime > centralNow) {
+    mostRecentAirTime.setDate(mostRecentAirTime.getDate() - 7)
+  }
+
+  const hoursSinceAir = (centralNow.getTime() - mostRecentAirTime.getTime()) / (1000 * 60 * 60)
+  return hoursSinceAir >= 0 && hoursSinceAir < 24
+}
+
 export default function TradePortalPage() {
   const params = useParams()
+  const router = useRouter()
   const type = params.type as string
   const instance = params.instance as string
   const { user } = useAuth()
@@ -62,7 +89,9 @@ export default function TradePortalPage() {
   const [isPrivateLeague, setIsPrivateLeague] = useState(false)
   const [historyLimit, setHistoryLimit] = useState(10)
   const [reloadTrigger, setReloadTrigger] = useState(0)
-  const castawayTerm = castawayTermByLeague[type] ?? 'Contestant'
+const castawayTerm = castawayTermByLeague[type] ?? 'Contestant'
+const tradesFrozen = isTradeFrozen(type)
+
 
   const selectStyle = {
     width: '100%',
@@ -100,9 +129,31 @@ export default function TradePortalPage() {
       if (!user || !leagueId) return
       const { data: leagueData } = await supabase
         .from('leagues')
-        .select('host_user_id, require_host_trade_approval, is_private')
+        .select('host_user_id, require_host_trade_approval, is_private, is_archived, league_type')
         .eq('id', leagueId)
         .single()
+
+        if (leagueData?.is_archived) {   // or leagueData?.is_archived — match whatever variable name that file uses
+  router.push(`/leagues/${type}`)
+  return
+}
+
+if (leagueData?.league_type === 'sandbox') {
+        if (!user) {
+          router.push('/')
+          return
+        }
+        const { data: profileCheck } = await supabase
+          .from('profiles')
+          .select('is_global_admin')
+          .eq('user_id', user.id)
+          .single()
+        if (!profileCheck?.is_global_admin) {
+          router.push('/')
+          return
+        }
+      }
+
       setIsHost(leagueData?.host_user_id === user.id)
       setRequireHostApproval(leagueData?.require_host_trade_approval ?? false)
       setIsPrivateLeague(leagueData?.is_private ?? false)
@@ -276,10 +327,17 @@ export default function TradePortalPage() {
     loadTheirCastaways()
   }, [leagueId, selectedTargetPlayer])
 
-  async function handleConfirmPropose() {
-    if (!user || !leagueId || !selectedTargetPlayer || !selectedOfferedId || !selectedRequestedId) return
-    setSubmitting(true)
-    setMessage('')
+async function handleConfirmPropose() {
+  if (!user || !leagueId || !selectedTargetPlayer || !selectedOfferedId || !selectedRequestedId) return
+
+  if (isTradeFrozen(type)) {
+    setMessage('Trades are frozen for 24 hours after an episode. Please try again later.')
+    setSubmitting(false)
+    return
+  }
+
+  setSubmitting(true)
+  setMessage('')
     const { data: statusCheck } = await supabase
       .from('castaways')
       .select('id, status')
@@ -513,8 +571,12 @@ if (tradeProfiles && tradeProfiles.length > 0) {
   }
 }
 
-  async function handleAccept(trade: Trade) {
-    if (requireHostApproval) {
+async function handleAccept(trade: Trade) {
+  if (isTradeFrozen(type)) {
+    setMessage('Trades are frozen for 24 hours after an episode airs. Please try again later.')
+    return
+  }
+  if (requireHostApproval) {
       const { error } = await supabase
         .from('trades')
         .update({ status: 'pending_host_approval' })
@@ -639,6 +701,10 @@ if (tradeData?.proposing_user_id) {
   }
 
   async function handleApprove(trade: Trade) {
+    if (isTradeFrozen(type)) {
+    setMessage('Trades are frozen for 24 hours after an episode airs. Please try again later.')
+    return
+  }
     await executeTrade(trade)
     setReloadTrigger((prev) => prev + 1)
   }
@@ -850,22 +916,27 @@ if (denyProfiles && denyProfiles.length > 0) {
               </select>
             </>
           )}
-          <button
-            onClick={() => { setMessage(''); setShowConfirm(true) }}
-            disabled={!selectedOfferedId || !selectedTargetPlayer || !selectedRequestedId}
-            style={{
-              backgroundColor: '#f0b429',
-              color: '#0a0a0f',
-              padding: '12px 24px',
-              borderRadius: '6px',
-              border: 'none',
-              fontWeight: 'bold',
-              cursor: (!selectedOfferedId || !selectedTargetPlayer || !selectedRequestedId) ? 'not-allowed' : 'pointer',
-              opacity: (!selectedOfferedId || !selectedTargetPlayer || !selectedRequestedId) ? 0.5 : 1
-            }}
-          >
-            Offer Trade
-          </button>
+         <button
+  onClick={() => { setMessage(''); setShowConfirm(true) }}
+  disabled={!selectedOfferedId || !selectedTargetPlayer || !selectedRequestedId || tradesFrozen}
+  style={{
+    backgroundColor: '#f0b429',
+    color: '#0a0a0f',
+    padding: '12px 24px',
+    borderRadius: '6px',
+    border: 'none',
+    fontWeight: 'bold',
+    cursor: (!selectedOfferedId || !selectedTargetPlayer || !selectedRequestedId || tradesFrozen) ? 'not-allowed' : 'pointer',
+    opacity: (!selectedOfferedId || !selectedTargetPlayer || !selectedRequestedId || tradesFrozen) ? 0.5 : 1
+  }}
+>
+  Offer Trade
+</button>
+{tradesFrozen && (
+  <p style={{ color: '#ff6b6b', fontSize: '0.85rem', marginTop: '8px' }}>
+    Trades are frozen for 24 hours after each episode airs. Please try again later.
+  </p>
+)}
           {message && (
             <p style={{ color: '#f0b429', marginTop: '12px', fontSize: '0.9rem' }}>{message}</p>
           )}

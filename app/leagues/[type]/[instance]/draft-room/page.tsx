@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useRef } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import ConfirmModal from '@/components/ConfirmModal'
@@ -43,6 +43,7 @@ const castawayTermByLeague: Record<string, string> = {
 
 export default function DraftRoomPage() {
   const params = useParams()
+  const router = useRouter ()
   const type = params.type as string
   const instance = params.instance as string
   const { user, loading } = useAuth()
@@ -62,13 +63,33 @@ const castawayTerm = castawayTermByLeague[type] ?? 'Castaway'
 
   const loadDraftState = async () => {
     const { data: leagueData } = await supabase
-      .from('leagues')
-      .select('*')
-      .eq('league_type', type)
-      .eq('slug', instance)
-      .single()
+  .from('leagues')
+  .select('*')
+  .eq('league_type', type)
+  .eq('slug', instance)
+  .single()
 
-    setLeague(leagueData)
+if (leagueData?.is_archived) {
+  router.push(`/leagues/${type}`)
+  return
+}
+if (leagueData?.league_type === 'sandbox') {
+  if (!user) {
+    router.push('/')
+    return
+  }
+  const { data: profileCheck } = await supabase
+    .from('profiles')
+    .select('is_global_admin')
+    .eq('user_id', user.id)
+    .single()
+  if (!profileCheck?.is_global_admin) {
+    router.push('/')
+    return
+  }
+}
+
+setLeague(leagueData)
 
     if (leagueData) {
       const { data: castawayList } = await supabase

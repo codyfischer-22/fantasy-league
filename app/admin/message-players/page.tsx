@@ -21,7 +21,7 @@ export default function MessagePlayersPage() {
   const [subject, setSubject] = useState('')
   const [message, setMessage] = useState('')
   const [linkUrl, setLinkUrl] = useState('')
-  const [linkText, setLinkText] = useState('')
+  const [linkText, setLinkText] = useState('View League →')
   const [sending, setSending] = useState(false)
   const [result, setResult] = useState('')
   const [sendAsNotification, setSendAsNotification] = useState(true)

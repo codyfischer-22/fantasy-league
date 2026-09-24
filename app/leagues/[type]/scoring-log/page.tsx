@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams, useSearchParams } from 'next/navigation'
+import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/AuthContext'
 import { leagueTypeLabels } from '@/lib/leagueTypeLabels'
@@ -125,6 +125,7 @@ type EpisodeGroup = {
 
 export default function ScoringLogPage() {
   const params = useParams()
+  const router = useRouter()
   const type = params.type as string
   const searchParams = useSearchParams()
   const fromInstance = searchParams.get('from')
@@ -135,19 +136,40 @@ export default function ScoringLogPage() {
   const [isFrozen, setIsFrozen] = useState(false)
   const categoryLabels = categoryLabelsByLeague[type] ?? {}
 
-  useEffect(() => {
-    async function loadLog() {
-      if (!user && type !== 'sotb-demo') {
-        setPageLoading(false)
-        return
-      }
+useEffect(() => {
+async function loadLog() {
+  if (type === 'sandbox') {
+    if (!user) {
+      router.push('/')
+      return
+    }
+    const { data: profileCheck } = await supabase
+      .from('profiles')
+      .select('is_global_admin')
+      .eq('user_id', user.id)
+      .single()
+    if (!profileCheck?.is_global_admin) {
+      router.push('/')
+      return
+    }
+  }
+
+  if (!user && type !== 'sotb-demo') {
+    setPageLoading(false)
+    return
+  }
       if (fromInstance) {
         const { data: league } = await supabase
           .from('leagues')
-          .select('name, is_frozen')
+          .select('name, is_frozen, is_archived')
           .eq('league_type', type)
           .eq('slug', fromInstance)
           .single()
+
+        if (league?.is_archived) {
+  router.push('/')
+  return
+}
         setLeagueName(league?.name ?? null)
         setIsFrozen(league?.is_frozen ?? false)
       }
@@ -325,14 +347,14 @@ if ((scores && scores.length > 0) || (customEntries && customEntries.length > 0)
       padding: '60px 40px'
     }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-        <a href={fromInstance ? `/leagues/${type}/${fromInstance}` : `/leagues/${type}`} style={{
-          color: '#a0a0b0',
-          fontSize: '0.85rem',
-          textDecoration: 'none',
-          display: 'inline-block',
-          marginBottom: '24px'
-        }}>
-{fromInstance ? `← Back to ${leagueName ?? 'League'}` : `← Back to ${leagueTypeLabels[type] ?? 'League'}`}        </a>
+        <a href={fromInstance ? `/leagues/${type}/${fromInstance}` : '/'} style={{
+  color: '#a0a0b0',
+  fontSize: '0.85rem',
+  textDecoration: 'none',
+  display: 'inline-block',
+  marginBottom: '24px'
+}}>
+{fromInstance ? `← Back to ${leagueName ?? 'League'}` : '← Back to Trekkon Fantasy Leagues'}        </a>
 
         <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '10px' }}>
   <Calculator size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />

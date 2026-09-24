@@ -1,9 +1,9 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { TrendingUp, Lock } from 'lucide-react'
+import { useParams, useRouter } from 'next/navigation'
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts'
@@ -175,6 +175,7 @@ function CustomTooltip({ active, payload, label }: any) {
 
 export default function AnalyticsPage() {
   const params = useParams()
+  const router = useRouter()
   const type = params.type as string
   const instance = params.instance as string
   const { user, loading } = useAuth()
@@ -210,16 +211,35 @@ useEffect(() => {
   useEffect(() => {
     async function loadData() {
       const { data: league } = await supabase
-        .from('leagues')
-        .select('id, league_type, name, is_frozen, is_private')
-        .eq('league_type', type)
-        .eq('slug', instance)
-        .single()
-      if (!league) {
-        setAccess('denied')
-        return
-      }
-      setIsFrozen(league.is_frozen ?? false)
+  .from('leagues')
+  .select('id, league_type, name, is_frozen, is_private, is_archived')
+  .eq('league_type', type)
+  .eq('slug', instance)
+  .single()
+if (!league) {
+  setAccess('denied')
+  return
+}
+if (league.is_archived) {
+  router.push(`/leagues/${type}`)
+  return
+}
+if (league.league_type === 'sandbox') {
+  if (!user) {
+    router.push('/')
+    return
+  }
+  const { data: profileCheck } = await supabase
+    .from('profiles')
+    .select('is_global_admin')
+    .eq('user_id', user.id)
+    .single()
+  if (!profileCheck?.is_global_admin) {
+    router.push('/')
+    return
+  }
+}
+setIsFrozen(league.is_frozen ?? false)
       setIsPrivateLeague(league.is_private ?? false)
       const isDemoLeague = type === 'sotb-demo' || type === 'uncharted-turretory-demo'
 if (!isDemoLeague) {

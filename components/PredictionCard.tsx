@@ -27,9 +27,7 @@ const castawayTermByLeague: Record<string, string> = {
 
 const episodeAirTimeByLeague: Record<string, { dayOfWeek: number; hour: number }> = {
   'secrets-on-the-beach': { dayOfWeek: 3, hour: 19 }, // Wednesday, 7 PM
-  'sotb-demo': { dayOfWeek: 3, hour: 19 },
   'uncharted-turretory': { dayOfWeek: 4, hour: 19 }, // Thursday, 7 PM
-  'uncharted-turretory-demo': { dayOfWeek: 4, hour: 19 },
 }
 
 export default function PredictionCard({ leagueId, leagueType, instanceSlug }: Props) {  const { user } = useAuth()

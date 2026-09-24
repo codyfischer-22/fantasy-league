@@ -152,10 +152,11 @@ const handleResolvePredictions = async () => {
     return
   }
 
-  const { data: leagues } = await supabase
+const { data: leagues } = await supabase
   .from('leagues')
   .select('id')
   .eq('league_type', selectedLeagueType)
+  .eq('is_archived', false)
 
   if (!leagues || leagues.length === 0) {
     setPredictionMessage('No leagues found for this league type.')
@@ -203,9 +204,10 @@ const handleAwardSeasonBonus = async () => {
   setBonusMessage('')
 
     const { data: leagues } = await supabase
-    .from('leagues')
-    .select('id, name, league_type, slug')
-    .eq('league_type', selectedLeagueType)
+  .from('leagues')
+  .select('id, name, league_type, slug')
+  .eq('league_type', selectedLeagueType)
+  .eq('is_archived', false)
 
   if (!leagues || leagues.length === 0) {
     setBonusMessage('No leagues found for this league type.')
@@ -549,10 +551,11 @@ await supabase
       return
     }
 
-    const { data: allLeagues } = await supabase
-      .from('leagues')
-      .select('id')
-      .eq('league_type', selectedLeagueType)
+ const { data: allLeagues } = await supabase
+  .from('leagues')
+  .select('id')
+  .eq('league_type', selectedLeagueType)
+  .eq('is_archived', false)
 
     const leagueIds = (allLeagues ?? []).map((l) => l.id)
 

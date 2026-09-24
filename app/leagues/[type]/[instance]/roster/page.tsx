@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { useAuth } from '@/lib/AuthContext'
 import { Users } from 'lucide-react'
 
 type RosterMember = {
@@ -41,6 +42,8 @@ const rosterTermByLeague: Record<string, string> = {
 
 export default function RosterPage() {
   const params = useParams()
+  const router = useRouter()
+  const { user, loading: authLoading } = useAuth()
   const type = params.type as string
   const instance = params.instance as string
 
@@ -60,11 +63,13 @@ useEffect(() => {
   return () => window.removeEventListener('resize', checkWidth)
 }, [])
 
-  useEffect(() => {
+     useEffect(() => {
     async function loadRoster() {
+      if (authLoading) return
+
       const { data: league } = await supabase
         .from('leagues')
-        .select('id, name')
+        .select('id, name, league_type, is_archived')
         .eq('league_type', type)
         .eq('slug', instance)
         .single()
@@ -72,6 +77,26 @@ useEffect(() => {
       if (!league) {
         setPageLoading(false)
         return
+      }
+
+      if (league.is_archived) {
+        router.push(`/leagues/${type}`)
+        return
+      }
+      if (league.league_type === 'sandbox') {
+        if (!user) {
+          router.push('/')
+          return
+        }
+        const { data: profileCheck } = await supabase
+          .from('profiles')
+          .select('is_global_admin')
+          .eq('user_id', user.id)
+          .single()
+        if (!profileCheck?.is_global_admin) {
+          router.push('/')
+          return
+        }
       }
 
       setLeagueName(league.name)
@@ -170,8 +195,8 @@ useEffect(() => {
       setPageLoading(false)
     }
 
-    loadRoster()
-  }, [type, instance])
+        loadRoster()
+  }, [type, instance, authLoading, user])
 
   if (pageLoading) {
     return (

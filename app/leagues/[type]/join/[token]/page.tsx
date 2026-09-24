@@ -19,7 +19,7 @@ export default function JoinLeaguePage() {
     async function handleJoin() {
 const { data: league } = await supabase
   .from('leagues')
-  .select('id, name, slug, host_user_id, is_frozen, max_members')
+  .select('id, name, slug, host_user_id, is_frozen, max_members, draft_status')
   .eq('invite_token', token)
   .eq('is_private', true)
   .single()
@@ -33,6 +33,12 @@ if (!league) {
 if (league.is_frozen) {
   setStatus('error')
   setMessage('This league is currently frozen because the host\u2019s membership dropped below Crew Chief. Please check back later.')
+  return
+}
+
+if (league.draft_status === 'in_progress' || league.draft_status === 'completed') {
+  setStatus('error')
+  setMessage('This league\u2019s draft procedure has already started. Registration is closed.')
   return
 }
 
@@ -159,7 +165,7 @@ const { data: hostNotifyProfile } = await supabase
         <>
           <div style={{ fontSize: '2.5rem' }}>⚠️</div>
           <p style={{ color: '#ff6b6b', textAlign: 'center', maxWidth: '400px' }}>{message}</p>
-          <a href={`/leagues/${type}`} style={{ color: '#f0b429' }}>← Back to 🏝️ Secrets on the Beach</a>
+          <a href={`/leagues/${type}`} style={{ color: '#f0b429' }}>← Back to League</a>
         </>
       ) : (
         <p>Joining your league...</p>
