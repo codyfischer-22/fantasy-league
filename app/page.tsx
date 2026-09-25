@@ -26,6 +26,11 @@ const leagueCircleBackgrounds: Record<string, React.CSSProperties> = {
     backgroundSize: 'cover',
     backgroundPosition: 'center',
   },
+  'sandbox':{
+    backgroundImage: `url('/textures/sandbox.jpg')`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+  }
 }
 
 export default function Home() {
