@@ -622,7 +622,7 @@ effectiveCap = league.max_members ?? (hostProfile?.tier === 'teamprincipal' ? 18
     setTimeout(() => setCopied(false), 2000)
   }}
   style={{
-    backgroundColor: copied ? '#24a720' : '#f0b429',
+    backgroundColor: copied ? '#2bda25' : '#f0b429',
     color: copied ? '#ffffff' : '#0a0a0f',
     border: 'none',
     padding: '8px 16px',
@@ -680,7 +680,7 @@ effectiveCap = league.max_members ?? (hostProfile?.tier === 'teamprincipal' ? 18
       onClick={() => setShowStartDraftConfirm(true)}
       className="league-card"
       style={{
-        backgroundColor: '#24a720',
+        backgroundColor: '#2bda25',
         color: '#ffffff',
         border: '2px solid #ffff',
         padding: '10px 20px',

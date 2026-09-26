@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useRef } from 'react'
 import ChatPanel from '@/components/ChatPanel'
-import { MessageCircle, Bell, Settings, Menu, Mail, HandCoins, UserPen, MicSignal } from 'lucide-react'
+import { MessageCircle, Bell, Settings, Menu, Mail, HandCoins, UserPen, MicSignal, Swords, TreePalm, ChessRook, CarFront, Engine } from 'lucide-react'
 
 type Notification = {
   id: number
@@ -16,7 +16,6 @@ type Notification = {
 export default function Header() {
   const { user, loading } = useAuth()
   const router = useRouter()
-  const [showExtrasModal, setShowExtrasModal] = useState(false)
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [showNotifications, setShowNotifications] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
@@ -27,6 +26,20 @@ export default function Header() {
   const notifRef = useRef<HTMLDivElement | null>(null)
   const [showHamburgerMenu, setShowHamburgerMenu] = useState(false)
 const hamburgerRef = useRef<HTMLDivElement | null>(null)
+const [showLeaguesMenu, setShowLeaguesMenu] = useState(false)
+const leaguesRef = useRef<HTMLDivElement | null>(null)
+
+useEffect(() => {
+  function handleClickOutsideLeagues(e: MouseEvent) {
+    if (leaguesRef.current && !leaguesRef.current.contains(e.target as Node)) {
+      setShowLeaguesMenu(false)
+    }
+  }
+  if (showLeaguesMenu) {
+    document.addEventListener('mousedown', handleClickOutsideLeagues)
+  }
+  return () => document.removeEventListener('mousedown', handleClickOutsideLeagues)
+}, [showLeaguesMenu])
 
 useEffect(() => {
   function handleClickOutsideHamburger(e: MouseEvent) {
@@ -199,7 +212,63 @@ useEffect(() => {
       </a>
 
       <nav style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center' }}>
-<a href="/#leagues" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.2rem' }}>Leagues</a>         <a href="/#tiers" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Features</a>
+<div ref={leaguesRef} style={{ position: 'relative' }}>
+  <button
+    onClick={() => {
+      setShowLeaguesMenu(!showLeaguesMenu)
+      setShowHamburgerMenu(false)
+      setShowNotifications(false)
+      setIsChatOpen(false)
+    }}
+    className="btn"
+    style={{
+      background: 'none',
+      border: 'none',
+      color: '#f0b429',
+      fontSize: '1.2rem',
+      cursor: 'pointer',
+      padding: 0,
+      fontFamily: 'inherit'
+    }}
+  >
+    Leagues
+  </button>
+
+  {showLeaguesMenu && (
+    <div style={{
+      position: 'absolute',
+      top: '36px',
+      left: 0,
+      backgroundColor: '#1a1a2e',
+      border: '1px solid #f0b429',
+      borderRadius: '10px',
+      minWidth: '200px',
+      zIndex: 200,
+      padding: '8px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '-4px'
+    }}>
+{user && (
+  <a href="/#my-leagues" style={{ padding: '10px 12px', textDecoration: 'none', color: '#f0b429', fontSize: '0.95rem', borderRadius: '6px', fontWeight: 'bold', borderBottom: '1px solid #2a2a3e', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+    <Swords size={18} strokeWidth={1.5} /> My Leagues
+  </a>
+)}
+<a href="/#secrets-on-the-beach" style={{ padding: '10px 12px', textDecoration: 'none', color: '#ffffff', fontSize: '0.95rem', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+  <TreePalm size={18} strokeWidth={1.5} /> Survivor
+</a>
+<a href="/#uncharted-turretory" style={{ padding: '10px 12px', textDecoration: 'none', color: '#ffffff', fontSize: '0.95rem', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+  <ChessRook size={18} strokeWidth={1.5} /> The Traitors
+</a>
+<a href="/#paddock-politicks" style={{ padding: '10px 12px', textDecoration: 'none', color: '#ffffff', fontSize: '0.95rem', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+  <Engine size={18} strokeWidth={1.5} /> Formula 1
+</a>
+<a href="/#the-oval-offset" style={{ padding: '10px 12px', textDecoration: 'none', color: '#ffffff', fontSize: '0.95rem', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+  <CarFront size={18} strokeWidth={1.5} /> NASCAR
+</a>
+    </div>
+  )}
+</div>    <a href="/#tiers" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Features</a>
 <a href="/leagues/all/rules" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Scoring</a>
 <a href="/leagues/all/draft" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Timelines</a>
 
@@ -237,20 +306,19 @@ useEffect(() => {
       flexDirection: 'column',
       gap: '4px'
     }}>
-      {user && (
-        <a href="/account" style={{
-          padding: '10px 12px',
-          textDecoration: 'none',
-          color: '#ffffff',
-          fontSize: '1rem',
-          borderRadius: '6px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px'
-        }}>
-          <UserPen size={20} strokeWidth={1.5} /> My Account
-        </a>
-      )}
+
+           <a href="/contact" style={{
+        padding: '10px 12px',
+        textDecoration: 'none',
+        color: '#ffffff',
+        fontSize: '1rem',
+        borderRadius: '6px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px'
+      }}>
+        <Mail size={20} strokeWidth={1.5} /> Contact Us
+      </a>
 
       <a href="/media" style={{
         padding: '10px 12px',
@@ -265,18 +333,6 @@ useEffect(() => {
         <MicSignal size={20} strokeWidth={1.5} /> Original Media
       </a>
 
-      <a href="/contact" style={{
-        padding: '10px 12px',
-        textDecoration: 'none',
-        color: '#ffffff',
-        fontSize: '1rem',
-        borderRadius: '6px',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px'
-      }}>
-        <Mail size={20} strokeWidth={1.5} /> Contact Us
-      </a>
       <a href="/tip-jar" style={{
         padding: '10px 12px',
         textDecoration: 'none',
@@ -289,6 +345,22 @@ useEffect(() => {
       }}>
         <HandCoins size={22} strokeWidth={1.5} /> Support Trekkon
       </a>
+
+{user && (
+        <a href="/account" style={{
+          padding: '10px 12px',
+          textDecoration: 'none',
+          color: '#ffffff',
+          fontSize: '1rem',
+          borderRadius: '6px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px'
+        }}>
+          <UserPen size={20} strokeWidth={1.5} /> My Account
+        </a>
+      )}
+
       {isAdmin && (
         <a href="/admin/dashboard" style={{
           padding: '10px 12px',

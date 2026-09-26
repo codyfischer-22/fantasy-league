@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/AuthContext'
-import { Rat, Anchor, Drill, Rocket, ScrollText, ClipboardList, Earth, Lock, TestTubeDiagonal} from 'lucide-react'
+import { Rat, Anchor, Drill, Rocket, ScrollText, ClipboardList, Earth, Lock, TestTubeDiagonal, TreePalm, ChessRook } from 'lucide-react'
 
 type League = {
   id: number
@@ -58,7 +58,7 @@ useEffect(() => {
 
 const hubContent: Record<string, {
   title: string
-  emoji: string
+  icon: React.ComponentType<{ size?: number; color?: string; strokeWidth?: number }>
   intro: string[]
   demoHref?: string
   rulesDescription: string
@@ -66,7 +66,7 @@ const hubContent: Record<string, {
 }> = {
   'secrets-on-the-beach': {
     title: 'Welcome to the Beach!',
-    emoji: '🏝️',
+    icon: TreePalm,
     intro: [
       'For 25 years, our screens and hearts have been graced with the iconic television series Survivor. This fantasy league emerged for Season 50, with its zany fan favorites, and continues today for a new generation of players in Fiji and on this platform.',
 'Whether or not you\u2019ve played fantasy leagues before, please trust we\u2019ll guide you through this process. Draft tribes, make trades, watch episodes, stir up chatter, and then get off your couch to live your own adventure!',      
@@ -81,9 +81,9 @@ const hubContent: Record<string, {
 },
   'uncharted-turretory': {
     title: 'Welcome to the Turret!',
-    emoji: '🗡️',
+    icon: ChessRook,
     intro: [
-      'Remember that game you used play at band camp? The one where someone is murdered every night and justice is doled out every morning? Multiply that by Fegan Floop from <em>Spy Kids</em>, and you have an Emmy-winning reality competition show, <em>The Traitors</em>.',
+      'Remember that game you used play at band camp? The one ehere someone is murdered every night and justice is doled out every morning? Multiply that by Fegan Floop from <em>Spy Kids</em>, and you have an Emmy-winning reality competition show, <em>The Traitors</em>.',
       'Whether or not you\u2019ve played fantasy leagues before, please trust we\u2019ll guide you through this process. Draft teams, make trades, watch episodes, stir up chatter, and then get off your couch to live your own adventure!',
       'To ensure your spot, register by September 15 (11:59 PM CT).',
       'Drafts window is September 16-17 (7:00 PM CT).',
@@ -243,8 +243,9 @@ if (!hubContent[type]) {
           ← Back to Trekkon Fantasy Leagues
         </a>
 
-        <h1 style={{ color: '#f0b429', fontSize: 'clamp(2.0rem, 6vw, 3rem)', marginBottom: '24px', maxWidth: '900px', marginLeft: 'auto', marginRight: 'auto' }}>
-  {hubContent[type]?.emoji} {hubContent[type]?.title ?? 'Welcome!'}
+        <h1 style={{ color: '#f0b429', fontSize: 'clamp(2.0rem, 6vw, 3rem)', marginBottom: '24px', maxWidth: '900px', marginLeft: 'auto', marginRight: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
+  {hubContent[type]?.icon && React.createElement(hubContent[type].icon, { size: 50, color: '#ffffff', strokeWidth: 1.2 })}
+  {hubContent[type]?.title ?? 'Welcome!'}
 </h1>
 
 {!isMemberOfThisType && (
@@ -278,6 +279,43 @@ if (!hubContent[type]) {
           gap: '20px',
           marginBottom: '20px'
         }}>
+          <a href={`/leagues/${type}/rules`} style={{
+            backgroundColor: '#1a1a2e',
+            border: '3px solid #f0b429',
+            borderRadius: '12px',
+            padding: '24px',
+            textDecoration: 'none',
+            color: '#ffffff',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center'
+          }}>
+           <h2 style={{ color: '#f0b429', fontSize: 'clamp(1.1rem, 6.6vw, 1.7rem)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+  <ScrollText size={28} strokeWidth={2} color="#ffffff" style={{ flexShrink: 0 }} /> Rules & Scoring <span className="demo-arrow">→</span>
+</h2>
+            <p style={{ color: '#a0a0b0', fontSize: '1rem', lineHeight: '1.5' }}>
+  {hubContent[type]?.rulesDescription}
+</p>
+          </a>
+
+          <a href={`/leagues/${type}/draft`} style={{
+            backgroundColor: '#1a1a2e',
+            border: '3px solid #f0b429',
+            borderRadius: '12px',
+            padding: '24px',
+            textDecoration: 'none',
+            color: '#ffffff',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center'
+          }}>
+            <h2 style={{ color: '#f0b429', fontSize: 'clamp(1.1rem, 6.6vw, 1.7rem)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+  <ClipboardList size={28} strokeWidth={2} color="#ffffff" style={{ flexShrink: 0 }} /> Draft & Trading <span className="demo-arrow">→</span>
+</h2>
+         <p style={{ color: '#a0a0b0', fontSize: '1rem', lineHeight: '1.5' }}>
+  {hubContent[type]?.draftDescription}
+</p>
+          </a>
 
           <div style={{
             backgroundColor: '#1a1a2e',
@@ -291,8 +329,6 @@ if (!hubContent[type]) {
             <h2 style={{ color: '#f0b429', fontSize: 'clamp(1.1rem, 6.6vw, 1.7rem)', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
   <Earth size={28} color="#ffffff" strokeWidth={2} style={{ flexShrink: 0 }} /> Public Leagues
 </h2>
-
-
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {instances.length === 0 ? (
                 <p style={{ color: '#555570', fontSize: '0.9rem' }}>No public leagues available yet.</p>

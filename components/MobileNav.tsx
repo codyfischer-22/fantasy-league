@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import ChatPanel from '@/components/ChatPanel'
-import { Home, MessageCircle, Bell, KeyRound, Menu, UserPen, Mail, HandCoins, Settings, ScrollText, ClipboardList, Wallet, MicSignal } from 'lucide-react'
+import { Home, MessageCircle, Bell, KeyRound, Menu, UserPen, Mail, HandCoins, Settings, ScrollText, ClipboardList, Wallet, MicSignal, Swords, TreePalm, ChessRook, CarFront, Engine } from 'lucide-react'
 
 export default function MobileNav() {
   const { user } = useAuth()
@@ -16,6 +16,20 @@ export default function MobileNav() {
   const [showHamburgerMenu, setShowHamburgerMenu] = useState(false)
   const hamburgerRef = useRef<HTMLDivElement | null>(null)
   const [isAdmin, setIsAdmin] = useState(false)
+  const [showLeaguesMenu, setShowLeaguesMenu] = useState(false)
+const leaguesRef = useRef<HTMLDivElement | null>(null)
+
+useEffect(() => {
+  function handleClickOutsideLeagues(e: MouseEvent) {
+    if (leaguesRef.current && !leaguesRef.current.contains(e.target as Node)) {
+      setShowLeaguesMenu(false)
+    }
+  }
+  if (showLeaguesMenu) {
+    document.addEventListener('mousedown', handleClickOutsideLeagues)
+  }
+  return () => document.removeEventListener('mousedown', handleClickOutsideLeagues)
+}, [showLeaguesMenu])
 
   useEffect(() => {
     async function checkAdmin() {
@@ -189,10 +203,13 @@ export default function MobileNav() {
         padding: '8px 4px',
         zIndex: 150
       }}>
-        <a href="/" style={navItemStyle}>
-          <Home size={22} strokeWidth={2} />
-          <span style={navLabelStyle}>Leagues</span>
-        </a>
+        <button
+  onClick={() => { setShowLeaguesMenu(!showLeaguesMenu); setShowHamburgerMenu(false); setShowNotifications(false); setIsChatOpen(false) }}
+  style={navItemStyle}
+>
+  <Home size={22} strokeWidth={2} />
+  <span style={navLabelStyle}>Leagues</span>
+</button>
         {user && (
           <button
             onClick={() => { setIsChatOpen(!isChatOpen); setShowNotifications(false); setShowHamburgerMenu(false) }}
@@ -350,6 +367,41 @@ export default function MobileNav() {
         </div>
       )}
 
+{showLeaguesMenu && (
+  <div ref={leaguesRef} className="mobile-notif-panel" style={{
+    position: 'fixed',
+    bottom: '58px',
+    left: '16px',
+    width: '210px',
+    backgroundColor: '#1a1a2e',
+    border: '1px solid #f0b429',
+    borderRadius: '10px',
+    zIndex: 200,
+    padding: '8px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '-4px'
+  }}>
+    {user && (
+      <a href="/#my-leagues" style={{ padding: '10px 12px', textDecoration: 'none', color: '#f0b429', fontSize: '0.95rem', borderRadius: '6px', fontWeight: 'bold', borderBottom: '1px solid #2a2a3e', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <Swords size={18} strokeWidth={1.5} /> My Leagues
+      </a>
+    )}
+    <a href="/#secrets-on-the-beach" style={hamburgerLinkStyle}>
+      <TreePalm size={18} strokeWidth={1.5} /> Survivor
+    </a>
+    <a href="/#uncharted-turretory" style={hamburgerLinkStyle}>
+      <ChessRook size={18} strokeWidth={1.5} /> The Traitors
+    </a>
+    <a href="/#paddock-politicks" style={hamburgerLinkStyle}>
+      <Engine size={18} strokeWidth={1.5} /> Formula 1
+    </a>
+    <a href="/#the-oval-offset" style={hamburgerLinkStyle}>
+      <CarFront size={18} strokeWidth={1.5} /> NASCAR
+    </a>
+  </div>
+)}
+
       {showHamburgerMenu && (
   <div ref={hamburgerRef} className="mobile-notif-panel" style={{
     position: 'fixed',
@@ -368,11 +420,9 @@ export default function MobileNav() {
     gap: '2px'
   }}>
 
-            {user && (
-            <a href="/account" style={hamburgerLinkStyle}>
-              <UserPen size={22} strokeWidth={1} /> Account
-            </a>
-             )}
+     <a href="/contact" style={hamburgerLinkStyle}>
+         <Mail size={22} strokeWidth={1} /> Contact Us
+          </a>
 
             {user && (
   <a href="/leagues/all/rules" style={hamburgerLinkStyle}>
@@ -398,10 +448,12 @@ export default function MobileNav() {
          <a href="/tip-jar" style={hamburgerLinkStyle}>
          <HandCoins size={22} strokeWidth={1} /> Support Us
           </a>
-          
-          <a href="/contact" style={hamburgerLinkStyle}>
-         <Mail size={22} strokeWidth={1} /> Contact Us
-          </a>
+
+              {user && (
+            <a href="/account" style={hamburgerLinkStyle}>
+              <UserPen size={22} strokeWidth={1} /> Account
+            </a>
+             )}
 
         {isAdmin && (
             <a href="/admin/dashboard" style={hamburgerLinkStyle}>

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
-import { Rat, Anchor, Drill, Rocket, Earth, Lock, TestTubeDiagonal, Hammer, CornerLeftUp, Mail, Hourglass } from 'lucide-react'
+import { Rat, Anchor, Drill, Rocket, Earth, Lock, TestTubeDiagonal, Hammer, CornerLeftUp, Mail, Hourglass, TreePalm, ChessRook, CarFront, Engine, MessageCirclePlus } from 'lucide-react'
 
 type MyLeague = {
   name: string
@@ -189,8 +189,8 @@ This is your arena to compete with friends, family, and on-screen stars on beach
 
           
 
-     {showPersonalizedView && (
-  <section style={{ padding: '50px 40px 20px 40px' }}>
+    {showPersonalizedView && (
+  <section id="my-leagues" style={{ padding: '50px 40px 20px 40px' }}>
     <div style={{ maxWidth: '1100px', margin: '0 auto', marginTop: '8px' }}>
 <div className="league-circle-row" style={{
   display: 'flex',
@@ -270,9 +270,8 @@ This is your arena to compete with friends, family, and on-screen stars on beach
 }}>
 
             {/* Secrets on the Beach */}
-<div
-  className="league-card"
-  style={{
+<div id="secrets-on-the-beach" className="league-card" style=
+{{
     backgroundImage: `linear-gradient(rgba(26,26,46,.5), rgba(26,26,46,0.5)), url('/textures/sand.jpg')`,
 backgroundSize: 'cover',
 backgroundPosition: 'center',
@@ -283,9 +282,9 @@ backgroundPosition: 'center',
     flex: '0 1 350px'
   }}
 >
-  <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.3rem, 6vw, 1.65rem)', marginBottom: '8px' }}>
-    <span className="emoji-sotb">🏝️</span> Secrets on the Beach
-  </h3>
+  <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.3rem, 6vw, 1.65rem)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+  <TreePalm size={30} color='#ffffff' strokeWidth={1.5} /> Secrets on the Beach
+</h3>
   <p style={{ color: '#ffffff', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
     Set sail for this island adventure, going 25+ years strong, by drafting your tribe, winning challenges, and surviving the vote.
   </p>
@@ -400,9 +399,8 @@ backgroundPosition: 'center',
 </div>
 
         {/* Uncharted Turretory */}
-<div
-  className="league-card"
-  style={{
+<div id="uncharted-turretory" className="league-card" style=
+{{
     backgroundImage: `linear-gradient(rgba(26,26,46,.5), rgba(26,26,46,0.75)), url('/textures/traitors.jpg')`,
 backgroundSize: 'cover',
 backgroundPosition: 'center',
@@ -413,9 +411,9 @@ backgroundPosition: 'center',
     flex: '0 1 350px'
   }}
 >
-  <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.3rem, 6vw, 1.65rem)', marginBottom: '8px' }}>
-    <span className="emoji-turret">🗡️</span> Uncharted Turretory
-  </h3>
+  <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.3rem, 6vw, 1.65rem)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+  <ChessRook size={30} color='#ffffff' strokeWidth={1.5} /> Uncharted Turretory
+</h3>
   <p style={{ color: '#ffffff', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
     Scale the turret steps of Alan's Castle and decide who you'll back in this game of murder, banishment, and deception.
   </p>
@@ -536,7 +534,7 @@ backgroundPosition: 'center',
   gap: '16px'
 }}>
 {/* Paddock Politicks */}
-<div style={{
+<div id="paddock-politicks" style={{
   backgroundImage: `linear-gradient(rgba(26,26,46,.5), rgba(26,26,46,0.75)), url('/textures/paddock.jpg')`,
 backgroundSize: 'cover',
 backgroundPosition: 'center',
@@ -546,16 +544,16 @@ backgroundPosition: 'center',
     padding: '28px',
   flex: '0 1 350px'
 }}>
-  <h3 style={{
-    color: '#f0b429',
-    fontSize: 'clamp(1.5rem, 6vw, 1.7rem)',
-    marginBottom: '8px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px'
-  }}>
-    <span className="emoji-f1-home">🏎️</span> <span className="text-f1-shift-home">Paddock Politicks</span>
-  </h3>
+<h3 style={{
+  color: '#f0b429',
+  fontSize: 'clamp(1.5rem, 6vw, 1.7rem)',
+  marginBottom: '8px',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '6px'
+}}>
+  <Engine size={30} color='#ffffff' strokeWidth={1.5} /> Paddock Politicks
+</h3>
   <p style={{ color: '#ffffff', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
     Coming in 2027, travel the globe with world-class drivers up and down the grid over 24 weeks of high octane racing.
   </p>
@@ -577,7 +575,7 @@ backgroundPosition: 'center',
 </div>
 
 {/* The Oval Offset */}
-<div style={{
+<div id="the-oval-offset" style={{
    backgroundImage: `linear-gradient(rgba(26,26,46,.5), rgba(26,26,46,0.75)), url('/textures/oval.jpg')`,
 backgroundSize: 'cover',
 backgroundPosition: 'center',
@@ -595,7 +593,7 @@ backgroundPosition: 'center',
   alignItems: 'center',
   gap: '8px'
 }}>
-  <span>🚗</span> <span>The Oval Offset</span>
+  <CarFront size={30} strokeWidth={1.5} color="#ffffff" /> <span>The Oval Offset</span>
 </h3>
   <p style={{ color: '#ffffff', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
     Coming in 2027, climb through the cargo net for 36 weeks of American Thunder and race to the checkered flag.
@@ -628,8 +626,8 @@ backgroundPosition: 'center',
   flex: '0 1 350px'
   }}
   >
-            <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.5rem, 6vw, 1.7rem)', marginBottom: '11px', marginTop: '0px' }}>
-  <span className="emoji-suggest">💭</span> Suggest a Fandom
+            <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.5rem, 6vw, 1.7rem)', marginBottom: '11px', marginTop: '0px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+  <MessageCirclePlus size={30} strokeWidth={1.5} color="#ffffff" /> Suggest a Fandom
 </h3>
             <p style={{ color: '#ffffff', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '21.5px' }}>
 Got an idea for a league we should build next? Send us your concept and help shape the future of Trekkon Fantasy Leagues. 
