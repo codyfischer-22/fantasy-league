@@ -511,12 +511,13 @@ if (bumpedProfile?.email_opt_in) {
     return () => clearInterval(interval)
   }, [])
 
-  useEffect(() => {
+ useEffect(() => {
+  if (loading) return
   const pollInterval = setInterval(() => {
     loadDraftState()
   }, 5000)
   return () => clearInterval(pollInterval)
-}, [])
+}, [loading, user])
 
 useEffect(() => {
   if (

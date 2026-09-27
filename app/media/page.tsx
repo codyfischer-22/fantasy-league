@@ -1,6 +1,6 @@
 'use client'
 
-import { MicSignal, NotebookPen, SquarePlay } from 'lucide-react'
+import { MicSignal, NotebookPen, SquareLibrary } from 'lucide-react'
 
 export default function ExtrasPage() {
   return (
@@ -42,7 +42,7 @@ export default function ExtrasPage() {
         {/* Podcast Section */}
 <div style={{ marginBottom: '32px' }}>
   <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-    <MicSignal size={22} strokeWidth={2} color="#f0b429" />
+    <SquareLibrary size={22} strokeWidth={2} color="#f0b429" />
     Talkin' with Trekkon
   </h2>
   <iframe
