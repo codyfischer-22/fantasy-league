@@ -138,21 +138,25 @@ export default function ScoringLogPage() {
 
 useEffect(() => {
 async function loadLog() {
+  if (authLoading) return  // wait for auth to actually resolve before checking anything
+
   if (type === 'sandbox') {
     if (!user) {
       router.push('/')
       return
     }
-    const { data: profileCheck } = await supabase
-      .from('profiles')
-      .select('is_global_admin')
-      .eq('user_id', user.id)
-      .single()
-    if (!profileCheck?.is_global_admin) {
-      router.push('/')
-      return
-    }
+      const { data: profileCheck, error: profileError } = await supabase
+    .from('profiles')
+    .select('is_global_admin')
+    .eq('user_id', user.id)
+    .single()
+  console.log('profileCheck:', profileCheck, 'error:', profileError)
+  if (!profileCheck?.is_global_admin) {
+    console.log('redirecting: not global admin')
+    router.push('/')
+    return
   }
+}
 
   if (!user && type !== 'sotb-demo') {
     setPageLoading(false)
@@ -258,8 +262,8 @@ if ((scores && scores.length > 0) || (customEntries && customEntries.length > 0)
 
       setPageLoading(false)
     }
-    loadLog()
-  }, [type, fromInstance, user])
+   loadLog()
+}, [type, fromInstance, user, authLoading])
 
   if (pageLoading) {
     return (
