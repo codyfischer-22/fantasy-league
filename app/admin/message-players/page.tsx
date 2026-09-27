@@ -27,8 +27,7 @@ export default function MessagePlayersPage() {
   const [sendAsNotification, setSendAsNotification] = useState(true)
   const [sendAsEmail, setSendAsEmail] = useState(true)
   const [filterType, setFilterType] = useState('all')
-  const [allLeagues, setAllLeagues] = useState<{ id: number; name: string }[]>([])
-
+const [allLeagues, setAllLeagues] = useState<{ id: number; name: string; league_type: string; is_show_chat: boolean }[]>([])
 const applyFilter = async (type: string) => {
   setFilterType(type)
 
@@ -93,31 +92,45 @@ const applyFilter = async (type: string) => {
 }
 
   useEffect(() => {
-    async function checkAdmin() {
-      if (!user) {
-        setChecking(false)
-        return
-      }
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('is_global_admin')
-        .eq('user_id', user.id)
-        .single()
+  async function checkAdmin() {
+    if (!user) {
+      setChecking(false)
+      return
+    }
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_global_admin')
+      .eq('user_id', user.id)
+      .single()
 
-      if (profile?.is_global_admin) {
-        setIsAdmin(true)
-        const { data: profiles } = await supabase
-          .from('profiles')
-          .select('user_id, email, display_name, email_opt_in')
-          .order('display_name')
-        setAllProfiles(profiles ?? [])
+    if (profile?.is_global_admin) {
+      setIsAdmin(true)
+
+const excludedTestEmails = [
+  'test@fantasyleagues.com',
+  'test2@fantasyleagues.com',
+  'test3@fantasyleagues.com',
+  'test4@fantasyleagues.com',
+  'test5@fantasyleagues.com',
+  'test6@fantasyleagues.com',
+]
+
+const { data: profiles } = await supabase
+  .from('profiles')
+  .select('user_id, email, display_name, email_opt_in')
+  .order('display_name')
+setAllProfiles((profiles ?? []).filter((p) => !excludedTestEmails.includes(p.email)))
 
           const { data: leagues } = await supabase
-    .from('leagues')
-    .select('id, name')
-    .order('name')
-  setAllLeagues(leagues ?? [])
-      }
+  .from('leagues')
+  .select('id, name, league_type, is_show_chat')
+  .order('name')
+setAllLeagues(
+  (leagues ?? []).filter(
+    (l) => l.league_type !== 'sotb-demo' && l.league_type !== 'uncharted-turretory-demo' && !l.is_show_chat
+  )
+)
+    }
       setChecking(false)
     }
     if (!loading) checkAdmin()

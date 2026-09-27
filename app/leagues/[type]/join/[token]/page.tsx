@@ -4,6 +4,16 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
+import { getFreeAgentPool, type FreeAgent } from '@/lib/freeAgents'
+import FreeAgentClaimModal from '@/components/FreeAgentClaimModal'
+
+const castawayTermByLeague: Record<string, string> = {
+  'secrets-on-the-beach': 'Castaway',
+  'sotb-demo': 'Castaway',
+  'uncharted-turretory': 'Castle-Goer',
+  'uncharted-turretory-demo': 'Castle-Goer',
+  'sandbox': 'Contestant',
+}
 
 export default function JoinLeaguePage() {
   const params = useParams()
@@ -12,15 +22,17 @@ export default function JoinLeaguePage() {
   const router = useRouter()
   const { user, loading } = useAuth()
   const [leagueName, setLeagueName] = useState<string | null>(null)
-  const [status, setStatus] = useState<'checking' | 'error' | 'joining'>('checking')
   const [message, setMessage] = useState('')
+  const [status, setStatus] = useState<'checking' | 'error' | 'joining' | 'free-agent'>('checking')
+const [freeAgentPool, setFreeAgentPool] = useState<FreeAgent[]>([])
+
+const [freeAgentLeague, setFreeAgentLeague] = useState<{ id: number; name: string; slug: string } | null>(null)
 
   useEffect(() => {
     async function handleJoin() {
 const { data: league } = await supabase
   .from('leagues')
-  .select('id, name, slug, host_user_id, is_frozen, max_members, draft_status')
-  .eq('invite_token', token)
+.select('id, name, slug, league_type, host_user_id, is_frozen, max_members, draft_status')  .eq('invite_token', token)
   .eq('is_private', true)
   .single()
 
@@ -36,17 +48,25 @@ if (league.is_frozen) {
   return
 }
 
-if (league.draft_status === 'in_progress' || league.draft_status === 'completed') {
-  setStatus('error')
-  setMessage('This league\u2019s draft procedure has already started. Registration is closed.')
+     if (!user) {
+  localStorage.setItem('pendingInvitePath', `/leagues/${type}/join/${token}`)
+  router.push('/signup')
   return
 }
 
-      if (!user) {
-        localStorage.setItem('pendingInvitePath', `/leagues/${type}/join/${token}`)
-        router.push('/signup')
-        return
-      }
+
+if (league.draft_status === 'in_progress' || league.draft_status === 'completed') {
+  const pool = await getFreeAgentPool(league.id, league.league_type)
+  if (pool.length < 3) {
+    setStatus('error')
+    setMessage('This league\u2019s draft procedure has already started and no free agent spots remain. Registration is closed.')
+    return
+  }
+  setFreeAgentPool(pool)
+  setFreeAgentLeague({ id: league.id, name: league.name, slug: league.slug })
+  setStatus('free-agent')
+  return
+}
 
       setStatus('joining')
 
@@ -161,15 +181,27 @@ const { data: hostNotifyProfile } = await supabase
       gap: '16px',
       padding: '40px'
     }}>
-      {status === 'error' ? (
-        <>
-          <div style={{ fontSize: '2.5rem' }}>⚠️</div>
-          <p style={{ color: '#ff6b6b', textAlign: 'center', maxWidth: '400px' }}>{message}</p>
-          <a href={`/leagues/${type}`} style={{ color: '#f0b429' }}>← Back to League</a>
-        </>
-      ) : (
-        <p>Joining your league...</p>
-      )}
+{status === 'error' ? (
+  <>
+    <p style={{ color: '#ff6b6b', textAlign: 'center', maxWidth: '400px' }}>{message}</p>
+    <a href={`/leagues/${type}`} style={{ color: '#f0b429' }}>← Back to League</a>
+  </>
+) : status === 'free-agent' ? (
+  <FreeAgentClaimModal
+    open={true}
+    leagueId={freeAgentLeague!.id}
+    leagueName={freeAgentLeague!.name}
+    leagueSlug={freeAgentLeague!.slug}
+    leagueType={type}
+    userId={user!.id}
+    pool={freeAgentPool}
+    castawayTerm={castawayTermByLeague[type] ?? 'Contestant'}
+    onClose={() => router.push(`/leagues/${type}`)}
+    onClaimed={() => router.push(`/leagues/${type}/${freeAgentLeague!.slug}`)}
+  />
+) : (
+  <p>Joining your league...</p>
+)}
     </main>
   )
 }

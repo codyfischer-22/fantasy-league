@@ -47,10 +47,17 @@ export default function LeagueSettingsPage() {
         .eq('slug', instance)
         .single()
 
-      if (!leagueData || leagueData.host_user_id !== user.id) {
-        router.push(`/leagues/${type}/${instance}`)
-        return
-      }
+    const { data: profileCheck } = await supabase
+  .from('profiles')
+  .select('is_global_admin')
+  .eq('user_id', user.id)
+  .maybeSingle()
+const isGlobalAdmin = profileCheck?.is_global_admin ?? false
+
+if (!leagueData || (leagueData.host_user_id !== user.id && !isGlobalAdmin)) {
+  router.push(`/leagues/${type}/${instance}`)
+  return
+}
       if (leagueData.is_archived) {
         router.push(`/leagues/${type}`)
         return
@@ -92,10 +99,11 @@ const { data: profileData } = await supabase
   .single()
 setUserTier(profileData?.tier ?? null)
 
-      const { data: memberRows } = await supabase
-        .from('league_members')
-        .select('user_id')
-        .eq('league_id', leagueData.id)
+     const { data: memberRows } = await supabase
+  .from('league_members')
+  .select('user_id, joined_at')
+  .eq('league_id', leagueData.id)
+  .order('joined_at', { ascending: true })
 
       if (memberRows && memberRows.length > 0) {
         const memberIds = memberRows.map((m) => m.user_id)

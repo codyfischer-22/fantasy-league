@@ -43,19 +43,11 @@ const sections: CardDef[] = [
     globalOnly: true,
   },
   {
-    label: 'League & Season Management',
+    label: 'Leagues Overview',
     description: 'Create, edit, and archive leagues across all league types.',
     icon: Trophy,
-    href: null,
-    status: 'planned',
-    globalOnly: true,
-  },
-  {
-    label: 'Private League Oversight',
-    description: 'View and moderate all privately-hosted leagues in one place.',
-    icon: Shield,
-    href: null,
-    status: 'planned',
+    href: '/admin/leagues',
+    status: 'live',
     globalOnly: true,
   },
   {
@@ -70,14 +62,6 @@ const sections: CardDef[] = [
     label: 'Site Health',
     description: 'Basic statistics and monitoring: player counts, active leagues, error logs, etc.',
     icon: Activity,
-    href: null,
-    status: 'planned',
-    globalOnly: true,
-  },
-  {
-    label: 'League Archive',
-    description: 'Browse and preserve past completed leagues and seasons.',
-    icon: Archive,
     href: null,
     status: 'planned',
     globalOnly: true,
@@ -171,33 +155,35 @@ export default function AdminDashboardPage() {
             }
 
             const cardContent = (
-              <>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                  {isLockedForRole ? (
-                    <Lock size={26} strokeWidth={1.75} color="#555570" />
-                  ) : (
-                    <Icon size={28} strokeWidth={1.75} color={isClickable ? '#f0b429' : '#555570'} />
-                  )}
-                  <span style={{
-                    fontSize: '0.68rem',
-                    fontWeight: 'bold',
-                    padding: '2px 10px',
-                    borderRadius: '20px',
-                    backgroundColor: badgeBg,
-                    color: badgeColor,
-                    whiteSpace: 'nowrap',
-                  }}>
-                    {badgeLabel}
-                  </span>
-                </div>
-                <div style={{ fontSize: '1.05rem', fontWeight: 'bold', marginBottom: '6px', color: isClickable ? '#ffffff' : '#a0a0b0' }}>
-                  {section.label}
-                </div>
-                <div style={{ fontSize: '0.82rem', color: '#7a7a90', lineHeight: '1.5' }}>
-                  {section.description}
-                </div>
-              </>
-            )
+  <>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        {isLockedForRole ? (
+          <Lock size={26} strokeWidth={1.75} color="#555570" />
+        ) : (
+          <Icon size={28} strokeWidth={1.75} color={isClickable ? '#f0b429' : '#555570'} />
+        )}
+        <span style={{ fontSize: '1.05rem', fontWeight: 'bold', color: isClickable ? '#ffffff' : '#a0a0b0' }}>
+          {section.label}
+        </span>
+      </div>
+      <span style={{
+        fontSize: '0.68rem',
+        fontWeight: 'bold',
+        padding: '2px 10px',
+        borderRadius: '20px',
+        backgroundColor: badgeBg,
+        color: badgeColor,
+        whiteSpace: 'nowrap',
+      }}>
+        {badgeLabel}
+      </span>
+    </div>
+    <div style={{ fontSize: '0.82rem', color: '#7a7a90', lineHeight: '1.5' }}>
+      {section.description}
+    </div>
+  </>
+)
 
             const cardStyle = {
               backgroundColor: '#1a1a2e',

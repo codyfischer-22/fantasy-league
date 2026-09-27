@@ -188,9 +188,22 @@ setLeague(leagueData)
     }
   })
 
-  // ---- Actions ----
+  // ---- Actions ---- //
   const handleMakePick = async (castawayId: number, castawayName: string) => {
     if (!user || !league || !isMyTurn) return
+
+ const { data: existingPick } = await supabase
+  .from('draft_picks')
+  .select('id')
+  .eq('league_id', league.id)
+  .eq('pick_number', league.current_pick_number)
+  .maybeSingle()
+
+if (existingPick) {
+  console.warn('Pick already made for this slot; skipping duplicate.')
+  return
+}
+
     const currentRound = Math.ceil(league.current_pick_number / members.length)
     setPicking(true)
 
@@ -228,6 +241,11 @@ if (advanceError) {
 }
 
 if (isDraftComplete) {
+await supabase
+    .from('leagues')
+    .update({ base_clone_count: baseClone })
+    .eq('id', league.id)
+
   await supabase.from('notifications').insert(
     members.map((m) => ({
       user_id: m.user_id,
@@ -273,6 +291,20 @@ await loadDraftState()
 
 const handleMissedPick = async () => {
   if (!league) return
+
+const { data: existingPick } = await supabase
+    .from('draft_picks')
+    .select('id')
+    .eq('league_id', league.id)
+    .eq('pick_number', league.current_pick_number)
+    .maybeSingle()
+
+  if (existingPick) {
+    console.warn('Pick already made for this slot — skipping duplicate.')
+    setHandlingMissedPick(false)
+    return
+  }
+
   const missedUserId = currentPickerId
   const configuredBehavior = league.missed_pick_behavior || 'bump_to_back'
 
@@ -364,6 +396,11 @@ if (missedProfile?.email_opt_in) {
 }
 
 if (isDraftComplete) {
+  await supabase
+    .from('leagues')
+    .update({ base_clone_count: baseClone })
+    .eq('id', league.id)
+
   await supabase.from('notifications').insert(
     members.map((m) => ({
       user_id: m.user_id,

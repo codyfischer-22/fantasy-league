@@ -881,7 +881,8 @@ const isEliminatedThisEpisode =
   backgroundColor: '#1a1a2e',
   border: '1px solid #2a2a3e',
   borderRadius: '10px',
-  padding: '20px'
+  padding: '20px',
+  gap: '12px',
 }}>
   <h3 style={{ color: '#f0b429', fontSize: '1.1rem', marginBottom: '10px' }}>
     Weekly Predictions Mini Game
@@ -889,6 +890,8 @@ const isEliminatedThisEpisode =
   <p style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '16px' }}>
     Automatically scores every player's prediction for this episode using whoever's marked eliminated (💀) above.
   </p>
+  
+  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
   <button
     onClick={handleResolvePredictions}
     disabled={resolvingPredictions}
@@ -922,7 +925,7 @@ const isEliminatedThisEpisode =
     >
       {awardingBonus ? 'Awarding...' : 'Award Bonus (+50)'}
     </button>
-  )}
+  )} </div>
 
 
   {predictionMessage && (

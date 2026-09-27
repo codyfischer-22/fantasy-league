@@ -13,6 +13,7 @@ type LogEntry = {
   castaway_name: string | null
   rank_choice: number | null
   was_auto_assigned: boolean
+  is_free_agent_claim: boolean
   event_type: 'pick' | 'bumped_to_back'
 }
 
@@ -77,7 +78,7 @@ if (league.league_type === 'sandbox') {
 
 const { data: picks } = await supabase
   .from('draft_picks')
-  .select('pick_number, round, original_user_id, castaway_id, drafted_at, was_auto_assigned')
+  .select('pick_number, round, original_user_id, castaway_id, drafted_at, was_auto_assigned, is_free_agent_claim')
   .eq('league_id', league.id)
   .order('pick_number')
 
@@ -129,18 +130,20 @@ const castawayIds = [...new Set(safePicks.map((p) => p.castaway_id))]
   castaway_name: castawayMap.get(p.castaway_id) ?? `Unknown ${castawayTerm}`,
   rank_choice: rankMap.get(`${p.original_user_id}-${p.castaway_id}`) ?? null,
   was_auto_assigned: p.was_auto_assigned ?? false,
+  is_free_agent_claim: p.is_free_agent_claim ?? false,
   event_type: 'pick',
 }))
 
-        const eventEntries: LogEntry[] = safeEvents.map((e) => ({
-          pick_number: e.pick_number,
-          round: null,
-          display_name: nameMap.get(e.user_id) ?? 'Unnamed Player',
-          castaway_name: null,
-          rank_choice: null,
-          was_auto_assigned: false,
-          event_type: 'bumped_to_back',
-        }))
+       const eventEntries: LogEntry[] = safeEvents.map((e) => ({
+  pick_number: e.pick_number,
+  round: null,
+  display_name: nameMap.get(e.user_id) ?? 'Unnamed Player',
+  castaway_name: null,
+  rank_choice: null,
+  was_auto_assigned: false,
+  is_free_agent_claim: false,
+  event_type: 'bumped_to_back',
+}))
 
         const entries = [...pickEntries, ...eventEntries].sort((a, b) => a.pick_number - b.pick_number)
 
@@ -222,8 +225,11 @@ const castawayIds = [...new Set(safePicks.map((p) => p.castaway_id))]
               <> — <strong>{entry.display_name}</strong> missed their pick and was bumped to back of the draft.</>
             ) : (
               <>
-                {' '}(Round {entry.round}) — <strong>{entry.display_name}</strong> {entry.was_auto_assigned ? 'missed pick & randomly assigned' : 'selected'} {entry.castaway_name}.
-              </>
+{entry.is_free_agent_claim ? (
+  <> — <strong>{entry.display_name}</strong> joined late and claimed {entry.castaway_name}.</>
+) : (
+  <> (Round {entry.round}) — <strong>{entry.display_name}</strong> {entry.was_auto_assigned ? 'missed pick & randomly assigned' : 'selected'} {entry.castaway_name}.</>
+)}              </>
             )}
           </div>
 {!entry.was_auto_assigned && !isPrivateLeague && (

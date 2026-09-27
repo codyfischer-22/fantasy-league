@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { RefreshCw } from 'lucide-react'
+import { getFreeAgentPool, type FreeAgent } from '@/lib/freeAgents'
 
 type Castaway = {
   id: number
@@ -89,9 +90,14 @@ export default function TradePortalPage() {
   const [isPrivateLeague, setIsPrivateLeague] = useState(false)
   const [historyLimit, setHistoryLimit] = useState(10)
   const [reloadTrigger, setReloadTrigger] = useState(0)
-const castawayTerm = castawayTermByLeague[type] ?? 'Contestant'
-const tradesFrozen = isTradeFrozen(type)
-
+  const castawayTerm = castawayTermByLeague[type] ?? 'Contestant'
+  const tradesFrozen = isTradeFrozen(type)
+  const [freeAgentPool, setFreeAgentPool] = useState<FreeAgent[]>([])
+const [selectedDropId, setSelectedDropId] = useState<number | null>(null)
+const [selectedAddId, setSelectedAddId] = useState<number | null>(null)
+const [waiverSubmitting, setWaiverSubmitting] = useState(false)
+const [waiverMessage, setWaiverMessage] = useState('')
+const [activeTab, setActiveTab] = useState<'trade' | 'waiver'>('trade')
 
   const selectStyle = {
     width: '100%',
@@ -109,6 +115,110 @@ const tradesFrozen = isTradeFrozen(type)
     backgroundPosition: 'right 8px center',
     backgroundSize: '16px',
   }
+
+  const handleWaiverClaim = async () => {
+  if (!user || !leagueId || !selectedDropId || !selectedAddId) return
+
+  if (isTradeFrozen(type)) {
+    setWaiverMessage('Free agent moves are frozen for 24 hours after an episode airs. Please try again later.')
+    return
+  }
+
+  setWaiverSubmitting(true)
+  setWaiverMessage('')
+
+  const { data: ownedCheck } = await supabase
+    .from('draft_picks')
+    .select('id')
+    .eq('league_id', leagueId)
+    .eq('user_id', user.id)
+    .eq('castaway_id', selectedDropId)
+    .maybeSingle()
+
+  if (!ownedCheck) {
+    setWaiverSubmitting(false)
+    setWaiverMessage('You no longer own that castaway.')
+    return
+  }
+
+  const { data: leagueRow } = await supabase
+    .from('leagues')
+    .select('base_clone_count')
+    .eq('id', leagueId)
+    .single()
+
+  const { data: currentPicks } = await supabase
+    .from('draft_picks')
+    .select('castaway_id')
+    .eq('league_id', leagueId)
+
+  const draftedCount = (currentPicks ?? []).filter((p) => p.castaway_id === selectedAddId).length
+  const remaining = (leagueRow?.base_clone_count ?? 0) - draftedCount
+
+  if (remaining <= 0) {
+    setWaiverSubmitting(false)
+    setWaiverMessage('That contestant was just claimed by someone else. Please pick again.')
+    return
+  }
+
+  const { error: dropError } = await supabase
+    .from('draft_picks')
+    .delete()
+    .eq('id', ownedCheck.id)
+
+  if (dropError) {
+    setWaiverSubmitting(false)
+    setWaiverMessage('Something went wrong dropping your castaway. Please try again.')
+    return
+  }
+
+  const { data: maxPickRow } = await supabase
+    .from('draft_picks')
+    .select('pick_number')
+    .eq('league_id', leagueId)
+    .order('pick_number', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  const nextPickNumber = (maxPickRow?.pick_number ?? 0) + 1
+
+  const { error: addError } = await supabase.from('draft_picks').insert({
+    league_id: leagueId,
+    user_id: user.id,
+    castaway_id: selectedAddId,
+    round: 5,
+    pick_number: nextPickNumber,
+    original_user_id: user.id,
+    is_free_agent_claim: true,
+  })
+
+  setWaiverSubmitting(false)
+
+  if (addError) {
+    setWaiverMessage('Something went wrong adding your new pick. Please contact support; your dropped castaway may need to be restored.')
+    return
+  }
+
+  setWaiverMessage('Roster updated!')
+  setSelectedDropId(null)
+  setSelectedAddId(null)
+  setReloadTrigger((prev) => prev + 1)
+}
+
+useEffect(() => {
+  if (activeTab === 'waiver' && freeAgentPool.length === 0) {
+    setActiveTab('trade')
+  }
+}, [freeAgentPool, activeTab])
+
+useEffect(() => {
+  async function loadPool() {
+    if (!leagueId) return
+    const pool = await getFreeAgentPool(leagueId, type)
+    setFreeAgentPool(pool)
+  }
+  loadPool()
+}, [leagueId, type, reloadTrigger])
 
   useEffect(() => {
     async function loadLeague() {
@@ -133,12 +243,12 @@ const tradesFrozen = isTradeFrozen(type)
         .eq('id', leagueId)
         .single()
 
-        if (leagueData?.is_archived) {   // or leagueData?.is_archived — match whatever variable name that file uses
-  router.push(`/leagues/${type}`)
-  return
-}
+      if (leagueData?.is_archived) {
+        router.push(`/leagues/${type}`)
+        return
+      }
 
-if (leagueData?.league_type === 'sandbox') {
+      if (leagueData?.league_type === 'sandbox') {
         if (!user) {
           router.push('/')
           return
@@ -327,17 +437,17 @@ if (leagueData?.league_type === 'sandbox') {
     loadTheirCastaways()
   }, [leagueId, selectedTargetPlayer])
 
-async function handleConfirmPropose() {
-  if (!user || !leagueId || !selectedTargetPlayer || !selectedOfferedId || !selectedRequestedId) return
+  async function handleConfirmPropose() {
+    if (!user || !leagueId || !selectedTargetPlayer || !selectedOfferedId || !selectedRequestedId) return
 
-  if (isTradeFrozen(type)) {
-    setMessage('Trades are frozen for 24 hours after an episode. Please try again later.')
-    setSubmitting(false)
-    return
-  }
+    if (isTradeFrozen(type)) {
+      setMessage('Trades are frozen for 24 hours after an episode. Please try again later.')
+      setSubmitting(false)
+      return
+    }
 
-  setSubmitting(true)
-  setMessage('')
+    setSubmitting(true)
+    setMessage('')
     const { data: statusCheck } = await supabase
       .from('castaways')
       .select('id, status')
@@ -416,36 +526,36 @@ async function handleConfirmPropose() {
       link: `/leagues/${type}/${instance}/trade-portal`,
     })
 
-const { data: targetProfile } = await supabase
-  .from('profiles')
-  .select('email, display_name, email_opt_in')
-  .eq('user_id', selectedTargetPlayer.user_id)
-  .single()
+    const { data: targetProfile } = await supabase
+      .from('profiles')
+      .select('email, display_name, email_opt_in')
+      .eq('user_id', selectedTargetPlayer.user_id)
+      .single()
 
-if (targetProfile?.email_opt_in) {
-  const { data: { session } } = await supabase.auth.getSession()
-  const accessToken = session?.access_token
+    if (targetProfile?.email_opt_in) {
+      const { data: { session } } = await supabase.auth.getSession()
+      const accessToken = session?.access_token
 
-  await fetch('/api/send-notification-email', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify({
-      recipients: [{
-        email: targetProfile.email,
-        playerName: targetProfile.display_name || 'Player',
-      }],
-      subject: `You've received a trade offer in ${leagueName}!`,
-      message: `You've received a trade offer in ${leagueName}! Head to the Trade Portal to review it.`,
-      linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}/trade-portal`,
-      linkText: 'View Trade Portal →',
-    }),
-  })
-  }
+      await fetch('/api/send-notification-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          recipients: [{
+            email: targetProfile.email,
+            playerName: targetProfile.display_name || 'Player',
+          }],
+          subject: `You've received a trade offer in ${leagueName}!`,
+          message: `You've received a trade offer in ${leagueName}! Head to the Trade Portal to review it.`,
+          linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}/trade-portal`,
+          linkText: 'View Trade Portal →',
+        }),
+      })
+    }
 
-  setMessage('Trade offer sent!')
+    setMessage('Trade offer sent!')
     setShowConfirm(false)
     setSelectedOfferedId(null)
     setSelectedTargetPlayer(null)
@@ -455,18 +565,37 @@ if (targetProfile?.email_opt_in) {
   }
 
   async function handleWithdraw(tradeId: string) {
-    const { error } = await supabase
+    const { error, count } = await supabase
       .from('trades')
-      .update({ status: 'withdrawn', resolved_at: new Date().toISOString() })
+      .update(
+        { status: 'withdrawn', resolved_at: new Date().toISOString() },
+        { count: 'exact' }
+      )
       .eq('id', tradeId)
+      .in('status', ['pending', 'pending_host_approval'])
+
     if (error) {
       console.error('Error withdrawing trade:', JSON.stringify(error, null, 2))
       return
+    }
+    if (!count || count === 0) {
+      setMessage('This trade has already been resolved and can no longer be withdrawn.')
     }
     setReloadTrigger((prev) => prev + 1)
   }
 
   async function executeTrade(trade: Trade) {
+    const { data: currentTrade } = await supabase
+      .from('trades')
+      .select('status')
+      .eq('id', trade.id)
+      .single()
+
+    if (currentTrade?.status !== 'pending' && currentTrade?.status !== 'pending_host_approval') {
+      console.warn('executeTrade called on a trade that is no longer pending — skipping.')
+      return
+    }
+
     const { data: receiverPicks } = await supabase
       .from('draft_picks')
       .select('castaway_id')
@@ -512,22 +641,28 @@ if (targetProfile?.email_opt_in) {
       console.error('Error updating trade status:', JSON.stringify(statusError, null, 2))
       return
     }
-    const { error: error1 } = await supabase
+    const { error: error1, count: count1 } = await supabase
       .from('draft_picks')
-      .update({ user_id: trade.receiving_user_id })
+      .update({ user_id: trade.receiving_user_id }, { count: 'exact' })
       .eq('league_id', leagueId)
       .eq('castaway_id', trade.offered_castaway_id)
       .eq('user_id', trade.proposing_user_id)
-    const { error: error2 } = await supabase
+    const { error: error2, count: count2 } = await supabase
       .from('draft_picks')
-      .update({ user_id: trade.proposing_user_id })
+      .update({ user_id: trade.proposing_user_id }, { count: 'exact' })
       .eq('league_id', leagueId)
       .eq('castaway_id', trade.requested_castaway_id)
       .eq('user_id', trade.receiving_user_id)
-    if (error1 || error2) {
-      console.error('Error executing trade swap:', JSON.stringify(error1 || error2, null, 2))
+
+    if (error1 || error2 || count1 !== 1 || count2 !== 1) {
+      console.error('Trade failed to apply cleanly — rolling back trade status.')
+      await supabase
+        .from('trades')
+        .update({ status: 'declined', declined_by: 'system', resolved_at: new Date().toISOString() })
+        .eq('id', trade.id)
       return
     }
+
     await supabase.from('notifications').insert([
       {
         user_id: trade.proposing_user_id,
@@ -541,50 +676,57 @@ if (targetProfile?.email_opt_in) {
       },
     ])
 
-const { data: tradeProfiles } = await supabase
-  .from('profiles')
-  .select('email, display_name, email_opt_in')
-  .in('user_id', [trade.proposing_user_id, trade.receiving_user_id])
-  .eq('email_opt_in', true)
+    const { data: tradeProfiles } = await supabase
+      .from('profiles')
+      .select('email, display_name, email_opt_in')
+      .in('user_id', [trade.proposing_user_id, trade.receiving_user_id])
+      .eq('email_opt_in', true)
 
-if (tradeProfiles && tradeProfiles.length > 0) {
-  const { data: { session } } = await supabase.auth.getSession()
-  const accessToken = session?.access_token
+    if (tradeProfiles && tradeProfiles.length > 0) {
+      const { data: { session } } = await supabase.auth.getSession()
+      const accessToken = session?.access_token
 
-  await fetch('/api/send-notification-email', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify({
-      recipients: tradeProfiles.map((p) => ({
-        email: p.email,
-        playerName: p.display_name || 'Player',
-      })),
-      subject: `Trade accepted in ${leagueName}!`,
-      message: `Your trade offer in ${leagueName} was accepted!`,
-      linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}/trade-portal`,
-      linkText: 'View Trade Portal →',
-    }),
-  })
+      await fetch('/api/send-notification-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          recipients: tradeProfiles.map((p) => ({
+            email: p.email,
+            playerName: p.display_name || 'Player',
+          })),
+          subject: `Trade accepted in ${leagueName}!`,
+          message: `Your trade offer in ${leagueName} was accepted!`,
+          linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}/trade-portal`,
+          linkText: 'View Trade Portal →',
+        }),
+      })
+    }
   }
-}
 
-async function handleAccept(trade: Trade) {
-  if (isTradeFrozen(type)) {
-    setMessage('Trades are frozen for 24 hours after an episode airs. Please try again later.')
-    return
-  }
-  if (requireHostApproval) {
-      const { error } = await supabase
+  async function handleAccept(trade: Trade) {
+    if (isTradeFrozen(type)) {
+      setMessage('Trades are frozen for 24 hours after an episode airs. Please try again later.')
+      return
+    }
+    if (requireHostApproval) {
+      const { error, count } = await supabase
         .from('trades')
-        .update({ status: 'pending_host_approval' })
+        .update({ status: 'pending_host_approval' }, { count: 'exact' })
         .eq('id', trade.id)
+        .in('status', ['pending'])
+
       if (error) {
         console.error('Error accepting trade:', JSON.stringify(error, null, 2))
         return
       }
+      if (!count || count === 0) {
+        setMessage('This trade has already been resolved and can no longer be accepted.')
+        return
+      }
+
       let approverIds: string[] = []
       if (isPrivateLeague) {
         const { data: leagueData } = await supabase
@@ -609,34 +751,34 @@ async function handleAccept(trade: Trade) {
           }))
         )
 
- const { data: approverProfiles } = await supabase
-    .from('profiles')
-    .select('email, display_name, email_opt_in')
-    .in('user_id', approverIds)
-    .eq('email_opt_in', true)
+        const { data: approverProfiles } = await supabase
+          .from('profiles')
+          .select('email, display_name, email_opt_in')
+          .in('user_id', approverIds)
+          .eq('email_opt_in', true)
 
-  if (approverProfiles && approverProfiles.length > 0) {
-  const { data: { session } } = await supabase.auth.getSession()
-  const accessToken = session?.access_token
+        if (approverProfiles && approverProfiles.length > 0) {
+          const { data: { session } } = await supabase.auth.getSession()
+          const accessToken = session?.access_token
 
-  await fetch('/api/send-notification-email', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${accessToken}`, },
-      body: JSON.stringify({
-        recipients: approverProfiles.map((p) => ({
-          email: p.email,
-          playerName: p.display_name || 'Player',
-        })),
-        subject: `A trade needs your approval in ${leagueName}!`,
-        message: `A trade in ${leagueName} is awaiting your approval.`,
-        linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}/trade-portal`,
-        linkText: 'Review Trade →',
-      }),
-    })
-  }
-
+          await fetch('/api/send-notification-email', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify({
+              recipients: approverProfiles.map((p) => ({
+                email: p.email,
+                playerName: p.display_name || 'Player',
+              })),
+              subject: `A trade needs your approval in ${leagueName}!`,
+              message: `A trade in ${leagueName} is awaiting your approval.`,
+              linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}/trade-portal`,
+              linkText: 'Review Trade →',
+            }),
+          })
+        }
       }
     } else {
       await executeTrade(trade)
@@ -645,79 +787,90 @@ async function handleAccept(trade: Trade) {
   }
 
   async function handleDecline(tradeId: string) {
- const { data: tradeData } = await supabase
-    .from('trades')
-    .select('proposing_user_id')
-    .eq('id', tradeId)
-    .single()
-
-    const { error } = await supabase
+    const { data: tradeData } = await supabase
       .from('trades')
-      .update({ status: 'declined', declined_by: 'player', resolved_at: new Date().toISOString() })
+      .select('proposing_user_id')
       .eq('id', tradeId)
+      .single()
+
+    const { error, count } = await supabase
+      .from('trades')
+      .update({ status: 'declined', declined_by: 'player', resolved_at: new Date().toISOString() }, { count: 'exact' })
+      .eq('id', tradeId)
+      .in('status', ['pending'])
+
     if (error) {
       console.error('Error declining trade:', JSON.stringify(error, null, 2))
       return
     }
-
-if (tradeData?.proposing_user_id) {
-    await supabase.from('notifications').insert({
-      user_id: tradeData.proposing_user_id,
-      message: `Your trade offer in ${leagueName} was declined.`,
-      link: `/leagues/${type}/${instance}/trade-portal`,
-    })
-
-     const { data: proposerProfile } = await supabase
-      .from('profiles')
-      .select('email, display_name, email_opt_in')
-      .eq('user_id', tradeData.proposing_user_id)
-      .single()
-
-    if (proposerProfile?.email_opt_in) {
-  const { data: { session } } = await supabase.auth.getSession()
-  const accessToken = session?.access_token
-
-  await fetch('/api/send-notification-email', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${accessToken}`,
-    },
-        body: JSON.stringify({
-          recipients: [{
-            email: proposerProfile.email,
-            playerName: proposerProfile.display_name || 'Player',
-          }],
-          subject: `Your trade offer was declined in ${leagueName}..`,
-          message: `Your trade offer in ${leagueName} was declined.`,
-          linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}/trade-portal`,
-          linkText: 'View Trade Portal →',
-        }),
-      })
+    if (!count || count === 0) {
+      return
     }
-  }
+
+    if (tradeData?.proposing_user_id) {
+      await supabase.from('notifications').insert({
+        user_id: tradeData.proposing_user_id,
+        message: `Your trade offer in ${leagueName} was declined.`,
+        link: `/leagues/${type}/${instance}/trade-portal`,
+      })
+
+      const { data: proposerProfile } = await supabase
+        .from('profiles')
+        .select('email, display_name, email_opt_in')
+        .eq('user_id', tradeData.proposing_user_id)
+        .single()
+
+      if (proposerProfile?.email_opt_in) {
+        const { data: { session } } = await supabase.auth.getSession()
+        const accessToken = session?.access_token
+
+        await fetch('/api/send-notification-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({
+            recipients: [{
+              email: proposerProfile.email,
+              playerName: proposerProfile.display_name || 'Player',
+            }],
+            subject: `Your trade offer was declined in ${leagueName}..`,
+            message: `Your trade offer in ${leagueName} was declined.`,
+            linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}/trade-portal`,
+            linkText: 'View Trade Portal →',
+          }),
+        })
+      }
+    }
 
     setReloadTrigger((prev) => prev + 1)
   }
 
   async function handleApprove(trade: Trade) {
     if (isTradeFrozen(type)) {
-    setMessage('Trades are frozen for 24 hours after an episode airs. Please try again later.')
-    return
-  }
+      setMessage('Trades are frozen for 24 hours after an episode airs. Please try again later.')
+      return
+    }
     await executeTrade(trade)
     setReloadTrigger((prev) => prev + 1)
   }
 
   async function handleDeny(trade: Trade) {
-    const { error } = await supabase
+    const { error, count } = await supabase
       .from('trades')
-      .update({ status: 'declined', declined_by: 'host', resolved_at: new Date().toISOString() })
+      .update({ status: 'declined', declined_by: 'host', resolved_at: new Date().toISOString() }, { count: 'exact' })
       .eq('id', trade.id)
+      .in('status', ['pending_host_approval'])
+
     if (error) {
       console.error('Error denying trade:', JSON.stringify(error, null, 2))
       return
     }
+    if (!count || count === 0) {
+      return
+    }
+
     await supabase.from('notifications').insert([
       {
         user_id: trade.proposing_user_id,
@@ -731,34 +884,34 @@ if (tradeData?.proposing_user_id) {
       },
     ])
 
-const { data: denyProfiles } = await supabase
-  .from('profiles')
-  .select('user_id, email, display_name, email_opt_in')
-  .in('user_id', [trade.proposing_user_id, trade.receiving_user_id])
-  .eq('email_opt_in', true)
+    const { data: denyProfiles } = await supabase
+      .from('profiles')
+      .select('user_id, email, display_name, email_opt_in')
+      .in('user_id', [trade.proposing_user_id, trade.receiving_user_id])
+      .eq('email_opt_in', true)
 
-if (denyProfiles && denyProfiles.length > 0) {
-  const { data: { session } } = await supabase.auth.getSession()
-  const accessToken = session?.access_token
+    if (denyProfiles && denyProfiles.length > 0) {
+      const { data: { session } } = await supabase.auth.getSession()
+      const accessToken = session?.access_token
 
-  await fetch('/api/send-notification-email', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify({
-      recipients: denyProfiles.map((p) => ({
-        email: p.email,
-        playerName: p.display_name || 'Player',
-      })),
-      subject: `A trade was denied in ${leagueName}..`,
-      message: `A trade in ${leagueName} was denied by the host.`,
-      linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}/trade-portal`,
-      linkText: 'View Trade Portal →',
-    }),
-  })
-}
+      await fetch('/api/send-notification-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          recipients: denyProfiles.map((p) => ({
+            email: p.email,
+            playerName: p.display_name || 'Player',
+          })),
+          subject: `A trade was denied in ${leagueName}..`,
+          message: `A trade in ${leagueName} was denied by the host.`,
+          linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}/trade-portal`,
+          linkText: 'View Trade Portal →',
+        }),
+      })
+    }
 
     setReloadTrigger((prev) => prev + 1)
   }
@@ -807,16 +960,50 @@ if (denyProfiles && denyProfiles.length > 0) {
           </p>
         </div>
 
-        <div style={{
-          backgroundColor: '#1a1a2e',
+<div style={{
+  backgroundColor: '#1a1a2e',
+  border: '1px solid #f0b429',
+  borderRadius: '10px',
+  padding: '16px',
+  marginBottom: '32px'
+}}>
+  <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+    <button
+      onClick={() => setActiveTab('trade')}
+      style={{
+        backgroundColor: activeTab === 'trade' ? '#f0b429' : 'transparent',
+        color: activeTab === 'trade' ? '#0a0a0f' : '#a0a0b0',
+        border: '1px solid #f0b429',
+        padding: '8px 16px',
+        borderRadius: '6px',
+        fontWeight: 'bold',
+        fontSize: '0.9rem',
+        cursor: 'pointer',
+      }}
+    >
+      Propose a Trade
+    </button>
+    {freeAgentPool.length > 0 && (
+      <button
+        onClick={() => setActiveTab('waiver')}
+        style={{
+          backgroundColor: activeTab === 'waiver' ? '#f0b429' : 'transparent',
+          color: activeTab === 'waiver' ? '#0a0a0f' : '#a0a0b0',
           border: '1px solid #f0b429',
-          borderRadius: '10px',
-          padding: '16px',
-          marginBottom: '32px'
-        }}>
-          <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '16px' }}>
-            Propose a Trade
-          </h2>
+          padding: '8px 16px',
+          borderRadius: '6px',
+          fontWeight: 'bold',
+          fontSize: '0.9rem',
+          cursor: 'pointer',
+        }}
+      >
+        Free Agent Wire
+      </button>
+    )}
+  </div>
+
+  {activeTab === 'trade' && (
+    <>
           <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '4px' }}>
             1. {castawayTerm} you are offering:
           </label>
@@ -916,31 +1103,99 @@ if (denyProfiles && denyProfiles.length > 0) {
               </select>
             </>
           )}
-         <button
-  onClick={() => { setMessage(''); setShowConfirm(true) }}
-  disabled={!selectedOfferedId || !selectedTargetPlayer || !selectedRequestedId || tradesFrozen}
-  style={{
-    backgroundColor: '#f0b429',
-    color: '#0a0a0f',
-    padding: '12px 24px',
-    borderRadius: '6px',
-    border: 'none',
-    fontWeight: 'bold',
-    cursor: (!selectedOfferedId || !selectedTargetPlayer || !selectedRequestedId || tradesFrozen) ? 'not-allowed' : 'pointer',
-    opacity: (!selectedOfferedId || !selectedTargetPlayer || !selectedRequestedId || tradesFrozen) ? 0.5 : 1
-  }}
->
-  Offer Trade
-</button>
-{tradesFrozen && (
-  <p style={{ color: '#ff6b6b', fontSize: '0.85rem', marginTop: '8px' }}>
-    Trades are frozen for 24 hours after each episode airs. Please try again later.
-  </p>
-)}
+          <button
+            onClick={() => { setMessage(''); setShowConfirm(true) }}
+            disabled={!selectedOfferedId || !selectedTargetPlayer || !selectedRequestedId || tradesFrozen}
+            style={{
+              backgroundColor: '#f0b429',
+              color: '#0a0a0f',
+              padding: '12px 24px',
+              borderRadius: '6px',
+              border: 'none',
+              fontWeight: 'bold',
+              cursor: (!selectedOfferedId || !selectedTargetPlayer || !selectedRequestedId || tradesFrozen) ? 'not-allowed' : 'pointer',
+              opacity: (!selectedOfferedId || !selectedTargetPlayer || !selectedRequestedId || tradesFrozen) ? 0.5 : 1
+            }}
+          >
+            Offer Trade
+          </button>
+          {tradesFrozen && (
+            <p style={{ color: '#ff6b6b', fontSize: '0.85rem', marginTop: '8px' }}>
+              Trades are frozen for 24 hours after each episode airs. Please try again later.
+            </p>
+          )}
           {message && (
             <p style={{ color: '#f0b429', marginTop: '12px', fontSize: '0.9rem' }}>{message}</p>
           )}
-        </div>
+    </>
+  )}
+
+   {activeTab === 'waiver' && freeAgentPool.length > 0 && (
+  <div style={{
+    backgroundColor: '#1a1a2e',
+    border: 'none',
+    borderRadius: '10px',
+    padding: '0px',
+    marginBottom: '0px'
+  }}>
+ 
+    <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '4px' }}>
+      1. {castawayTerm} you are dropping:
+    </label>
+    <select
+      value={selectedDropId ?? ''}
+      onChange={(e) => setSelectedDropId(Number(e.target.value))}
+      style={selectStyle}
+    >
+      <option value="">Select {castawayTerm}...</option>
+      {myCastaways.map((c) => (
+        <option key={c.id} value={c.id}>{c.name}</option>
+      ))}
+    </select>
+
+    <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '6px' }}>
+      2. {castawayTerm} (leftover from draft) to claim:
+    </label>
+    <select
+      value={selectedAddId ?? ''}
+      onChange={(e) => setSelectedAddId(Number(e.target.value))}
+      style={selectStyle}
+    >
+      <option value="">Select {castawayTerm}...</option>
+      {freeAgentPool.map((c) => (
+        <option key={c.id} value={c.id}>{c.name} ({c.remaining} Left)</option>
+      ))}
+    </select>
+
+    <button
+      onClick={handleWaiverClaim}
+      disabled={!selectedDropId || !selectedAddId || waiverSubmitting || tradesFrozen}
+      style={{
+        backgroundColor: '#f0b429',
+        color: '#0a0a0f',
+        padding: '12px 24px',
+        borderRadius: '6px',
+        border: 'none',
+        fontWeight: 'bold',
+        cursor: (!selectedDropId || !selectedAddId || waiverSubmitting || tradesFrozen) ? 'not-allowed' : 'pointer',
+        opacity: (!selectedDropId || !selectedAddId || waiverSubmitting || tradesFrozen) ? 0.5 : 1
+      }}
+    >
+      {waiverSubmitting ? 'Processing...' : 'Confirm Swap'}
+    </button>
+
+    {tradesFrozen && (
+      <p style={{ color: '#ff6b6b', fontSize: '0.85rem', marginTop: '8px' }}>
+        Free agent moves are frozen for 24 hours after each episode airs.
+      </p>
+    )}
+    {waiverMessage && (
+      <p style={{ color: '#f0b429', fontSize: '0.9rem', marginTop: '12px' }}>{waiverMessage}</p>
+    )}
+  </div>
+)} 
+</div>
+
 
         {showConfirm && (
           <div style={{

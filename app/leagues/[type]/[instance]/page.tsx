@@ -8,6 +8,16 @@ import ConfirmModal from '@/components/ConfirmModal'
 import { Cog, Palette, Trophy, Calculator, TrendingUp, Users, ClipboardList, RefreshCw, Puzzle, Microscope, Lock} from 'lucide-react'
 import ResourcesModal from '@/components/ResourcesModal'
 import PredictionCard from '@/components/PredictionCard'
+import { getFreeAgentPool, type FreeAgent } from '@/lib/freeAgents'
+import FreeAgentClaimModal from '@/components/FreeAgentClaimModal'
+
+const castawayTermByLeague: Record<string, string> = {
+  'secrets-on-the-beach': 'Castaway',
+  'sotb-demo': 'Castaway',
+  'uncharted-turretory': 'Castle-Goer',
+  'uncharted-turretory-demo': 'Castle-Goer',
+  'sandbox': 'Contestant',
+}
 
 type League = {
   id: number
@@ -50,8 +60,13 @@ export default function LeagueInstancePage() {
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false)
   const [copied, setCopied] = useState(false)
   const [showResources, setShowResources] = useState(false)
-
+  const [isGlobalAdmin, setIsGlobalAdmin] = useState(false)
+  const [showFreeAgentModal, setShowFreeAgentModal] = useState(false)
+const [freeAgentPool, setFreeAgentPool] = useState<FreeAgent[]>([])
 const [isMobileWidth, setIsMobileWidth] = useState(false)
+
+
+const castawayTerm = castawayTermByLeague[type] ?? 'Contestant'
 
 useEffect(() => {
   function checkWidth() {
@@ -91,6 +106,16 @@ if (leagueData?.league_type === 'sandbox') {
           return
         }
       }
+
+      if (user) {
+  const { data: adminCheck } = await supabase
+    .from('profiles')
+    .select('is_global_admin')
+    .eq('user_id', user.id)
+    .maybeSingle()
+  setIsGlobalAdmin(adminCheck?.is_global_admin ?? false)
+}
+
       setLeague(leagueData)
       if (leagueData && user && leagueData.host_user_id === user.id) {
         setIsHost(true)
@@ -116,11 +141,17 @@ if (leagueData?.league_type === 'sandbox') {
 const cap = leagueData.max_members ?? (hostProfile?.tier === 'teamprincipal' ? 18 : 8)
           setMaxMembers(cap)
         }
-        const { count: pickCount } = await supabase
-          .from('draft_picks')
-          .select('*', { count: 'exact', head: true })
-          .eq('league_id', leagueData.id)
-        setHasDrafted((pickCount ?? 0) > 0)
+       const { count: pickCount } = await supabase
+  .from('draft_picks')
+  .select('*', { count: 'exact', head: true })
+  .eq('league_id', leagueData.id)
+const draftHasRun = (pickCount ?? 0) > 0
+setHasDrafted(draftHasRun)
+
+if (draftHasRun) {
+  const pool = await getFreeAgentPool(leagueData.id, leagueData.league_type)
+  setFreeAgentPool(pool)
+}
         if (user) {
           const { data: profileData } = await supabase
             .from('profiles')
@@ -312,15 +343,24 @@ effectiveCap = league.max_members ?? (hostProfile?.tier === 'teamprincipal' ? 18
       setJoining(false)
       return
     }
-    const { count: pickCount } = await supabase
-      .from('draft_picks')
-      .select('*', { count: 'exact', head: true })
-      .eq('league_id', league.id)
-    if (pickCount && pickCount > 0) {
-      setJoinMessage('This league has already drafted. Registration is closed.')
-      setJoining(false)
-      return
-    }
+const { count: pickCount } = await supabase
+  .from('draft_picks')
+  .select('*', { count: 'exact', head: true })
+  .eq('league_id', league.id)
+
+if (pickCount && pickCount > 0) {
+  const pool = await getFreeAgentPool(league.id, league.league_type)
+  if (pool.length < 3) {
+    setJoinMessage('This league has already drafted and no free agent spots remain. Registration is closed.')
+    setJoining(false)
+    return
+  }
+  setJoining(false)
+  setShowJoinModal(false)
+  setFreeAgentPool(pool)
+  setShowFreeAgentModal(true)
+  return
+}
     const { error } = await supabase.from('league_members').insert({
       user_id: user.id,
       league_id: league.id,
@@ -545,6 +585,12 @@ effectiveCap = league.max_members ?? (hostProfile?.tier === 'teamprincipal' ? 18
     ← Back to Trekkon Fantasy Leagues
   </a>
 
+ {isGlobalAdmin && !isHost && league.is_private && (
+  <div style={{ backgroundColor: '#1a1a2e', border: '1px solid #ff6b6b', borderRadius: '8px', padding: '10px 16px', marginBottom: '16px', color: '#ff6b6b', fontSize: '0.85rem' }}>
+    Viewing league controls as Global Admin.
+  </div>
+)}
+
         <div style={{ textAlign: 'left', marginBottom: '12px' }}>
           <div style={{
             display: 'flex',
@@ -584,7 +630,7 @@ effectiveCap = league.max_members ?? (hostProfile?.tier === 'teamprincipal' ? 18
             </div>
           )}
 
-         {isHost && league.is_private && (
+         {(isHost || isGlobalAdmin) && league.is_private && (
   <div style={{
     backgroundColor: '#1a1a2e',
     border: '1px solid #f0b429',
@@ -674,7 +720,7 @@ effectiveCap = league.max_members ?? (hostProfile?.tier === 'teamprincipal' ? 18
   </div>
 )}
 
-{isHost && league.is_private && league.draft_status !== 'in_progress' && league.draft_status !== 'completed' && (
+{(isHost || isGlobalAdmin) && league.is_private && league.draft_status !== 'in_progress' && league.draft_status !== 'completed' && (
   <div style={{ marginBottom: '24px', textAlign: 'center' }}>
     <button
       onClick={() => setShowStartDraftConfirm(true)}
@@ -847,42 +893,47 @@ const content = (
                 </div>
               </div>
             ) : (
-              hasDrafted ? (
-                <div style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '14px',
-                  backgroundColor: '#1a1a2e',
-                  color: '#555570',
-                  padding: '14px 32px',
-                  borderRadius: '8px',
-                  border: '1px solid #2a2a3e',
-                  fontWeight: 'bold',
-                  fontSize: '1rem'
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'center' }}>
-  <Lock size={32} strokeWidth={2} color="#f0b429" />
-</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
-                    <span>See you next time!</span>
-                    <span>Registration&apos;s closed.</span>
-                  </div>
-                </div>
-              ) : (
-                <button onClick={handleClimbAboard} style={{
-                  backgroundColor: '#f0b429',
-                  color: '#0a0a0f',
-                  padding: '14px 32px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  fontWeight: 'bold',
-                  fontSize: '1rem',
-                  letterSpacing: '1.2px',
-                  cursor: 'pointer'
-                }}>
-                  {`Join as ${tierLabels[myTier] ?? myTier}`}
-                </button>
-              )
+             hasDrafted ? (
+  freeAgentPool.length >= 3 ? (
+    <button onClick={() => setShowFreeAgentModal(true)} style={{
+      backgroundColor: '#f0b429',
+      color: '#0a0a0f',
+      padding: '14px 32px',
+      borderRadius: '8px',
+      border: 'none',
+      fontWeight: 'bold',
+      fontSize: '1rem',
+      cursor: 'pointer'
+    }}>
+      Claim Players
+    </button>
+  ) : (
+    <div style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '14px',
+      backgroundColor: '#1a1a2e',
+      color: '#555570',
+      padding: '14px 32px',
+      borderRadius: '8px',
+      border: '1px solid #2a2a3e',
+      fontWeight: 'bold',
+      fontSize: '1rem'
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <Lock size={32} strokeWidth={2} color="#f0b429" />
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
+        <span>See you next time!</span>
+        <span>Registration&apos;s closed.</span>
+      </div>
+    </div>
+  )
+) : (
+  <button onClick={handleClimbAboard}>
+    {`Join as ${tierLabels[myTier] ?? myTier}`}
+  </button>
+)
             )}
           </div>
         </div>
@@ -994,7 +1045,27 @@ const content = (
         onCancel={() => setShowLeaveConfirm(false)}
       />
 
-<ResourcesModal open={showResources} onClose={() => setShowResources(false)} type={type} />    
+<ResourcesModal open={showResources} onClose={() => setShowResources(false)} type={type} />   
+
+  {league && user && (
+  <FreeAgentClaimModal
+    open={showFreeAgentModal}
+    leagueId={league.id}
+    leagueName={league.name}
+    leagueSlug={instance}
+    leagueType={type}
+    userId={user.id}
+    pool={freeAgentPool}
+    castawayTerm={castawayTerm}
+    onClose={() => setShowFreeAgentModal(false)}
+    onClaimed={() => {
+      setShowFreeAgentModal(false)
+      setIsMember(true)
+      setMemberCount((prev) => (prev ?? 0) + 1)
+      window.location.reload()
+    }}
+  />
+)} 
   
 </main>
   )
