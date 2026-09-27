@@ -200,7 +200,7 @@ const { data: hostNotifyProfile } = await supabase
     onClaimed={() => router.push(`/leagues/${type}/${freeAgentLeague!.slug}`)}
   />
 ) : (
-  <p>Joining your league...</p>
+  <p>Joining League...</p>
 )}
     </main>
   )

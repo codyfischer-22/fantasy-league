@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import ConfirmModal from '@/components/ConfirmModal'
-import { Puzzle } from 'lucide-react'
+import { Puzzle, Timer } from 'lucide-react'
 
 type Castaway = { id: number; name: string }
 type Pick = { user_id: string; castaway_id: number }
@@ -669,10 +669,11 @@ if (
           ← Back to {league.name}
         </a>
 
-        <h1 style={{ color: '#f0b429', fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '12px' }}>
-          🧩 <span style={{ color: '#f0b429' }}>League</span>{' '}
-          <span style={{ color: '#ffffff' }}>Draft Room</span>
-        </h1>
+       <h1 style={{ color: '#f0b429', fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+  <Puzzle size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
+  <span style={{ color: '#f0b429' }}>League</span>{' '}
+  <span style={{ color: '#ffffff' }}>Draft Room</span>
+</h1>
 {showInstructions && (
   <>
     <p style={{ color: '#a0a0b0', fontSize: '1rem', lineHeight: '1.6', marginBottom: '8px', maxWidth: '800px' }}>
@@ -718,9 +719,10 @@ if (
         )}
 
         {secondsRemaining !== null && league.draft_status === 'in_progress' && (
-          <p style={{ color: secondsRemaining <= 60 ? '#ff6b6b' : '#a0a0b0', fontSize: '1.2rem', marginBottom: '30px' }}>
-            ⏱️ {Math.floor(secondsRemaining / 60)}:{String(secondsRemaining % 60).padStart(2, '0')} Remaining
-          </p>
+       <p style={{ color: secondsRemaining <= 60 ? '#ff6b6b' : '#a0a0b0', fontSize: '1.2rem', marginBottom: '30px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+  <Timer size={20} strokeWidth={2} />
+  {Math.floor(secondsRemaining / 60)}:{String(secondsRemaining % 60).padStart(2, '0')} Remaining
+</p>
         )}
 
 <div className="draft-room-columns">
