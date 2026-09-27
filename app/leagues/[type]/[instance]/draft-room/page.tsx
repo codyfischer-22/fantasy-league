@@ -334,7 +334,7 @@ const { data: existingPick } = await supabase
 
       const randomPick = eligibleCastaways[Math.floor(Math.random() * eligibleCastaways.length)]
 
-await supabase.from('draft_picks').insert({
+const { error: insertError } = await supabase.from('draft_picks').insert({
   league_id: league.id,
   user_id: missedUserId,
   castaway_id: randomPick.id,
@@ -343,6 +343,12 @@ await supabase.from('draft_picks').insert({
   was_auto_assigned: true,
   original_user_id: missedUserId,
 })
+
+if (insertError) {
+  console.warn('Missed-pick insert failed (likely a duplicate race) — aborting this run.', insertError)
+  setHandlingMissedPick(false)
+  return
+}
 
       const nextPickNumber = league.current_pick_number + 1
       const isDraftComplete = nextPickNumber > draftOrder.length

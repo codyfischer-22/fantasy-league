@@ -64,6 +64,8 @@ export default function LeagueInstancePage() {
   const [showFreeAgentModal, setShowFreeAgentModal] = useState(false)
 const [freeAgentPool, setFreeAgentPool] = useState<FreeAgent[]>([])
 const [isMobileWidth, setIsMobileWidth] = useState(false)
+const [startingDraft, setStartingDraft] = useState(false)
+
 
 
 const castawayTerm = castawayTermByLeague[type] ?? 'Contestant'
@@ -178,106 +180,123 @@ if (draftHasRun) {
     }
   }, [type, instance, user, loading])
 
-  const handleStartDraft = async () => {
-    if (!user || !league) return
-    const { count: memberCount } = await supabase
-      .from('league_members')
-      .select('*', { count: 'exact', head: true })
-      .eq('league_id', league.id)
-    if (memberCount !== null && memberCount < 3) {
-      alert(`You need at least 3 players to start the draft.`)
-      return
-    }
-    const { data: members } = await supabase
-      .from('league_members')
-      .select('user_id')
-      .eq('league_id', league.id)
-    if (!members || members.length === 0) return
-    let orderedMembers = [...members]
-    if (league.draft_order_method === 'host_set' && league.custom_draft_order) {
-      orderedMembers = league.custom_draft_order
-        .map((userId: string) => members.find((m) => m.user_id === userId))
-        .filter((m): m is { user_id: string; display_name: string } => m !== undefined)
-    } else {
-      orderedMembers = orderedMembers.sort(() => Math.random() - 0.5)
-    }
-    const turnOrderRows = orderedMembers.map((m, index) => ({
-      league_id: league.id,
+    const handleStartDraft = async () => {
+  if (startingDraft) return
+  setStartingDraft(true)
+
+  if (!user || !league) {
+    setStartingDraft(false)
+    return
+  }
+
+  if (league.draft_status === 'in_progress' || league.draft_status === 'completed') {
+    setStartingDraft(false)
+    return
+  }
+
+  const { count: memberCount } = await supabase
+    .from('league_members')
+    .select('*', { count: 'exact', head: true })
+    .eq('league_id', league.id)
+  if (memberCount !== null && memberCount < 3) {
+    alert(`You need at least 3 players to start the draft.`)
+    setStartingDraft(false)
+    return
+  }
+  const { data: members } = await supabase
+    .from('league_members')
+    .select('user_id')
+    .eq('league_id', league.id)
+  if (!members || members.length === 0) {
+    setStartingDraft(false)
+    return
+  }
+  let orderedMembers = [...members]
+  if (league.draft_order_method === 'host_set' && league.custom_draft_order) {
+    orderedMembers = league.custom_draft_order
+      .map((userId: string) => members.find((m) => m.user_id === userId))
+      .filter((m): m is { user_id: string; display_name: string } => m !== undefined)
+  } else {
+    orderedMembers = orderedMembers.sort(() => Math.random() - 0.5)
+  }
+  const turnOrderRows = orderedMembers.map((m, index) => ({
+    league_id: league.id,
+    user_id: m.user_id,
+    position: index + 1,
+  }))
+  const { error: turnOrderError } = await supabase
+    .from('draft_turn_order')
+    .insert(turnOrderRows)
+  if (turnOrderError) {
+    alert('Something went wrong setting up the draft order. Please try again.')
+    setStartingDraft(false)
+    return
+  }
+  const baseOrder = orderedMembers.map((m) => m.user_id)
+  const totalRounds = 4
+  const fullSequence: string[] = []
+  for (let round = 1; round <= totalRounds; round++) {
+    const roundOrder = round % 2 === 1 ? baseOrder : [...baseOrder].reverse()
+    fullSequence.push(...roundOrder)
+  }
+  const pickTimerMs = league.pick_timer_seconds ? league.pick_timer_seconds * 1000 : null
+  const deadline = pickTimerMs ? new Date(Date.now() + pickTimerMs).toISOString() : null
+  await supabase
+    .from('leagues')
+    .update({
+      draft_status: 'in_progress',
+      current_pick_number: 1,
+      pick_deadline: deadline,
+      draft_order: fullSequence,
+    })
+    .eq('id', league.id)
+  await supabase.from('notifications').insert(
+    orderedMembers.map((m) => ({
       user_id: m.user_id,
-      position: index + 1,
+      message: `The draft for ${league.name} has started! That\u2019s right: silly season is upon us. Head to the draft room and make your picks!`,
+      link: `/leagues/${type}/${instance}/draft-room`,
     }))
-    const { error: turnOrderError } = await supabase
-      .from('draft_turn_order')
-      .insert(turnOrderRows)
-    if (turnOrderError) {
-      alert('Something went wrong setting up the draft order. Please try again.')
-      return
+  )
+
+  const memberIds = orderedMembers.map((m) => m.user_id)
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('email, display_name, email_opt_in')
+    .in('user_id', memberIds)
+    .eq('email_opt_in', true)
+
+  if (profiles && profiles.length > 0) {
+    const { data: { session } } = await supabase.auth.getSession()
+    const accessToken = session?.access_token
+
+    const emailResponse = await fetch('/api/send-notification-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({
+        recipients: profiles.map((p) => ({
+          email: p.email,
+          playerName: p.display_name || 'Player',
+        })),
+        subject: `${league.name} draft ${league.name} has started!`,
+        message: `That's right, silly season is upon us! The draft for ${league.name} has started. Head to the draft room and make your picks!`,
+        linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}/draft-room`,
+        linkText: 'Go to Draft Room →',
+      }),
+    })
+
+    if (!emailResponse.ok) {
+      const errorData = await emailResponse.json().catch(() => null)
+      console.error('Draft start email failed:', emailResponse.status, errorData)
     }
-    const baseOrder = orderedMembers.map((m) => m.user_id)
-    const totalRounds = 4
-    const fullSequence: string[] = []
-    for (let round = 1; round <= totalRounds; round++) {
-      const roundOrder = round % 2 === 1 ? baseOrder : [...baseOrder].reverse()
-      fullSequence.push(...roundOrder)
-    }
-    const pickTimerMs = league.pick_timer_seconds ? league.pick_timer_seconds * 1000 : null
-    const deadline = pickTimerMs ? new Date(Date.now() + pickTimerMs).toISOString() : null
-    await supabase
-      .from('leagues')
-      .update({
-        draft_status: 'in_progress',
-        current_pick_number: 1,
-        pick_deadline: deadline,
-        draft_order: fullSequence,
-      })
-      .eq('id', league.id)
-    await supabase.from('notifications').insert(
-      orderedMembers.map((m) => ({
-        user_id: m.user_id,
-        message: `The draft for ${league.name} has started! That\u2019s right: silly season is upon us. Head to the draft room and make your picks!`,
-        link: `/leagues/${type}/${instance}/draft-room`,
-      }))
-    )
-
-    const memberIds = orderedMembers.map((m) => m.user_id)
-    const { data: profiles } = await supabase
-      .from('profiles')
-      .select('email, display_name, email_opt_in')
-      .in('user_id', memberIds)
-      .eq('email_opt_in', true)
-
-    if (profiles && profiles.length > 0) {
-  const { data: { session } } = await supabase.auth.getSession()
-  const accessToken = session?.access_token
-
-  const emailResponse = await fetch('/api/send-notification-email', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify({
-      recipients: profiles.map((p) => ({
-        email: p.email,
-        playerName: p.display_name || 'Player',
-      })),
-      subject: `${league.name} draft ${league.name} has started!`,
-      message: `That's right, silly season is upon us! The draft for ${league.name} has started. Head to the draft room and make your picks!`,
-      linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}/draft-room`,
-      linkText: 'Go to Draft Room →',
-    }),
-  })
-
-  if (!emailResponse.ok) {
-    const errorData = await emailResponse.json().catch(() => null)
-    console.error('Draft start email failed:', emailResponse.status, errorData)
+  } else {
+    console.log('No opted-in profiles found — skipping draft start email.')
   }
-} else {
-  console.log('No opted-in profiles found — skipping draft start email.')
+
+  router.push(`/leagues/${type}/${instance}/draft-room`)
 }
-
-    router.push(`/leagues/${type}/${instance}/draft-room`)
-  }
 
  const handleClimbAboard = () => {
   if (!user) {
@@ -1030,10 +1049,10 @@ const content = (
           'Clicking "Start Draft" will immediately start the selection timer for the first player up.',
           'Note: All players should be actively engaged in your draft window (whether it lasts 60 minutes or 2 days).'
         ]}
-        confirmText="Start Draft"
-        onConfirm={() => { setShowStartDraftConfirm(false); handleStartDraft() }}
-        onCancel={() => setShowStartDraftConfirm(false)}
-      />
+     confirmText={startingDraft ? 'Starting...' : 'Start Draft'}
+  onConfirm={() => { setShowStartDraftConfirm(false); handleStartDraft() }}
+  onCancel={() => setShowStartDraftConfirm(false)}
+/>
 
       <ConfirmModal
         open={showLeaveConfirm}
