@@ -214,8 +214,8 @@ if (scheduleEnabled) {
     setResult('Something went wrong scheduling this message.')
     return
   }
-  setResult(`Scheduled for ${when.toLocaleString()}`)
-  setSubject('')
+setResult(`Scheduled for ${when.toLocaleString([], { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit' })}.`)  
+setSubject('')
   setMessage('')
   setScheduleEnabled(false)
   setScheduledFor('')

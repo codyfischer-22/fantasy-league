@@ -170,7 +170,7 @@ export default function MessageHistoryPage() {
                       <div style={{ color: '#555570', fontSize: '0.8rem', marginTop: '2px' }}>
                         {m.audience_label ?? 'Custom Selection'} • {m.recipient_count} Recipient{m.recipient_count === 1 ? '' : 's'} •{' '}
                         {[m.via_notification && 'Notification', m.via_email && 'Email'].filter(Boolean).join(' + ')} •{' '}
-                        {when ? new Date(when).toLocaleString() : ''} • By {senderNames[m.sent_by] ?? 'Admin'}
+                        {when ? new Date(when).toLocaleString([], { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : ''} • By {senderNames[m.sent_by] ?? 'Admin'}
                       </div>
                       {m.status === 'sent' && (
                         <div style={{ color: '#a0a0b0', fontSize: '0.8rem', marginTop: '2px' }}>
