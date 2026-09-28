@@ -214,7 +214,7 @@ if (scheduleEnabled) {
     setResult('Something went wrong scheduling this message.')
     return
   }
-  setResult(`Scheduled for ${when.toLocaleString()}.`)
+  setResult(`Scheduled for ${when.toLocaleString()}`)
   setSubject('')
   setMessage('')
   setScheduleEnabled(false)
@@ -281,7 +281,7 @@ if (scheduleEnabled) {
     }
 
     setSending(false)
-    await supabase.from('admin_messages').insert({
+   const { error: archiveError } = await supabase.from('admin_messages').insert({
   sent_by: user.id,
   subject,
   message,
@@ -299,6 +299,9 @@ if (scheduleEnabled) {
   email_failed: sendAsEmail ? emailFailed : null,
   email_skipped: sendAsEmail ? emailSkipped : null,
 })
+if (archiveError) {
+  console.error('Archive save failed:', JSON.stringify(archiveError, null, 2))
+}
 
     const parts: string[] = []
     if (sendAsNotification) parts.push(`${notifSuccess} Notification(s) Sent`)

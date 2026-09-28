@@ -168,15 +168,15 @@ export default function MessageHistoryPage() {
                     <div style={{ minWidth: 0 }}>
                       <div style={{ fontWeight: 'bold' }}>{m.subject}</div>
                       <div style={{ color: '#555570', fontSize: '0.8rem', marginTop: '2px' }}>
-                        {m.audience_label ?? 'Custom Selection'} • {m.recipient_count} recipient{m.recipient_count === 1 ? '' : 's'} •{' '}
+                        {m.audience_label ?? 'Custom Selection'} • {m.recipient_count} Recipient{m.recipient_count === 1 ? '' : 's'} •{' '}
                         {[m.via_notification && 'Notification', m.via_email && 'Email'].filter(Boolean).join(' + ')} •{' '}
-                        {when ? new Date(when).toLocaleString() : ''} • by {senderNames[m.sent_by] ?? 'Admin'}
+                        {when ? new Date(when).toLocaleString() : ''} • By {senderNames[m.sent_by] ?? 'Admin'}
                       </div>
                       {m.status === 'sent' && (
                         <div style={{ color: '#a0a0b0', fontSize: '0.8rem', marginTop: '2px' }}>
-                          {m.via_notification && `${m.notif_sent ?? 0} notifications`}
+                          {m.via_notification && `${m.notif_sent ?? 0} Notifications`}
                           {m.via_notification && m.via_email && ' • '}
-                          {m.via_email && `${m.email_sent ?? 0} emails sent${m.email_failed ? `, ${m.email_failed} failed` : ''}${m.email_skipped ? `, ${m.email_skipped} skipped` : ''}`}
+                          {m.via_email && `${m.email_sent ?? 0} Emails Sent${m.email_failed ? `, ${m.email_failed} failed` : ''}${m.email_skipped ? `, ${m.email_skipped} skipped` : ''}`}
                         </div>
                       )}
                     </div>
