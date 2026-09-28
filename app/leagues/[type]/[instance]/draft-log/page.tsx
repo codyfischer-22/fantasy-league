@@ -82,6 +82,16 @@ const { data: picks } = await supabase
   .eq('league_id', league.id)
   .order('pick_number')
 
+const { data: waiverTrades } = await supabase
+  .from('trades')
+  .select('proposing_user_id, requested_castaway_id')
+  .eq('league_id', league.id)
+  .eq('is_waiver_move', true)
+
+const waiverKeys = new Set(
+  (waiverTrades ?? []).map((t) => `${t.proposing_user_id}-${t.requested_castaway_id}`)
+)
+
     const { data: events } = await supabase
   .from('draft_events')
   .select('pick_number, user_id, event_type')
@@ -98,8 +108,19 @@ if (picks && picks.length > 0 && picks[0].drafted_at) {
   }))
 }
 
-              const safePicks = picks ?? []
-        const safeEvents = events ?? []
+const safePicks = (picks ?? []).filter(
+  (p) => !(p.is_free_agent_claim && waiverKeys.has(`${p.original_user_id}-${p.castaway_id}`))
+)        
+const safeEvents = events ?? []
+const regularMax = Math.max(
+  0,
+  ...safePicks.filter((p) => !p.is_free_agent_claim).map((p) => p.pick_number)
+)
+const displayNumberByPick = new Map<number, number>()
+safePicks
+  .filter((p) => p.is_free_agent_claim)
+  .sort((a, b) => a.pick_number - b.pick_number)
+  .forEach((p, index) => displayNumberByPick.set(p.pick_number, regularMax + index + 1))
 const userIds = [...new Set([...safePicks.map((p) => p.original_user_id), ...safeEvents.map((e) => e.user_id)])]
 const castawayIds = [...new Set(safePicks.map((p) => p.castaway_id))]
         const { data: profiles } = await supabase
@@ -124,8 +145,7 @@ const castawayIds = [...new Set(safePicks.map((p) => p.castaway_id))]
         )
 
           const pickEntries: LogEntry[] = safePicks.map((p) => ({
-  pick_number: p.pick_number,
-  round: p.round,
+pick_number: displayNumberByPick.get(p.pick_number) ?? p.pick_number,  round: p.round,
   display_name: nameMap.get(p.original_user_id) ?? 'Unnamed Player',
   castaway_name: castawayMap.get(p.castaway_id) ?? `Unknown ${castawayTerm}`,
   rank_choice: rankMap.get(`${p.original_user_id}-${p.castaway_id}`) ?? null,
@@ -226,14 +246,14 @@ const castawayIds = [...new Set(safePicks.map((p) => p.castaway_id))]
             ) : (
               <>
 {entry.is_free_agent_claim ? (
-  <> — <strong>{entry.display_name}</strong> joined late and claimed {entry.castaway_name}.</>
+  <> (Late Join) — <strong>{entry.display_name}</strong> claimed {entry.castaway_name}.</>
 ) : (
   <> (Round {entry.round}) — <strong>{entry.display_name}</strong> {entry.was_auto_assigned ? 'missed pick & randomly assigned' : 'selected'} {entry.castaway_name}.</>
 )}              </>
             )}
           </div>
-{!entry.was_auto_assigned && !isPrivateLeague && (
-  <div style={{ color: '#555570', fontSize: '0.8rem', marginTop: '2px' }}>
+{!entry.was_auto_assigned && !entry.is_free_agent_claim && !isPrivateLeague && (
+    <div style={{ color: '#555570', fontSize: '0.8rem', marginTop: '2px' }}>
     {entry.rank_choice
       ? `Their #${entry.rank_choice} ranked choice.`
       : 'Ranking not on record.'}

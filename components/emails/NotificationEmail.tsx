@@ -56,8 +56,10 @@ export function NotificationEmail({
                       </table>
                     )}
                     <p style={{ color: '#555570', fontSize: '0.8rem', fontFamily: 'Georgia, serif', marginTop: '32px' }}>
-                      You&apos;re currently opted in to email updates at Trekkon Fantasy Leagues. You can opt out anytime in your &quot;Account&quot; tab.
-                    </p>
+  You&apos;re currently opted in to email updates at Trekkon Fantasy Leagues. You can opt out anytime in your{' '}
+  <a href="https://trekkonleagues.com/account" style={{ color: '#a0a0b0', textDecoration: 'underline' }}>
+    &quot;Account&quot;</a> tab.
+</p>
                   </td>
                 </tr>
               </tbody>

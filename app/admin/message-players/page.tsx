@@ -26,6 +26,8 @@ export default function MessagePlayersPage() {
   const [result, setResult] = useState('')
   const [sendAsNotification, setSendAsNotification] = useState(true)
   const [sendAsEmail, setSendAsEmail] = useState(true)
+  const [scheduleEnabled, setScheduleEnabled] = useState(false)
+const [scheduledFor, setScheduledFor] = useState('')
   const [filterType, setFilterType] = useState('all')
 const [allLeagues, setAllLeagues] = useState<{ id: number; name: string; league_type: string; is_show_chat: boolean }[]>([])
 const applyFilter = async (type: string) => {
@@ -153,6 +155,25 @@ setAllLeagues(
     setSelectedIds(new Set())
   }
 
+const audienceLabel = () => {
+  if (filterType.startsWith('league-')) {
+    const id = parseInt(filterType.replace('league-', ''))
+    return allLeagues.find((l) => l.id === id)?.name ?? 'Specific League'
+  }
+  const labels: Record<string, string> = {
+    all: 'Everyone',
+    'no-league': 'Not in Any League',
+    hosts: 'League Hosts Only',
+    'tier-stowaway': 'Tier: Stowaway',
+    'tier-castaway': 'Tier: Castaway',
+    'tier-crewchief': 'Tier: Crew Chief',
+    'tier-teamprincipal': 'Tier: Team Principal',
+    'leaguetype-secrets-on-the-beach': 'League Type: Secrets on the Beach',
+    'leaguetype-uncharted-turretory': 'League Type: Uncharted Turretory',
+  }
+  return labels[filterType] ?? 'Custom Selection'
+}
+
   const handleSend = async () => {
     if (!subject.trim() || !message.trim() || selectedIds.size === 0) {
       setResult('Please fill out a subject, message, and select at least one recipient.')
@@ -163,6 +184,43 @@ setAllLeagues(
       setResult('Please select at least one delivery method.')
       return
     }
+
+if (!user) return
+
+if (scheduleEnabled) {
+  const when = new Date(scheduledFor)
+  if (!scheduledFor || isNaN(when.getTime()) || when.getTime() < Date.now() + 5 * 60 * 1000) {
+    setResult('Pick a send time at least 5 minutes from now.')
+    return
+  }
+  setSending(true)
+  const { error: scheduleError } = await supabase.from('admin_messages').insert({
+    sent_by: user.id,
+    subject,
+    message,
+    link_url: linkUrl || null,
+    link_text: linkText || null,
+    recipient_ids: Array.from(selectedIds),
+    recipient_count: selectedIds.size,
+    audience_label: audienceLabel(),
+    via_notification: sendAsNotification,
+    via_email: sendAsEmail,
+    status: 'scheduled',
+    scheduled_for: when.toISOString(),
+  })
+  setSending(false)
+  if (scheduleError) {
+    console.error('Error scheduling message:', JSON.stringify(scheduleError, null, 2))
+    setResult('Something went wrong scheduling this message.')
+    return
+  }
+  setResult(`Scheduled for ${when.toLocaleString()}.`)
+  setSubject('')
+  setMessage('')
+  setScheduleEnabled(false)
+  setScheduledFor('')
+  return
+}
 
     setSending(true)
     setResult('')
@@ -223,6 +281,24 @@ setAllLeagues(
     }
 
     setSending(false)
+    await supabase.from('admin_messages').insert({
+  sent_by: user.id,
+  subject,
+  message,
+  link_url: linkUrl || null,
+  link_text: linkText || null,
+  recipient_ids: selectedProfiles.map((p) => p.user_id),
+  recipient_count: selectedProfiles.length,
+  audience_label: audienceLabel(),
+  via_notification: sendAsNotification,
+  via_email: sendAsEmail,
+  status: 'sent',
+  sent_at: new Date().toISOString(),
+  notif_sent: sendAsNotification ? notifSuccess : null,
+  email_sent: sendAsEmail ? emailSuccess : null,
+  email_failed: sendAsEmail ? emailFailed : null,
+  email_skipped: sendAsEmail ? emailSkipped : null,
+})
 
     const parts: string[] = []
     if (sendAsNotification) parts.push(`${notifSuccess} Notification(s) Sent`)
@@ -251,14 +327,34 @@ setAllLeagues(
   return (
     <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
       <div style={{ maxWidth: '700px', margin: '0 auto' }}>
-        <h1 style={{ fontSize: '2rem', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <h1 style={{ fontSize: '2rem', marginBottom: '-4px', display: 'flex', alignItems: 'center', gap: '10px' }}>
           <Mail size={32} strokeWidth={2} color="#f0b429" />
           <span style={{ color: '#f0b429' }}>Message</span>{' '}
           <span style={{ color: '#ffffff' }}>Players</span>
         </h1>
 
+   <a     
+  href="/admin/message-history"
+  style={{
+    color: '#a0a0b0',
+    fontSize: '0.85rem',
+    textDecoration: 'none',
+    transition: 'color 0.2s ease',
+  }}
+  onMouseEnter={(e) => {
+    e.currentTarget.style.color = '#ffffff'
+    e.currentTarget.style.textDecoration = 'underline'
+  }}
+  onMouseLeave={(e) => {
+    e.currentTarget.style.color = '#a0a0b0'
+    e.currentTarget.style.textDecoration = 'none'
+  }}
+>
+  Outgoing Messages →
+</a>
+
         <div style={{ marginBottom: '20px' }}>
-          <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '8px' }}>
+          <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '8px', marginTop: '20px' }}>
             Recipients ({selectedIds.size} of {allProfiles.length} selected)
           </label>
 
@@ -390,13 +486,28 @@ setAllLeagues(
           style={{ width: '100%', padding: '10px', marginBottom: '24px', borderRadius: '6px', border: '1px solid #2a2a3e', backgroundColor: '#12121a', color: '#ffffff' }}
         />
 
+<div style={{ marginBottom: '20px' }}>
+  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem', marginBottom: scheduleEnabled ? '10px' : 0 }}>
+    <input type="checkbox" checked={scheduleEnabled} onChange={(e) => setScheduleEnabled(e.target.checked)} />
+    Schedule for Later
+  </label>
+  {scheduleEnabled && (
+    <input
+      type="datetime-local"
+      value={scheduledFor}
+      onChange={(e) => setScheduledFor(e.target.value)}
+      style={{ padding: '10px', borderRadius: '6px', border: '1px solid #2a2a3e', backgroundColor: '#12121a', color: '#ffffff', colorScheme: 'dark' }}
+    />
+  )}
+</div>
+
         <button
           onClick={handleSend}
           disabled={sending}
           style={{ backgroundColor: '#f0b429', color: '#0a0a0f', padding: '14px 32px', borderRadius: '8px', border: 'none', fontWeight: 'bold', fontSize: '1rem', cursor: sending ? 'not-allowed' : 'pointer' }}
         >
-          {sending ? 'Sending...' : 'Send Email'}
-        </button>
+{sending ? 'Working...' : scheduleEnabled ? 'Schedule Message' : 'Send Email'}      
+  </button>
 
         {result && (
           <p style={{ color: '#f0b429', fontWeight: 'bold', marginTop: '16px' }}>{result}</p>

@@ -571,6 +571,29 @@ async function submitReport(msg: Message) {
     .select('name')
     .eq('id', msg.league_id)
     .single();
+
+  const { error: reportError } = await supabase.from('chat_reports').insert({
+    message_id: msg.id,
+    league_id: msg.league_id,
+    league_name: leagueData?.name ?? null,
+    reporter_id: currentUserId,
+    reported_user_id: msg.user_id,
+    message_content: msg.content,
+    message_created_at: msg.created_at,
+    reason: reportReason.trim(),
+  });
+
+  if (reportError?.code === '23505') {
+    // Already reported this message. Close quietly without alerting admins again.
+    setReportSubmitting(false);
+    setReportingMessageId(null);
+    setReportReason('');
+    return;
+  }
+  if (reportError) {
+    console.error('Error saving report:', JSON.stringify(reportError, null, 2));
+  }
+
   const { data: admins } = await supabase
     .from('profiles')
     .select('user_id')
@@ -580,7 +603,7 @@ async function submitReport(msg: Message) {
     (admins ?? []).map((a) => ({
       user_id: a.user_id,
       message: `⚠️ ${reporterName} reported a message from ${reportedName} in ${leagueData?.name ?? 'a league'}. Report: "${reportReason.trim()}"`,
-      link: null,
+      link: '/admin/reports',
     }))
   );
 

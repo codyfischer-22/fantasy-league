@@ -17,13 +17,14 @@ type PlayerResult = {
 type Trade = {
   id: string
   proposing_user_id: string
-  receiving_user_id: string
+  receiving_user_id: string | null
   offered_castaway_id: number
   requested_castaway_id: number
   status: string
   declined_by: string | null
   created_at: string
   resolved_at: string | null
+  is_waiver_move: boolean
 }
 
 const castawayTermByLeague: Record<string, string> = {
@@ -116,86 +117,27 @@ const [activeTab, setActiveTab] = useState<'trade' | 'waiver'>('trade')
     backgroundSize: '16px',
   }
 
-  const handleWaiverClaim = async () => {
+ const handleWaiverClaim = async () => {
   if (!user || !leagueId || !selectedDropId || !selectedAddId) return
 
   if (isTradeFrozen(type)) {
-    setWaiverMessage('Free agent moves are frozen for 24 hours after an episode airs. Please try again later.')
+    setWaiverMessage('Waiver wire moves are frozen for 24 hours after an episode airs. Please try again later.')
     return
   }
 
   setWaiverSubmitting(true)
   setWaiverMessage('')
 
-  const { data: ownedCheck } = await supabase
-    .from('draft_picks')
-    .select('id')
-    .eq('league_id', leagueId)
-    .eq('user_id', user.id)
-    .eq('castaway_id', selectedDropId)
-    .maybeSingle()
-
-  if (!ownedCheck) {
-    setWaiverSubmitting(false)
-    setWaiverMessage('You no longer own that castaway.')
-    return
-  }
-
-  const { data: leagueRow } = await supabase
-    .from('leagues')
-    .select('base_clone_count')
-    .eq('id', leagueId)
-    .single()
-
-  const { data: currentPicks } = await supabase
-    .from('draft_picks')
-    .select('castaway_id')
-    .eq('league_id', leagueId)
-
-  const draftedCount = (currentPicks ?? []).filter((p) => p.castaway_id === selectedAddId).length
-  const remaining = (leagueRow?.base_clone_count ?? 0) - draftedCount
-
-  if (remaining <= 0) {
-    setWaiverSubmitting(false)
-    setWaiverMessage('That contestant was just claimed by someone else. Please pick again.')
-    return
-  }
-
-  const { error: dropError } = await supabase
-    .from('draft_picks')
-    .delete()
-    .eq('id', ownedCheck.id)
-
-  if (dropError) {
-    setWaiverSubmitting(false)
-    setWaiverMessage('Something went wrong dropping your castaway. Please try again.')
-    return
-  }
-
-  const { data: maxPickRow } = await supabase
-    .from('draft_picks')
-    .select('pick_number')
-    .eq('league_id', leagueId)
-    .order('pick_number', { ascending: false })
-    .limit(1)
-    .maybeSingle()
-
-  const nextPickNumber = (maxPickRow?.pick_number ?? 0) + 1
-
-  const { error: addError } = await supabase.from('draft_picks').insert({
-    league_id: leagueId,
-    user_id: user.id,
-    castaway_id: selectedAddId,
-    round: 5,
-    pick_number: nextPickNumber,
-    original_user_id: user.id,
-    is_free_agent_claim: true,
+  const { error } = await supabase.rpc('waiver_swap', {
+    p_league_id: leagueId,
+    p_drop_castaway_id: selectedDropId,
+    p_add_castaway_id: selectedAddId,
   })
 
   setWaiverSubmitting(false)
 
-  if (addError) {
-    setWaiverMessage('Something went wrong adding your new pick. Please contact support; your dropped castaway may need to be restored.')
+  if (error) {
+    setWaiverMessage(error.message)
     return
   }
 
@@ -316,8 +258,8 @@ useEffect(() => {
         ...(approvalData ?? []),
       ]
       const castawayIds = [...new Set(allTrades.flatMap((t) => [t.offered_castaway_id, t.requested_castaway_id]))]
-      const userIds = [...new Set(allTrades.flatMap((t) => [t.proposing_user_id, t.receiving_user_id]))]
-      if (castawayIds.length > 0) {
+const userIds = [...new Set(allTrades.flatMap((t) => [t.proposing_user_id, t.receiving_user_id]))].filter((id): id is string => !!id)      
+if (castawayIds.length > 0) {
         const { data: castawayRows } = await supabase
           .from('castaways')
           .select('id, name')
@@ -997,7 +939,7 @@ useEffect(() => {
           cursor: 'pointer',
         }}
       >
-        Free Agent Wire
+        Waiver Wire
       </button>
     )}
   </div>
@@ -1186,7 +1128,7 @@ useEffect(() => {
 
     {tradesFrozen && (
       <p style={{ color: '#ff6b6b', fontSize: '0.85rem', marginTop: '8px' }}>
-        Free agent moves are frozen for 24 hours after each episode airs.
+        Waiver wire moves are frozen for 24 hours after each episode airs.
       </p>
     )}
     {waiverMessage && (
@@ -1278,7 +1220,7 @@ useEffect(() => {
               }}>
                 <span>
                   <strong style={{ color: '#f0b429' }}>{castawayNames[t.offered_castaway_id]}</strong> to{' '}
-                  {displayNames[t.receiving_user_id]}{' '} for <strong style={{ color: '#f0b429' }}>{castawayNames[t.requested_castaway_id]}</strong>
+                  {displayNames[t.receiving_user_id ?? '']}{' '} for <strong style={{ color: '#f0b429' }}>{castawayNames[t.requested_castaway_id]}</strong>
                   {t.status === 'pending_host_approval' && <span style={{ color: '#a0a0b0' }}> | Pending Host Approval</span>}
                 </span>
                 <button
@@ -1355,7 +1297,7 @@ useEffect(() => {
                 alignItems: 'center'
               }}>
                 <span>
-                  {displayNames[t.proposing_user_id]} giving <strong style={{ color: '#f0b429' }}>{castawayNames[t.offered_castaway_id]}</strong> to {displayNames[t.receiving_user_id]} for <strong style={{ color: '#f0b429' }}>{castawayNames[t.requested_castaway_id]}</strong>!
+                  {displayNames[t.proposing_user_id]} giving <strong style={{ color: '#f0b429' }}>{castawayNames[t.offered_castaway_id]}</strong> to {displayNames[t.receiving_user_id ?? '']} for <strong style={{ color: '#f0b429' }}>{castawayNames[t.requested_castaway_id]}</strong>!
                 </span>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <button
@@ -1383,25 +1325,29 @@ useEffect(() => {
           ) : (
             <>
               {tradeHistory.map((t) => (
-                <div key={t.id} style={{
-                  backgroundColor: '#12121a',
-                  border: '1px solid #2a2a3e',
-                  borderRadius: '8px',
-                  padding: '12px',
-                  marginBottom: '8px',
-                  color: '#a0a0b0',
-                  fontSize: '0.85rem'
-                }}>
-                  {displayNames[t.proposing_user_id]} offered {castawayNames[t.offered_castaway_id]} to {displayNames[t.receiving_user_id]} for {castawayNames[t.requested_castaway_id]}
-                  {' '}—{' '}
-                  <span style={{
-                    color: t.status === 'accepted' ? '#068e38' : t.status === 'declined' ? '#ff6b6b' : '#555570',
-                    fontWeight: 'bold'
-                  }}>
-                    {t.status === 'declined' && t.declined_by === 'host' ? 'Denied by Host' : t.status.charAt(0).toUpperCase() + t.status.slice(1)}
-                  </span>
-                </div>
-              ))}
+  <div key={t.id} style={{
+    backgroundColor: '#12121a',
+    border: '1px solid #2a2a3e',
+    borderRadius: '8px',
+    padding: '12px',
+    marginBottom: '8px',
+    color: '#a0a0b0',
+    fontSize: '0.85rem'
+  }}>
+{t.is_waiver_move ? (
+  <>{displayNames[t.proposing_user_id]} dropped <strong style={{ color: '#f0b429' }}>{castawayNames[t.offered_castaway_id]}</strong> and picked up <strong style={{ color: '#f0b429' }}>{castawayNames[t.requested_castaway_id]}</strong> in waiver wire</>
+) : (
+  <>{displayNames[t.proposing_user_id]} offered <strong style={{ color: '#f0b429' }}>{castawayNames[t.offered_castaway_id]}</strong> to {displayNames[t.receiving_user_id ?? '']} for <strong style={{ color: '#f0b429' }}>{castawayNames[t.requested_castaway_id]}</strong></>
+)}
+    {' '}—{' '}
+    <span style={{
+      color: t.status === 'accepted' ? '#068e38' : t.status === 'declined' ? '#ff6b6b' : '#555570',
+      fontWeight: 'bold'
+    }}>
+      {t.status === 'declined' && t.declined_by === 'host' ? 'Denied by Host' : t.status.charAt(0).toUpperCase() + t.status.slice(1)}
+    </span>
+  </div>
+))}
               {tradeHistory.length === historyLimit && (
                 <button
                   onClick={() => setHistoryLimit((prev) => prev + 10)}
