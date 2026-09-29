@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Flame } from 'lucide-react'
 
 export default function PardonOurMessModal() {
-  const [show, setShow] = useState(true)
+  const [show, setShow] = useState(false)
 
 const MODAL_ENABLED = false // flip to true to re-enable
 
