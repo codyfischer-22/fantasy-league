@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/AuthContext";
 import SiteFrame from "@/components/SiteFrame";
-import PardonOurMessModal from "@/components/PardonOurMessModal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -53,13 +52,11 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-<body className="min-h-full flex flex-col">
-  <AuthProvider>
-    <PardonOurMessModal />
-    <SiteFrame>{children}</SiteFrame>
-  </AuthProvider>
-</body>
-
+      <body className="min-h-full flex flex-col">
+        <AuthProvider>
+          <SiteFrame>{children}</SiteFrame>
+        </AuthProvider>
+      </body>
     </html>
   );
 }
