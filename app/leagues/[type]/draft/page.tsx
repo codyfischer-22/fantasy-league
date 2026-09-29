@@ -1,7 +1,7 @@
 'use client'
 
 import { useParams, useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Lock, ListOrdered, RefreshCw, Calendar, ClipboardList } from 'lucide-react'
 
 type InfoRow = {
@@ -11,8 +11,7 @@ type InfoRow = {
 
 const draftContent: Record<string, {
   leagueName: string
-  intro: (string | JSX.Element)[]
-  draftWindow: InfoRow[]
+  intro: (string | ReactNode)[]
   draftFormatPublic: string[]
   draftFormatPrivate: string[]
   trades: string[]
