@@ -420,18 +420,14 @@ useEffect(() => {
     gap: '2px'
   }}>
 
-     <a href="/contact" style={hamburgerLinkStyle}>
-         <Mail size={22} strokeWidth={1} /> Contact Us
-          </a>
-
             {user && (
   <a href="/leagues/all/rules" style={hamburgerLinkStyle}>
-    <ScrollText size={22} strokeWidth={1} /> Scoring
+    <ScrollText size={22} strokeWidth={1} /> Rules
   </a>
 )}
 {user && (
   <a href="/leagues/all/draft" style={hamburgerLinkStyle}>
-    <ClipboardList size={22} strokeWidth={1} /> Timelines
+    <ClipboardList size={22} strokeWidth={1} /> Rosters
   </a>
 )}
 
@@ -449,9 +445,13 @@ useEffect(() => {
          <HandCoins size={22} strokeWidth={1} /> Support Us
           </a>
 
+             <a href="/contact" style={hamburgerLinkStyle}>
+         <Mail size={22} strokeWidth={1} /> Contact Us
+          </a>
+
               {user && (
             <a href="/account" style={hamburgerLinkStyle}>
-              <UserPen size={22} strokeWidth={1} /> Account
+              <UserPen size={22} strokeWidth={1} /> My Account
             </a>
              )}
 

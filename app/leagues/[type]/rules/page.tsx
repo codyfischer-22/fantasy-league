@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { ScrollText, Dices } from 'lucide-react'
+import { ScrollText, Dices, Calendar } from 'lucide-react'
 
 type ScoringRow = {
   event: string
@@ -10,20 +10,48 @@ type ScoringRow = {
   notes?: string[]
 }
 
+type InfoRow = {
+  label: string
+  detail: string
+}
+
+const neutralIntroByType: Record<string, string[]> = {
+  'secrets-on-the-beach': [
+    'Trekkon Fantasy Leagues is all about keeping our leagues simple and players\u2019 viewing experience pure. We do not want to – as a wise soul once wrote – "murder to dissect" with one hundred scoring categories. Leave the tabulations to us, then, and focus on restocking your watch party\u2019s bean dip, enjoying the drama, and "Thursday Morning Quarterbacking" in the group chat.',
+    'When our beloved franchise throws us twists and turns – looking at you Billie Eilish – please trust our team will do our best to arbitrate according to the letter and spirit of the law.',
+  ],
+  'uncharted-turretory': [
+    'Trekkon Fantasy Leagues is all about keeping our leagues simple and players\u2019 viewing experience pure. We do not want to – as a wise soul once wrote – "murder to dissect" with one hundred scoring categories. Leave the tabulations to us, then, and focus on the roundtable drama, refilling your goblet, and "Friday Morning Quarterbacking" in the group chat.',
+    'When the castle throws us twists and turns, please trust our team will do our best to arbitrate according to the letter and spirit of the law.',
+  ],
+}
+
+const defaultNeutralIntro = [
+  'Trekkon Fantasy Leagues is all about keeping our leagues simple and players\u2019 viewing experience pure. We do not want to – as a wise soul once wrote – "murder to dissect" with one hundred scoring categories. Leave the tabulations to us, then, and focus on restocking your watch party\u2019s bean dip, enjoying the drama, and "Monday Morning Quarterbacking" in the group chat.',
+]
+
 const rulesContent: Record<string, {
   leagueName: string
   intro: string[]
   sections: { title: string; rows: ScoringRow[] }[]
+  draftWindow: InfoRow[]
   tiebreaker: string[]
   closing?: string
 }> = {
   'secrets-on-the-beach': {
     leagueName: 'Secrets on the Beach',
-    intro: [
-      'Trekkon Fantasy Leagues is all about keeping our leagues simple and players\u2019 viewing experience pure. We do not want to – as a wise soul once wrote – "murder to dissect," trying to annotate every worm eaten, tear shed, and blindside planned. Leave the tabulations to us, then, and focus on restocking your watch party\u2019s bean dip, enjoying the island politics, and "Thursday Morning Quarterbacking" in the group chat.',
-      'When our beloved franchise throws us twists and turns – looking at you Billie Eilish – please trust our team will do our best to arbitrate according to both the letter and spirit of the law.',
-    ],
+    intro: [],
+
+    draftWindow: [
+  { label: 'Signup Deadline', detail: 'Sunday, September 13, 11:59 PM' },
+  { label: 'Draft Rankings Due (Public)', detail: 'Tuesday, September 15, 5 PM' },
+  { label: 'Draft Order Set', detail: 'Tuesday, September 15, 7 PM\n\u2013 Wednesday, September 16, 5 PM' },
+  { label: 'Draft Window', detail: 'Wednesday, September 16, 7 PM\n\u2013 Sunday, September 20, 7 PM' },
+  { label: 'Episode 1 Airs', detail: 'Wednesday, September 23, 7 PM' },
+],
+
     sections: [
+      
       {
         title: 'Weekly Elimination Mini-Game',
         rows: [
@@ -147,10 +175,15 @@ const rulesContent: Record<string, {
   },
   'uncharted-turretory': {
     leagueName: 'Uncharted Turretory',
-    intro: [
-      'Trekkon Fantasy Leagues is all about keeping our leagues simple and players\u2019 viewing experience pure. Leave the tabulations to us, then, and focus on the roundtable drama, refilling your goblet, and "Friday Morning Quarterbacking" in the group chat.',
-      'When the show throws us a twist we didn\u2019t see coming, please trust our team will arbitrate according to both the letter and spirit of the law.',
-    ],
+    intro: [],
+
+    draftWindow: [
+  { label: 'Signup Deadline', detail: 'Tuesday, September 15, 11:59 PM' },
+  { label: 'Draft Rankings Due (Public)', detail: 'Wednesday, September 16, 5 PM' },
+  { label: 'Draft Window', detail: 'Wednesday, September 16, 7 PM \n\u2013 Thursday, September 17, 5 PM' },
+  { label: 'Episode 1 Airs', detail: 'Thursday, September 17, 7 PM' },
+],
+
     sections: [
       {
         title: 'Weekly Elimination Mini-Game',
@@ -296,7 +329,7 @@ export default function RulesPage() {
 
         <h1 style={{
   fontSize: 'clamp(1.6rem, 8vw, 2.25rem)',
-  marginBottom: '16px',
+  marginBottom: '4px',
   display: 'flex',
   alignItems: 'center',
   flexWrap: 'wrap',
@@ -307,9 +340,17 @@ export default function RulesPage() {
   <span style={{ color: '#ffffff' }}>Rules & Scoring</span>
 </h1>
 
+<div style={{ marginBottom: '28px' }}>
+  {(type ? neutralIntroByType[type] ?? defaultNeutralIntro : defaultNeutralIntro).map((para, i) => (
+    <p key={i} style={{ color: '#a0a0b0', fontSize: '0.95rem', lineHeight: '1.7', marginBottom: '12px' }}>
+      {para}
+    </p>
+  ))}
+</div>
+
 {!content && (
-        <div style={{ marginBottom: '32px' }}>
-          <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '8px' }}>
+        <div style={{ marginBottom: '0px' }}>
+          <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '8px' }}>
             View "Rules & Scoring" for the following league:
           </label>
          <select
@@ -338,7 +379,8 @@ export default function RulesPage() {
 
         {!content ? null : (
   <>
-    <div style={{ marginBottom: '14px' }}>
+
+    <div style={{ marginBottom: '28px' }}>
   {content.intro.map((para, i) => (
     <p key={i} style={{ color: '#a0a0b0', fontSize: '0.95rem', lineHeight: '1.7', marginBottom: '12px' }}>
       {para}
@@ -346,32 +388,38 @@ export default function RulesPage() {
   ))}
 </div>
 
-<div style={{ marginBottom: '32px' }}>
-  <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '6px' }}>
-        Check out "Rules & Scoring" for another league:
-      </label>
-      <select
-        value={type ?? ''}
-        onChange={(e) => handleRuleTypeChange(e.target.value)}
-        style={{
-          padding: '10px 14px',
-          borderRadius: '6px',
-          border: '1px solid #2a2a3e',
-          backgroundColor: '#12121a',
-          color: '#ffffff',
-          fontSize: '1rem',
-          width: '100%',
-          maxWidth: '320px'
-        }}
-      >
-        <option value="" disabled>Select League...</option>
-        {ruleTypeOptions.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}{opt.comingSoon ? ' (Coming Soon)' : ''}
-          </option>
-        ))}
-      </select>
-    </div>
+    <div style={{ marginBottom: '32px' }}>
+  <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+    <Calendar size={22} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
+    Key League Dates
+  </h2>
+
+  <div style={{
+    backgroundColor: '#1a1a2e',
+    border: '1px solid #2a2a3e',
+    borderRadius: '10px',
+    overflow: 'hidden'
+  }}>
+    {content.draftWindow.map((row, i) => (
+      <div key={row.label} style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '14px 20px',
+        borderBottom: i < content.draftWindow.length - 1 ? '1px solid #2a2a3e' : 'none',
+        flexWrap: 'wrap',
+        gap: '4px'
+      }}>
+        <div style={{ fontSize: '0.95rem', fontWeight: 'bold', color: '#ffffff' }}>{row.label}</div>
+        <div className="draft-date-detail" style={{ fontSize: '0.9rem', color: '#a0a0b0' }}>{row.detail}</div>
+      </div>
+    ))}
+  </div>
+</div>
+
+<p style={{ color: '#4a4a61', textAlign: 'center', fontSize: '.95rem', lineHeight: '1.2', marginTop: '-20px', marginBottom: '28px' }}>
+  <i>Private deadlines at league host discretion. Public deadlines follow Central Time (CT). </i>
+</p>
 
             {content.sections.map((section) => (
               <div key={section.title} style={{ marginBottom: '32px' }}>
@@ -427,7 +475,8 @@ export default function RulesPage() {
               border: '1px solid #f0b429',
               borderRadius: '10px',
               padding: '20px',
-              marginBottom: '32px'
+              marginBottom: '32px',
+              marginTop: '32px',
             }}>
               <h2 style={{ color: '#f0b429', fontSize: '1.1rem', marginBottom: '8px', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                 <Dices size={22} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
@@ -442,6 +491,33 @@ export default function RulesPage() {
                 )
               })}
             </div>
+
+            <div style={{ marginBottom: '0px' }}>
+  <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '6px' }}>
+        Check out "Rules & Scoring" for another league:
+      </label>
+      <select
+        value={type ?? ''}
+        onChange={(e) => handleRuleTypeChange(e.target.value)}
+        style={{
+          padding: '10px 14px',
+          borderRadius: '6px',
+          border: '1px solid #2a2a3e',
+          backgroundColor: '#12121a',
+          color: '#ffffff',
+          fontSize: '1rem',
+          width: '100%',
+          maxWidth: '320px'
+        }}
+      >
+        <option value="" disabled>Select League...</option>
+        {ruleTypeOptions.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}{opt.comingSoon ? ' (Coming Soon)' : ''}
+          </option>
+        ))}
+      </select>
+    </div>
 
             <p style={{ color: '#555570', fontSize: '0.9rem', textAlign: 'center' }}>
               {content.closing}

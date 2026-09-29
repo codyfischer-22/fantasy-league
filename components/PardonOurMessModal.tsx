@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Flame } from 'lucide-react'
 
 export default function PardonOurMessModal() {
-  const [show, setShow] = useState(false)
+  const [show, setShow] = useState(true)
 
 const MODAL_ENABLED = false // flip to true to re-enable
 
@@ -40,12 +40,13 @@ useEffect(() => {
         textAlign: 'left'
       }}>
         <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.5rem, 6vw, 2rem)', marginBottom: '12px' }}>
-         🔥 ALMOST GO TIME!
+         🔥 NEW FEATURES!
         </h3>
         <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '8px', lineHeight: '1.6' }}>
-          You have until Tuesday, September 15, 11:59 PM to sign up for our public <em>Survivor</em> and <em>Traitors</em> leagues. To confirm you are in, check under "Your Leagues" in Leagues.</p>
+         Remember to make your elimination prediction each week for a chance to split +50 bonus points!
+         </p>
         <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '8px', lineHeight: '1.6' }}>
-Keep an eye out for next steps on the draft process. In the meantime, share a league with your tribe and prepare for the trek!
+In the Trade Portal, we added a Waiver Wire where you can swap an active contestant for a draft leftover. Late joins can also draw directly from this free agent well!
 </p>
      <button onClick={handleDismiss} style={{
   backgroundColor: '#f0b429',

@@ -268,10 +268,10 @@ useEffect(() => {
 </a>
     </div>
   )}
-</div>    <a href="/#tiers" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Features</a>
-<a href="/leagues/all/rules" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Scoring</a>
-<a href="/leagues/all/draft" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Timelines</a>
-
+</div>    
+<a href="/leagues/all/rules" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Rules</a>
+<a href="/leagues/all/draft" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Rosters</a>
+<a href="/#tiers" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Features</a>
 <div ref={hamburgerRef} style={{ position: 'relative' }}>
   <button
     onClick={() => {
@@ -307,19 +307,6 @@ useEffect(() => {
       gap: '4px'
     }}>
 
-           <a href="/contact" style={{
-        padding: '10px 12px',
-        textDecoration: 'none',
-        color: '#ffffff',
-        fontSize: '1rem',
-        borderRadius: '6px',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px'
-      }}>
-        <Mail size={20} strokeWidth={1.5} /> Contact Us
-      </a>
-
       <a href="/media" style={{
         padding: '10px 12px',
         textDecoration: 'none',
@@ -343,7 +330,20 @@ useEffect(() => {
         alignItems: 'center',
         gap: '8px'
       }}>
-        <HandCoins size={22} strokeWidth={1.5} /> Support Trekkon
+        <HandCoins size={22} strokeWidth={1.5} /> Support Us
+      </a>
+
+        <a href="/contact" style={{
+        padding: '10px 12px',
+        textDecoration: 'none',
+        color: '#ffffff',
+        fontSize: '1rem',
+        borderRadius: '6px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px'
+      }}>
+        <Mail size={20} strokeWidth={1.5} /> Contact Us
       </a>
 
 {user && (
