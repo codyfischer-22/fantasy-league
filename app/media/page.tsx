@@ -30,7 +30,7 @@ export default function ExtrasPage() {
           flexWrap: 'wrap',
           gap: '8px 10px'
         }}>
-          <MicSignal size={32} strokeWidth={2} color="#f0b429" style={{ flexShrink: 0 }} />
+          <SquareLibrary size={32} strokeWidth={2} color="#f0b429" style={{ flexShrink: 0 }} />
           <span style={{ color: '#f0b429' }}>Original</span>
           <span style={{ color: '#ffffff' }}>Media</span>
         </h1>
@@ -42,7 +42,7 @@ export default function ExtrasPage() {
         {/* Podcast Section */}
 <div style={{ marginBottom: '32px' }}>
   <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-    <SquareLibrary size={22} strokeWidth={2} color="#f0b429" />
+    <MicSignal size={22} strokeWidth={2} color="#f0b429" />
     Talkin' with Trekkon
   </h2>
   <iframe

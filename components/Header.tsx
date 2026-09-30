@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useRef } from 'react'
 import ChatPanel from '@/components/ChatPanel'
-import { MessageCircle, Bell, Settings, Menu, Mail, HandCoins, UserPen, MicSignal, Swords, TreePalm, ChessRook, CarFront, Engine } from 'lucide-react'
+import { MessageCircle, Bell, Settings, Menu, Mail, HandCoins, UserPen, SquareLibrary, Swords, TreePalm, ChessRook, CarFront, Engine } from 'lucide-react'
 
 type Notification = {
   id: number
@@ -317,7 +317,7 @@ useEffect(() => {
         alignItems: 'center',
         gap: '8px'
       }}>
-        <MicSignal size={20} strokeWidth={1.5} /> Original Media
+        <SquareLibrary size={20} strokeWidth={1.5} /> Original Media
       </a>
 
       <a href="/tip-jar" style={{
