@@ -437,7 +437,7 @@ useEffect(() => {
 
           {!user && (
   <a href="/media" style={hamburgerLinkStyle}>
-    <MicSignal size={22} strokeWidth={1} /> Media
+    <SquareLibrary size={22} strokeWidth={1} /> Media
   </a>
 )}
 
