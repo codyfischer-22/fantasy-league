@@ -47,9 +47,19 @@ export default function ExtrasPage() {
   </h2>
   <iframe
     style={{ borderRadius: '12px' }}
-    src="https://open.spotify.com/embed/show/7HR9XTBY9tbnZWciUOM0NZ?utm_source=generator&si=3f1b815174f745f2"
+    src="https://open.spotify.com/embed/episode/45wGCggZSPSvIRy2GjLjYM?utm_source=generator&si=5cdac251108e4ccc"
     width="100%"
-    height="352"
+    height="152"
+    frameBorder="0"
+    allowFullScreen
+    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+    loading="lazy"
+  ></iframe>
+  <iframe
+    style={{ borderRadius: '12px' }}
+    src="https://open.spotify.com/embed/episode/65IXV5BJuozSfaYdN7CDWK?utm_source=generator&si=d9d592a8f7ff4e9d"
+    width="100%"
+    height="152"
     frameBorder="0"
     allowFullScreen
     allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
