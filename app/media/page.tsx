@@ -39,34 +39,33 @@ export default function ExtrasPage() {
           Check out podcasts, blogs, and who knows what from Trekkon Fantasy Leagues!
         </p>
 
-        {/* Podcast Section */}
+   {/* Podcast Section */}
 <div style={{ marginBottom: '32px' }}>
   <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
     <MicSignal size={22} strokeWidth={2} color="#f0b429" />
     Talkin' with Trekkon
   </h2>
-  <iframe
-    style={{ borderRadius: '12px' }}
-    src="https://open.spotify.com/embed/episode/45wGCggZSPSvIRy2GjLjYM?utm_source=generator&si=5cdac251108e4ccc"
-    width="100%"
-    height="152"
-    frameBorder="0"
-    allowFullScreen
-    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-    loading="lazy"
-  ></iframe>
-  <iframe
-    style={{ borderRadius: '12px' }}
-    src="https://open.spotify.com/embed/episode/65IXV5BJuozSfaYdN7CDWK?utm_source=generator&si=d9d592a8f7ff4e9d"
-    width="100%"
-    height="152"
-    frameBorder="0"
-    allowFullScreen
-    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-    loading="lazy"
-  ></iframe>
+  <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+    <iframe
+      style={{ borderRadius: '12px', flex: '1 1 300px' }}
+      src="https://open.spotify.com/embed/episode/45wGCggZSPSvIRy2GjLjYM?utm_source=generator&si=5cdac251108e4ccc"
+      height="152"
+      frameBorder="0"
+      allowFullScreen
+      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+      loading="lazy"
+    ></iframe>
+    <iframe
+      style={{ borderRadius: '12px', flex: '1 1 300px' }}
+      src="https://open.spotify.com/embed/episode/65IXV5BJuozSfaYdN7CDWK?utm_source=generator&si=d9d592a8f7ff4e9d"
+      height="152"
+      frameBorder="0"
+      allowFullScreen
+      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+      loading="lazy"
+    ></iframe>
+  </div>
 </div>
-
         {/* Blog Section */}
         <div style={{ marginBottom: '0px' }}>
           <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
