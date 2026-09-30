@@ -34,13 +34,25 @@ type Submission = {
 }
 
 export default function InboxPage() {
+  return (
+    <Suspense fallback={
+      <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0a0b0', fontFamily: 'Georgia, serif' }}>
+        Loading...
+      </main>
+    }>
+      <InboxContent />
+    </Suspense>
+  )
+}
+
+function InboxContent() {
   const { user, loading } = useAuth()
   const [isAdmin, setIsAdmin] = useState(false)
   const [checking, setChecking] = useState(true)
   const searchParams = useSearchParams()
-const [category, setCategory] = useState<'reports' | 'contact'>(
-  searchParams.get('tab') === 'contact' ? 'contact' : 'reports'
-)
+  const [category, setCategory] = useState<'reports' | 'contact'>(
+    searchParams.get('tab') === 'contact' ? 'contact' : 'reports'
+  )
   const [tab, setTab] = useState<'open' | 'handled'>('open')
 
   const [reports, setReports] = useState<Report[]>([])
