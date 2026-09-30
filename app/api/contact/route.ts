@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
+import { createClient } from '@supabase/supabase-js'
 
 const resend = new Resend(process.env.RESEND_API_KEY!)
+
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,6 +16,35 @@ export async function POST(req: NextRequest) {
     if (!name || !email || !reason || !message) {
       return NextResponse.json({ error: 'All fields are required.' }, { status: 400 })
     }
+
+    const { error: saveError } = await supabaseAdmin.from('contact_submissions').insert({
+      name,
+      email,
+      reason,
+      message,
+    })
+
+    if (saveError) {
+      console.error('Contact submission save failed:', saveError)
+    }
+
+    const { data: admins } = await supabaseAdmin
+  .from('profiles')
+  .select('user_id')
+  .eq('is_global_admin', true)
+
+if (admins && admins.length > 0) {
+  const { error: notifError } = await supabaseAdmin.from('notifications').insert(
+    admins.map((a) => ({
+      user_id: a.user_id,
+      message: `📬 New contact form submission!`,
+      link: '/admin/support-center?tab=contact',
+    }))
+  )
+  if (notifError) {
+    console.error('Contact form admin notification failed:', notifError)
+  }
+}
 
     const { error } = await resend.emails.send({
       from: 'Trekkon Contact Form <hello@trekkonleagues.com>',

@@ -54,7 +54,7 @@ const sections: CardDef[] = [
     label: 'Support Center',
     description: 'Archive of contact/support inquiries and reported chat messages.',
     icon: MessageSquareWarning,
-    href: '/admin/reports',
+    href: '/admin/support-center',
     status: 'live',
     globalOnly: true,
   },

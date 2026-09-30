@@ -603,7 +603,7 @@ async function submitReport(msg: Message) {
     (admins ?? []).map((a) => ({
       user_id: a.user_id,
       message: `⚠️ ${reporterName} reported a message from ${reportedName} in ${leagueData?.name ?? 'a league'}. Report: "${reportReason.trim()}"`,
-      link: '/admin/reports',
+      link: '/admin/support-center',
     }))
   );
 
