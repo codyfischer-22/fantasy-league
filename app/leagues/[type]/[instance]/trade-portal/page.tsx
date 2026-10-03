@@ -137,11 +137,73 @@ const [activeTab, setActiveTab] = useState<'trade' | 'waiver'>('trade')
   setWaiverSubmitting(false)
 
   if (error) {
-    setWaiverMessage(error.message)
-    return
-  }
+  setWaiverMessage(error.message)
+  return
+}
 
-  setWaiverMessage('Roster updated!')
+const droppedName = myCastaways.find((c) => c.id === selectedDropId)?.name ?? 'Unknown'
+const addedName = freeAgentPool.find((c) => c.id === selectedAddId)?.name ?? 'Unknown'
+
+ const { data: myProfile } = await supabase
+    .from('profiles')
+    .select('display_name')
+    .eq('user_id', user.id)
+    .single()
+  const myName = myProfile?.display_name || 'A player'
+
+const { data: leagueRow } = await supabase
+  .from('leagues')
+  .select('host_user_id, is_private')
+  .eq('id', leagueId)
+  .single()
+
+let recipientIds: string[] = []
+if (leagueRow?.is_private) {
+  if (leagueRow.host_user_id && leagueRow.host_user_id !== user.id) {
+    recipientIds = [leagueRow.host_user_id]
+  }
+} else {
+  const { data: admins } = await supabase
+    .from('profiles')
+    .select('user_id')
+    .eq('is_global_admin', true)
+  recipientIds = (admins ?? []).map((a) => a.user_id)
+}
+
+if (recipientIds.length > 0) {
+  const { data: optedInProfiles } = await supabase
+    .from('profiles')
+    .select('email, display_name, email_opt_in')
+    .in('user_id', recipientIds)
+    .eq('email_opt_in', true)
+
+  if (optedInProfiles && optedInProfiles.length > 0) {
+    const { data: { session } } = await supabase.auth.getSession()
+    const accessToken = session?.access_token
+
+
+
+    await fetch('/api/send-notification-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({
+        recipients: optedInProfiles.map((p) => ({
+          email: p.email,
+          playerName: p.display_name || 'Admin',
+        })),
+        subject: `Waiver Wire action in ${leagueName}!`,
+message: `A waiver move just happened in ${leagueName}: ${myName} dropped ${droppedName} and picked up ${addedName}.`,
+        linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}/trade-portal`,
+        linkText: 'Trade History →',
+      }),
+    })
+  }
+}
+
+setWaiverMessage('Roster updated!')
   setSelectedDropId(null)
   setSelectedAddId(null)
   setReloadTrigger((prev) => prev + 1)

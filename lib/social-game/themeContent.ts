@@ -6,28 +6,29 @@ type ThemeContent = {
 
 export const themeContentBySkin: Record<string, ThemeContent> = {
   neutral: {
-    displayName: 'Neutral',
-    emoji: '⚪',
-    intro: 'A game of hidden identities and social deduction. Good Team Members must work together to complete Missions, while Bad Team Members secretly sabotage from within. Trust carefully — anyone could be lying.',
-  },
+    displayName: 'Classic',
+    emoji: '🍞',
+        intro: "You know the drill: Good Guys, Bad Guys & 5 Missions.",
+        },
+
   island: {
-    displayName: 'Island Themed',
+    displayName: 'Beach',
     emoji: '🏝️',
-    intro: "Twenty-plus days on the beach, and trust is the rarest resource of all. Castaways must band together to win Challenges and outlast the game — but a few Villainous Rats are playing both sides, and one Villainous Snake is pulling the strings from the shadows. Read the tribe. Trust your gut. One blindside is all it takes.",
+    intro: "After surviving the early vote together, your once-strong alliance senses a blindside on the horizon. On one hand are the castaways out to win immunity and make the merge as a team. On the other are villainous rats and snakes looking to sabotage the alliance and keep the fan favorite far from the million dollars.",
   },
   traitors: {
-    displayName: 'Traitors Themed',
+    displayName: 'Turret',
     emoji: '🗡️',
-    intro: "Somewhere in this castle, Traitors walk among the Faithful — smiling, voting, plotting. Every Mission tests loyalty, and every Round Table is a chance to root out the deception before it's too late. But beware: the Turret Master is watching, and one wrong accusation could hand evil the game.",
+    intro: "Welcome to the Scottish Highlands, where faithful and traitors walk amongst one another. After vicious murders, a week of round tables approaches, where you must decide to banish or save the traitors on the block. The war is on between the turret master and the most faithful of the faithfuls. Who will come out of the fire of truth unscathed?",
   },
   f1: {
-    displayName: 'F1 Themed',
+    displayName: 'Paddock',
     emoji: '🏎️',
-    intro: "Somewhere in the Pit Crew, a Rival Spy is feeding secrets to the other team — and their Rival Team Principal is calling the shots from the shadows. Every Trekkon Grand Spree is a test of trust: can the team stay clean through every pit stop, or will sabotage take them out before the checkered flag?",
+    intro: "Max Velocity is a few clean pitstops away from winnnig the Trekkon Grand Spree and securing another World Championship. But beware because a rival team principal has sent his spies to your garage to sabotage the car. You must uncover and neutralize the rival spies or else miss out on the sport's biggest trophy.",
   },
   nascar: {
-    displayName: 'NASCAR Themed',
+    displayName: 'Oval',
     emoji: '🚗',
-    intro: "Somewhere in the garage, a Rival Manufacturer has infiltrated the team — feeding intel back to their Points Rival with every lap. Every Trekkon Fantasy 500 is a test of loyalty: push your Teammates to victory, or risk a Right Rear Spin Out that could end the run early.",
-  },
+    intro: "You are the points leader heading into the final few restarts of the Trekkon Fantasy 500! Chevotas, Forlets, and Toyords are packed tightly, and you can't tell who's friend or foe. Will your teammates push you to the lead or will another manufacturer spin you out and open the door for your points rival?",
+}
 }

@@ -9,7 +9,7 @@ type PlayerCountConfig = {
   missions: MissionRequirement[]
 }
 
-const gameConfigByPlayerCount: Record<number, PlayerCountConfig> = {
+export const gameConfigByPlayerCount: Record<number, PlayerCountConfig> = {
   5: {
     goodCount: 3,
     badCount: 2,

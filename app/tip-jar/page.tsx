@@ -2,7 +2,7 @@
 import { useAuth } from '@/lib/AuthContext'
 import { useSearchParams } from 'next/navigation'
 import { Suspense, useState } from 'react'
-import { MicSignal, HandCoins } from 'lucide-react'
+import { HandCoins } from 'lucide-react'
 
 function ExtrasContent() {
   const { user } = useAuth()

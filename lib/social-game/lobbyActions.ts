@@ -8,7 +8,28 @@ export async function joinGame(gameId: number, userId: string): Promise<{ error:
     .single()
 
   if (!game || game.status !== 'lobby') {
+    // Already-seated players should still be allowed back in once the game has started
+    const { data: existingSeat } = await supabase
+      .from('social_game_players')
+      .select('id')
+      .eq('game_id', gameId)
+      .eq('user_id', userId)
+      .maybeSingle()
+
+    if (existingSeat) return { error: null }
+
     return { error: 'This game has already started or no longer exists.' }
+  }
+
+  const { data: existingSeat } = await supabase
+    .from('social_game_players')
+    .select('id')
+    .eq('game_id', gameId)
+    .eq('user_id', userId)
+    .maybeSingle()
+
+  if (existingSeat) {
+    return { error: null }
   }
 
   const { count } = await supabase
@@ -96,7 +117,7 @@ export async function checkHostEligibility(userId: string): Promise<{ canHost: b
     return {
       canHost: false,
       freeRemaining: null,
-      reason: 'Stowaways can join games, but hosting requires Castaway or higher. Upgrade to start hosting.',
+      reason: 'Stowaways can join unlimited games, but regular hosting requires a Crew Chief or Team Principal membership. Castaways received 5 free hosts. Visit account to upgrade your membership tier!',
     }
   }
 
@@ -142,22 +163,23 @@ export async function createGame(
   const displayName = `${isPrivate ? 'Private' : 'Public'} ${(sameTypeCount ?? 0) + 1}`
   const joinCode = isPrivate ? Math.random().toString(36).substring(2, 8).toUpperCase() : null
 
-  const { data, error } = await supabase
-    .from('social_games')
-    .insert({
-      host_user_id: hostUserId,
-      skin,
-      status: 'lobby',
-      is_private: isPrivate,
-      display_name: displayName,
-      join_code: joinCode,
-    })
-    .select('id')
-    .single()
+const { data, error } = await supabase
+  .from('social_games')
+  .insert({
+    host_user_id: hostUserId,
+    skin,
+    status: 'lobby',
+    is_private: isPrivate,
+    display_name: displayName,
+    join_code: joinCode,
+  })
+  .select('id')
+  .single()
 
-  if (error || !data) {
-    return { gameId: null, error: 'Something went wrong creating the game.' }
-  }
+if (error || !data) {
+  console.error('createGame insert failed:', JSON.stringify(error, null, 2))
+  return { gameId: null, error: 'Something went wrong creating the game.' }
+}
 
   const { error: seatError } = await supabase.from('social_game_players').insert({
     game_id: data.id,
@@ -178,14 +200,16 @@ export type OpenGame = {
   is_private: boolean
   display_name: string
   player_count: number
+  status: string
+  host_user_id: string
 }
 
 export async function listOpenGames(): Promise<OpenGame[]> {
-  const { data: games } = await supabase
-    .from('social_games')
-    .select('id, skin, is_private, display_name')
-    .eq('status', 'lobby')
-    .order('created_at', { ascending: false })
+ const { data: games } = await supabase
+  .from('social_games')
+  .select('id, skin, is_private, display_name, status, host_user_id')
+  .in('status', ['lobby', 'in_progress'])
+  .order('created_at', { ascending: false })
 
   if (!games || games.length === 0) return []
 
@@ -202,11 +226,13 @@ export async function listOpenGames(): Promise<OpenGame[]> {
 
   return games.map((g) => ({
     id: g.id,
-    skin: g.skin,
-    is_private: g.is_private,
-    display_name: g.display_name,
-    player_count: countMap.get(g.id) ?? 0,
-  }))
+  skin: g.skin,
+  is_private: g.is_private,
+  display_name: g.display_name,
+  player_count: countMap.get(g.id) ?? 0,
+  status: g.status,
+  host_user_id: g.host_user_id,
+}))
 }
 
 export async function joinPrivateGame(gameId: number, code: string, userId: string): Promise<{ error: string | null }> {
@@ -220,7 +246,7 @@ export async function joinPrivateGame(gameId: number, code: string, userId: stri
     return { error: 'This game has already started or no longer exists.' }
   }
   if (game.join_code !== code.toUpperCase().trim()) {
-    return { error: 'Incorrect join code.' }
+    return { error: 'Please enter correct join code to play.' }
   }
 
   return joinGame(gameId, userId)
