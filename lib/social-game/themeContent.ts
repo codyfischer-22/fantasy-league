@@ -19,7 +19,7 @@ export const themeContentBySkin: Record<string, ThemeContent> = {
   traitors: {
     displayName: 'Turret',
     emoji: '🗡️',
-    intro: "Welcome to the Scottish Highlands, where faithful and traitors walk amongst one another. After vicious murders, a week of round tables approaches, where you must decide to banish or save the traitors on the block. The war is on between the turret master and the most faithful of the faithfuls. Who will come out of the fire of truth unscathed?",
+    intro: "Welcome to the Scottish Highlands, where faithful and traitors intermingle in castle hallways. After vicious murders, a week of round tables approaches, where you must decide to banish or save the traitors on the block. The war is on between the turret master and the most faithful of the faithfuls. Who will come out of the fire of truth unscathed?",
   },
   f1: {
     displayName: 'Paddock',

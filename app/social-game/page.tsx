@@ -320,16 +320,24 @@ Private games are restricted to anyone with whom you share the code. Public leag
                   <span style={{ fontSize: '1.4rem' }}>{theme.emoji}</span>
                   <div>
                     <div style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      {g.display_name}
-                      {isMyHost && (
-                        <span style={{
-                          color: '#f0b429', fontSize: '0.7rem', fontWeight: 'bold',
-                          border: '1px solid #f0b429', borderRadius: '4px', padding: '1px 6px'
-                        }}>
-                          HOSTING
-                        </span>
-                      )}
-                    </div>
+  {g.display_name}
+  {isMyHost && (
+    <span style={{
+      color: '#f0b429', fontSize: '0.7rem', fontWeight: 'bold',
+      border: '1px solid #f0b429', borderRadius: '4px', padding: '1px 6px'
+    }}>
+      HOSTING
+    </span>
+  )}
+  {!g.counts_toward_records && (
+    <span style={{
+      color: '#a0a0b0', fontSize: '0.7rem', fontWeight: 'bold',
+      border: '1px solid #555570', borderRadius: '4px', padding: '1px 6px'
+    }}>
+      CASUAL
+    </span>
+  )}
+</div>
                     <div style={{ color: '#a0a0b0', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
   <span>{g.player_count}/10 players</span>
   {g.status !== 'lobby' && !isMine && (

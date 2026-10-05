@@ -1,11 +1,6 @@
 'use client'
 
-type SeatPlayer = {
-  user_id: string
-  seat_order: number
-  display_name: string
-  role?: string
-}
+import PlayerRecordHover from './PlayerRecordHover'
 
 type Props = {
   players: SeatPlayer[]
@@ -17,6 +12,7 @@ type Props = {
   seatSize?: number
   currentLeaderUserId?: string
   missionLeaderLabel?: string
+  canViewRecords?: boolean
 }
 
 export default function SeatCircle({
@@ -24,11 +20,11 @@ export default function SeatCircle({
   hostUserId,
   myUserId,
   myRole,
-  onMySeatClick,
   circleSize = 320,
   seatSize = 80,
   currentLeaderUserId,
   missionLeaderLabel = 'LEADER',
+  canViewRecords = false,
 }: Props) {
   const center = circleSize / 2
   const radius = center - seatSize / 2
@@ -64,17 +60,18 @@ if (iAmEvil && theirRoleIsEvil) {
   const showBadCaptainGlow = iAmEvil && p.role === 'badCaptain'
   const showGoodCaptainGlow = isMe && myRole === 'goodCaptain'
 
-  return (
-    <div
-      key={p.user_id}
-      style={{
-        position: 'absolute',
-        left: `${x - seatSize / 2}px`,
-        top: `${y - seatSize / 2}px`,
-        width: `${seatSize}px`,
-        height: `${seatSize}px`,
-      }}
-    >
+return (
+  <div
+    key={p.user_id}
+    style={{
+      position: 'absolute',
+      left: `${x - seatSize / 2}px`,
+      top: `${y - seatSize / 2}px`,
+      width: `${seatSize}px`,
+      height: `${seatSize}px`,
+    }}
+  >
+        <PlayerRecordHover userId={p.user_id} displayName={p.display_name} enabled={canViewRecords}>
       <div style={{
         width: '100%',
         height: '100%',
@@ -99,6 +96,7 @@ if (iAmEvil && theirRoleIsEvil) {
       }}>
         <span>{p.display_name}</span>
       </div>
+        </PlayerRecordHover>
       {isLeader && (
         <span style={{
           position: 'absolute',

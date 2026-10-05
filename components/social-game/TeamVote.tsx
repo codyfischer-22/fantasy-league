@@ -70,16 +70,16 @@ useEffect(() => {
 
   return (
     <div style={{ maxWidth: '420px', margin: '0 auto', textAlign: 'center' }}>
-      <h3 style={{ color: '#f0b429', fontSize: '1.1rem', marginBottom: '8px' }}>
-        {leaderName} proposed:
+      <h3 style={{ color: '#f0b429', fontSize: '.95rem', marginTop: '-16px', marginBottom: '8px' }}>
+        {leaderName} Proposed:
       </h3>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '20px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '16px' }}>
         {proposedTeam.map((userId) => {
           const p = players.find((pl) => pl.user_id === userId)
           return (
             <div key={userId} style={{
               backgroundColor: '#1a1a2e', border: '1px solid #f0b429', borderRadius: '8px',
-              padding: '8px 12px', color: '#ffffff', fontSize: '0.9rem'
+              padding: '8px 12px', color: '#ffffff', fontSize: '0.85rem'
             }}>
               {p?.display_name ?? 'Unknown'}
             </div>
@@ -88,14 +88,15 @@ useEffect(() => {
       </div>
 
       {!myVote ? (
-        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginBottom: '20px' }}>
+        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginBottom: '8px' }}>
           <button
             onClick={() => castVote(true)}
             disabled={submitting}
             style={{
               backgroundColor: '#068e38', color: '#ffffff', padding: '10px 24px',
-              borderRadius: '8px', border: 'none', fontWeight: 'bold', fontSize: '0.95rem',
-              cursor: submitting ? 'not-allowed' : 'pointer'
+              borderRadius: '8px', border: 'none', fontWeight: 'bold', fontSize: '0.85rem',
+              cursor: submitting ? 'not-allowed' : 'pointer',
+              minWidth: '100px'
             }}
           >
             Approve
@@ -105,8 +106,9 @@ useEffect(() => {
             disabled={submitting}
             style={{
               backgroundColor: 'transparent', color: '#ff6b6b', border: '1px solid #ff6b6b',
-              padding: '10px 24px', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.95rem',
-              cursor: submitting ? 'not-allowed' : 'pointer'
+              padding: '6px 14px', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.85rem',
+              cursor: submitting ? 'not-allowed' : 'pointer',
+              minWidth: '100px'
             }}
           >
             Reject

@@ -7,6 +7,8 @@ import { themeContentBySkin } from '@/lib/social-game/themeContent'
 import { joinGame, leaveGame } from '@/lib/social-game/lobbyActions'
 import { assignRoles } from '@/lib/social-game/assignRoles'
 import { useRouter } from 'next/navigation'
+import PlayerRecordHover from '@/components/social-game/PlayerRecordHover'
+import { canViewRecords, canToggleRecords } from '@/lib/social-game/playerRecords'
 
 
 type Player = {
@@ -36,10 +38,21 @@ export default function GameLobby({ gameId, skin, hostUserId, joinCode, isPrivat
   const router = useRouter()
   const [showWelcome, setShowWelcome] = useState(true)
   const [spectators, setSpectators] = useState<{ user_id: string; display_name: string }[]>([])
+  const [countsTowardRecords, setCountsTowardRecords] = useState(true)
+const [myTier, setMyTier] = useState('stowaway')
 
   const isHost = user?.id === hostUserId
   const theme = themeContentBySkin[skin]
   const isSeated = players.some((p) => p.user_id === user?.id)
+
+useEffect(() => {
+  async function loadTier() {
+    if (!user) return
+    const { data } = await supabase.from('profiles').select('tier').eq('user_id', user.id).single()
+    setMyTier(data?.tier ?? 'stowaway')
+  }
+  loadTier()
+}, [user])
 
 useEffect(() => {
   if (!user) return
@@ -76,6 +89,18 @@ useEffect(() => {
   const interval = setInterval(pingAndLoadSpectators, 10000)
   return () => clearInterval(interval)
 }, [gameId, user, isSeated])
+
+useEffect(() => {
+  async function loadToggleAndTier() {
+    const { data } = await supabase.from('social_games').select('counts_toward_records').eq('id', gameId).single()
+    if (data) setCountsTowardRecords(data.counts_toward_records)
+    if (user) {
+      const { data: profile } = await supabase.from('profiles').select('tier').eq('user_id', user.id).single()
+      setMyTier(profile?.tier ?? 'stowaway')
+    }
+  }
+  loadToggleAndTier()
+}, [gameId, user])
 
   useEffect(() => {
     async function loadPlayers() {
@@ -210,7 +235,7 @@ const handleJoin = async () => {
     alignItems: 'center',
     justifyContent: 'center',
     gap: '10px',
-    marginBottom: '32px'
+    marginBottom: '16px'
   }}>
     <span style={{ color: '#a0a0b0', fontSize: '0.9rem' }}>Join Code:</span>
     <span style={{
@@ -246,7 +271,7 @@ const handleJoin = async () => {
 
 
 {isHost && (
-  <p style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '16px' }}>
+  <p style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '8px' }}>
     Thanks for hosting!
   </p>
 )}
@@ -287,9 +312,15 @@ const handleJoin = async () => {
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <span style={{ color: '#555570', fontSize: '0.85rem', width: '20px' }}>{seatNum + 1}.</span>
-          <span style={{ color: occupant ? '#ffffff' : '#555570', fontSize: '0.9rem' }}>
-            {occupant ? occupant.display_name : 'Open'}
-          </span>
+        {occupant ? (
+  <PlayerRecordHover userId={occupant.user_id} displayName={occupant.display_name} enabled={canViewRecords(myTier)}>
+    <span style={{ color: '#ffffff', fontSize: '0.9rem' }}>
+      {occupant.display_name}
+    </span>
+  </PlayerRecordHover>
+) : (
+  <span style={{ color: '#555570', fontSize: '0.9rem' }}>Open</span>
+)}
           {isMeSeat && (
             <span style={{ color: '#f0b429', fontSize: '0.7rem', fontWeight: 'bold' }}>(You)</span>
           )}
@@ -318,7 +349,7 @@ const handleJoin = async () => {
   </div>
 )}
 
-<p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '12px' }}>
+<p style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '24px', marginTop: '-12px' }}>
   {players.length >= 5
     ? `(${players.length}/10) - Awaiting Host Start`
     : `Waiting for players to join... (${players.length}/10)`}
@@ -396,7 +427,7 @@ const handleJoin = async () => {
       border: '1px solid #ff6b6b',
       padding: '10px 24px',
       borderRadius: '8px',
-      marginTop: '12px',
+      marginTop: '0px',
        minWidth: '160px',
       fontWeight: 'bold',
       fontSize: '0.9rem',
@@ -406,7 +437,6 @@ const handleJoin = async () => {
     {leaving ? 'Canceling...' : 'Cancel Game'}
   </button>
 )}
-
       {isHost && isSeated && (
         <div>
           <button
@@ -419,7 +449,8 @@ const handleJoin = async () => {
               borderRadius: '8px',
               border: 'none',
               fontWeight: 'bold',
-              marginTop: '12px',
+              marginTop: '0px',
+              marginBottom: '8px',
               minWidth: '160px',
               fontSize: '1rem',
               cursor: players.length < 5 || players.length > 10 ? 'not-allowed' : 'pointer',
@@ -430,6 +461,22 @@ const handleJoin = async () => {
           </button>
         </div>
       )}
+
+      {isHost && canToggleRecords(myTier) && (
+  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center', marginBottom: '0px', color: '#a0a0b0', fontSize: '0.85rem', cursor: 'pointer' }}>
+    <input
+      type="checkbox"
+      checked={countsTowardRecords}
+      onChange={async (e) => {
+        const checked = e.target.checked
+        setCountsTowardRecords(checked)
+        await supabase.from('social_games').update({ counts_toward_records: checked }).eq('id', gameId)
+      }}
+    />
+    Log toward statistics?
+  </label>
+)}
+
 
       {message && (
         <p style={{ color: '#ff6b6b', fontSize: '0.9rem', marginTop: '12px' }}>{message}</p>

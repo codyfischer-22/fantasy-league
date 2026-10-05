@@ -1,5 +1,19 @@
 import { supabase } from '@/lib/supabase'
 
+export type OpenGame = {
+  id: number
+  skin: string
+  is_private: boolean
+  display_name: string
+  player_count: number
+  status: string
+  host_user_id: string
+  join_code: string | null
+  counts_toward_records: boolean
+}
+
+
+
 export async function joinGame(gameId: number, userId: string): Promise<{ error: string | null }> {
   const { data: game } = await supabase
     .from('social_games')
@@ -205,9 +219,9 @@ export type OpenGame = {
 }
 
 export async function listOpenGames(): Promise<OpenGame[]> {
- const { data: games } = await supabase
+const { data: games } = await supabase
   .from('social_games')
-  .select('id, skin, is_private, display_name, status, host_user_id')
+  .select('id, skin, is_private, display_name, status, host_user_id, join_code, counts_toward_records')
   .in('status', ['lobby', 'in_progress'])
   .order('created_at', { ascending: false })
 
@@ -224,14 +238,16 @@ export async function listOpenGames(): Promise<OpenGame[]> {
     countMap.set(p.game_id, (countMap.get(p.game_id) ?? 0) + 1)
   })
 
-  return games.map((g) => ({
-    id: g.id,
+return games.map((g) => ({
+  id: g.id,
   skin: g.skin,
   is_private: g.is_private,
   display_name: g.display_name,
   player_count: countMap.get(g.id) ?? 0,
   status: g.status,
   host_user_id: g.host_user_id,
+  join_code: g.join_code,
+  counts_toward_records: g.counts_toward_records,
 }))
 }
 

@@ -21,6 +21,8 @@ import RuleCorner from '@/components/social-game/RuleCorner'
 import Scoreboard from '@/components/social-game/Scoreboard'
 import GameLog from '@/components/social-game/GameLog'
 import { gameConfigByPlayerCount } from '@/lib/social-game/gameConfig'
+import { canViewRecords } from '@/lib/social-game/playerRecords'
+
 
 type Game = {
   id: number
@@ -63,6 +65,7 @@ export default function SocialGameRoomPage() {
   const [myRole, setMyRole] = useState<string>('')
   const [seenResultFor, setSeenResultFor] = useState<number | null>(null)
   const [introStep, setIntroStep] = useState<number | null>(null)
+  const [myTier, setMyTier] = useState('stowaway')
 
   async function loadGame() {
     const { data } = await supabase
@@ -124,6 +127,15 @@ export default function SocialGameRoomPage() {
 
     setLoading(false)
   }
+
+  useEffect(() => {
+  async function loadTier() {
+    if (!user) return
+    const { data } = await supabase.from('profiles').select('tier').eq('user_id', user.id).single()
+    setMyTier(data?.tier ?? 'stowaway')
+  }
+  loadTier()
+}, [user])
 
   useEffect(() => {
     if (!game) return
@@ -251,29 +263,30 @@ export default function SocialGameRoomPage() {
             alignItems: 'flex-start'
           }}>
        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '340px', flexShrink: 0 }}>
-  {isSeated && isRoomPhase && (
+  {isRoomPhase && (
     <RuleCorner card={ruleCards[0]} isActive={ruleCards[0].phase === activePhase} />
   )}
-  {isSeated && isRoomPhase && (
+  {isRoomPhase && (
     <RuleCorner card={ruleCards[1]} isActive={ruleCards[1].phase === activePhase} />
   )}
-  {isSeated && isRoomPhase && (
+  {isRoomPhase && (
     <RuleCorner card={ruleCards[2]} isActive={ruleCards[2].phase === activePhase} />
   )}
 </div>
 
             <div style={{ width: '460px', flexShrink: 0, textAlign: 'center' }}>
               <div style={{ position: 'relative', display: 'inline-block' }}>
-                <SeatCircle
-                  players={players}
-                  hostUserId={game.host_user_id}
-                  myUserId={isSeated ? user?.id : undefined}
-                  myRole={myRole}
-                  circleSize={players.length >= 8 ? 460 : players.length >= 6 ? 420 : 380}
-                  seatSize={players.length >= 9 ? 80 : players.length >= 7 ? 90 : players.length >= 6 ? 100 : 110}
-                  currentLeaderUserId={players.find((p) => p.seat_order === currentLeaderSeat)?.user_id}
-                  missionLeaderLabel={roleTerms.missionLeader}
-                />
+      <SeatCircle
+  players={players}
+  hostUserId={game.host_user_id}
+  myUserId={isSeated ? user?.id : undefined}
+  myRole={myRole}
+  circleSize={players.length >= 8 ? 460 : players.length >= 6 ? 420 : 380}
+  seatSize={players.length >= 9 ? 80 : players.length >= 7 ? 90 : players.length >= 6 ? 100 : 110}
+  currentLeaderUserId={players.find((p) => p.seat_order === currentLeaderSeat)?.user_id}
+  missionLeaderLabel={roleTerms.missionLeader}
+  canViewRecords={canViewRecords(myTier)}
+/>
                 <div style={{
                   position: 'absolute',
                   top: '50%',
@@ -374,17 +387,25 @@ export default function SocialGameRoomPage() {
                   )
                 })()
               ) : (
-                <p style={{ color: '#a0a0b0' }}>
-                  👀 You&apos;re spectating this game. The spectator view isn&apos;t built yet, but you&apos;re in the room!
+                <>
+                <p style={{ color: '#ff6b6b', fontSize: '.85rem', marginBottom: '4px' }}>
+                  You&apos;re in Spectator Mode!
                 </p>
+                <p style={{ color: '#a0a0b0', fontSize: '.85rem', marginBottom: '6px' }}>
+                  We know it&apos;s tempting, but let the players do the playing.
+                </p>
+                 <p style={{ color: '#a0a0b0', fontSize: '.85rem' }}>
+                Follow along with every action in the Game Log.
+                </p>
+                </>
               )}
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '280px', flexShrink: 0 }}>
-              {isSeated && game.status !== 'lobby' && (
+              {game.status !== 'lobby' && (
                 <Scoreboard gameId={game.id} currentMission={currentMission} gameStatus={game.status} roleTerms={roleTerms} />
               )}
-              {isSeated && game.status !== 'lobby' && (
+              {game.status !== 'lobby' && (
                 <GameLog gameId={game.id} players={players} roleTerms={roleTerms} gameStatus={game.status} captainGuessTarget={game.captain_guess_target} />
               )}
             </div>
