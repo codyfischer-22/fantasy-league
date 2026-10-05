@@ -46,59 +46,83 @@ export default function CaptainGuess({ gameId, skin, players, myUserId, myRole, 
 
   if (!isBadCaptain) {
     return (
-      <p style={{ color: '#a0a0b0', textAlign: 'center' }}>
-        {terms.goodTeamMember}s have won 3 {terms.mission.toLowerCase()}s! The {terms.badCaptain} now gets one chance to guess the {terms.goodCaptain} and steal the win...
-      </p>
+      <>
+        <p style={{ color: '#a0a0b0', fontSize: '.85rem', marginBottom: '8px', textAlign: 'center' }}>
+          {terms.goodTeam} succesfully completed 3 {terms.mission}s!
+        </p>
+        <p style={{ color: '#a0a0b0', fontSize: '.85rem', textAlign: 'center' }}>
+          But the {terms.badCaptain} can steal the win by guessing the {terms.goodCaptain}...
+        </p>
+      </>
     )
   }
 
   return (
-    <div style={{ maxWidth: '420px', margin: '0 auto', textAlign: 'center' }}>
-      <h3 style={{ color: '#ff6b6b', fontSize: '1.1rem', marginBottom: '8px' }}>
-        Final Chance: Who is the {terms.goodCaptain}?
-      </h3>
-      <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '16px' }}>
-        Guess correctly and {terms.badTeamMember}s steal the win.
-      </p>
+    <div style={{
+      position: 'fixed',
+      top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.75)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 300,
+      padding: '20px'
+    }}>
+      <div style={{
+        backgroundColor: '#0a0a0f',
+        border: '2px solid #ff6b6b',
+        borderRadius: '12px',
+        padding: '24px',
+        maxWidth: '400px',
+        width: '100%',
+        textAlign: 'center'
+      }}>
+        <h3 style={{ color: '#ff6b6b', fontSize: '1.1rem', marginBottom: '8px' }}>
+          It's do or die! Who is the {terms.goodCaptain}?
+        </h3>
+        <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '16px' }}>
+          Guess correctly and your faction steals the win.
+        </p>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
-      {players
-  .filter((p) => p.role !== 'badCaptain' && p.role !== 'badTeamMember')
-  .map((p) => (
-            <label
-              key={p.user_id}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '10px',
-                backgroundColor: '#1a1a2e',
-                border: `1px solid ${selected === p.user_id ? '#f0b429' : '#2a2a3e'}`,
-                borderRadius: '8px', padding: '10px 14px', cursor: 'pointer'
-              }}
-            >
-              <input
-                type="radio"
-                name="captainGuess"
-                checked={selected === p.user_id}
-                onChange={() => setSelected(p.user_id)}
-              />
-              <span style={{ color: '#ffffff' }}>{p.display_name}</span>
-            </label>
-          ))}
+        <div style={{ display: 'flex', fontSize: '.85rem', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
+          {players
+            .filter((p) => p.role !== 'badCaptain' && p.role !== 'badTeamMember')
+            .map((p) => (
+              <label
+                key={p.user_id}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '10px',
+                  backgroundColor: '#1a1a2e',
+                  border: `1px solid ${selected === p.user_id ? '#f0b429' : '#2a2a3e'}`,
+                  borderRadius: '8px', padding: '10px 14px', cursor: 'pointer'
+                }}
+              >
+                <input
+                  type="radio"
+                  name="captainGuess"
+                  checked={selected === p.user_id}
+                  onChange={() => setSelected(p.user_id)}
+                />
+                <span style={{ color: '#ffffff' }}>{p.display_name}</span>
+              </label>
+            ))}
+        </div>
+
+        <button
+          onClick={handleSubmit}
+          disabled={submitting || !selected}
+          style={{
+            backgroundColor: '#ff6b6b', color: '#ffffff', padding: '12px 32px',
+            borderRadius: '8px', border: 'none', fontWeight: 'bold', fontSize: '1rem',
+            cursor: (submitting || !selected) ? 'not-allowed' : 'pointer',
+            opacity: (submitting || !selected) ? 0.5 : 1
+          }}
+        >
+          {submitting ? 'Submitting...' : 'Lock In Guess'}
+        </button>
+
+        {message && <p style={{ color: '#ff6b6b', fontSize: '0.85rem', marginTop: '12px' }}>{message}</p>}
       </div>
-
-      <button
-        onClick={handleSubmit}
-        disabled={submitting || !selected}
-        style={{
-          backgroundColor: '#ff6b6b', color: '#ffffff', padding: '12px 32px',
-          borderRadius: '8px', border: 'none', fontWeight: 'bold', fontSize: '1rem',
-          cursor: (submitting || !selected) ? 'not-allowed' : 'pointer',
-          opacity: (submitting || !selected) ? 0.5 : 1
-        }}
-      >
-        {submitting ? 'Submitting...' : 'Lock In Guess'}
-      </button>
-
-      {message && <p style={{ color: '#ff6b6b', fontSize: '0.85rem', marginTop: '12px' }}>{message}</p>}
     </div>
   )
 }

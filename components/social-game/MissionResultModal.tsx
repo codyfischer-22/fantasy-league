@@ -55,10 +55,12 @@ export default function MissionResultModal({ missionId, missionNumber, skin, vot
       >
         {isRejection ? (
           <>
-            <h2 style={{ color: '#a0a0b0', fontSize: '1.3rem', marginBottom: '10px' }}>Team Rejected</h2>
+            <h2 style={{ color: '#a0a0b0', fontSize: '1.3rem', marginBottom: '10px' }}>Proposal Rejected</h2>
+            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '6px' }}>
+  The proposed representatives for {terms.mission} {missionNumber} was voted down. The role of {terms.missionLeader} now passes clockwise.
+</p>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem' }}>
-              The proposed team for {terms.mission} {missionNumber} was voted down. Leadership passes to the next seat.
-            </p>
+5 rejected proposals in a single {terms.mission} result in an automatic {terms.failMission}.</p>
           </>
         ) : (
           <>
@@ -67,7 +69,7 @@ export default function MissionResultModal({ missionId, missionNumber, skin, vot
             </h2>
             {passCount !== null && failCount !== null && (
               <p style={{ color: '#a0a0b0', fontSize: '0.95rem' }}>
-                {passCount} {terms.passMission}{passCount === 1 ? '' : 's'}, {failCount} {terms.failMission}{failCount === 1 ? '' : 's'} submitted.
+                {passCount} {terms.passMission}{passCount === 1 ? '' : 's'} & {failCount} {terms.failMission}{failCount === 1 ? '' : 's'}.
               </p>
             )}
           </>

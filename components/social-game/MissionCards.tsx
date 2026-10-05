@@ -6,6 +6,7 @@ import { roleTermsBySkin } from '@/lib/social-game/roles'
 
 type Props = {
   missionId: number
+  missionNumber: number
   skin: string
   myUserId: string
   myRole: string
@@ -13,7 +14,7 @@ type Props = {
   onResolved: () => void
 }
 
-export default function MissionCards({ missionId, skin, myUserId, myRole, isOnTeam, onResolved }: Props) {
+export default function MissionCards({ missionId, missionNumber, skin, myUserId, myRole, isOnTeam, onResolved }: Props) {
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [message, setMessage] = useState('')
@@ -33,13 +34,13 @@ export default function MissionCards({ missionId, skin, myUserId, myRole, isOnTe
     onResolved()
   }
 
-  if (!isOnTeam) {
-    return (
-      <p style={{ color: '#a0a0b0', textAlign: 'center' }}>
-        Waiting for the team to complete {terms.mission.toLowerCase()} {missionId}...
-      </p>
-    )
-  }
+if (!isOnTeam) {
+  return (
+    <p style={{ color: '#a0a0b0', textAlign: 'center' }}>
+      Waiting for the team to complete {terms.mission} {missionNumber}...
+    </p>
+  )
+}
 
   if (submitted) {
     return <p style={{ color: '#a0a0b0', textAlign: 'center' }}>Card submitted. Waiting on your teammates...</p>

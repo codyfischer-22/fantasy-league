@@ -96,8 +96,8 @@ export default function RoleReveal({ gameId, skin, myUserId, onClose }: Props) {
           backgroundColor: '#0a0a0f',
           border: '1px solid #2a2a3e',
           borderRadius: '12px',
-          padding: '28px',
-          maxWidth: '480px',
+          padding: '24px',
+          maxWidth: '400px',
           width: '100%',
           maxHeight: '85vh',
           overflowY: 'auto',
@@ -127,30 +127,32 @@ export default function RoleReveal({ gameId, skin, myUserId, onClose }: Props) {
           <p style={{ color: '#a0a0b0' }}>Could not find your seat.</p>
         ) : (
           <>
-            <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '8px' }}>Your Role</h2>
             <div style={{
               backgroundColor: '#1a1a2e',
-              border: `2px solid ${isEvil ? '#ff6b6b' : '#f0b429'}`,
+              border: `2px solid ${isEvil ? '#ff6b6b' : '#068e38'}`,
               borderRadius: '12px',
-              padding: '24px',
+              padding: '12px',
+              marginTop: '16px',
               marginBottom: '24px'
             }}>
-              <p style={{ color: isEvil ? '#ff6b6b' : '#f0b429', fontSize: '1.4rem', fontWeight: 'bold', marginBottom: '4px' }}>
-                {roleLabel[me.role]}
-              </p>
-              <p style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
-                {isEvil ? `You are on the ${terms.badTeamMember} side.` : `You are on the ${terms.goodTeamMember} side.`}
-              </p>
+           <p style={{ fontSize: '1.0rem', fontWeight: 'bold', marginBottom: '4px' }}>
+  <span style={{ color: '#f0b429'}}>Role:</span>{' '}
+  <span style={{ color: '#ffffff' }}>{roleLabel[me.role]}</span>
+</p>
+           <p style={{ fontSize: '.95rem' }}>
+  <span style={{ color: '#f0b429' }}>Faction:</span>{' '}
+  <span style={{ color: '#a0a0b0' }}>{isEvil ? terms.badTeam : terms.goodTeam}</span>
+</p>
             </div>
 
             {isEvil && evilTeammates.length > 0 && (
               <div style={{ marginBottom: '8px' }}>
-                <h3 style={{ color: '#ff6b6b', fontSize: '1rem', marginBottom: '10px' }}>Your fellow {terms.badTeamMember}s:</h3>
+                <h3 style={{ color: '#ff6b6b', fontSize: '.95rem', marginBottom: '10px' }}>Your fellow {terms.badTeamMember}s:</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   {evilTeammates.map((p) => (
                     <div key={p.user_id} style={{
                       backgroundColor: '#1a1a2e', border: '1px solid #ff6b6b', borderRadius: '8px',
-                      padding: '10px', color: '#ffffff', fontSize: '0.95rem'
+                      padding: '10px', color: '#ffffff', fontSize: '0.85rem'
                     }}>
                       {p.display_name} {p.role === 'badCaptain' ? `(${terms.badCaptain})` : ''}
                     </div>
@@ -161,7 +163,7 @@ export default function RoleReveal({ gameId, skin, myUserId, onClose }: Props) {
 
             {isGoodCaptain && (
               <div style={{ marginBottom: '8px' }}>
-                <h3 style={{ color: '#f0b429', fontSize: '1rem', marginBottom: '10px' }}>You see everyone&apos;s true side:</h3>
+                <h3 style={{ color: '#f0b429', fontSize: '.95rem', marginBottom: '10px' }}>You know every player's faction:</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   {everyoneElse.map((p) => {
                     const theirEvil = p.role === 'badCaptain' || p.role === 'badTeamMember'
@@ -169,7 +171,7 @@ export default function RoleReveal({ gameId, skin, myUserId, onClose }: Props) {
                       <div key={p.user_id} style={{
                         backgroundColor: '#1a1a2e',
                         border: `1px solid ${theirEvil ? '#ff6b6b' : '#2a2a3e'}`,
-                        borderRadius: '8px', padding: '10px', color: '#ffffff', fontSize: '0.95rem',
+                        borderRadius: '8px', padding: '10px', color: '#ffffff', fontSize: '0.85rem',
                         display: 'flex', justifyContent: 'space-between'
                       }}>
                         <span>{p.display_name}</span>
@@ -185,7 +187,7 @@ export default function RoleReveal({ gameId, skin, myUserId, onClose }: Props) {
 
             {!isEvil && !isGoodCaptain && (
               <p style={{ color: '#555570', fontSize: '0.85rem' }}>
-                You don&apos;t know anyone else&apos;s role. Watch carefully and trust wisely.
+                You don&apos;t know anyone&apos;s role. Watch carefully and trust nobody!
               </p>
             )}
           </>

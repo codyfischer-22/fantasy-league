@@ -2,8 +2,10 @@
 
 export type RoleTerms = {
   placeSetting: string
+  goodTeam: string
   goodTeamMember: string
   goodCaptain: string
+  badTeam: string
   badTeamMember: string
   badCaptain: string
   mission: string
@@ -19,8 +21,10 @@ export type RoleTerms = {
 export const roleTermsBySkin: Record<string, RoleTerms> = {
   neutral: {
    placeSetting: 'arena',
+   goodTeam: 'Good Team',
     goodTeamMember: 'Good Team Member',
     goodCaptain: 'Good Captain',
+    badTeam: 'Bad Team',
     badTeamMember: 'Bad Team Member',
     badCaptain: 'Bad Captain',
     mission: 'Mission',
@@ -34,8 +38,10 @@ export const roleTermsBySkin: Record<string, RoleTerms> = {
   },
   island: {
     placeSetting: 'beach',
+    goodTeam: 'Heroes',
     goodTeamMember: 'Alliance Member',
     goodCaptain: 'Fan Favorite',
+    badTeam: 'Villains',
     badTeamMember: 'Villainous Rat',
     badCaptain: 'Villainous Snake',
     mission: 'Challenge',
@@ -49,8 +55,10 @@ export const roleTermsBySkin: Record<string, RoleTerms> = {
   },
   traitors: {
     placeSetting: 'Round Table',
+    goodTeam: 'Faithfuls',
     goodTeamMember: 'Faithful',
     goodCaptain: 'Most Faithful of the Faithfuls',
+    badTeam: 'Traitors',
     badTeamMember: 'Traitor',
     badCaptain: 'Turret Master',
     mission: 'Round Table',
@@ -65,8 +73,10 @@ export const roleTermsBySkin: Record<string, RoleTerms> = {
   },
   f1: {
     placeSetting: 'paddock',
+    goodTeam: 'Max Velocity Racing',
     goodTeamMember: 'Pit Crew',
     goodCaptain: 'Max Velocity',
+    badTeam: 'Rival Garage',
     badTeamMember: 'Rival Spy',
     badCaptain: 'Rival Team Principal',
     mission: 'Pit Stop',
@@ -80,14 +90,16 @@ export const roleTermsBySkin: Record<string, RoleTerms> = {
       },
   nascar: {
     placeSetting: 'oval',
+    goodTeam: 'TFL Racing',
     goodTeamMember: 'Teammate',
     goodCaptain: 'Points Leader',
+    badTeam: 'Rival Manufacturers',
     badTeamMember: 'Rival Manufacturer',
     badCaptain: 'Points Rival',
     mission: 'Restart',
     missionLeader: 'Crew Chief',
     passMission: 'Push to P1',
-    failMission: 'Right Rear Spin Out',
+    failMission: 'Right Rear & Spin Out',
     goodTeamMemberDescription: 'You\u0027ve been tasked by your owner to push your teammate, the Points Leader, in the final laps. Help him advance while blocking rival manufacturers from interfering or discovering his identity. If his points rival discovers who he is, your team loses the race and the Chase.',
      goodCaptainDescription: 'Your spotter has let you know where every driver is on track: you know your teammates, the rival manufacturer cars, and your points rival. Help your teammates complete 3 good pushes to win the race while keeping your identity a secret. If you are found out, you\u0027ll be in the wall.',
     badTeamMemberDescription: 'If you\u0027re not going to win the championship, it sure as hell isn\u0027t going to be a Chevota. Spin out the competition 3 times to help your manufacturer win.. or else reject 5 proposals.. or help take out the Points Leader in overtime.',
