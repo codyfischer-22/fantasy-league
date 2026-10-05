@@ -24,6 +24,11 @@ export default function SocialGameLandingPage() {
   const [pendingCreate, setPendingCreate] = useState<{ skin: string; isPrivate: boolean } | null>(null)
   const [myGameIds, setMyGameIds] = useState<Set<number>>(new Set())
   const [privateJoinError, setPrivateJoinError] = useState<Record<number, string>>({})
+  const [isMobile, setIsMobile] = useState<boolean | null>(null)
+
+useEffect(() => {
+  setIsMobile(window.innerWidth < 768)
+}, [])
 
 useEffect(() => {
   async function loadMyGames() {
@@ -157,6 +162,22 @@ Stowaway tier can join unlimited games, Castaway gets 5 free hosts, and Crew Chi
 <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '16px' }}>
 Private games are restricted to anyone with whom you share the code. Public leagues are playable by anyone who wanders into your lobby. Choose your game theme and dive into the action!</p>
 
+
+{isMobile === null ? null : isMobile ? (
+  <div style={{
+    backgroundColor: '#1a1a2e',
+    border: '1px solid #2a2a3e',
+    borderRadius: '10px',
+    padding: '20px',
+    textAlign: 'left',
+    marginBottom: '24px'
+  }}>
+    <p style={{ color: '#ff6b6b', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>
+      We currently have {openGames.length} joinable game{openGames.length === 1 ? '' : 's'} in the lobby, but they are, unfortunately, not yet configured to mobile. Hop onto a desktop computer to get in on the action!
+    </p>
+  </div>
+) : (
+  <>
  {!showHostPicker ? (
   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
     <button
@@ -429,19 +450,19 @@ Private games are restricted to anyone with whom you share the code. Public leag
         padding: '24px', maxWidth: '380px', width: '90%', textAlign: 'left'
       }}
     >
-    <p style={{ color: '#ffffff', fontSize: '1rem', marginBottom: '12px', textAlign: 'left' }}>
-  Create new {pendingCreate.isPrivate ? 'private' : 'public'} league?
-</p>
-<p style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '14px', textAlign: 'left' }}>
-  {pendingCreate.isPrivate
-    ? 'Players can only join this game with a special code, generated once your league is created.'
-    : 'Any player will be able to join this league from our main lobby. Happy deceiving!'}
-</p>
-{freeRemaining !== null && (
-  <p style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '16px', textAlign: 'left' }}>
-    After this, you will have {Math.max(0, freeRemaining - 1)} free host{Math.max(0, freeRemaining - 1) === 1 ? '' : 's'} remaining unless you upgrade to Crew Chief+.
-  </p>
-)}
+      <p style={{ color: '#ffffff', fontSize: '1rem', marginBottom: '12px', textAlign: 'left' }}>
+        Create new {pendingCreate.isPrivate ? 'private' : 'public'} league?
+      </p>
+      <p style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '14px', textAlign: 'left' }}>
+        {pendingCreate.isPrivate
+          ? 'Players can only join this game with a special code, generated once your league is created.'
+          : 'Any player will be able to join this league from our main lobby. Happy deceiving!'}
+      </p>
+      {freeRemaining !== null && (
+        <p style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '16px', textAlign: 'left' }}>
+          After this, you will have {Math.max(0, freeRemaining - 1)} free host{Math.max(0, freeRemaining - 1) === 1 ? '' : 's'} remaining unless you upgrade to Crew Chief+.
+        </p>
+      )}
       <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
         <button
           onClick={() => {
@@ -470,6 +491,8 @@ Private games are restricted to anyone with whom you share the code. Public leag
       </div>
     </div>
   </div>
+)}
+</>
 )}
 </div>
     </main>
