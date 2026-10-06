@@ -1,19 +1,5 @@
 import { supabase } from '@/lib/supabase'
 
-export type OpenGame = {
-  id: number
-  skin: string
-  is_private: boolean
-  display_name: string
-  player_count: number
-  status: string
-  host_user_id: string
-  join_code: string | null
-  counts_toward_records: boolean
-}
-
-
-
 export async function joinGame(gameId: number, userId: string): Promise<{ error: string | null }> {
   const { data: game } = await supabase
     .from('social_games')

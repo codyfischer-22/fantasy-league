@@ -2,6 +2,13 @@
 
 import PlayerRecordHover from './PlayerRecordHover'
 
+type SeatPlayer = {
+  user_id: string
+  seat_order: number
+  display_name: string
+  role?: string
+}
+
 type Props = {
   players: SeatPlayer[]
   hostUserId: string
