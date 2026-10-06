@@ -65,14 +65,14 @@ export default function Scoreboard({ gameId, currentMission, gameStatus, roleTer
 }
 
     return (
-    <div style={{
-      backgroundColor: '#1a1a2e',
-      border: '1px solid #2a2a3e',
-      borderRadius: '10px',
-      padding: '14px',
-      boxSizing: 'border-box',
-      height: '100%'
-    }}>
+<div style={{
+  backgroundColor: 'rgba(26, 26, 46, 0.9)',
+  border: '1px solid #2a2a3e',
+  borderRadius: '10px',
+  padding: '14px',
+  boxSizing: 'border-box',
+  height: '100%'
+}}>
     <h4 style={{ color: '#f0b429', fontSize: '0.9rem', marginBottom: '10px', textDecoration: 'underline' }}>
   Win Conditions
 </h4>

@@ -249,10 +249,18 @@ export default function SocialGameRoomPage() {
       ) : game.status === 'good_wins' || game.status === 'evil_wins' ? (
 <GameOver skin={game.skin} status={game.status} players={players} captainGuessTarget={game.captain_guess_target} />
     ) : isRoomPhase ? (
-        <div>
-          <h2 style={{ color: '#ffffff', fontSize: '1.4rem', marginBottom: '24px', textAlign: 'center' }}>
-            {theme.emoji} <span style={{ color: '#f0b429' }}>{game.display_name}</span> Game Room
-          </h2>
+  <div style={{
+    backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.4), rgba(10, 10, 15, 0.4)), url(/images/social-game/backgrounds/${game.skin}.jpg)`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundAttachment: 'fixed',
+    minHeight: '100vh',
+    margin: '-60px -40px',
+    padding: '60px 40px'
+  }}>
+    <h2 style={{ color: '#ffffff', fontSize: '1.4rem', marginBottom: '24px', textAlign: 'center' }}>
+      {theme.emoji} <span style={{ color: '#f0b429' }}>{game.display_name}</span> Game Room
+    </h2>
 
           <div style={{
             display: 'flex',
@@ -286,6 +294,7 @@ export default function SocialGameRoomPage() {
   currentLeaderUserId={players.find((p) => p.seat_order === currentLeaderSeat)?.user_id}
   missionLeaderLabel={roleTerms.missionLeader}
   canViewRecords={canViewRecords(myTier)}
+  skin={game.skin}
 />
                 <div style={{
                   position: 'absolute',
@@ -295,9 +304,9 @@ export default function SocialGameRoomPage() {
                   textAlign: 'center',
                   pointerEvents: 'none'
                 }}>
-                  <p style={{ color: '#a0a0b0', fontSize: '2.25rem', margin: 0 }}>
-                    {game.status === 'captain_guess' ? `${roleTerms.badCaptain} Guess` : `${roleTerms.mission} ${currentMission}`}
-                  </p>
+                  <p style={{ color: '#c8c8d2', fontSize: '2.25rem', margin: 0, textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
+  {game.status === 'captain_guess' ? `${roleTerms.badCaptain} Guess` : `${roleTerms.mission} ${currentMission}`}
+</p>
                   {isSeated && (
                     <button
                       onClick={() => setShowRole(true)}
@@ -330,8 +339,8 @@ export default function SocialGameRoomPage() {
                     onGuessed={() => loadGame()}
                   />
                 ) : (
-                  <p style={{ color: '#a0a0b0' }}>👀 Final guess in progress...</p>
-                )
+<p style={{ color: '#c8c8d2', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>Final guess in progress...</p>               
+ )
               ) : isSeated ? (
                 (() => {
                   const leaderSeatHere = players.find((p) => p.seat_order === currentLeaderSeat)
@@ -364,7 +373,7 @@ export default function SocialGameRoomPage() {
                         />
                       )
                     }
-                    return <p style={{ color: '#a0a0b0' }}>Resolving...</p>
+return <p style={{ color: '#c8c8d2', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>Resolving...</p>
                   }
 
                   if (isMeLeaderHere) {
@@ -388,15 +397,15 @@ export default function SocialGameRoomPage() {
                 })()
               ) : (
                 <>
-                <p style={{ color: '#ff6b6b', fontSize: '.85rem', marginBottom: '4px' }}>
-                  You&apos;re in Spectator Mode!
-                </p>
-                <p style={{ color: '#a0a0b0', fontSize: '.85rem', marginBottom: '6px' }}>
-                  We know it&apos;s tempting, but let the players do the playing.
-                </p>
-                 <p style={{ color: '#a0a0b0', fontSize: '.85rem' }}>
-                Follow along with every action in the Game Log.
-                </p>
+                <p style={{ color: '#ff6b6b', fontSize: '.85rem', marginBottom: '4px', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
+  You&apos;re in Spectator Mode!
+</p>
+<p style={{ color: '#c8c8d2', fontSize: '.85rem', marginBottom: '6px', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
+  We know it&apos;s tempting, but let the players do the playing.
+</p>
+<p style={{ color: '#c8c8d2', fontSize: '.85rem', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
+  Follow along with every action in the Game Log.
+</p>
                 </>
               )}
             </div>

@@ -202,6 +202,8 @@ export type OpenGame = {
   player_count: number
   status: string
   host_user_id: string
+  join_code: string | null
+  counts_toward_records: boolean
 }
 
 export async function listOpenGames(): Promise<OpenGame[]> {

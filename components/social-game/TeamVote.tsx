@@ -115,13 +115,12 @@ useEffect(() => {
           </button>
         </div>
       ) : (
-        <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '20px' }}>
+ <p style={{ color: '#c8c8d2', fontSize: '0.9rem', marginBottom: '20px', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
           You voted to {myVote.approve ? 'Approve' : 'Reject'}.
         </p>
       )}
 
-      <p style={{ color: '#555570', fontSize: '0.85rem' }}>
-        {votes.length} of {players.length} players have voted.
+      <p style={{ color: '#c8c8d2', fontSize: '0.85rem', textAlign: 'center', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>        {votes.length} of {players.length} players have voted.
       </p>
     </div>
   )

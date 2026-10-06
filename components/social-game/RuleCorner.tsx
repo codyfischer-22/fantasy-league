@@ -10,11 +10,10 @@ type Props = {
 export default function RuleCorner({ card, isActive }: Props) {
   return (
     <div style={{
-      backgroundColor: '#1a1a2e',
-      border: isActive ? '2px solid #f0b429' : '1px solid #2a2a3e',
-      borderRadius: '10px',
-      padding: '14px',
-      opacity: isActive ? 1 : 0.4,
+  backgroundColor: isActive ? 'rgba(26, 26, 46, 0.97)' : 'rgba(26, 26, 46, 0.85)',
+  border: isActive ? '2px solid #f0b429' : '1px solid #2a2a3e',
+  borderRadius: '10px',
+  padding: '14px',
       transition: 'opacity 0.3s, border-color 0.3s',
       textAlign: 'left',
       boxSizing: 'border-box',

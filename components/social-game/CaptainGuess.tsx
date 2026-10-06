@@ -45,17 +45,17 @@ export default function CaptainGuess({ gameId, skin, players, myUserId, myRole, 
   }
 
   if (!isBadCaptain) {
-    return (
-      <>
-        <p style={{ color: '#a0a0b0', fontSize: '.85rem', marginBottom: '8px', textAlign: 'center' }}>
-          {terms.goodTeam} succesfully completed 3 {terms.mission}s!
-        </p>
-        <p style={{ color: '#a0a0b0', fontSize: '.85rem', textAlign: 'center' }}>
-          But the {terms.badCaptain} can steal the win by guessing the {terms.goodCaptain}...
-        </p>
-      </>
-    )
-  }
+  return (
+    <>
+      <p style={{ color: '#c8c8d2', fontSize: '.85rem', marginBottom: '8px', textAlign: 'center', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
+        {terms.goodTeam} succesfully completed 3 {terms.mission}s!
+      </p>
+      <p style={{ color: '#c8c8d2', fontSize: '.85rem', textAlign: 'center', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
+        But the {terms.badCaptain} can steal the win by guessing the {terms.goodCaptain}...
+      </p>
+    </>
+  )
+}
 
   return (
     <div style={{

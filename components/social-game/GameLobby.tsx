@@ -207,15 +207,25 @@ const handleJoin = async () => {
   onGameStarted()
 }
 
-     return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
+return (
+<div style={{
+  minHeight: '100vh',
+  backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.5), rgba(10, 10, 15, 0.5)), url(/images/social-game/backgrounds/${skin}.jpg)`,
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  backgroundAttachment: 'fixed',
+  margin: '-60px -40px',
+  padding: '60px 40px'
+}}>
+      <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
    <div style={{ marginBottom: '12px', textAlign: 'left' }}>
         <button
           onClick={() => router.push('/social-game')}
           style={{
             background: 'none',
             border: 'none',
-            color: '#a0a0b0',
+            color: '#c8c8d2',
+textShadow: '0 1px 3px rgba(0,0,0,0.8)',
             fontSize: '0.85rem',
             cursor: 'pointer',
             textDecoration: 'none'
@@ -237,7 +247,7 @@ const handleJoin = async () => {
     gap: '10px',
     marginBottom: '16px'
   }}>
-    <span style={{ color: '#a0a0b0', fontSize: '0.9rem' }}>Join Code:</span>
+<span style={{ color: '#c8c8d2', fontSize: '0.9rem', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>Join Code:</span>
     <span style={{
       color: '#f0b429',
       fontSize: '1.1rem',
@@ -271,16 +281,16 @@ const handleJoin = async () => {
 
 
 {isHost && (
-  <p style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '8px' }}>
-    Thanks for hosting!
-  </p>
+ <p style={{ color: '#c8c8d2', fontSize: '0.85rem', marginBottom: '8px', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
+  Thanks for hosting!
+</p>
 )}
 {!isHost && players.length > 0 && (() => {
   const hostPlayer = players.find((p) => p.user_id === hostUserId)
   return hostPlayer ? (
-    <p style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '16px' }}>
-      Hosted by <span style={{ color: '#f0b429', fontWeight: 'bold' }}>{hostPlayer.display_name}</span>
-    </p>
+   <p style={{ color: '#c8c8d2', fontSize: '0.85rem', marginBottom: '16px', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
+  Hosted by <span style={{ color: '#f0b429', fontWeight: 'bold' }}>{hostPlayer.display_name}</span>
+</p>
   ) : null
 })()}
 
@@ -349,17 +359,16 @@ const handleJoin = async () => {
   </div>
 )}
 
-<p style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '24px', marginTop: '-12px' }}>
-  {players.length >= 5
+<p style={{ color: '#c8c8d2', fontSize: '0.85rem', marginBottom: '24px', marginTop: '-12px', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>  {players.length >= 5
     ? `(${players.length}/10) - Awaiting Host Start`
     : `Waiting for players to join... (${players.length}/10)`}
 </p>
 
       {!isSeated ? (
         <div>
-          <p style={{ color: '#555570', fontSize: '0.85rem', marginBottom: '12px' }}>
-            You&apos;re currently just watching. Click below to join the game.
-          </p>
+        <p style={{ color: '#c8c8d2', fontSize: '0.85rem', marginBottom: '12px', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
+  You&apos;re currently just watching. Click below to join the game.
+</p>
           <button
             onClick={handleJoin}
             disabled={joining || players.length >= 10}
@@ -428,6 +437,7 @@ const handleJoin = async () => {
       padding: '10px 24px',
       borderRadius: '8px',
       marginTop: '0px',
+marginBottom: '12px',
        minWidth: '160px',
       fontWeight: 'bold',
       fontSize: '0.9rem',
@@ -449,7 +459,6 @@ const handleJoin = async () => {
               borderRadius: '8px',
               border: 'none',
               fontWeight: 'bold',
-              marginTop: '0px',
               marginBottom: '8px',
               minWidth: '160px',
               fontSize: '1rem',
@@ -463,8 +472,8 @@ const handleJoin = async () => {
       )}
 
       {isHost && canToggleRecords(myTier) && (
-  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center', marginBottom: '0px', color: '#a0a0b0', fontSize: '0.85rem', cursor: 'pointer' }}>
-    <input
+<label style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center', marginBottom: '0px', color: '#c8c8d2', fontSize: '0.85rem', cursor: 'pointer', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
+      <input
       type="checkbox"
       checked={countsTowardRecords}
       onChange={async (e) => {
@@ -530,6 +539,7 @@ const handleJoin = async () => {
   </div>
 )}
 
+      </div>
     </div>
   )
 }

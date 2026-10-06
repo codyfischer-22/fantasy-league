@@ -36,21 +36,21 @@ export default function MissionCards({ missionId, missionNumber, skin, myUserId,
 
 if (!isOnTeam) {
   return (
-    <p style={{ color: '#a0a0b0', textAlign: 'center' }}>
+    <p style={{ color: '#c8c8d2', textAlign: 'center', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
       Waiting for the team to complete {terms.mission} {missionNumber}...
     </p>
   )
 }
 
-  if (submitted) {
-    return <p style={{ color: '#a0a0b0', textAlign: 'center' }}>Card submitted. Waiting on your teammates...</p>
-  }
+ if (submitted) {
+  return <p style={{ color: '#c8c8d2', textAlign: 'center', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>Card submitted. Waiting on your teammates...</p>
+}
 
   return (
     <div style={{ textAlign: 'center' }}>
-      <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '16px' }}>
-        Choose your card for this {terms.mission.toLowerCase()}.
-      </p>
+     <p style={{ color: '#c8c8d2', fontSize: '0.9rem', marginBottom: '16px', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
+  Choose your card for this {terms.mission.toLowerCase()}.
+</p>
       <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
         <button
           onClick={() => submitCard('pass')}

@@ -46,6 +46,15 @@ export default function ExtrasPage() {
     Talkin' with Trekkon
   </h2>
   <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+      <iframe
+      style={{ borderRadius: '12px', flex: '1 1 300px' }}
+      src="https://open.spotify.com/embed/episode/16vIftajOIUeEr4rSLBs3Q?utm_source=generator&si=8e727ea878324b52"
+      height="152"
+      frameBorder="0"
+      allowFullScreen
+      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+      loading="lazy"
+    ></iframe>
     <iframe
       style={{ borderRadius: '12px', flex: '1 1 300px' }}
       src="https://open.spotify.com/embed/episode/45wGCggZSPSvIRy2GjLjYM?utm_source=generator&si=5cdac251108e4ccc"
