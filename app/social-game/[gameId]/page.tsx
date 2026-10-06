@@ -22,6 +22,9 @@ import Scoreboard from '@/components/social-game/Scoreboard'
 import GameLog from '@/components/social-game/GameLog'
 import { gameConfigByPlayerCount } from '@/lib/social-game/gameConfig'
 import { canViewRecords } from '@/lib/social-game/playerRecords'
+import { disbandGame } from '@/lib/social-game/lobbyActions'
+import { useRouter } from 'next/navigation'
+import ReportPlayerModal from '@/components/social-game/ReportPlayerModal'
 
 
 type Game = {
@@ -66,6 +69,21 @@ export default function SocialGameRoomPage() {
   const [seenResultFor, setSeenResultFor] = useState<number | null>(null)
   const [introStep, setIntroStep] = useState<number | null>(null)
   const [myTier, setMyTier] = useState('stowaway')
+  const [disbanding, setDisbanding] = useState(false)
+  const router = useRouter()
+  const [showDisbandConfirm, setShowDisbandConfirm] = useState(false)
+  const [showReportModal, setShowReportModal] = useState(false)
+
+const handleDisband = async () => {
+  if (!game || !user) return
+  setDisbanding(true)
+  const { error } = await disbandGame(game.id, user.id)
+  setDisbanding(false)
+  setShowDisbandConfirm(false)
+  if (error) {
+    alert(error)
+  }
+}
 
   async function loadGame() {
     const { data } = await supabase
@@ -247,17 +265,49 @@ export default function SocialGameRoomPage() {
           onGameStarted={() => loadGame()}
         />
       ) : game.status === 'good_wins' || game.status === 'evil_wins' ? (
-<GameOver skin={game.skin} status={game.status} players={players} captainGuessTarget={game.captain_guess_target} />
-    ) : isRoomPhase ? (
-  <div style={{
+<GameOver skin={game.skin} status={game.status} players={players} captainGuessTarget={game.captain_guess_target} gameId={game.id} myUserId={user!.id} />
+) : game.status === 'disbanded' ? (
+  <div style={{ maxWidth: '460px', margin: '60px auto', textAlign: 'center' }}>
+    <h2 style={{ color: '#ff6b6b', fontSize: '1.4rem', marginBottom: '12px' }}>Game Disbanded</h2>
+    <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '24px' }}>
+      A player ended this game early. It won&apos;t count toward anyone&apos;s record.
+    </p>
+    <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+      <button
+        onClick={() => router.push('/social-game')}
+        style={{
+          backgroundColor: '#f0b429', color: '#0a0a0f', padding: '12px 32px',
+          borderRadius: '8px', border: 'none', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer'
+        }}
+      >
+        ← Back to Game Lobby
+      </button>
+      {isSeated && (
+        <button
+          onClick={() => setShowReportModal(true)}
+          style={{
+            backgroundColor: 'transparent', color: '#a0a0b0', border: '1px solid #2a2a3e',
+            padding: '12px 24px', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.9rem', cursor: 'pointer'
+          }}
+        >
+         🚩 Report Player
+        </button>
+      )}
+    </div>
+  </div>
+) : isRoomPhase ? (
+<div style={{
+  backgroundColor: '#0a0a0f',
+  ...(game.skin !== 'neutral' && {
     backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.4), rgba(10, 10, 15, 0.4)), url(/images/social-game/backgrounds/${game.skin}.jpg)`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundAttachment: 'fixed',
-    minHeight: '100vh',
-    margin: '-60px -40px',
-    padding: '60px 40px'
-  }}>
+  }),
+  minHeight: '100vh',
+  margin: '-60px -40px',
+  padding: '60px 40px'
+}}>
     <h2 style={{ color: '#ffffff', fontSize: '1.4rem', marginBottom: '24px', textAlign: 'center' }}>
       {theme.emoji} <span style={{ color: '#f0b429' }}>{game.display_name}</span> Game Room
     </h2>
@@ -410,14 +460,49 @@ return <p style={{ color: '#c8c8d2', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
               )}
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '280px', flexShrink: 0 }}>
-              {game.status !== 'lobby' && (
-                <Scoreboard gameId={game.id} currentMission={currentMission} gameStatus={game.status} roleTerms={roleTerms} />
-              )}
-              {game.status !== 'lobby' && (
-                <GameLog gameId={game.id} players={players} roleTerms={roleTerms} gameStatus={game.status} captainGuessTarget={game.captain_guess_target} />
-              )}
-            </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '280px', flexShrink: 0 }}>
+  {game.status !== 'lobby' && (
+    <Scoreboard gameId={game.id} currentMission={currentMission} gameStatus={game.status} roleTerms={roleTerms} />
+  )}
+  {game.status !== 'lobby' && (
+    <GameLog gameId={game.id} players={players} roleTerms={roleTerms} gameStatus={game.status} captainGuessTarget={game.captain_guess_target} />
+  )}
+  {isSeated && (game.status === 'in_progress' || game.status === 'captain_guess') && (
+    <button
+      onClick={() => setShowDisbandConfirm(true)}
+      disabled={disbanding}
+      style={{
+        backgroundColor: 'transparent',
+        color: '#ff6b6b',
+        border: '1px solid #ff6b6b',
+        padding: '10px 16px',
+        borderRadius: '8px',
+        fontWeight: 'bold',
+        fontSize: '0.85rem',
+        cursor: disbanding ? 'not-allowed' : 'pointer'
+      }}
+    >
+      {disbanding ? 'Disbanding...' : '☠️ Disband Game'}
+    </button>
+  )}
+  {isSeated && (game.status === 'in_progress' || game.status === 'captain_guess') && (
+    <button
+      onClick={() => setShowReportModal(true)}
+      style={{
+        backgroundColor: 'transparent',
+        color: '#2a2a3e',
+        border: '1px solid #2a2a3e',
+        padding: '10px 16px',
+        borderRadius: '8px',
+        fontWeight: 'bold',
+        fontSize: '0.85rem',
+        cursor: 'pointer'
+      }}
+    >
+     🚩 Report a Player
+    </button>
+  )}
+</div>
           </div>
         </div>
       ) : null}
@@ -556,6 +641,84 @@ return <p style={{ color: '#c8c8d2', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
           </div>
         </div>
       )}
+
+      {showDisbandConfirm && (
+  <div
+    onClick={() => setShowDisbandConfirm(false)}
+    style={{
+      position: 'fixed',
+      top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.75)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 400,
+      padding: '20px'
+    }}
+  >
+    <div
+      onClick={(e) => e.stopPropagation()}
+      style={{
+        backgroundColor: '#0a0a0f',
+        border: '2px solid #ff6b6b',
+        borderRadius: '12px',
+        padding: '28px',
+        maxWidth: '400px',
+        width: '100%',
+        textAlign: 'center'
+      }}
+    >
+      <h3 style={{ color: '#ff6b6b', fontSize: '1.1rem', marginBottom: '12px' }}>
+        Disband Game?
+      </h3>
+      <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '24px', lineHeight: '1.5' }}>
+        This will immediately end the game for everyone. It will <strong>not</strong> count toward anyone&apos;s record.
+      </p>
+      <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+        <button
+          onClick={handleDisband}
+          disabled={disbanding}
+          style={{
+            backgroundColor: '#ff6b6b',
+            color: '#ffffff',
+            padding: '10px 24px',
+            borderRadius: '8px',
+            border: 'none',
+            fontWeight: 'bold',
+            fontSize: '0.9rem',
+            cursor: disbanding ? 'not-allowed' : 'pointer'
+          }}
+        >
+          {disbanding ? 'Disbanding...' : 'Disband Game'}
+        </button>
+        <button
+          onClick={() => setShowDisbandConfirm(false)}
+          style={{
+            backgroundColor: 'transparent',
+            color: '#a0a0b0',
+            border: '1px solid #2a2a3e',
+            padding: '10px 24px',
+            borderRadius: '8px',
+            fontWeight: 'bold',
+            fontSize: '0.9rem',
+            cursor: 'pointer'
+          }}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+{showReportModal && user && (
+  <ReportPlayerModal
+    gameId={game.id}
+    reporterUserId={user.id}
+    players={players}
+    onClose={() => setShowReportModal(false)}
+  />
+)}
 
       {showRole && user && (
         <RoleReveal gameId={game.id} skin={game.skin} myUserId={user.id} onClose={() => setShowRole(false)} />

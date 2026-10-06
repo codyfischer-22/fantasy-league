@@ -2,6 +2,8 @@
 
 import { useRouter } from 'next/navigation'
 import { roleTermsBySkin } from '@/lib/social-game/roles'
+import { useState } from 'react'
+import ReportPlayerModal from './ReportPlayerModal'
 
 type SeatPlayer = {
   user_id: string
@@ -15,14 +17,17 @@ type Props = {
   status: string
   players: SeatPlayer[]
   captainGuessTarget: string | null
+  gameId: number
+  myUserId: string
 }
 
-export default function GameOver({ skin, status, players, captainGuessTarget }: Props) {
+export default function GameOver({ skin, status, players, captainGuessTarget, gameId, myUserId }: Props) {
   const router = useRouter()
   const terms = roleTermsBySkin[skin]
   const evilWon = status === 'evil_wins'
   const wonByGuess = evilWon && captainGuessTarget !== null
   const themeColor = evilWon ? '#ff6b6b' : '#068e38'
+  const [reportTarget, setReportTarget] = useState<string | null>(null)
 
   const roleLabel: Record<string, string> = {
     goodCaptain: terms.goodCaptain,
@@ -129,18 +134,29 @@ export default function GameOver({ skin, status, players, captainGuessTarget }: 
                   alignItems: 'center',
                   color: '#ffffff',
                   fontSize: '0.9rem',
-boxShadow: isCaptain && isEvil === evilWon ? `0 0 16px 2px ${themeColor}59` : 'none',                  opacity: 0,
+                  boxShadow: isCaptain && isEvil === evilWon ? `0 0 16px 2px ${themeColor}59` : 'none',
+                  opacity: 0,
                   animation: `fadeInUp 0.45s ease ${0.3 + i * 0.1}s forwards`
                 }}
               >
                 <span style={{ fontSize: '.85rem', fontWeight: isCaptain ? 'bold' : 'normal' }}>{p.display_name}</span>
-                <span style={{
-                  color: isEvil ? '#ff6b6b' : '#a0a0b0',
-                  fontWeight: isCaptain ? 'bold' : 'normal',
-                  fontSize: '.85rem'
-                }}>
-                  {isCaptain && ' '}{roleLabel[p.role]}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{
+                    color: isEvil ? '#ff6b6b' : '#a0a0b0',
+                    fontWeight: isCaptain ? 'bold' : 'normal',
+                    fontSize: '.85rem'
+                  }}>
+                    {isCaptain && ' '}{roleLabel[p.role]}
+                  </span>
+                  {p.user_id !== myUserId && (
+                    <button
+                      onClick={() => setReportTarget(p.user_id)}
+                      style={{ background: 'none', border: 'none', color: '#555570', fontSize: '0.7rem', cursor: 'pointer', textDecoration: 'underline' }}
+                    >
+                      🚩
+                    </button>
+                  )}
+                </div>
               </div>
             )
           })}
@@ -158,6 +174,15 @@ boxShadow: isCaptain && isEvil === evilWon ? `0 0 16px 2px ${themeColor}59` : 'n
           ← Back to Game Lobby
         </button>
       </div>
+
+      {reportTarget && (
+        <ReportPlayerModal
+          gameId={gameId}
+          reporterUserId={myUserId}
+          players={players.filter((p) => p.user_id === reportTarget)}
+          onClose={() => setReportTarget(null)}
+        />
+      )}
 
       <style jsx>{`
         @keyframes pulseGlow {

@@ -1,5 +1,87 @@
 import { supabase } from '@/lib/supabase'
 
+const TEST_ACCOUNT_EMAILS = [
+    'test@fantasyleagues.com',
+  'test2@fantasyleagues.com',
+  'test3@fantasyleagues.com',
+  'test4@fantasyleagues.com',
+  'test5@fantasyleagues.com',
+  'test6@fantasyleagues.com',
+]
+
+export async function disbandGame(gameId: number, hostUserId: string): Promise<{ error: string | null }> {
+  const { error } = await supabase.rpc('disband_game', { p_game_id: gameId, p_host_user_id: hostUserId })
+  if (error) {
+    return { error: error.message }
+  }
+  return { error: null }
+}
+
+export async function cancelGame(gameId: number, hostUserId: string): Promise<{ error: string | null }> {
+  const { data: game } = await supabase
+    .from('social_games')
+    .select('status, host_user_id')
+    .eq('id', gameId)
+    .single()
+
+  if (!game) {
+    return { error: 'Game not found.' }
+  }
+
+  if (game.host_user_id !== hostUserId) {
+    return { error: 'Only the host can disband this game.' }
+  }
+
+  if (game.status !== 'lobby') {
+    return { error: 'You can only disband a game that hasn\'t started yet.' }
+  }
+
+  const { error } = await supabase
+    .from('social_games')
+    .delete()
+    .eq('id', gameId)
+
+  if (error) {
+    return { error: 'Something went wrong disbanding the game.' }
+  }
+
+  return { error: null }
+}
+
+async function isExemptFromOneGameLimit(userId: string): Promise<boolean> {
+  const { data } = await supabase
+    .from('profiles')
+    .select('is_global_admin, email')
+    .eq('user_id', userId)
+    .single()
+
+  if (!data) return false
+  if (data.is_global_admin) return true
+  if (data.email && TEST_ACCOUNT_EMAILS.includes(data.email)) return true
+  return false
+}
+
+async function getOtherActiveGame(userId: string, excludeGameId?: number): Promise<number | null> {
+  const { data: seatRows } = await supabase
+    .from('social_game_players')
+    .select('game_id')
+    .eq('user_id', userId)
+
+  if (!seatRows || seatRows.length === 0) return null
+
+  const gameIds = seatRows.map((r) => r.game_id).filter((id) => id !== excludeGameId)
+  if (gameIds.length === 0) return null
+
+  const { data: activeGames } = await supabase
+    .from('social_games')
+    .select('id')
+    .in('id', gameIds)
+    .in('status', ['lobby', 'in_progress', 'captain_guess'])
+    .limit(1)
+
+  return activeGames && activeGames.length > 0 ? activeGames[0].id : null
+}
+
 export async function joinGame(gameId: number, userId: string): Promise<{ error: string | null }> {
   const { data: game } = await supabase
     .from('social_games')
@@ -32,16 +114,26 @@ export async function joinGame(gameId: number, userId: string): Promise<{ error:
     return { error: null }
   }
 
-  const { count } = await supabase
-    .from('social_game_players')
-    .select('*', { count: 'exact', head: true })
-    .eq('game_id', gameId)
+ const { count } = await supabase
+  .from('social_game_players')
+  .select('*', { count: 'exact', head: true })
+  .eq('game_id', gameId)
 
-  if (count !== null && count >= 10) {
-    return { error: 'This game is full (10 players max).' }
+if (count !== null && count >= 10) {
+  return { error: 'This game is full (10 players max).' }
+}
+
+const isExempt = await isExemptFromOneGameLimit(userId)
+console.log('isExempt:', isExempt, 'userId:', userId)
+if (!isExempt) {
+  const otherGameId = await getOtherActiveGame(userId, gameId)
+  console.log('otherGameId:', otherGameId)
+  if (otherGameId) {
+    return { error: 'You\'re already in an active game or lobby. Leave it before joining another.' }
   }
+}
 
-  const { error } = await supabase.from('social_game_players').insert({
+const { error } = await supabase.from('social_game_players').insert({
     game_id: gameId,
     user_id: userId,
     seat_order: count ?? 0,
@@ -154,6 +246,16 @@ export async function createGame(
   if (!eligibility.canHost) {
     return { gameId: null, error: eligibility.reason }
   }
+
+const isExempt = await isExemptFromOneGameLimit(hostUserId)
+console.log('isExempt:', isExempt, 'userId:', hostUserId)
+if (!isExempt) {
+  const otherGameId = await getOtherActiveGame(hostUserId)
+  console.log('otherGameId:', otherGameId)
+  if (otherGameId) {
+    return { gameId: null, error: 'You\'re already in an active game or lobby. Leave it before hosting another.' }
+  }
+}
 
   const { count: sameTypeCount } = await supabase
     .from('social_games')

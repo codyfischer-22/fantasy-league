@@ -206,14 +206,16 @@ const handleJoin = async () => {
   setStarting(false)
   onGameStarted()
 }
-
 return (
 <div style={{
   minHeight: '100vh',
-  backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.5), rgba(10, 10, 15, 0.5)), url(/images/social-game/backgrounds/${skin}.jpg)`,
-  backgroundSize: 'cover',
-  backgroundPosition: 'center',
-  backgroundAttachment: 'fixed',
+  backgroundColor: '#0a0a0f',
+  ...(skin !== 'neutral' && {
+    backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.4), rgba(10, 10, 15, 0.4)), url(/images/social-game/backgrounds/${skin}.jpg)`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundAttachment: 'fixed',
+  }),
   margin: '-60px -40px',
   padding: '60px 40px'
 }}>
@@ -225,7 +227,7 @@ return (
             background: 'none',
             border: 'none',
             color: '#c8c8d2',
-textShadow: '0 1px 3px rgba(0,0,0,0.8)',
+            textShadow: '0 1px 3px rgba(0,0,0,0.8)',
             fontSize: '0.85rem',
             cursor: 'pointer',
             textDecoration: 'none'
