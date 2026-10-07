@@ -45,7 +45,18 @@ export default function ExtrasPage() {
     <MicSignal size={22} strokeWidth={2} color="#f0b429" />
     Talkin' with Trekkon
   </h2>
+
+
   <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+     <iframe
+      style={{ borderRadius: '12px', flex: '1 1 300px' }}
+      src="https://open.spotify.com/embed/episode/6JdWbCQoCMWCqZb9Gy8x03?utm_source=generator&si=7824b2b237364544"
+      height="152"
+      frameBorder="0"
+      allowFullScreen
+      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+      loading="lazy"
+    ></iframe>
       <iframe
       style={{ borderRadius: '12px', flex: '1 1 300px' }}
       src="https://open.spotify.com/embed/episode/16vIftajOIUeEr4rSLBs3Q?utm_source=generator&si=8e727ea878324b52"

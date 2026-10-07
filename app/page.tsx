@@ -868,7 +868,7 @@ Got an idea for a league we should build next? Send us your concept and help sha
             border: '2px dashed #ca29ca',
             borderRadius: '12px',
             padding: '24px',
-            marginBottom: '48px',
+            marginBottom: '12px',
             textAlign: 'center'
           }}>
          <h3 style={{ color: '#ca29ca', fontSize: 'clamp(1.0rem, 8vw, 1.5rem)', marginBottom: '8px' }}>
@@ -879,9 +879,31 @@ Got an idea for a league we should build next? Send us your concept and help sha
 <p style={{ color: '#a0a0b0', fontSize: 'clamp(.7rem, 4.75vw, 1.1rem)', lineHeight: '1.7' }}>
   Annual price for every league, every season, and every perk!
 </p>
+        </div>   
+        <p style={{ color: '#555570', textAlign: 'center', fontSize: '0.9rem', marginBottom: '0px' }}>
+Additional membership perks found in game page below.
+ </p>
         </div>
-        </div>
+
 </section>
+
+  
+     {/* ─── LEAGUES ─── */}
+<section id="leagues" className="scroll-offset" style={{ padding: '50px 40px' }}>
+  <h2 style={{
+    textAlign: 'center',
+    color: '#f0b429',
+    fontSize: 'clamp(1.75rem, 8vw, 2.25rem)',
+    marginBottom: '16px',
+    letterSpacing: '2px'
+  }}> 
+  Get in the Game
+  </h2>
+
+
+  </section>
+
+  
 
 {showUpgradeModal && (
   <div style={{
