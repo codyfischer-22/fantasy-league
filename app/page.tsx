@@ -200,6 +200,18 @@ This is your arena to compete with friends, family, and on-screen stars on beach
   overflowY: 'visible',
   padding: '24px 12px',
 }}>  
+<a
+  href="/social-game"
+  className="league-circle"
+  style={{
+    '--circle-color': '#068e38',
+    position: 'relative',
+    backgroundImage: `url('/images/social-game/backgrounds/game-lobby-background.png')`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+  } as React.CSSProperties}
+>
+</a>
 {[...hostedLeagues, ...joinedLeagues].map((league) => {
   const isHosted = hostedLeagues.some((h) => h.slug === league.slug && h.type === league.type)
   const isLive = league.draft_status === 'in_progress'
@@ -240,7 +252,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     }}>
       <CornerLeftUp size={16} />
     </span>
-    Hot Route to Active Leagues
+    Hot Route to Active Leagues & Game Lobby
   </p> 
 </div>
   </section>
