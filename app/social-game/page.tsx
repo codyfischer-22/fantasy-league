@@ -132,29 +132,15 @@ const handleJoinPublic = async (game: OpenGame) => {
           ← Back to Trekkon Fantasy Leagues
         </a>
 
-         <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+         <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '0px', display: 'flex', alignItems: 'center', gap: '10px' }}>
   <PlayingCardsFan size={40} strokeWidth={1.5} color="#f0b429" style={{ position: 'relative', top: '-1px' }} />
   <span style={{ color: '#f0b429' }}>Get in the Game</span>{' '}
   <span style={{ color: '#ffffff' }}>Lobby</span>
 </h1>
 
-<p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '4px' }}>
-  Watching is fun, but have you ever wondered if you have what it takes to <em>play</em> the game? </p>
-
-<p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '24px' }}>
-  Though we certainly recommend honesty, kindness, and integrity in the real world, this entry-level social deduction game is a great place to test your lying, deceiving, and backstabbing accumen.
-</p>
-
-        <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '4px' }}>Basic Game Mechanics</h2>
-
-<p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '12px' }}>
- 5-10 players are randomly assigned factions, where they compete in a series of missions. Evil players know their teammates and win by failing 3 missions. Good players win by passing 3 missions... if evil cannot guess their leader, that is. The good leader holds all the cards, knowing everyone's faction, but if they say too much, they're a goner!
+<p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '36px' }}>
+ 5-10 players are randomly assigned factions, where they compete in up to 5 missions. Evil players know their teammates and win by failing 3 missions. Good players win by passing 3 missions... if evil cannot guess their leader, that is. The good leader holds all the cards, knowing everyone's intentions, but say too much and they're a goner!
  </p>
-
-
-   <h2 className="mobile-center-heading" style={{ color: '#f0b429', fontSize: '1.3rem', textAlign: 'left', marginBottom: '8px', marginTop: '24px' }}>
-            Membership Tiers
-          </h2>
 
 <section id="hub-tiers" style={{ backgroundColor: '#0a0a0f', marginBottom: '8px' }}>            
   <div className="tier-grid">
@@ -220,7 +206,7 @@ const handleJoinPublic = async (game: OpenGame) => {
 <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Drill size={14} strokeWidth={2} color="rgb(245, 255, 156)" /> All Previous Perks</li>
 <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Drill size={14} strokeWidth={2} color="rgb(245, 255, 156)" /> Host Public Games</li>
 <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Drill size={14} strokeWidth={2} color="rgb(245, 255, 156)" /> Host Private Games</li>
-<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Drill size={14} strokeWidth={2} color="rgb(245, 255, 156)" /> Customized Avatar *</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Drill size={14} strokeWidth={2} color="rgb(245, 255, 156)" /> <em>Customized Avatar</em></li>
                   <div style={{ fontSize: '1.5rem', color: 'rgb(245, 255, 156)', fontWeight: 'bold', textAlign: 'center', marginBottom: '0px' }}>
                     $3.99
                   </div>
@@ -244,9 +230,9 @@ const handleJoinPublic = async (game: OpenGame) => {
                 </h3>
                 <ul style={{ color: '#a0a0b0', fontSize: '0.9rem', textAlign: 'left', lineHeight: '1.7', listStyle: 'none', padding: 0 }}>
                  <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> All Previous Perks</li>
-<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> Rename Games *</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> <em>Rename Games</em></li>
 <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> Highlighted Chats</li>
-<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> Build Custom Skin</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> <em>Make Custom Skin *</em></li>
                   <div style={{ fontSize: '1.5rem', color: '#f0b429', fontWeight: 'bold', textAlign: 'center', marginBottom: '0px' }}>
                     $6.99
                   </div>
@@ -255,16 +241,9 @@ const handleJoinPublic = async (game: OpenGame) => {
             </div>
           </section>
 
-              <p style={{ color: '#555570', textAlign: 'center', fontSize: '0.9rem', marginBottom: '12px' }}>
-* Asterisk denotes features that have yet to be built out.
- </p>
-
-
-
-        <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '4px' }}>Host a Game</h2>
-<p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '36px' }}>
-Private games are restricted to anyone with whom hosts share the code. Public leagues are playable by anyone who wanders into your lobby. Choose your skin and wreak some havoc!</p>
-
+             <p style={{ color: '#555570', textAlign: 'center', fontSize: '0.9rem', marginBottom: '36px' }}>
+  <em>Features have yet to be built out.</em> * Usable while active, after three consecutive paid months.
+</p>
 
 {isMobile === null ? null : isMobile ? (
   <div style={{
@@ -284,6 +263,25 @@ Private games are restricted to anyone with whom hosts share the code. Public le
  {!showHostPicker ? (
   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '12px' }}>
     <button
+      onClick={() => {
+        document.getElementById('public-games')?.scrollIntoView({ behavior: 'smooth' })
+      }}
+      style={{
+        backgroundColor: 'transparent',
+        color: '#f0b429',
+        padding: '12px 24px',
+        borderRadius: '8px',
+        border: '1px solid #f0b429 ',
+        fontWeight: 'bold',
+        fontSize: '1rem',
+        cursor: 'pointer',
+        minWidth: '150px'
+      }}
+    >
+      See Public
+    </button>
+    <span style={{ color: '#555570', fontSize: '1rem' }}>— OR —</span>
+    <button
       onClick={handleShowHostPicker}
       style={{
         backgroundColor: '#f0b429',
@@ -293,28 +291,11 @@ Private games are restricted to anyone with whom hosts share the code. Public le
         border: 'none',
         fontWeight: 'bold',
         fontSize: '1rem',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        minWidth: '150px'
       }}
     >
       Create Game
-    </button>
-    <span style={{ color: '#555570', fontSize: '1rem' }}>— OR —</span>
-    <button
-      onClick={() => {
-        document.getElementById('public-games')?.scrollIntoView({ behavior: 'smooth' })
-      }}
-      style={{
-        backgroundColor: '#f0b429',
-        color: '#0a0a0f',
-        padding: '12px 24px',
-        borderRadius: '8px',
-        border: 'none',
-        fontWeight: 'bold',
-        fontSize: '1rem',
-        cursor: 'pointer'
-      }}
-    >
-      Join Game
     </button>
   </div>
 ) : (

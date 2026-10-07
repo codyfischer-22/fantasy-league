@@ -451,7 +451,8 @@ if (!hubContent[type]) {
             Membership Tiers
           </h2>
 
-<section id="hub-tiers" style={{ backgroundColor: '#0a0a0f', marginBottom: '12px' }}>            <div className="tier-grid">
+<section id="hub-tiers" style={{ backgroundColor: '#0a0a0f', marginBottom: '12px' }}>            
+  <div className="tier-grid">
               <div
                 className="tier-card"
                 onClick={() => router.push('/account?tier=stowaway')}

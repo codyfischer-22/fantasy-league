@@ -890,15 +890,71 @@ Additional membership perks found in game page below.
   
      {/* ─── LEAGUES ─── */}
 <section id="leagues" className="scroll-offset" style={{ padding: '50px 40px' }}>
-  <h2 style={{
+  <h2 id="play-social-game" style={{
     textAlign: 'center',
     color: '#f0b429',
     fontSize: 'clamp(1.75rem, 8vw, 2.25rem)',
-    marginBottom: '16px',
+    marginBottom: '6px',
     letterSpacing: '2px'
   }}> 
   Get in the Game
   </h2>
+
+  <p style={{
+            color: '#ffffff',
+            fontSize: 'clamp(.85rem, 4.5vw, 1rem)',
+            maxWidth: '800px',
+            textAlign: 'center',
+            margin: '0 auto 16px auto',
+            marginBottom: '4px',
+            lineHeight: '1.7'
+          }}>
+  Watching is fun, but have you ever wondered if you have what it takes to <em>play</em> the game? 
+  </p>
+
+<p style={{ color: '#a0a0b0', fontSize: 'clamp(.85rem, 4.5vw, 1rem)', marginBottom: '12px', textAlign: 'center', maxWidth: '800px', margin: '0 auto 12px auto' }}>
+  This is an entry-level social deduction game featuring live voice chats, easy-to-follow game mechanics,
+  <br />
+  and lots of bickering. Five short rounds present infinite possibilities for a new game experience each time!
+</p>
+
+<div style={{ maxWidth: '900px', margin: '20px auto' }}>
+  <a
+    href="/social-game"
+    style={{ display: 'block', transition: 'transform 0.2s, box-shadow 0.2s' }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.transform = 'scale(1.015)'
+      e.currentTarget.style.boxShadow = '0 8px 24px rgba(240, 180, 41, 0.35)'
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.transform = 'scale(1)'
+      e.currentTarget.style.boxShadow = 'none'
+    }}
+  >
+    <img
+      src="/images/social-game/social-game-screen.png"
+      alt="Social deduction game room"
+      style={{
+        width: '100%',
+        borderRadius: '12px',
+        border: '2px solid #f0b429',
+        display: 'block',
+        cursor: 'pointer'
+      }}
+    />
+  </a>
+</div>
+
+  <p style={{
+            color: '#a0a0b0',
+            fontSize: 'clamp(.85rem, 4.5vw, 1rem)',
+            maxWidth: '800px',
+            textAlign: 'center',
+            margin: '0 auto 16px auto',
+            marginBottom: '24px'
+          }}>
+  Though we certainly recommend honesty, kindness, and integrity in the real world, this entry-level social deduction game is a great place to test your lying, deceiving, and backstabbing accumen.
+</p>
 
 
   </section>

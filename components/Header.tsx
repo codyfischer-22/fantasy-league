@@ -272,6 +272,7 @@ useEffect(() => {
 <a href="/leagues/all/rules" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Rules</a>
 <a href="/leagues/all/draft" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Rosters</a>
 <a href="/#tiers" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Features</a>
+<a href="/#play-social-game" className="btn" style={{ color: '#f0b429', textDecoration: 'none', fontSize: '1.1rem' }}>Play</a>
 <div ref={hamburgerRef} style={{ position: 'relative' }}>
   <button
     onClick={() => {
