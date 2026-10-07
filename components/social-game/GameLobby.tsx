@@ -561,7 +561,7 @@ marginBottom: '12px',
         textAlign: 'center'
       }}
     >
-      <p style={{ color: '#ffffff', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '16px' }}>
+      <p style={{ color: '#ffffff', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '24px' }}>
         Welcome to the <strong style={{ color: '#f0b429' }}>{displayName}</strong> Staging Area. You&apos;ll wait here until enough players join and your host starts the game.
       </p>
   
