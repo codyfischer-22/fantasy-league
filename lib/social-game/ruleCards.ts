@@ -23,11 +23,5 @@ export function getRuleCards(roleTerms: RoleTerms): RuleCard[] {
       heading: `${roleTerms.mission} Actions`,
   body: `➤ When selected for a ${roleTerms.mission}, ${roleTerms.goodTeamMember}s and ${roleTerms.goodCaptain} have no choice but to ${roleTerms.passMission}.\n\n➤ ${roleTerms.badTeamMember}s and ${roleTerms.badCaptain} are able to secretly ${roleTerms.failMission}, confirming an enemy is in the group.\n\n➤  If multiple players on the ${roleTerms.mission} opt to ${roleTerms.failMission}, it\u0027d be a giveaway that multiple ${roleTerms.badTeamMember}s were present.\n\n➤${roleTerms.badTeamMember}s and ${roleTerms.badCaptain} may also ${roleTerms.passMission}, concealing their identities for another round.`,
 },
-    {
-      position: 'bottomLeft',
-      phase: 'waiting',
-      heading: `General Tip`,
-      body: `➤ If you can see colors around player seats besides your own, you have a special role. Referencing those in gameplay will give away your role.`,
-    },
   ]
 }

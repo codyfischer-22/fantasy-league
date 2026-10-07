@@ -25,6 +25,7 @@ import { canViewRecords } from '@/lib/social-game/playerRecords'
 import { disbandGame } from '@/lib/social-game/lobbyActions'
 import { useRouter } from 'next/navigation'
 import ReportPlayerModal from '@/components/social-game/ReportPlayerModal'
+import VoiceChat from '@/components/social-game/VoiceChat'
 
 
 type Game = {
@@ -36,6 +37,7 @@ type Game = {
   is_private: boolean
   display_name: string
   captain_guess_target: string | null
+  hms_room_code: string | null
 }
 
 type SeatPlayer = {
@@ -73,6 +75,7 @@ export default function SocialGameRoomPage() {
   const router = useRouter()
   const [showDisbandConfirm, setShowDisbandConfirm] = useState(false)
   const [showReportModal, setShowReportModal] = useState(false)
+  const [showRuleCards, setShowRuleCards] = useState(true)
 
 const handleDisband = async () => {
   if (!game || !user) return
@@ -86,11 +89,11 @@ const handleDisband = async () => {
 }
 
   async function loadGame() {
-    const { data } = await supabase
-      .from('social_games')
-      .select('id, skin, status, host_user_id, current_leader_seat, current_mission, join_code, is_private, display_name, captain_guess_target')
-      .eq('id', gameId)
-      .single()
+const { data } = await supabase
+  .from('social_games')
+  .select('id, skin, status, host_user_id, current_leader_seat, current_mission, join_code, is_private, display_name, captain_guess_target, hms_room_code')
+  .eq('id', gameId)
+  .single()
     setGame(data)
     if (data) {
       setCurrentLeaderSeat(data.current_leader_seat)
@@ -228,27 +231,32 @@ const handleDisband = async () => {
   const gameConfig = gameConfigByPlayerCount[players.length]
   const needsTwoFails = gameConfig?.missions[3]?.failsNeeded === 2
 
-  const introSteps = [
-    {
-      heading: `${theme.emoji} Welcome to the ${theme.displayName}!`,
-      roleName: '',
-      body: theme.intro,
-    },
-    ...(gameConfig
-      ? [{
-          heading: 'Team Counts',
-          roleName: '',
-          body: `Since this game has ${players.length} players, there will be ${gameConfig.goodCount} ${roleTerms.goodTeam} players trying to ${roleTerms.passMission} and ${gameConfig.badCount} opposing players with ${roleTerms.badTeam}.${needsTwoFails ? `\n\n**Because there are 7 or more players in the game, ${roleTerms.mission} 4 will require 2 ${roleTerms.failMission}s to fail.**` : ''}`,
-        }]
-      : []),
-    ...(myRoleInfo
-      ? [{
-          heading: 'Your Role:',
-          roleName: myRoleInfo.name,
-          body: myRoleInfo.description,
-        }]
-      : []),
-  ]
+const introSteps = [
+  {
+    heading: `${theme.emoji} Welcome to the ${theme.displayName}!`,
+    roleName: '',
+    body: theme.intro,
+  },
+  ...(gameConfig
+    ? [{
+        heading: 'Team Counts',
+        roleName: '',
+        body: `Since this game has ${players.length} players, there will be ${gameConfig.goodCount} ${roleTerms.goodTeam} players trying to ${roleTerms.passMission} and ${gameConfig.badCount} opposing players with ${roleTerms.badTeam}.${needsTwoFails ? `\n\n**Because there are 7 or more players in the game, ${roleTerms.mission} 4 will require 2 ${roleTerms.failMission}s to fail.**` : ''}`,
+      }]
+    : []),
+  ...(myRoleInfo
+    ? [{
+        heading: 'Your Role:',
+        roleName: myRoleInfo.name,
+        body: myRoleInfo.description,
+      }]
+    : []),
+  {
+    heading: `General Tip`,
+    roleName: '',
+    body: `➤ If you can see red or green around other player seats, you have a special role. Referencing those in gameplay will give away your role (unless you're bluffing).`,
+  },
+]
 
   const isRoomPhase = game.status === 'in_progress' || game.status === 'captain_guess'
 
@@ -308,6 +316,26 @@ const handleDisband = async () => {
   margin: '-60px -40px',
   padding: '60px 40px'
 }}>
+  <div style={{ maxWidth: '1125px', margin: '0 auto' }}>
+    <div style={{ marginBottom: '12px', textAlign: 'left' }}>
+      <button
+        onClick={() => router.push('/social-game')}
+        style={{
+          background: 'none',
+          border: 'none',
+          color: '#c8c8d2',
+          fontSize: '0.85rem',
+          cursor: 'pointer',
+          textDecoration: 'none',
+          textShadow: '0 1px 3px rgba(0,0,0,0.8)'
+        }}
+      >
+        ← Back to Game Lobby
+      </button>
+    </div>
+  </div>
+
+  <div style={{ maxWidth: '1300px', margin: '0 auto' }}>
     <h2 style={{ color: '#ffffff', fontSize: '1.4rem', marginBottom: '24px', textAlign: 'center' }}>
       {theme.emoji} <span style={{ color: '#f0b429' }}>{game.display_name}</span> Game Room
     </h2>
@@ -320,15 +348,30 @@ const handleDisband = async () => {
             margin: '0 auto',
             alignItems: 'flex-start'
           }}>
-       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '340px', flexShrink: 0 }}>
-  {isRoomPhase && (
-    <RuleCorner card={ruleCards[0]} isActive={ruleCards[0].phase === activePhase} />
-  )}
-  {isRoomPhase && (
-    <RuleCorner card={ruleCards[1]} isActive={ruleCards[1].phase === activePhase} />
-  )}
-  {isRoomPhase && (
-    <RuleCorner card={ruleCards[2]} isActive={ruleCards[2].phase === activePhase} />
+<div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '340px', flexShrink: 0 }}>  <button
+    onClick={() => setShowRuleCards(!showRuleCards)}
+    style={{
+      backgroundColor: 'rgba(26, 26, 46, 0.9)',
+      border: '1px solid #2a2a3e',
+      borderRadius: '8px',
+      padding: '5px 10px',
+      color: '#f0b429',
+      fontSize: '0.75rem',
+      cursor: 'pointer',
+      alignSelf: 'flex-start'
+    }}
+  >
+    {showRuleCards ? '◀ Hide Rules' : 'Show Rules ▶'}
+  </button>
+  {showRuleCards && (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      {isRoomPhase && (
+        <RuleCorner card={ruleCards[0]} isActive={ruleCards[0].phase === activePhase} />
+      )}
+      {isRoomPhase && (
+        <RuleCorner card={ruleCards[1]} isActive={ruleCards[1].phase === activePhase} />
+      )}
+    </div>
   )}
 </div>
 
@@ -467,14 +510,17 @@ return <p style={{ color: '#c8c8d2', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
   {game.status !== 'lobby' && (
     <GameLog gameId={game.id} players={players} roleTerms={roleTerms} gameStatus={game.status} captainGuessTarget={game.captain_guess_target} />
   )}
+  {game.hms_room_code && isSeated && (
+    <VoiceChat roomCode={game.hms_room_code} displayName={players.find(p => p.user_id === user?.id)?.display_name ?? 'Player'} />
+  )}
   {isSeated && (game.status === 'in_progress' || game.status === 'captain_guess') && (
     <button
       onClick={() => setShowDisbandConfirm(true)}
       disabled={disbanding}
-      style={{
-        backgroundColor: 'transparent',
-        color: '#ff6b6b',
-        border: '1px solid #ff6b6b',
+    style={{
+  backgroundColor: 'rgba(255, 107, 107, 0.35)',
+  color: '#ffffff',
+  border: '1px solid #ff6b6b',
         padding: '10px 16px',
         borderRadius: '8px',
         fontWeight: 'bold',
@@ -488,10 +534,10 @@ return <p style={{ color: '#c8c8d2', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
   {isSeated && (game.status === 'in_progress' || game.status === 'captain_guess') && (
     <button
       onClick={() => setShowReportModal(true)}
-      style={{
-        backgroundColor: 'transparent',
-        color: '#2a2a3e',
-        border: '1px solid #2a2a3e',
+     style={{
+  backgroundColor: 'rgba(240, 180, 41, 0.35)',
+  color: '#ffffff',
+  border: '1px solid #f0b429',
         padding: '10px 16px',
         borderRadius: '8px',
         fontWeight: 'bold',
@@ -503,8 +549,9 @@ return <p style={{ color: '#c8c8d2', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
     </button>
   )}
 </div>
-          </div>
+                   </div>
         </div>
+      </div>
       ) : null}
 
       {activeMission && (activeMission.vote_result === 'rejected' || activeMission.mission_result) && seenResultFor !== activeMission.id && (
