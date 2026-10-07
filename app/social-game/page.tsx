@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { themeContentBySkin } from '@/lib/social-game/themeContent'
-import { ChessKnight } from 'lucide-react'
+import { PlayingCardsFan, Rat, Rocket, Anchor, Drill  } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { createGame, listOpenGames, joinGame, joinPrivateGame, checkHostEligibility, type OpenGame } from '@/lib/social-game/lobbyActions'
 
@@ -133,9 +133,9 @@ const handleJoinPublic = async (game: OpenGame) => {
         </a>
 
          <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-  <ChessKnight size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '-1px' }} />
-  <span style={{ color: '#f0b429' }}>Social Deduction</span>{' '}
-  <span style={{ color: '#ffffff' }}>Game Lobby</span>
+  <PlayingCardsFan size={40} strokeWidth={1.5} color="#f0b429" style={{ position: 'relative', top: '-1px' }} />
+  <span style={{ color: '#f0b429' }}>Get in the Game</span>{' '}
+  <span style={{ color: '#ffffff' }}>Lobby</span>
 </h1>
 
 <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '4px' }}>
@@ -147,20 +147,123 @@ const handleJoinPublic = async (game: OpenGame) => {
 
         <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '4px' }}>Basic Game Mechanics</h2>
 
-<p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '4px' }}>
- Every game is comprised of 5-10 players in a theme of the host's choosing. Players will be randomly assigned into a good or evil faction, where they will endeavor to pass or fail missions. If the evil faction fails 3 missions or prevents a mission from happening in the first place (after 5 rejected proposals), they win! If the good team passes 3 missions, they win! They win, that is, if the leader of the evil faction cannot correctly peg their leader. Did we mention the bad guys know who each other are? Or that the leader of the good faction knows all the pieces on the board? Say too much, however, and they're a goner!</p>
+<p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '12px' }}>
+ 5-10 players are randomly assigned factions, where they compete in a series of missions. Evil players know their teammates and win by failing 3 missions. Good players win by passing 3 missions... if evil cannot guess their leader, that is. The good leader holds all the cards, knowing everyone's faction, but if they say too much, they're a goner!
+ </p>
 
-<p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '16px' }}>
-Game mechanics will be spelled out step-by-step as you play so you just worry about getting the W for your faction!
-</p>
+
+   <h2 className="mobile-center-heading" style={{ color: '#f0b429', fontSize: '1.3rem', textAlign: 'left', marginBottom: '8px', marginTop: '24px' }}>
+            Membership Tiers
+          </h2>
+
+<section id="hub-tiers" style={{ backgroundColor: '#0a0a0f', marginBottom: '8px' }}>            
+  <div className="tier-grid">
+              <div
+                className="tier-card"
+                onClick={() => router.push('/account?tier=stowaway')}
+                style={{
+                  backgroundColor: '#1a1a2e',
+                  border: '1px solid #2a2a3e',
+                  borderRadius: '10px',
+                  padding: '16px',
+                  textAlign: 'center'
+                }}
+              >
+                <h3 style={{ fontSize: '1.2rem', color: '#a0a0b0', marginBottom: '8px' }}>Stowaway</h3>
+            <ul style={{ color: '#a0a0b0', fontSize: '0.9rem', textAlign: 'left', lineHeight: '1.7', listStyle: 'none', padding: 0 }}>
+  <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rat size={14} strokeWidth={2} /> Join Public Games </li>
+  <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rat size={14} strokeWidth={2} /> Join Private Games</li>
+  <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rat size={14} strokeWidth={2} /> Public Text Chat</li>
+  <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rat size={14} strokeWidth={2} /> Private Voice Chat</li>
+  <div style={{ fontSize: '1.5rem', color: '#a0a0b0', textAlign: 'center', fontWeight: 'bold', marginBottom: '0px' }}>
+    $0.00
+  </div>
+</ul>
+              </div>
+
+              <div
+                className="tier-card"
+                onClick={() => router.push('/account?tier=castaway')}
+                style={{
+                  backgroundColor: '#1a1a2e',
+                  border: '1.75px solid #ffffff',
+                  borderRadius: '10px',
+                  padding: '16px',
+                  textAlign: 'center'
+                }}
+              >
+                <h3 style={{ fontSize: '1.2rem', color: '#ffffff', marginBottom: '8px' }}>Castaway</h3>
+                <ul style={{ color: '#a0a0b0', fontSize: '0.9rem', textAlign: 'left', lineHeight: '1.7', listStyle: 'none', padding: 0 }}>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Anchor size={14} strokeWidth={2} color="#ffffff" /> All Previous Perks</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Anchor size={14} strokeWidth={2} color="#ffffff" /> Public Voice Chat </li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Anchor size={14} strokeWidth={2} color="#ffffff" /> 5 Sample Hosts </li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Anchor size={14} strokeWidth={2} color="#ffffff" /> Win/Loss Statistics </li>
+                  <div style={{ fontSize: '1.5rem', color: '#ffffff', textAlign: 'center', fontWeight: 'bold', marginBottom: '0px' }}>
+                    $1.99
+                  </div>
+                </ul>
+              </div>
+
+              <div
+                className="tier-card"
+                onClick={() => router.push('/account?tier=crewchief')}
+                style={{
+                  backgroundColor: '#1a1a2e',
+                  border: '1.75px solid rgb(245, 255, 156)',
+                  borderRadius: '10px',
+                  padding: '16px',
+                  textAlign: 'center'
+                }}
+              >
+                <h3 style={{ fontSize: '1.2rem', color: 'rgb(245, 255, 156)', marginBottom: '8px' }}>Crew Chief</h3>
+                <ul style={{ color: '#a0a0b0', fontSize: '0.9rem', textAlign: 'left', lineHeight: '1.7', listStyle: 'none', padding: 0 }}>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Drill size={14} strokeWidth={2} color="rgb(245, 255, 156)" /> All Previous Perks</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Drill size={14} strokeWidth={2} color="rgb(245, 255, 156)" /> Host Public Games</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Drill size={14} strokeWidth={2} color="rgb(245, 255, 156)" /> Host Private Games</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Drill size={14} strokeWidth={2} color="rgb(245, 255, 156)" /> Customized Avatar *</li>
+                  <div style={{ fontSize: '1.5rem', color: 'rgb(245, 255, 156)', fontWeight: 'bold', textAlign: 'center', marginBottom: '0px' }}>
+                    $3.99
+                  </div>
+                </ul>
+              </div>
+
+              <div
+                className="tier-card"
+                onClick={() => router.push('/account?tier=teamprincipal')}
+                style={{
+                  backgroundColor: '#1a1a2e',
+                  border: '1.75px solid #e7ab1f',
+                  borderRadius: '10px',
+                  padding: '16px',
+                  textAlign: 'center',
+                  position: 'relative'
+                }}
+              >
+                <h3 style={{ fontSize: '1.2rem', color: '#f0b429', marginBottom: '10px' }}>
+                  Team Principal
+                </h3>
+                <ul style={{ color: '#a0a0b0', fontSize: '0.9rem', textAlign: 'left', lineHeight: '1.7', listStyle: 'none', padding: 0 }}>
+                 <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> All Previous Perks</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> Highlighted Chats</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> Build Custom Skin</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> Support Trekkon</li>
+                  <div style={{ fontSize: '1.5rem', color: '#f0b429', fontWeight: 'bold', textAlign: 'center', marginBottom: '0px' }}>
+                    $6.99
+                  </div>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+              <p style={{ color: '#555570', textAlign: 'center', fontSize: '0.9rem', marginBottom: '12px' }}>
+* Asterisk denotes features that have yet to be built out.
+ </p>
+
+
 
         <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '4px' }}>Host a Game</h2>
-
-<p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '4px' }}>
-Stowaway tier can join unlimited games, Castaway gets 5 free hosts, and Crew Chief+ can host unlimited public or private games. Castaway+ members have access to customizable profile pictures and win/loss statistics for every player on the board. Team Principals will soon be able to create custom game configurations with player labels of their choice.</p>
-
-<p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '16px' }}>
-Private games are restricted to anyone with whom you share the code. Public leagues are playable by anyone who wanders into your lobby. Choose your game theme and dive into the action!</p>
+<p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '36px' }}>
+Private games are restricted to anyone with whom hosts share the code. Public leagues are playable by anyone who wanders into your lobby. Choose your skin and wreak some havoc!</p>
 
 
 {isMobile === null ? null : isMobile ? (
@@ -179,7 +282,7 @@ Private games are restricted to anyone with whom you share the code. Public leag
 ) : (
   <>
  {!showHostPicker ? (
-  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '12px' }}>
     <button
       onClick={handleShowHostPicker}
       style={{
@@ -195,9 +298,24 @@ Private games are restricted to anyone with whom you share the code. Public leag
     >
       Create Game
     </button>
-    <span style={{ color: '#555570', fontSize: '1rem' }}>
-      — OR — Join Below
-    </span>
+    <span style={{ color: '#555570', fontSize: '1rem' }}>— OR —</span>
+    <button
+      onClick={() => {
+        document.getElementById('public-games')?.scrollIntoView({ behavior: 'smooth' })
+      }}
+      style={{
+        backgroundColor: '#f0b429',
+        color: '#0a0a0f',
+        padding: '12px 24px',
+        borderRadius: '8px',
+        border: 'none',
+        fontWeight: 'bold',
+        fontSize: '1rem',
+        cursor: 'pointer'
+      }}
+    >
+      Join Game
+    </button>
   </div>
 ) : (
   <div
@@ -210,8 +328,8 @@ Private games are restricted to anyone with whom you share the code. Public leag
       </p>
     )}
 
-    <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
-      {selectableSkins.map((skin) => {
+<div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
+          {selectableSkins.map((skin) => {
         const theme = themeContentBySkin[skin]
         return (
           <button
@@ -244,15 +362,17 @@ Private games are restricted to anyone with whom you share the code. Public leag
       const theme = themeContentBySkin[skin]
       return (
   <div
-    onClick={(e) => e.stopPropagation()}
-    style={{
-      backgroundColor: '#1a1a2e',
-      border: '2px solid #f0b429',
-      borderRadius: '12px',
-      padding: '24px',
-      maxWidth: '480px'
-    }}
-  >
+  onClick={(e) => e.stopPropagation()}
+  style={{
+    backgroundColor: '#1a1a2e',
+    border: '2px solid #f0b429',
+    borderRadius: '12px',
+    padding: '24px',
+    maxWidth: '480px',
+    margin: '0 auto',
+    textAlign: 'left'
+  }}
+>
           <h2 style={{ color: '#f0b429', fontSize: '1.2rem', marginBottom: '10px' }}>
             {theme.emoji} {theme.displayName}
           </h2>
@@ -318,8 +438,8 @@ Private games are restricted to anyone with whom you share the code. Public leag
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span style={{ fontSize: '1.4rem' }}>{theme.emoji}</span>
-                  <div>
-                    <div style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+  <div style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '6px' }}>
   {g.display_name}
   {isMyHost && (
     <span style={{
@@ -417,8 +537,8 @@ Private games are restricted to anyone with whom you share the code. Public leag
                 </div>
               )}
 
-              <div style={{ marginBottom: '24px' }}>
-                <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '4px' }}>Public Games</h2>
+          <div id="public-games" style={{ marginBottom: '24px' }}>
+  <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '4px' }}>Public Games</h2>
                 {publicGames.length === 0 ? (
                   <p style={{ color: '#555570' }}>No public games running right now; be the first to host one!</p>
                 ) : (
@@ -466,8 +586,8 @@ Private games are restricted to anyone with whom you share the code. Public leag
           ? 'Players can only join this game with a special code, generated once your league is created.'
           : 'Any player will be able to join this league from our main lobby. Happy deceiving!'}
       </p>
-      {freeRemaining !== null && (
-        <p style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '16px', textAlign: 'left' }}>
+     {freeRemaining !== null && freeRemaining > 0 && (
+  <p style={{ color: '#555570', fontSize: '0.85rem', marginBottom: '16px', textAlign: 'center' }}>
           After this, you will have {Math.max(0, freeRemaining - 1)} free host{Math.max(0, freeRemaining - 1) === 1 ? '' : 's'} remaining unless you upgrade to Crew Chief+.
         </p>
       )}

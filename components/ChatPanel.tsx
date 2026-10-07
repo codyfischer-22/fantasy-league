@@ -57,9 +57,9 @@ function renderMessageContent(text: string, members: { user_id: string; display_
   });
 }
 
-export default function ChatPanel({ onClose }: { onClose: () => void }) {
+export default function ChatPanel({ onClose, forcedLeagueId }: { onClose: () => void; forcedLeagueId?: number }) {
   const { user } = useAuth();
-const [leagues, setLeagues] = useState<{ id: number; name: string; league_type: string; slug: string }[]>([]);  const [selectedLeagueId, setSelectedLeagueId] = useState<number | null>(null);
+  const [leagues, setLeagues] = useState<{ id: number; name: string; league_type: string; slug: string }[]>([]);  const [selectedLeagueId, setSelectedLeagueId] = useState<number | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -233,71 +233,76 @@ setSelectedIsShowChat(data?.is_show_chat ?? false);
     loadUserTier();
   }, [user]);
 
-  useEffect(() => {
-    async function markAsRead() {
-      if (!selectedLeagueId || !user) return;
-      const { error } = await supabase
-        .from('chat_read_status')
-        .upsert(
-          {
-            user_id: user.id,
-            league_id: selectedLeagueId,
-            last_read_at: new Date().toISOString()
-          },
-          { onConflict: 'user_id,league_id' }
-        );
-      if (error) {
-        console.error('Error marking chat as read:', JSON.stringify(error, null, 2));
-      }
+useEffect(() => {
+  async function markAsRead() {
+    if (!selectedLeagueId || !user) return;
+    const { error } = await supabase
+      .from('chat_read_status')
+      .upsert(
+        {
+          user_id: user.id,
+          league_id: selectedLeagueId,
+          last_read_at: new Date().toISOString()
+        },
+        { onConflict: 'user_id,league_id' }
+      );
+    if (error) {
+      console.error('Error marking chat as read:', JSON.stringify(error, null, 2));
     }
-    markAsRead();
-  }, [selectedLeagueId, messages, user]);
+  }
+  markAsRead();
+}, [selectedLeagueId, messages, user]);
 
-  useEffect(() => {
-    async function loadLeagues() {
-      if (!user) return;
-      const { data: memberRows, error: memberError } = await supabase
-        .from('league_members')
-        .select('league_id')
-        .eq('user_id', user.id);
-      if (memberError) {
-        console.error('Error loading league memberships:', JSON.stringify(memberError, null, 2));
-        return;
-      }
-      const leagueIds = (memberRows ?? []).map((row) => row.league_id);
-      if (leagueIds.length === 0) {
-        setLeagues([]);
-        return;
-      }
-      const { data: leagueRows, error: leagueError } = await supabase
-        .from('leagues')
-        .select('id, name, league_type, slug')
-        .in('id', leagueIds)
-        .order('id', { ascending: true });
-      if (leagueError) {
-        console.error('Error loading league details:', JSON.stringify(leagueError, null, 2));
-        return;
-      }
+useEffect(() => {
+  if (forcedLeagueId) {
+    setLeagues([{ id: forcedLeagueId, name: 'Game Chat', league_type: 'social_game', slug: '' }]);
+    setSelectedLeagueId(forcedLeagueId);
+    return;
+  }
 
-      const myLeagues = leagueRows ?? [];
-let communityChats: { id: number; name: string; league_type: string; slug: string }[] = [];
-const { data: chatRows, error: chatError } = await supabase
-  .from('leagues')
-  .select('id, name, league_type, slug')
-  .eq('is_show_chat', true);
-if (chatError) {
-  console.error('Error loading community chats:', JSON.stringify(chatError, null, 2));
-} else {
-  communityChats = chatRows ?? [];
-}
-
-
-      const leagueList = [...communityChats, ...myLeagues];
-      setLeagues(leagueList);
-      setSelectedLeagueId((current) => current ?? (leagueList.length > 0 ? leagueList[0].id : null));
+  async function loadLeagues() {
+    if (!user) return;
+    const { data: memberRows, error: memberError } = await supabase
+      .from('league_members')
+      .select('league_id')
+      .eq('user_id', user.id);
+    if (memberError) {
+      console.error('Error loading league memberships:', JSON.stringify(memberError, null, 2));
+      return;
     }
-    loadLeagues();
-  }, [user]);
+    const leagueIds = (memberRows ?? []).map((row) => row.league_id);
+    if (leagueIds.length === 0) {
+      setLeagues([]);
+      return;
+    }
+    const { data: leagueRows, error: leagueError } = await supabase
+      .from('leagues')
+      .select('id, name, league_type, slug')
+      .in('id', leagueIds)
+      .order('id', { ascending: true });
+    if (leagueError) {
+      console.error('Error loading league details:', JSON.stringify(leagueError, null, 2));
+      return;
+    }
+
+    const myLeagues = leagueRows ?? [];
+    let communityChats: { id: number; name: string; league_type: string; slug: string }[] = [];
+    const { data: chatRows, error: chatError } = await supabase
+      .from('leagues')
+      .select('id, name, league_type, slug')
+      .eq('is_show_chat', true);
+    if (chatError) {
+      console.error('Error loading community chats:', JSON.stringify(chatError, null, 2));
+    } else {
+      communityChats = chatRows ?? [];
+    }
+
+    const leagueList = [...communityChats, ...myLeagues];
+    setLeagues(leagueList);
+    setSelectedLeagueId((current) => current ?? (leagueList.length > 0 ? leagueList[0].id : null));
+  }
+  loadLeagues();
+}, [user, forcedLeagueId]);
 
   useEffect(() => {
   async function loadMembersForMentions() {
@@ -674,10 +679,12 @@ async function toggleReaction(messageId: string, emoji: string) {
     display: 'flex',
     flexDirection: 'column',
     padding: '12px',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
+    textAlign: 'left'
   }}
 >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+          {!forcedLeagueId && (
           <select
             value={selectedLeagueId ?? ''}
             onChange={(e) => setSelectedLeagueId(Number(e.target.value))}
@@ -705,6 +712,7 @@ async function toggleReaction(messageId: string, emoji: string) {
   </option>
 ))}
           </select>
+          )}
          <button
   className="desktop-only-close"
   onClick={onClose}

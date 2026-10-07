@@ -10,6 +10,20 @@ export type PlayerRecord = {
   badWins: number
 }
 
+export function canUseVoiceChat(tier: string): boolean {
+  return tier !== 'stowaway'
+}
+
+export async function getReportCount(userId: string): Promise<number> {
+  const { count, error } = await supabase
+    .from('social_game_reports')
+    .select('*', { count: 'exact', head: true })
+    .eq('reported_user_id', userId)
+
+  if (error) return 0
+  return count ?? 0
+}
+
 export async function getPlayerRecord(userId: string): Promise<PlayerRecord | null> {
   const { data, error } = await supabase.rpc('get_player_record', { p_user_id: userId })
   if (error || !data || data.length === 0) return null

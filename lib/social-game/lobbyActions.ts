@@ -20,7 +20,7 @@ export async function disbandGame(gameId: number, hostUserId: string): Promise<{
 export async function cancelGame(gameId: number, hostUserId: string): Promise<{ error: string | null }> {
   const { data: game } = await supabase
     .from('social_games')
-    .select('status, host_user_id')
+    .select('status, host_user_id, chat_league_id')
     .eq('id', gameId)
     .single()
 
@@ -34,6 +34,12 @@ export async function cancelGame(gameId: number, hostUserId: string): Promise<{ 
 
   if (game.status !== 'lobby') {
     return { error: 'You can only disband a game that hasn\'t started yet.' }
+  }
+
+  if (game.chat_league_id) {
+    await supabase.from('messages').delete().eq('league_id', game.chat_league_id)
+    await supabase.from('league_members').delete().eq('league_id', game.chat_league_id)
+    await supabase.from('leagues').delete().eq('id', game.chat_league_id)
   }
 
   const { error } = await supabase
@@ -80,69 +86,6 @@ async function getOtherActiveGame(userId: string, excludeGameId?: number): Promi
     .limit(1)
 
   return activeGames && activeGames.length > 0 ? activeGames[0].id : null
-}
-
-export async function joinGame(gameId: number, userId: string): Promise<{ error: string | null }> {
-  const { data: game } = await supabase
-    .from('social_games')
-    .select('status')
-    .eq('id', gameId)
-    .single()
-
-  if (!game || game.status !== 'lobby') {
-    // Already-seated players should still be allowed back in once the game has started
-    const { data: existingSeat } = await supabase
-      .from('social_game_players')
-      .select('id')
-      .eq('game_id', gameId)
-      .eq('user_id', userId)
-      .maybeSingle()
-
-    if (existingSeat) return { error: null }
-
-    return { error: 'This game has already started or no longer exists.' }
-  }
-
-  const { data: existingSeat } = await supabase
-    .from('social_game_players')
-    .select('id')
-    .eq('game_id', gameId)
-    .eq('user_id', userId)
-    .maybeSingle()
-
-  if (existingSeat) {
-    return { error: null }
-  }
-
- const { count } = await supabase
-  .from('social_game_players')
-  .select('*', { count: 'exact', head: true })
-  .eq('game_id', gameId)
-
-if (count !== null && count >= 10) {
-  return { error: 'This game is full (10 players max).' }
-}
-
-const isExempt = await isExemptFromOneGameLimit(userId)
-console.log('isExempt:', isExempt, 'userId:', userId)
-if (!isExempt) {
-  const otherGameId = await getOtherActiveGame(userId, gameId)
-  console.log('otherGameId:', otherGameId)
-  if (otherGameId) {
-    return { error: 'You\'re already in an active game or lobby. Leave it before joining another.' }
-  }
-}
-
-const { error } = await supabase.from('social_game_players').insert({
-    game_id: gameId,
-    user_id: userId,
-    seat_order: count ?? 0,
-  })
-
-  if (error) {
-    return { error: 'Something went wrong joining the game.' }
-  }
-  return { error: null }
 }
 
 export async function leaveGame(gameId: number, userId: string): Promise<{ error: string | null }> {
@@ -209,7 +152,7 @@ export async function checkHostEligibility(userId: string): Promise<{ canHost: b
     return {
       canHost: false,
       freeRemaining: null,
-      reason: 'Stowaways can join unlimited games, but regular hosting requires a Crew Chief or Team Principal membership. Castaways received 5 free hosts. Visit account to upgrade your membership tier!',
+      reason: 'Stowaways can join unlimited games, but regular hosting requires Crew Chief+. Castaways received 5 free hosts. Visit Account to upgrade your membership tier!',
     }
   }
 
@@ -247,15 +190,13 @@ export async function createGame(
     return { gameId: null, error: eligibility.reason }
   }
 
-const isExempt = await isExemptFromOneGameLimit(hostUserId)
-console.log('isExempt:', isExempt, 'userId:', hostUserId)
-if (!isExempt) {
-  const otherGameId = await getOtherActiveGame(hostUserId)
-  console.log('otherGameId:', otherGameId)
-  if (otherGameId) {
-    return { gameId: null, error: 'You\'re already in an active game or lobby. Leave it before hosting another.' }
+  const isExempt = await isExemptFromOneGameLimit(hostUserId)
+  if (!isExempt) {
+    const otherGameId = await getOtherActiveGame(hostUserId)
+    if (otherGameId) {
+      return { gameId: null, error: 'You\'re already in an active game or lobby. Leave it before hosting another.' }
+    }
   }
-}
 
   const { count: sameTypeCount } = await supabase
     .from('social_games')
@@ -265,23 +206,48 @@ if (!isExempt) {
   const displayName = `${isPrivate ? 'Private' : 'Public'} ${(sameTypeCount ?? 0) + 1}`
   const joinCode = isPrivate ? Math.random().toString(36).substring(2, 8).toUpperCase() : null
 
-const { data, error } = await supabase
-  .from('social_games')
-  .insert({
-    host_user_id: hostUserId,
-    skin,
-    status: 'lobby',
-    is_private: isPrivate,
-    display_name: displayName,
-    join_code: joinCode,
-  })
-  .select('id')
-  .single()
+  const { data: leagueData, error: leagueError } = await supabase
+    .from('leagues')
+    .insert({
+      name: `${displayName} Chat`,
+      league_type: 'social_game',
+      host_user_id: hostUserId,
+      is_private: true,
+      is_public: false,
+      is_show_chat: false,
+    })
+    .select('id')
+    .single()
 
-if (error || !data) {
-  console.error('createGame insert failed:', JSON.stringify(error, null, 2))
-  return { gameId: null, error: 'Something went wrong creating the game.' }
-}
+  if (leagueError || !leagueData) {
+    console.error('League creation for chat failed:', JSON.stringify(leagueError, null, 2))
+  }
+
+  const { data, error } = await supabase
+    .from('social_games')
+    .insert({
+      host_user_id: hostUserId,
+      skin,
+      status: 'lobby',
+      is_private: isPrivate,
+      display_name: displayName,
+      join_code: joinCode,
+      chat_league_id: leagueData?.id ?? null,
+    })
+    .select('id')
+    .single()
+
+  if (error || !data) {
+    console.error('createGame insert failed:', JSON.stringify(error, null, 2))
+    return { gameId: null, error: 'Something went wrong creating the game.' }
+  }
+
+  if (leagueData) {
+    await supabase.from('league_members').insert({
+      league_id: leagueData.id,
+      user_id: hostUserId,
+    })
+  }
 
   const { error: seatError } = await supabase.from('social_game_players').insert({
     game_id: data.id,
@@ -339,6 +305,74 @@ return games.map((g) => ({
   join_code: g.join_code,
   counts_toward_records: g.counts_toward_records,
 }))
+}
+
+export async function joinGame(gameId: number, userId: string): Promise<{ error: string | null }> {
+  const { data: game } = await supabase
+    .from('social_games')
+    .select('status, chat_league_id')
+    .eq('id', gameId)
+    .single()
+
+  if (!game || game.status !== 'lobby') {
+    const { data: existingSeat } = await supabase
+      .from('social_game_players')
+      .select('id')
+      .eq('game_id', gameId)
+      .eq('user_id', userId)
+      .maybeSingle()
+
+    if (existingSeat) return { error: null }
+
+    return { error: 'This game has already started or no longer exists.' }
+  }
+
+  const { data: existingSeat } = await supabase
+    .from('social_game_players')
+    .select('id')
+    .eq('game_id', gameId)
+    .eq('user_id', userId)
+    .maybeSingle()
+
+  if (existingSeat) {
+    return { error: null }
+  }
+
+  const { count } = await supabase
+    .from('social_game_players')
+    .select('*', { count: 'exact', head: true })
+    .eq('game_id', gameId)
+
+  if (count !== null && count >= 10) {
+    return { error: 'This game is full (10 players max).' }
+  }
+
+  const isExempt = await isExemptFromOneGameLimit(userId)
+  if (!isExempt) {
+    const otherGameId = await getOtherActiveGame(userId, gameId)
+    if (otherGameId) {
+      return { error: 'You\'re already in an active game or lobby. Leave it before joining another.' }
+    }
+  }
+
+  const { error } = await supabase.from('social_game_players').insert({
+    game_id: gameId,
+    user_id: userId,
+    seat_order: count ?? 0,
+  })
+
+  if (error) {
+    return { error: 'Something went wrong joining the game.' }
+  }
+
+  if (game.chat_league_id) {
+    await supabase.from('league_members').upsert(
+      { league_id: game.chat_league_id, user_id: userId },
+      { onConflict: 'league_id,user_id' }
+    )
+  }
+
+  return { error: null }
 }
 
 export async function joinPrivateGame(gameId: number, code: string, userId: string): Promise<{ error: string | null }> {

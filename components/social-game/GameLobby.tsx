@@ -9,6 +9,8 @@ import { assignRoles } from '@/lib/social-game/assignRoles'
 import { useRouter } from 'next/navigation'
 import PlayerRecordHover from '@/components/social-game/PlayerRecordHover'
 import { canViewRecords, canToggleRecords } from '@/lib/social-game/playerRecords'
+import { MessageCircle } from 'lucide-react'
+import ChatPanel from '@/components/ChatPanel'
 
 
 type Player = {
@@ -25,10 +27,10 @@ type Props = {
   isPrivate: boolean
   displayName: string
   onGameStarted: () => void
+  chatLeagueId: number | null
 }
 
-export default function GameLobby({ gameId, skin, hostUserId, joinCode, isPrivate, displayName, onGameStarted }: Props) {  
-  const { user } = useAuth()
+export default function GameLobby({ gameId, skin, hostUserId, joinCode, isPrivate, displayName, onGameStarted, chatLeagueId }: Props) {  const { user } = useAuth()
   const [players, setPlayers] = useState<Player[]>([])
   const [starting, setStarting] = useState(false)
   const [joining, setJoining] = useState(false)
@@ -40,6 +42,7 @@ export default function GameLobby({ gameId, skin, hostUserId, joinCode, isPrivat
   const [spectators, setSpectators] = useState<{ user_id: string; display_name: string }[]>([])
   const [countsTowardRecords, setCountsTowardRecords] = useState(true)
 const [myTier, setMyTier] = useState('stowaway')
+const [showChat, setShowChat] = useState(false)
 
   const isHost = user?.id === hostUserId
   const theme = themeContentBySkin[skin]
@@ -57,16 +60,22 @@ useEffect(() => {
 useEffect(() => {
   if (!user) return
 
-  async function pingAndLoadSpectators() {
-    if (!isSeated) {
-      await supabase.from('social_game_spectators').upsert({
-        game_id: gameId,
-        user_id: user!.id,
-        last_seen: new Date().toISOString(),
-      })
-    } else {
-      await supabase.from('social_game_spectators').delete().eq('game_id', gameId).eq('user_id', user!.id)
+async function pingAndLoadSpectators() {
+  if (!isSeated) {
+    await supabase.from('social_game_spectators').upsert({
+      game_id: gameId,
+      user_id: user!.id,
+      last_seen: new Date().toISOString(),
+    })
+    if (chatLeagueId) {
+      await supabase.from('league_members').upsert(
+        { league_id: chatLeagueId, user_id: user!.id },
+        { onConflict: 'league_id,user_id' }
+      )
     }
+  } else {
+    await supabase.from('social_game_spectators').delete().eq('game_id', gameId).eq('user_id', user!.id)
+  }
 
     const cutoff = new Date(Date.now() - 15000).toISOString()
     const { data } = await supabase
@@ -236,8 +245,8 @@ return (
   margin: '-60px -40px',
   padding: '60px 40px'
 }}>
-      <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
-   <div style={{ marginBottom: '12px', textAlign: 'left' }}>
+<div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center', position: 'relative' }}>
+     <div style={{ marginBottom: '12px', textAlign: 'left' }}>
         <button
           onClick={() => router.push('/social-game')}
           style={{
@@ -383,6 +392,18 @@ return (
     : `Waiting for players to join... (${players.length}/10)`}
 </p>
 
+{chatLeagueId && (
+  <button
+    onClick={() => setShowChat(true)}
+    style={{
+backgroundColor: 'rgba(255, 255, 255, 0.15)', color: '#ffffff', border: '1px solid #ffffff',      padding: '12px 32px', borderRadius: '8px', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', margin: '0 auto 16px auto'
+    }}
+  >
+    <MessageCircle size={16} /> Text Chat
+  </button>
+)}
+
       {!isSeated ? (
         <div>
         <p style={{ color: '#c8c8d2', fontSize: '0.85rem', marginBottom: '12px', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
@@ -510,6 +531,10 @@ marginBottom: '12px',
         <p style={{ color: '#ff6b6b', fontSize: '0.9rem', marginTop: '12px' }}>{message}</p>
       )}
 
+      {showChat && (
+  <ChatPanel forcedLeagueId={chatLeagueId!} onClose={() => setShowChat(false)} />
+)}
+
 {showWelcome && (
   <div
     onClick={() => setShowWelcome(false)}
@@ -531,14 +556,15 @@ marginBottom: '12px',
         border: '1px solid #f0b429',
         borderRadius: '12px',
         padding: '28px',
-        maxWidth: '400px',
+        maxWidth: '500px',
         width: '100%',
         textAlign: 'center'
       }}
     >
-      <p style={{ color: '#ffffff', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '20px' }}>
-        Welcome to the staging area for <strong style={{ color: '#f0b429' }}>{displayName}</strong>. You&apos;ll wait here until enough players join and your host starts the game. Catch some baddies!
+      <p style={{ color: '#ffffff', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '8px' }}>
+        Welcome to the <strong style={{ color: '#f0b429' }}>{displayName}</strong> Staging Area. You&apos;ll wait here until enough players join and your host starts the game.
       </p>
+  
       <button
         onClick={() => setShowWelcome(false)}
         style={{

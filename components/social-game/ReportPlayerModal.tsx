@@ -89,7 +89,7 @@ useEffect(() => {
           </>
         ) : (
           <>
-            <h3 style={{ color: '#ff6b6b', fontSize: '1.1rem', marginBottom: '16px' }}>Report a Player</h3>
+            <h3 style={{ color: '#ff6b6b', fontSize: '1.1rem', marginBottom: '16px' }}>Report a player</h3>
 
             <div style={{ textAlign: 'left', marginBottom: '16px' }}>
   <label style={{ color: '#a0a0b0', fontSize: '0.8rem', display: 'block', marginBottom: '6px' }}>

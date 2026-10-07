@@ -56,8 +56,9 @@ if (!isOnTeam) {
           onClick={() => submitCard('pass')}
           disabled={submitting}
           style={{
-            backgroundColor: '#068e38', color: '#ffffff', padding: '10px 24px',
-            borderRadius: '8px', border: 'none', fontWeight: 'bold', fontSize: '0.95rem',
+            backgroundColor: '#068e38', color: '#ffffff', border: '1px solid #c8c8d2',
+            padding: '10px 24px',
+            borderRadius: '8px', fontWeight: 'bold', fontSize: '0.95rem',
             cursor: submitting ? 'not-allowed' : 'pointer'
           }}
         >
@@ -68,8 +69,9 @@ if (!isOnTeam) {
             onClick={() => submitCard('fail')}
             disabled={submitting}
             style={{
-              backgroundColor: 'transparent', color: '#ff6b6b', border: '1px solid #ff6b6b',
-              padding: '10px 24px', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.95rem',
+              backgroundColor: '#ff6b6b', color: '#ffffff', border: '1px solid #c8c8d2',
+              padding: '10px 24px', 
+              borderRadius: '8px', fontWeight: 'bold', fontSize: '0.95rem',
               cursor: submitting ? 'not-allowed' : 'pointer'
             }}
           >

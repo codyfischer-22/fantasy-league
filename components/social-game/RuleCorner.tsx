@@ -19,14 +19,14 @@ export default function RuleCorner({ card, isActive }: Props) {
       boxSizing: 'border-box',
       height: '100%'
     }}>
-      <h4 style={{ color: isActive ? '#f0b429' : '#555570', fontSize: '0.9rem', marginBottom: '6px', textDecoration: 'underline' }}>
+      <h4 style={{ color: isActive ? '#f0b429' : '#a0a0b0', fontSize: '0.9rem', marginBottom: '6px', textDecoration: 'underline' }}>
         {card.heading}
       </h4>
       {card.body.split('\n\n').map((paragraph, i) => (
         <p
           key={i}
           style={{
-            color: isActive ? '#a0a0b0' : '#555570',
+            color: isActive ? '#a0a0b0' : '#a0a0b0',
             fontSize: '0.78rem',
             lineHeight: '1.4',
             marginBottom: i === card.body.split('\n\n').length - 1 ? 0 : '8px'

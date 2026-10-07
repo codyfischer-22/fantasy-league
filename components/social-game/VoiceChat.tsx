@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { MessageCircle } from 'lucide-react'
+import { Mic } from 'lucide-react'
 import {
   HMSRoomProvider,
   useHMSActions,
@@ -43,33 +43,34 @@ if (!isConnected) {
       onClick={handleJoin}
       disabled={joining}
       style={{
-        backgroundColor: 'rgba(6, 142, 56, 0.35)', color: '#ffffff', border: '1px solid #068e38',
-        padding: '10px 16px', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.85rem', cursor: 'pointer',
+backgroundColor: 'rgba(202, 41, 202, 0.35)', color: '#ffffff', border: '1px solid #ca29ca',        padding: '10px 16px', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.85rem', cursor: 'pointer',
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px'
       }}
     >
-      <span>{joining ? 'Connecting...' : '🎙️ Join Voice Chat'}</span>
-      <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 'normal', fontSize: '0.7rem', color: '#ffffff' }}>
-        Or access chat <MessageCircle size={12} /> in header.
-      </span>
+      <span>{joining ? 'Connecting...' : (
+  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+    <Mic size={16} /> Voice Chat
+  </span>
+)}</span>
     </button>
   )
 }
 
 return (
   <div style={{
-    backgroundColor: 'rgba(6, 142, 56, 0.35)', border: '1px solid #068e38',
+    backgroundColor: 'rgba(202, 41, 202, 0.35)', border: '1px solid #ca29ca',
     borderRadius: '10px', padding: '14px'
   }}>
-    <div style={{ color: '#ffffff', fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '8px' }}>
-      🎙️ Voice Chat ({peers.length} Connected)
-    </div>
+
+   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#ffffff', fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '8px' }}>
+  <Mic size={16} /> Voice Chat ({peers.length} Connected)
+</div>
     <div style={{ display: 'flex', gap: '8px' }}>
   <button
   onClick={() => hmsActions.setLocalAudioEnabled(!isAudioOn)}
   style={{
-    backgroundColor: 'transparent', color: '#2a2a3e',
-    border: '1px solid #2a2a3e', padding: '8px 14px', borderRadius: '6px', fontSize: '0.8rem', cursor: 'pointer'
+    backgroundColor: 'transparent', color: '#ffffff',
+    border: '1px solid #a0a0b0', padding: '8px 14px', borderRadius: '6px', fontSize: '0.8rem', cursor: 'pointer'
   }}
 >
   {isAudioOn ? 'Mute' : 'Unmute'}
@@ -77,7 +78,7 @@ return (
       <button
         onClick={handleLeave}
         style={{
-          backgroundColor: 'transparent', color: '#2a2a3e', border: '1px solid #2a2a3e',
+          backgroundColor: 'transparent', color: '#ffffff', border: '1px solid #a0a0b0',
           padding: '8px 14px', borderRadius: '6px', fontSize: '0.8rem', cursor: 'pointer'
         }}
       >

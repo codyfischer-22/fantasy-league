@@ -80,7 +80,7 @@ setEntries(
   return (
   <div style={{
   backgroundColor: 'rgba(26, 26, 46, 0.9)',
-  border: '1px solid #2a2a3e',
+  border: '2px solid #f0b429',
   borderRadius: '10px',
   padding: '14px',
   boxSizing: 'border-box'
