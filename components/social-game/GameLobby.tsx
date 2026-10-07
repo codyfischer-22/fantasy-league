@@ -196,17 +196,21 @@ const handleJoin = async () => {
     return
   }
 
- const res = await fetch('/api/voice/create-room', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ gameId }),
-})
-const data = await res.json()
-console.log('Voice room creation response:', data)
-if (data.roomCode) {
-  await supabase.from('social_games').update({ hms_room_code: data.roomCode }).eq('id', gameId)
-} else {
-  console.error('Voice room creation failed:', data)
+try {
+  const res = await fetch('/api/voice/create-room', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ gameId }),
+  })
+  const data = await res.json()
+  console.log('Voice room creation response:', data)
+  if (data.roomCode) {
+    await supabase.from('social_games').update({ hms_room_code: data.roomCode }).eq('id', gameId)
+  } else {
+    console.error('Voice room creation failed:', data)
+  }
+} catch (e) {
+  console.error('Voice room creation threw:', e)
 }
 
   const { error: roleError } = await assignRoles(gameId)
