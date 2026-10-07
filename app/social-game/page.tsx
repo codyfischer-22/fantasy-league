@@ -244,7 +244,7 @@ const handleJoinPublic = async (game: OpenGame) => {
                 </h3>
                 <ul style={{ color: '#a0a0b0', fontSize: '0.9rem', textAlign: 'left', lineHeight: '1.7', listStyle: 'none', padding: 0 }}>
                  <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> All Previous Perks</li>
-<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> Custom Game Names *</li>
+<li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> Rename Games *</li>
 <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> Highlighted Chats</li>
 <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> Build Custom Skin</li>
                   <div style={{ fontSize: '1.5rem', color: '#f0b429', fontWeight: 'bold', textAlign: 'center', marginBottom: '0px' }}>
