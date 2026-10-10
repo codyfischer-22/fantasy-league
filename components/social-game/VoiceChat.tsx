@@ -30,7 +30,7 @@ function VoiceChatInner({ roomCode, displayName, userId, onSpeakersChange }: Pro
 const speakingUserIds = new Set(
   Object.values(speakers ?? {})
     .map((s) => peers.find((p) => p.id === s.peerID)?.customerUserId)
-    .filter(Boolean)
+    .filter((id): id is string => Boolean(id))
 )
 
 useEffect(() => {
