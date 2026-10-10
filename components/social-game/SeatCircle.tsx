@@ -21,6 +21,7 @@ type Props = {
   missionLeaderLabel?: string
   canViewRecords?: boolean
   skin?: string
+  speakingUserIds?: string[]
 }
 
 export default function SeatCircle({
@@ -34,6 +35,7 @@ export default function SeatCircle({
   missionLeaderLabel = 'LEADER',
   canViewRecords = false,
   skin,
+  speakingUserIds = [],
 }: Props) {
   const center = circleSize / 2
   const radius = center - seatSize / 2
@@ -71,6 +73,7 @@ return (
         const isMe = p.user_id === myUserId
         const isHost = p.user_id === hostUserId
         const isLeader = p.user_id === currentLeaderUserId
+        const isSpeaking = speakingUserIds.includes(p.user_id)
 
         const iAmEvil = myRole === 'badTeamMember' || myRole === 'badCaptain'
         const iAmGoodCaptain = myRole === 'goodCaptain'
@@ -98,6 +101,10 @@ return (
               top: `${y - seatSize / 2}px`,
               width: `${seatSize}px`,
               height: `${seatSize}px`,
+              transform: isSpeaking ? undefined : 'scale(1)',
+              animation: isSpeaking ? 'speakingPulse 0.6s ease-in-out infinite' : 'none',
+              transition: isSpeaking ? 'none' : 'transform 0.2s ease-out',
+              zIndex: isSpeaking ? 2 : 1,
             }}
           >
             <PlayerRecordHover userId={p.user_id} displayName={p.display_name} enabled={canViewRecords}>
@@ -147,6 +154,12 @@ backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.15), rgba(10, 10, 15, 0.15)
           </div>
         )
       })}
+      <style jsx>{`
+        @keyframes speakingPulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.25); }
+        }
+      `}</style>
     </div>
   )
 }

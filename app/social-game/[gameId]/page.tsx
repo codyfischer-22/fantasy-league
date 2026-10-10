@@ -81,6 +81,7 @@ export default function SocialGameRoomPage() {
   const [showRuleCards, setShowRuleCards] = useState(true)
   const [showChat, setShowChat] = useState(false)
   const [hasAdminInGame, setHasAdminInGame] = useState(false)
+  const [speakingUserIds, setSpeakingUserIds] = useState<string[]>([])
 
 const handleDisband = async () => {
   if (!game || !user) return
@@ -414,6 +415,7 @@ const introSteps = [
   missionLeaderLabel={roleTerms.missionLeader}
   canViewRecords={canViewRecords(myTier)}
   skin={game.skin}
+  speakingUserIds={speakingUserIds}
 />
                 <div style={{
                   position: 'absolute',
@@ -549,10 +551,15 @@ return <p style={{ color: '#c8c8d2', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
   <h4 style={{ color: '#f0b429', fontSize: '0.9rem', marginBottom: '0px', textDecoration: 'underline' }}>
     Game Resources
   </h4>
-{game.hms_room_code && isSeated && (game.is_private || canUseVoiceChat(myTier) || hasAdminInGame) && (
-  <VoiceChat roomCode={game.hms_room_code} displayName={players.find(p => p.user_id === user?.id)?.display_name ?? 'Player'} />
+{game.hms_room_code && isSeated && (canUseVoiceChat(myTier) || hasAdminInGame) && (
+<VoiceChat
+  roomCode={game.hms_room_code}
+  displayName={players.find(p => p.user_id === user?.id)?.display_name ?? 'Player'}
+  userId={user!.id}
+  onSpeakersChange={setSpeakingUserIds}
+/>
 )}
-{game.hms_room_code && isSeated && !game.is_private && !canUseVoiceChat(myTier) && !hasAdminInGame && (
+{game.hms_room_code && isSeated && !canUseVoiceChat(myTier) && !hasAdminInGame && (
   <div style={{
     backgroundColor: 'rgba(26, 26, 46, 0.9)', border: '1px solid #2a2a3e',
     borderRadius: '8px', padding: '10px 16px', color: '#555570', fontSize: '0.8rem', textAlign: 'center'

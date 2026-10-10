@@ -9,25 +9,46 @@ import {
   selectIsConnectedToRoom,
   selectPeers,
   selectIsLocalAudioEnabled,
+  selectSpeakers,
 } from '@100mslive/react-sdk'
 
-function VoiceChatInner({ roomCode, displayName }: { roomCode: string; displayName: string }) {
+type Props = {
+  roomCode: string
+  displayName: string
+  userId: string
+  onSpeakersChange?: (userIds: string[]) => void
+}
+
+function VoiceChatInner({ roomCode, displayName, userId, onSpeakersChange }: Props) {
   const hmsActions = useHMSActions()
   const isConnected = useHMSStore(selectIsConnectedToRoom)
   const peers = useHMSStore(selectPeers)
   const isAudioOn = useHMSStore(selectIsLocalAudioEnabled)
   const [joining, setJoining] = useState(false)
+  const speakers = useHMSStore(selectSpeakers)
 
-  const handleJoin = async () => {
-    setJoining(true)
-    try {
-      const authToken = await hmsActions.getAuthTokenByRoomCode({ roomCode })
-      await hmsActions.join({ userName: displayName, authToken })
-    } catch (e) {
-      console.error('Voice join failed:', e)
-    }
-    setJoining(false)
+const speakingUserIds = new Set(
+  Object.values(speakers ?? {})
+    .map((s) => peers.find((p) => p.id === s.peerID)?.customerUserId)
+    .filter(Boolean)
+)
+
+useEffect(() => {
+  console.log('Page-level speakingUserIds:', speakingUserIds)
+  onSpeakersChange?.(Array.from(speakingUserIds))
+}, [speakers])
+
+ const handleJoin = async () => {
+  setJoining(true)
+  try {
+    console.log('Joining with userId:', userId, 'roomCode:', roomCode)
+    const authToken = await hmsActions.getAuthTokenByRoomCode({ roomCode, userId })
+    await hmsActions.join({ userName: displayName, authToken })
+  } catch (e) {
+    console.error('Voice join failed:', e)
   }
+  setJoining(false)
+}
 
   const handleLeave = async () => {
     await hmsActions.leave()
@@ -89,7 +110,7 @@ return (
 )
 }
 
-export default function VoiceChat(props: { roomCode: string; displayName: string }) {
+export default function VoiceChat(props: Props) {
   return (
     <HMSRoomProvider>
       <VoiceChatInner {...props} />

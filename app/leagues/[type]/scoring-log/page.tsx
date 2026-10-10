@@ -123,6 +123,15 @@ type EpisodeGroup = {
   entries: ScoreEntry[]
 }
 
+const backgroundsByType: Record<string, string> = {
+  'secrets-on-the-beach': '/images/social-game/backgrounds/island.jpg',
+  'sotb-demo': '/images/social-game/backgrounds/island.jpg',
+  'uncharted-turretory': '/images/social-game/backgrounds/traitors.jpg',
+  'uncharted-turretory-demo': '/images/social-game/backgrounds/traitors.jpg',
+  'paddock-politicks': '/images/social-game/backgrounds/f1.jpg',
+  'the-oval-offset': '/images/social-game/backgrounds/nascar.jpg',
+}
+
 export default function ScoringLogPage() {
   const params = useParams()
   const router = useRouter()
@@ -250,16 +259,6 @@ if ((scores && scores.length > 0) || (customEntries && customEntries.length > 0)
     .sort((a, b) => b.episode_number - a.episode_number)
   setEpisodes(episodeGroups)
 }
-
-
-
-
-
-
-
-
-
-
       setPageLoading(false)
     }
    loadLog()
@@ -342,14 +341,20 @@ if ((scores && scores.length > 0) || (customEntries && customEntries.length > 0)
     )
   }
 
-  return (
-    <main style={{
-      backgroundColor: '#0a0a0f',
-      minHeight: '100vh',
-      fontFamily: 'Georgia, serif',
-      color: '#ffffff',
-      padding: '60px 40px'
-    }}>
+ return (
+  <main style={{
+    backgroundColor: '#0a0a0f',
+    minHeight: '100vh',
+    fontFamily: 'Georgia, serif',
+    color: '#ffffff',
+    padding: '60px 40px',
+    ...(backgroundsByType[type] && {
+      backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.75), rgba(10, 10, 15, 0.85)), url(${backgroundsByType[type]})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundAttachment: 'fixed',
+    }),
+  }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         <a href={fromInstance ? `/leagues/${type}/${fromInstance}` : '/'} style={{
   color: '#a0a0b0',

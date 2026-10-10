@@ -35,6 +35,15 @@ const castawayTermByLeague: Record<string, string> = {
   'sandbox': 'Contestant',
 }
 
+const backgroundsByType: Record<string, string> = {
+  'secrets-on-the-beach': '/images/social-game/backgrounds/island.jpg',
+  'sotb-demo': '/images/social-game/backgrounds/island.jpg',
+  'uncharted-turretory': '/images/social-game/backgrounds/traitors.jpg',
+  'uncharted-turretory-demo': '/images/social-game/backgrounds/traitors.jpg',
+  'paddock-politicks': '/images/social-game/backgrounds/f1.jpg',
+  'the-oval-offset': '/images/social-game/backgrounds/nascar.jpg',
+}
+
 const episodeAirTimeByLeague: Record<string, { dayOfWeek: number; hour: number }> = {
   'secrets-on-the-beach': { dayOfWeek: 3, hour: 19 }, // Wednesday, 7 PM CT
   'uncharted-turretory': { dayOfWeek: 4, hour: 19 }, // Thursday, 7 PM CT
@@ -923,14 +932,20 @@ if (castawayIds.length > 0) {
   const myOfferedCastawayName = myCastaways.find((c) => c.id === selectedOfferedId)?.name
   const theirRequestedCastawayName = theirCastaways.find((c) => c.id === selectedRequestedId)?.name
 
-  return (
-    <main style={{
-      backgroundColor: '#0a0a0f',
-      minHeight: '100vh',
-      fontFamily: 'Georgia, serif',
-      color: '#ffffff',
-      padding: '60px 40px'
-    }}>
+return (
+  <main style={{
+    backgroundColor: '#0a0a0f',
+    minHeight: '100vh',
+    fontFamily: 'Georgia, serif',
+    color: '#ffffff',
+    padding: '60px 40px',
+    ...(backgroundsByType[type] && {
+      backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.75), rgba(10, 10, 15, 0.85)), url(${backgroundsByType[type]})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundAttachment: 'fixed',
+    }),
+  }}>
       <div style={{ maxWidth: '800px', margin: '0 auto', paddingLeft: '20px' }}>
         <a href={`/leagues/${type}/${instance}`} style={{
           color: '#a0a0b0',

@@ -13,6 +13,15 @@ type Castaway = {
   status: string
 }
 
+const backgroundsByType: Record<string, string> = {
+  'secrets-on-the-beach': '/images/social-game/backgrounds/island.jpg',
+  'sotb-demo': '/images/social-game/backgrounds/island.jpg',
+  'uncharted-turretory': '/images/social-game/backgrounds/traitors.jpg',
+  'uncharted-turretory-demo': '/images/social-game/backgrounds/traitors.jpg',
+  'paddock-politicks': '/images/social-game/backgrounds/f1.jpg',
+  'the-oval-offset': '/images/social-game/backgrounds/nascar.jpg',
+}
+
 const castawayTermByLeague: Record<string, string> = {
   'secrets-on-the-beach': 'Castaway',
   'sotb-demo': 'Castaway',
@@ -252,14 +261,20 @@ const handleTouchEnd = () => {
     return null
   }
 
-  return (
-    <main style={{
-      backgroundColor: '#0a0a0f',
-      minHeight: '100vh',
-      fontFamily: 'Georgia, serif',
-      color: '#ffffff',
-      padding: '60px 40px'
-    }}>
+return (
+  <main style={{
+    backgroundColor: '#0a0a0f',
+    minHeight: '100vh',
+    fontFamily: 'Georgia, serif',
+    color: '#ffffff',
+    padding: '60px 40px',
+    ...(backgroundsByType[type] && {
+      backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.75), rgba(10, 10, 15, 0.85)), url(${backgroundsByType[type]})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundAttachment: 'fixed',
+    }),
+  }}>
       <div style={{ maxWidth: '700px', margin: '0 auto' }}>
 
         <a href={`/leagues/${type}/${instance}`} style={{

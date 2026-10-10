@@ -18,6 +18,15 @@ const draftCompleteTitleByLeague: Record<string, string> = {
   'sandbox': '🧪 Sandbox Draft Complete',
 }
 
+const backgroundsByType: Record<string, string> = {
+  'secrets-on-the-beach': '/images/social-game/backgrounds/island.jpg',
+  'sotb-demo': '/images/social-game/backgrounds/island.jpg',
+  'uncharted-turretory': '/images/social-game/backgrounds/traitors.jpg',
+  'uncharted-turretory-demo': '/images/social-game/backgrounds/traitors.jpg',
+  'paddock-politicks': '/images/social-game/backgrounds/f1.jpg',
+  'the-oval-offset': '/images/social-game/backgrounds/nascar.jpg',
+}
+
 const draftInstructionsByLeague: Record<string, { countLine: string }> = {
   'secrets-on-the-beach': {
     countLine: 'There are 21 castaways in Survivor 51 so any league with over 5 players will have castaways "cloned" as necessary (e.g. 10 players → 40 castaways needed → clone each castaway twice for 42 selectable options).',
@@ -615,7 +624,19 @@ if (!league) {
 
 if (league.draft_status !== 'in_progress' && league.draft_status !== 'completed') {
   return (
-    <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
+    <main style={{
+      backgroundColor: '#0a0a0f',
+      minHeight: '100vh',
+      fontFamily: 'Georgia, serif',
+      color: '#ffffff',
+      padding: '60px 40px',
+      ...(backgroundsByType[type] && {
+        backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.75), rgba(10, 10, 15, 0.85)), url(${backgroundsByType[type]})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+      }),
+    }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         <a href={`/leagues/${type}/${instance}`} style={{
           color: '#a0a0b0',
