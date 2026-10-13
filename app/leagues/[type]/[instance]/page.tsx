@@ -10,6 +10,7 @@ import ResourcesModal from '@/components/ResourcesModal'
 import PredictionCard from '@/components/PredictionCard'
 import { getFreeAgentPool, type FreeAgent } from '@/lib/freeAgents'
 import FreeAgentClaimModal from '@/components/FreeAgentClaimModal'
+import { useFooterBorder } from '@/lib/FooterContext'
 
 const castawayTermByLeague: Record<string, string> = {
   'secrets-on-the-beach': 'Castaway',
@@ -78,6 +79,12 @@ const [startingDraft, setStartingDraft] = useState(false)
 
 
 const castawayTerm = castawayTermByLeague[type] ?? 'Contestant'
+
+const { setShowBorder } = useFooterBorder()
+useEffect(() => {
+  setShowBorder(true)
+  return () => setShowBorder(false)
+}, [])
 
 useEffect(() => {
   function checkWidth() {

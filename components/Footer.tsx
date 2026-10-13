@@ -1,6 +1,10 @@
+'use client'
+import { useFooterBorder } from '@/lib/FooterContext'
+
 export default function Footer() {
+  const { showBorder } = useFooterBorder()
   return (
-    <footer style={{
+    <footer className={showBorder ? 'footer-with-border' : ''} style={{
       backgroundColor: '#12121a',
       borderTop: '2px solid #f0b429',
       padding: '30px 40px',

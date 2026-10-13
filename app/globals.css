@@ -645,3 +645,9 @@ html, body {
     min-height: auto !important;
   }
 }
+
+@media (max-width: 600px) {
+  .footer-with-border {
+    border-top: 2px solid #f0b429 !important;
+  }
+}
