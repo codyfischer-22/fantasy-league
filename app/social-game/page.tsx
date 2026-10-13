@@ -655,7 +655,7 @@ export default function SocialGameLandingPage() {
               border: '1px solid #f0b429',
               borderRadius: '12px',
               padding: '20px',
-              maxWidth: '225px',
+              maxWidth: '235px',
               width: '100%',
               maxHeight: '85vh',
               overflowY: 'auto'
@@ -665,22 +665,6 @@ export default function SocialGameLandingPage() {
             <p style={{ color: '#555570', textAlign: 'center', fontSize: '0.85rem', marginTop: '16px', marginBottom: '0px' }}>
               <em>Features have yet to be built out.</em> * Usable while active, after three consecutive paid months.
             </p>
-            <button
-              onClick={() => setShowMobilePerksModal(false)}
-              style={{
-                display: 'block',
-                margin: '16px auto 0 auto',
-                backgroundColor: '#f0b429',
-                color: '#0a0a0f',
-                border: 'none',
-                padding: '10px 24px',
-                borderRadius: '8px',
-                fontWeight: 'bold',
-                cursor: 'pointer'
-              }}
-            >
-              Close
-            </button>
           </div>
         </div>
       )}
