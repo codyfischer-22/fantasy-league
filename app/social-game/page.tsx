@@ -232,17 +232,11 @@ export default function SocialGameLandingPage() {
           ← Back to Trekkon Fantasy Leagues
         </a>
 
-        <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '0px', display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-          <PlayingCardsFan size={40} strokeWidth={1.5} color="#f0b429" style={{ position: 'relative', top: '-1px' }} />
-          <span className="desktop-only-text">
-            <span style={{ color: '#f0b429' }}>Get in the Game</span>{' '}
-            <span style={{ color: '#ffffff' }}>Lobby</span>
-          </span>
-          <span className="mobile-only-block">
-            <span style={{ color: '#f0b429' }}>Game</span>{' '}
-            <span style={{ color: '#ffffff' }}>Lobby</span>
-          </span>
-        </h1>
+    <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '0px', display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+  <PlayingCardsFan size={40} strokeWidth={1.5} color="#f0b429" style={{ position: 'relative', top: '-1px' }} />
+  <span style={{ color: '#f0b429' }}>Trust Issue5</span>{' '}
+  <span style={{ color: '#ffffff' }}>Lobby</span>
+</h1>
 
         <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '36px' }}>
           5-10 players are randomly assigned factions, where they compete in up to 5 missions. Evil players know their teammates and win by failing 3 missions. Good players win by passing 3 missions... if evil cannot guess their leader, that is. The good leader holds all the cards, knowing everyone's intentions, but say too much and they're a goner!

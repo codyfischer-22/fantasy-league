@@ -894,7 +894,7 @@ Got an idea for a league we should build next? Send us your concept and help sha
         </div>   
           <p style={{ color: '#555570', textAlign: 'center', fontSize: '0.9rem', marginBottom: '0px' }}>
   <span className="desktop-only-text">Additional membership perks found in game page below.</span>
-  <span className="mobile-only-text">Additional perks found in game page below.</span>
+  <span className="mobile-only-block">Additional perks found in game page below.</span>
 </p>
         </div>
 
@@ -927,7 +927,7 @@ Got an idea for a league we should build next? Send us your concept and help sha
   </p>
 
 <p className="mobile-left-text" style={{ color: '#a0a0b0', fontSize: 'clamp(.85rem, 4.5vw, 1rem)', marginBottom: '12px', textAlign: 'center', maxWidth: '800px', margin: '0 auto 12px auto' }}>
-  This is an entry-level, social deduction game featuring live voice chats, easy-to-follow game mechanics,{' '}
+  <em>Trust Issue5</em> is an entry-level, social deduction game featuring live voice chats, easy-to-follow game mechanics,{' '}
   <br className="desktop-only-break" />
   and lots of bickering. Five short rounds present infinite possibilities for a new game experience each time!
 </p>
@@ -967,7 +967,7 @@ Got an idea for a league we should build next? Send us your concept and help sha
   margin: '0 auto 16px auto',
   marginBottom: '24px'
 }}>
-  Though we certainly recommend honesty, kindness, and integrity in the real world, this game is a great place to test your lying, deceiving, and backstabbing accumen.
+  Though we certainly recommend honesty, kindness, and integrity in the real world, <em>Trust Issue5</em> is a great place to test your lying, deceiving, and backstabbing accumen.
 </p>
 
 
