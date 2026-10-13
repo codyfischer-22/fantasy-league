@@ -558,15 +558,19 @@ if (pickCount && pickCount > 0) {
 
   if (loading || pageLoading) {
     return (
-      <main style={{
-        backgroundColor: '#0a0a0f',
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: '#a0a0b0',
-        fontFamily: 'Georgia, serif'
-      }}>
+  <main className="mobile-shrink-main" style={{
+  backgroundColor: '#0a0a0f',
+  minHeight: '100vh',
+  fontFamily: 'Georgia, serif',
+  color: '#ffffff',
+  padding: '60px 40px',
+  ...(backgroundsByType[type] && {
+    backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.75), rgba(10, 10, 15, 0.85)), url(${backgroundsByType[type]})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundAttachment: 'fixed',
+  }),
+}}>
         Loading...
       </main>
     )
@@ -595,7 +599,7 @@ if (pickCount && pickCount > 0) {
   },
 ]
   return (
-<main style={{
+<main className="mobile-shrink-main" style={{
   backgroundColor: '#0a0a0f',
   minHeight: '100vh',
   fontFamily: 'Georgia, serif',

@@ -639,3 +639,9 @@ html, body {
     display: block;
   }
 }
+
+@media (max-width: 768px) {
+  .mobile-shrink-main {
+    min-height: auto !important;
+  }
+}
