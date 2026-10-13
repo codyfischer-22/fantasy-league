@@ -6,6 +6,7 @@ import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import ConfirmModal from '@/components/ConfirmModal'
 import { Puzzle, Timer } from 'lucide-react'
+import { useFooterBorder } from '@/lib/FooterContext'
 
 type Castaway = { id: number; name: string }
 type Pick = { user_id: string; castaway_id: number }
@@ -187,6 +188,19 @@ setLeague(leagueData)
 
     return true
   }
+
+  const { setShowBorder } = useFooterBorder()
+
+useEffect(() => {
+  const usingBackground = !!(
+    league &&
+    backgroundsByType[type] &&
+    league.draft_status !== 'in_progress' &&
+    league.draft_status !== 'completed'
+  )
+  setShowBorder(usingBackground)
+  return () => setShowBorder(false)
+}, [league?.draft_status, type])
 
   const rosterByPlayer: Record<string, string[]> = {}
   members.forEach((m) => (rosterByPlayer[m.user_id] = []))

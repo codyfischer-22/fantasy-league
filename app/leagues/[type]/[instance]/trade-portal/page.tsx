@@ -5,6 +5,8 @@ import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { RefreshCw } from 'lucide-react'
 import { getFreeAgentPool, type FreeAgent } from '@/lib/freeAgents'
+import { useFooterBorder } from '@/lib/FooterContext'
+
 
 type Castaway = {
   id: number
@@ -108,6 +110,13 @@ const [selectedAddId, setSelectedAddId] = useState<number | null>(null)
 const [waiverSubmitting, setWaiverSubmitting] = useState(false)
 const [waiverMessage, setWaiverMessage] = useState('')
 const [activeTab, setActiveTab] = useState<'trade' | 'waiver'>('trade')
+
+const { setShowBorder } = useFooterBorder()
+useEffect(() => {
+  setShowBorder(true)
+  return () => setShowBorder(false)
+}, [])
+
 
   const selectStyle = {
     width: '100%',

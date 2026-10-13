@@ -23,9 +23,9 @@ export default function SiteFrame({ children }: { children: React.ReactNode }) {
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         {!isMobileWidth && <Header />}
         <PardonOurMessModal />
-        <div style={{ flex: 1, paddingBottom: isMobileWidth ? 135 : 0 }}>
-          {children}
-        </div>
+    <div style={{ flex: 1 }}>
+  {children}
+</div>
         <Footer />
         {isMobileWidth && <MobileNav />}
       </div>

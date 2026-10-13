@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/AuthContext'
 import { Users } from 'lucide-react'
+import { useFooterBorder } from '@/lib/FooterContext'
 
 type RosterMember = {
   user_id: string
@@ -63,6 +64,13 @@ export default function RosterPage() {
   const rosterTerm = rosterTermByLeague[type] ?? 'Roster'
 
 const [isMobileWidth, setIsMobileWidth] = useState(false)
+
+const { setShowBorder } = useFooterBorder()
+useEffect(() => {
+  setShowBorder(true)
+  return () => setShowBorder(false)
+}, [])
+
 useEffect(() => {
   function checkWidth() {
     setIsMobileWidth(window.innerWidth <= 600)

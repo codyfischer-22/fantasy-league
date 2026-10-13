@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { ClipboardList } from 'lucide-react'
 import { useAuth } from '@/lib/AuthContext'
+import { useFooterBorder } from '@/lib/FooterContext'
 
 type LogEntry = {
   pick_number: number
@@ -46,6 +47,12 @@ export default function DraftLogPage() {
   const [pageLoading, setPageLoading] = useState(true)
   const [isPrivateLeague, setIsPrivateLeague] = useState(false)
   const castawayTerm = castawayTermByLeague[type] ?? 'Contestant'
+
+const { setShowBorder } = useFooterBorder()
+useEffect(() => {
+  setShowBorder(true)
+  return () => setShowBorder(false)
+}, [])
 
 useEffect(() => {
     async function loadLog() {
