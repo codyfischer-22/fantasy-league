@@ -926,7 +926,7 @@ Additional membership perks found in game page below.
 
 <p className="mobile-left-text" style={{ color: '#a0a0b0', fontSize: 'clamp(.85rem, 4.5vw, 1rem)', marginBottom: '12px', textAlign: 'center', maxWidth: '800px', margin: '0 auto 12px auto' }}>
   This is an entry-level, social deduction game featuring live voice chats, easy-to-follow game mechanics,
-  <br />
+  <br className="desktop-only-break" />
   and lots of bickering. Five short rounds present infinite possibilities for a new game experience each time!
 </p>
 
