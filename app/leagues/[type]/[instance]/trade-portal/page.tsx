@@ -964,10 +964,10 @@ return (
             marginBottom: '8px'
           }}>
             
-          <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', margin: 0, marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+         <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', margin: 0, marginBottom: '4px', display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
   <RefreshCw size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
   <span style={{ color: '#f0b429' }}>League</span>{' '}
-  <span style={{ color: '#ffffff' }}>Trade Portal</span>
+  <span className="mobile-full-width-break" style={{ color: '#ffffff' }}>Trade Portal</span>
 </h1>
           </div>
 

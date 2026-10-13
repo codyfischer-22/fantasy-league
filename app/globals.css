@@ -617,3 +617,9 @@ html, body {
     display: none;
   }
 }
+
+@media (max-width: 768px) {
+  .mobile-full-width-break {
+    flex-basis: 100%;
+  }
+}
