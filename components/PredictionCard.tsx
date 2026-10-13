@@ -299,7 +299,7 @@ setAllCastaways(allCastawayList ?? [])
   </p>
 </div>
 
-<p className="mobile-only-text" style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '24px' }}>
+<p className="mobile-only-block" style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '14px' }}>
   Who do you think will be eliminated next episode? Whoever has the most correct predictions gets to split the +50 point bonus. You can still play after your entire roster is eliminated!
 </p>
     <select
