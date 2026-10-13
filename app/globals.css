@@ -605,3 +605,9 @@ html, body {
     padding-right: 12px;
   }
 }
+
+@media (max-width: 768px) {
+  .mobile-left-text {
+    text-align: left !important;
+  }
+}
