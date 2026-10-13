@@ -50,6 +50,15 @@ export default function ExtrasPage() {
   <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
      <iframe
       style={{ borderRadius: '12px', flex: '1 1 300px' }}
+      src="https://open.spotify.com/embed/episode/5QDUuQREckLCILuZaV32X8?utm_source=generator&si=e20ebf780bce4e53"
+      height="152"
+      frameBorder="0"
+      allowFullScreen
+      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+      loading="lazy"
+    ></iframe>
+     <iframe
+      style={{ borderRadius: '12px', flex: '1 1 300px' }}
       src="https://open.spotify.com/embed/episode/6JdWbCQoCMWCqZb9Gy8x03?utm_source=generator&si=7824b2b237364544"
       height="152"
       frameBorder="0"
