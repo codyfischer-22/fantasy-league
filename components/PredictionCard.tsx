@@ -287,16 +287,21 @@ setAllCastaways(allCastawayList ?? [])
   </div>
 ) : (
   <>
-    <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '6px' }}>
-       Who do you think will be eliminated next episode?
-    </p>
-    <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '6px' }}>
-       Whoever has the most correct predictions gets to split the +50 point bonus.
-    </p>
-    <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '14px' }}>
-       You can still play after your entire roster is eliminated!
-    </p>
+  <div className="desktop-only-text">
+  <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '6px' }}>
+     Who do you think will be eliminated next episode?
+  </p>
+  <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '6px' }}>
+     Whoever has the most correct predictions gets to split the +50 point bonus.
+  </p>
+  <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '14px' }}>
+     You can still play after your entire roster is eliminated!
+  </p>
+</div>
 
+<p className="mobile-only-text" style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '14px' }}>
+  Who do you think will be eliminated next episode? Whoever has the most correct predictions gets to split the +50 point bonus. You can still play after your entire roster is eliminated!
+</p>
     <select
       value={selectedCastawayId}
       onChange={(e) => setSelectedCastawayId(e.target.value)}
