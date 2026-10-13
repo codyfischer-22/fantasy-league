@@ -676,7 +676,7 @@ Got an idea for a league we should build next? Send us your concept and help sha
 
 {/* ─── PRICING TIERS ─── */}
       <section id="tiers" style={{
-        padding: '20px 40px',
+        padding: '20px 20px',
         backgroundColor: '#0a0a0f',
       }}>
         <h2 style={{
@@ -892,21 +892,23 @@ Got an idea for a league we should build next? Send us your concept and help sha
   Annual price for every league, every season, and every perk!
 </p>
         </div>   
-        <p style={{ color: '#555570', textAlign: 'center', fontSize: '0.9rem', marginBottom: '0px' }}>
-Additional membership perks found in game page below.
- </p>
+          <p style={{ color: '#555570', textAlign: 'center', fontSize: '0.9rem', marginBottom: '0px' }}>
+  <span className="desktop-only-text">Additional membership perks found in game page below.</span>
+  <span className="mobile-only-text">Additional perks found in game page below.</span>
+</p>
         </div>
 
 </section>
 
   
-     {/* ─── LEAGUES ─── */}
+     {/* ─── GAME ─── */}
 <section id="leagues" className="scroll-offset" style={{ padding: '50px 40px' }}>
   <h2 id="play-social-game" style={{
     textAlign: 'center',
     color: '#f0b429',
     fontSize: 'clamp(1.75rem, 8vw, 2.25rem)',
     marginBottom: '6px',
+    marginTop: '-24px',
     letterSpacing: '2px'
   }}> 
   Get in the Game

@@ -225,7 +225,7 @@ setAllCastaways(allCastawayList ?? [])
   }}
 >
   <span className="desktop-only-text">Leaderboard →</span>
-  <span className="mobile-only-text">Standings →</span>
+  <span className="mobile-only-block">Standings →</span>
 </a>
 </div>
             {loading ? (

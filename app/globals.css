@@ -612,24 +612,35 @@ html, body {
   }
 }
 
-.mobile-only-block {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  .desktop-only-text {
-    display: none;
-  }
-  .mobile-only-text {
-    display: inline;
-  }
-  .mobile-only-block {
-    display: block;
-  }
-}
-
 @media (max-width: 768px) {
   .mobile-shrink-main {
     min-height: auto !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .prediction-row {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+}
+
+/* Default State (Desktop) */
+.desktop-only-text {
+  display: block;
+}
+
+.mobile-only-block {
+  display: none !important;
+}
+
+/* Mobile State (< 768px) */
+@media (max-width: 767px) {
+  .desktop-only-text {
+    display: none !important;
+  }
+
+  .mobile-only-block {
+    display: block !important;
   }
 }

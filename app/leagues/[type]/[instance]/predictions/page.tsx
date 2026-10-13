@@ -144,35 +144,35 @@ export default function PredictionLeaderboardPage() {
   const isTiedForFirst = s.correct === topScore && topScore > 0
   return (
   <div key={s.user_id} style={{
-    backgroundColor: '#1a1a2e',
-    border: isTiedForFirst ? '2px solid #f0b429' : '1px solid #2a2a3e',
-    borderRadius: '10px',
-    padding: '16px 20px'
-  }}>
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        {isTiedForFirst && (
-          <Trophy size={18} strokeWidth={2} color="#f0b429" />
-        )}
-                    <span style={{ fontWeight: 'bold', fontSize: '1rem' }}>{s.display_name}</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{
-                      backgroundColor: '#12121a',
-                      color: '#f0b429',
-                      padding: '4px 12px',
-                      borderRadius: '20px',
-                      fontWeight: 'bold',
-                      fontSize: '0.9rem'
-                    }}>
-                      {s.correct} Correct
-                    </span>
-                    <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
-                      ({s.total} Guessed)
-                    </span>
-                  </div>
-                </div>
-                            </div>
+  backgroundColor: '#1a1a2e',
+  border: isTiedForFirst ? '2px solid #f0b429' : '1px solid #2a2a3e',
+  borderRadius: '10px',
+  padding: '16px 20px'
+}}>
+  <div className="prediction-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      {isTiedForFirst && (
+        <Trophy size={18} strokeWidth={2} color="#f0b429" />
+      )}
+      <span style={{ fontWeight: 'bold', fontSize: '1rem' }}>{s.display_name}</span>
+    </div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <span style={{
+        backgroundColor: '#12121a',
+        color: '#f0b429',
+        padding: '4px 12px',
+        borderRadius: '20px',
+        fontWeight: 'bold',
+        fontSize: '0.9rem'
+      }}>
+        {s.correct} Correct
+      </span>
+      <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
+        ({s.total} Guessed)
+      </span>
+    </div>
+  </div>
+</div>
   )
 })}
           </div>
