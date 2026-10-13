@@ -903,7 +903,7 @@ const content = (
                     fontWeight: 'bold',
                     fontSize: '0.9rem',
                   }}>
-                    {memberTier === 'teamprincipal' ? 'Manage Membership' : 'Upgrade Membership'}
+                    {memberTier === 'teamprincipal' ? 'Manage Tier' : 'Upgrade Tier'}
                   </a>
                   {!isHost && (
                     <button
