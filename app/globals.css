@@ -611,3 +611,9 @@ html, body {
     text-align: left !important;
   }
 }
+
+@media (max-width: 768px) {
+  .desktop-only-break {
+    display: none;
+  }
+}
