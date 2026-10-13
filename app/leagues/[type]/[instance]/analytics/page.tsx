@@ -518,7 +518,7 @@ setPlayerChartData(playerRows)
             textDecoration: 'none',
             fontWeight: 'bold'
           }}>
-            Upgrade Membership →
+            Upgrade Tier →
           </a>
         </div>
       </div>
