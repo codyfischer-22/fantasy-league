@@ -108,7 +108,7 @@ export default function ExtrasPage() {
             padding: '20px'
           }}>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6' }}>
-              Episode write-ups are in the works. Check back soon for blog drops!
+              We might do this... someday... Let us know if interested!
             </p>
           </div>
         </div>
