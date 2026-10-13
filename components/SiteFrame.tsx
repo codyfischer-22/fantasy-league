@@ -4,7 +4,6 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import MobileNav from '@/components/MobileNav'
 import PardonOurMessModal from '@/components/PardonOurMessModal'
-import { FooterBorderProvider } from '@/lib/FooterContext'
 
 export default function SiteFrame({ children }: { children: React.ReactNode }) {
   const [isMobileWidth, setIsMobileWidth] = useState(false)
@@ -19,16 +18,14 @@ export default function SiteFrame({ children }: { children: React.ReactNode }) {
   }, [])
 
   return (
-    <FooterBorderProvider>
-      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        {!isMobileWidth && <Header />}
-        <PardonOurMessModal />
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      {!isMobileWidth && <Header />}
+      <PardonOurMessModal />
     <div style={{ flex: 1 }}>
   {children}
 </div>
-        <Footer />
-        {isMobileWidth && <MobileNav />}
-      </div>
-    </FooterBorderProvider>
+      <Footer />
+      {isMobileWidth && <MobileNav />}
+    </div>
   )
 }

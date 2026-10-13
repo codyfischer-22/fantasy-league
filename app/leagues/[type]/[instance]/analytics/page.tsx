@@ -4,7 +4,6 @@ import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { TrendingUp, Lock } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
-import { useFooterBorder } from '@/lib/FooterContext'
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts'
@@ -208,12 +207,6 @@ export default function AnalyticsPage() {
   const castawayTerm = castawayTermByLeague[type] ?? 'Contestant'
 
 const [isMobileWidth, setIsMobileWidth] = useState(false)
-
-const { setShowBorder } = useFooterBorder()
-useEffect(() => {
-  setShowBorder(true)
-  return () => setShowBorder(false)
-}, [])
 
 useEffect(() => {
   function checkWidth() {

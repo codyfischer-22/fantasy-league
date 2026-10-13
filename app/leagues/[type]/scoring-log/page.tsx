@@ -7,7 +7,6 @@ import { useAuth } from '@/lib/AuthContext'
 import { leagueTypeLabels } from '@/lib/leagueTypeLabels'
 import { Calculator } from 'lucide-react'
 import { Lock } from 'lucide-react'
-import { useFooterBorder } from '@/lib/FooterContext'
 
 const categoryLabelsByLeague: Record<string, Record<string, string>> = {
   'secrets-on-the-beach': {
@@ -145,12 +144,6 @@ export default function ScoringLogPage() {
   const { user, loading: authLoading } = useAuth()
   const [isFrozen, setIsFrozen] = useState(false)
   const categoryLabels = categoryLabelsByLeague[type] ?? {}
-
-const { setShowBorder } = useFooterBorder()
-useEffect(() => {
-  setShowBorder(true)
-  return () => setShowBorder(false)
-}, [])
 
 useEffect(() => {
 async function loadLog() {

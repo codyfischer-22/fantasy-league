@@ -222,18 +222,6 @@ html, body {
 }
 
 @media (max-width: 600px) {
-  footer {
-    border-top: none !important;
-  }
-}
-
-@media (max-width: 600px) {
-  footer {
-    background-color: #0a0a0f !important;
-  }
-}
-
-@media (max-width: 600px) {
   main {
     min-height: unset !important;
     height: auto !important;
@@ -643,11 +631,5 @@ html, body {
 @media (max-width: 768px) {
   .mobile-shrink-main {
     min-height: auto !important;
-  }
-}
-
-@media (max-width: 600px) {
-  .footer-with-border {
-    border-top: 2px solid #f0b429 !important;
   }
 }

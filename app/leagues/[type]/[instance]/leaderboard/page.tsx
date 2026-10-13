@@ -4,7 +4,6 @@ import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/AuthContext'
 import { Trophy } from 'lucide-react'
-import { useFooterBorder } from '@/lib/FooterContext'
 
 type CastawayScore = {
   castaway_id: number
@@ -39,12 +38,6 @@ export default function LeaderboardPage() {
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
   const [isFrozen, setIsFrozen] = useState(false)
   const router = useRouter()
-
-const { setShowBorder } = useFooterBorder()
-useEffect(() => {
-  setShowBorder(true)
-  return () => setShowBorder(false)
-}, [])
 
   useEffect(() => {
     async function loadLeaderboard() {
