@@ -623,3 +623,16 @@ html, body {
     flex-basis: 100%;
   }
 }
+
+.mobile-only-text {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .desktop-only-text {
+    display: none;
+  }
+  .mobile-only-text {
+    display: inline;
+  }
+}

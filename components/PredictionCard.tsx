@@ -215,19 +215,19 @@ setAllCastaways(allCastawayList ?? [])
     <Dices size={20} strokeWidth={2} /> Episode {currentEpisode} Prediction
   </h3>
 
-  <a
-    href={`/leagues/${leagueType}/${instanceSlug}/predictions`}
-    style={{
-      color: '#a0a0b0',
-      fontSize: '0.8rem',
-      textDecoration: 'underline',
-      whiteSpace: 'nowrap'
-    }}
-  >
-    Leaderboard →
-  </a>
+ <a
+  href={`/leagues/${leagueType}/${instanceSlug}/predictions`}
+  style={{
+    color: '#a0a0b0',
+    fontSize: '0.8rem',
+    textDecoration: 'underline',
+    whiteSpace: 'nowrap'
+  }}
+>
+  <span className="desktop-only-text">Leaderboard →</span>
+  <span className="mobile-only-text">Standings →</span>
+</a>
 </div>
-
             {loading ? (
               <p style={{ color: '#a0a0b0', fontSize: '0.9rem' }}>Loading...</p>
             ) : existingPrediction ? (
