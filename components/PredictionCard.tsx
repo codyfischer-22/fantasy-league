@@ -294,7 +294,7 @@ setAllCastaways(allCastawayList ?? [])
        Whoever has the most correct predictions gets to split the +50 point bonus.
     </p>
     <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '14px' }}>
-       You can still play after all roster players poof!
+       You can still play after your entire roster is eliminated!
     </p>
 
     <select
