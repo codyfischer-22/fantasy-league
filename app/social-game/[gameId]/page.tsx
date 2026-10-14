@@ -190,15 +190,20 @@ export default function SocialGameRoomPage() {
     }
   }, [game?.status, game?.chat_league_id])
 
-  useEffect(() => {
-    const roomPhase = game?.status === 'in_progress' || game?.status === 'captain_guess'
-    if (roomPhase) {
-      document.body.classList.add('game-room-mobile-nav-hidden')
-    }
-    return () => {
-      document.body.classList.remove('game-room-mobile-nav-hidden')
-    }
-  }, [game?.status])
+useEffect(() => {
+  const hideFooterPhase = ['in_progress', 'captain_guess', 'good_wins', 'evil_wins', 'disbanded'].includes(game?.status ?? '')
+  const roomPhase = game?.status === 'in_progress' || game?.status === 'captain_guess'
+  if (roomPhase) {
+    document.body.classList.add('game-room-mobile-nav-hidden')
+  }
+  if (hideFooterPhase) {
+    document.body.classList.add('hide-site-footer')
+  }
+  return () => {
+    document.body.classList.remove('game-room-mobile-nav-hidden')
+    document.body.classList.remove('hide-site-footer')
+  }
+}, [game?.status])
 
   useEffect(() => {
     if (!game) return

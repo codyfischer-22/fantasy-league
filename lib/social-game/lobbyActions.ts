@@ -24,32 +24,21 @@ export async function cancelGame(gameId: number, hostUserId: string): Promise<{ 
     .eq('id', gameId)
     .single()
 
-  if (!game) {
-    return { error: 'Game not found.' }
-  }
-
-  if (game.host_user_id !== hostUserId) {
-    return { error: 'Only the host can disband this game.' }
-  }
-
-  if (game.status !== 'lobby') {
-    return { error: 'You can only disband a game that hasn\'t started yet.' }
-  }
+  if (!game) return { error: 'Game not found.' }
+  if (game.host_user_id !== hostUserId) return { error: 'Only the host can disband this game.' }
+  if (game.status !== 'lobby') return { error: 'You can only disband a game that hasn\'t started yet.' }
 
   if (game.chat_league_id) {
+    await supabase.from('social_games').update({ chat_league_id: null }).eq('id', gameId)
     await supabase.from('messages').delete().eq('league_id', game.chat_league_id)
+    await supabase.from('chat_read_status').delete().eq('league_id', game.chat_league_id)
+    await supabase.from('chat_reports').delete().eq('league_id', game.chat_league_id)
     await supabase.from('league_members').delete().eq('league_id', game.chat_league_id)
     await supabase.from('leagues').delete().eq('id', game.chat_league_id)
   }
 
-  const { error } = await supabase
-    .from('social_games')
-    .delete()
-    .eq('id', gameId)
-
-  if (error) {
-    return { error: 'Something went wrong disbanding the game.' }
-  }
+  const { error } = await supabase.from('social_games').delete().eq('id', gameId)
+  if (error) return { error: 'Something went wrong disbanding the game.' }
 
   return { error: null }
 }

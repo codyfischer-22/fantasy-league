@@ -130,7 +130,7 @@ export default function SocialGameLandingPage() {
    <div
   className="tier-grid"
 >
-  <p className="mobile-only-block" style={{ color: '#ffffff', fontSize: '1.45rem', marginBottom: '-4px', gridColumn: '1 / -1', textAlign: 'center' }}>Click to Upgrade</p>
+  <p className="mobile-only-block" style={{ color: '#ffffff', fontSize: '1.45rem', marginBottom: '4px', gridColumn: '1 / -1', textAlign: 'center' }}>Click to Upgrade</p>
   <div
     className="tier-card"
     onClick={() => router.push('/account?tier=stowaway')}

@@ -776,3 +776,7 @@ html, body {
     min-height: 110vh !important;
   }
 }
+
+body.hide-site-footer footer {
+  display: none;
+}

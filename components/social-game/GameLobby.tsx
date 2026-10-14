@@ -4,13 +4,13 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { themeContentBySkin } from '@/lib/social-game/themeContent'
-import { joinGame, leaveGame } from '@/lib/social-game/lobbyActions'
 import { assignRoles } from '@/lib/social-game/assignRoles'
 import { useRouter } from 'next/navigation'
 import PlayerRecordHover from '@/components/social-game/PlayerRecordHover'
 import { canViewRecords, canToggleRecords } from '@/lib/social-game/playerRecords'
 import { MessageCircle } from 'lucide-react'
 import ChatPanel from '@/components/ChatPanel'
+import { joinGame, leaveGame, cancelGame } from '@/lib/social-game/lobbyActions'
 
 
 type Player = {
@@ -169,6 +169,20 @@ const handleJoin = async () => {
     setMessage(error)
   }
   // no navigation — staying on the page; the next poll will flip isSeated to false
+}
+
+const handleCancelGame = async () => {
+  if (!user) return
+  setLeaving(true)
+  setMessage('')
+  const { error } = await cancelGame(gameId, user.id)
+  console.log('cancelGame result:', { error, gameId, userId: user.id })
+  setLeaving(false)
+  if (error) {
+    setMessage(error)
+    return
+  }
+  router.push('/social-game')
 }
 
  const handleLeave = async () => {
@@ -468,7 +482,7 @@ backgroundColor: 'rgba(255, 255, 255, 0.15)', color: '#ffffff', border: '1px sol
 
       {isHost && players.length === 1 && (
   <button
-    onClick={handleLeave}
+    onClick={handleCancelGame}
     disabled={leaving}
     style={{
       backgroundColor: 'transparent',
@@ -477,8 +491,8 @@ backgroundColor: 'rgba(255, 255, 255, 0.15)', color: '#ffffff', border: '1px sol
       padding: '10px 24px',
       borderRadius: '8px',
       marginTop: '0px',
-marginBottom: '12px',
-       minWidth: '160px',
+      marginBottom: '12px',
+      minWidth: '160px',
       fontWeight: 'bold',
       fontSize: '0.9rem',
       cursor: leaving ? 'not-allowed' : 'pointer'
