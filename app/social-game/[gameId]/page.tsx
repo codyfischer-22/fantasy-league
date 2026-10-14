@@ -27,7 +27,8 @@ import { useRouter } from 'next/navigation'
 import ReportPlayerModal from '@/components/social-game/ReportPlayerModal'
 import VoiceChat from '@/components/social-game/VoiceChat'
 import ChatPanel from '@/components/ChatPanel'
-import { FlagTriangleRight, MessageCircle, Mic, Trash } from 'lucide-react'
+import { FlagTriangleRight, MessageCircle, Mic, Trash, BookOpen, ClipboardList, Menu } from 'lucide-react'
+import { HMSRoomProvider } from '@100mslive/react-sdk'
 
 
 type Game = {
@@ -82,107 +83,123 @@ export default function SocialGameRoomPage() {
   const [showChat, setShowChat] = useState(false)
   const [hasAdminInGame, setHasAdminInGame] = useState(false)
   const [speakingUserIds, setSpeakingUserIds] = useState<string[]>([])
+  const [showMobileRules, setShowMobileRules] = useState(false)
+  const [showMobileLog, setShowMobileLog] = useState(false)
+  const [showMobileVoice, setShowMobileVoice] = useState(false)
+  const [showMobileMore, setShowMobileMore] = useState(false)
+  const [voiceConnected, setVoiceConnected] = useState(false)
+  const [voiceMuted, setVoiceMuted] = useState(false)
 
-const handleDisband = async () => {
-  if (!game || !user) return
-  setDisbanding(true)
-  const { error } = await disbandGame(game.id, user.id)
-  setDisbanding(false)
-  setShowDisbandConfirm(false)
-  if (error) {
-    alert(error)
+  const handleDisband = async () => {
+    if (!game || !user) return
+    setDisbanding(true)
+    const { error } = await disbandGame(game.id, user.id)
+    setDisbanding(false)
+    setShowDisbandConfirm(false)
+    if (error) {
+      alert(error)
+    }
   }
-}
 
   async function loadGame() {
-  const { data } = await supabase
-    .from('social_games')
-    .select('id, skin, status, host_user_id, current_leader_seat, current_mission, join_code, is_private, display_name, captain_guess_target, hms_room_code, chat_league_id')
-    .eq('id', gameId)
-    .single()
-  setGame(data)
-  if (data) {
-    setCurrentLeaderSeat(data.current_leader_seat)
-    setCurrentMission(data.current_mission)
-  }
-
-  if (data && user) {
-    const { data: seatRow } = await supabase
-      .from('social_game_players')
-      .select('id, role')
-      .eq('game_id', gameId)
-      .eq('user_id', user.id)
-      .maybeSingle()
-    setIsSeated(!!seatRow)
-    setMyRole(seatRow?.role ?? '')
-
-    if (!seatRow && data.chat_league_id && data.status !== 'lobby') {
-      await supabase.from('league_members').upsert(
-        { league_id: data.chat_league_id, user_id: user.id },
-        { onConflict: 'league_id,user_id' }
-      )
+    const { data } = await supabase
+      .from('social_games')
+      .select('id, skin, status, host_user_id, current_leader_seat, current_mission, join_code, is_private, display_name, captain_guess_target, hms_room_code, chat_league_id')
+      .eq('id', gameId)
+      .single()
+    setGame(data)
+    if (data) {
+      setCurrentLeaderSeat(data.current_leader_seat)
+      setCurrentMission(data.current_mission)
     }
+
+    if (data && user) {
+      const { data: seatRow } = await supabase
+        .from('social_game_players')
+        .select('id, role')
+        .eq('game_id', gameId)
+        .eq('user_id', user.id)
+        .maybeSingle()
+      setIsSeated(!!seatRow)
+      setMyRole(seatRow?.role ?? '')
+
+      if (!seatRow && data.chat_league_id && data.status !== 'lobby') {
+        await supabase.from('league_members').upsert(
+          { league_id: data.chat_league_id, user_id: user.id },
+          { onConflict: 'league_id,user_id' }
+        )
+      }
+    }
+
+    if (data && data.status !== 'lobby') {
+      const { data: seatRows } = await supabase
+        .from('social_game_players')
+        .select('user_id, seat_order, role')
+        .eq('game_id', gameId)
+        .order('seat_order')
+
+      if (seatRows) {
+        const userIds = seatRows.map((r) => r.user_id)
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('user_id, display_name, is_global_admin')
+          .in('user_id', userIds)
+        const nameMap = new Map((profiles ?? []).map((p) => [p.user_id, p.display_name || 'Player']))
+        setPlayers(
+          seatRows.map((r) => ({
+            user_id: r.user_id,
+            seat_order: r.seat_order,
+            display_name: nameMap.get(r.user_id) ?? 'Player',
+            role: r.role,
+          }))
+        )
+        setHasAdminInGame((profiles ?? []).some((p) => p.is_global_admin))
+      }
+
+      const { data: missionRow } = await supabase
+        .from('social_game_missions')
+        .select('id, leader_user_id, proposed_team, vote_result, mission_result')
+        .eq('game_id', gameId)
+        .eq('mission_number', data.current_mission)
+        .order('id', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+      setActiveMission(missionRow)
+    }
+
+    setLoading(false)
   }
-
-  if (data && data.status !== 'lobby') {
-  const { data: seatRows } = await supabase
-    .from('social_game_players')
-    .select('user_id, seat_order, role')
-    .eq('game_id', gameId)
-    .order('seat_order')
-
-  if (seatRows) {
-    const userIds = seatRows.map((r) => r.user_id)
-    const { data: profiles } = await supabase
-      .from('profiles')
-      .select('user_id, display_name, is_global_admin')
-      .in('user_id', userIds)
-    const nameMap = new Map((profiles ?? []).map((p) => [p.user_id, p.display_name || 'Player']))
-    setPlayers(
-      seatRows.map((r) => ({
-        user_id: r.user_id,
-        seat_order: r.seat_order,
-        display_name: nameMap.get(r.user_id) ?? 'Player',
-        role: r.role,
-      }))
-    )
-    setHasAdminInGame((profiles ?? []).some((p) => p.is_global_admin))
-  }
-
-    const { data: missionRow } = await supabase
-      .from('social_game_missions')
-      .select('id, leader_user_id, proposed_team, vote_result, mission_result')
-      .eq('game_id', gameId)
-      .eq('mission_number', data.current_mission)
-      .order('id', { ascending: false })
-      .limit(1)
-      .maybeSingle()
-    setActiveMission(missionRow)
-  }
-
-  setLoading(false)
-}
 
   useEffect(() => {
-  async function loadTier() {
-    if (!user) return
-    const { data } = await supabase.from('profiles').select('tier').eq('user_id', user.id).single()
-    setMyTier(data?.tier ?? 'stowaway')
-  }
-  loadTier()
-}, [user])
-
-
-useEffect(() => {
-  if (!game) return
-  if (game.status === 'good_wins' || game.status === 'evil_wins') {
-    if (game.chat_league_id) {
-      supabase.from('messages').delete().eq('league_id', game.chat_league_id)
-        .then(() => supabase.from('league_members').delete().eq('league_id', game.chat_league_id))
-        .then(() => supabase.from('leagues').delete().eq('id', game.chat_league_id))
+    async function loadTier() {
+      if (!user) return
+      const { data } = await supabase.from('profiles').select('tier').eq('user_id', user.id).single()
+      setMyTier(data?.tier ?? 'stowaway')
     }
-  }
-}, [game?.status, game?.chat_league_id])
+    loadTier()
+  }, [user])
+
+
+  useEffect(() => {
+    if (!game) return
+    if (game.status === 'good_wins' || game.status === 'evil_wins') {
+      if (game.chat_league_id) {
+        supabase.from('messages').delete().eq('league_id', game.chat_league_id)
+          .then(() => supabase.from('league_members').delete().eq('league_id', game.chat_league_id))
+          .then(() => supabase.from('leagues').delete().eq('id', game.chat_league_id))
+      }
+    }
+  }, [game?.status, game?.chat_league_id])
+
+  useEffect(() => {
+    const roomPhase = game?.status === 'in_progress' || game?.status === 'captain_guess'
+    if (roomPhase) {
+      document.body.classList.add('game-room-mobile-nav-hidden')
+    }
+    return () => {
+      document.body.classList.remove('game-room-mobile-nav-hidden')
+    }
+  }, [game?.status])
 
   useEffect(() => {
     if (!game) return
@@ -257,374 +274,391 @@ useEffect(() => {
   const gameConfig = gameConfigByPlayerCount[players.length]
   const needsTwoFails = gameConfig?.missions[3]?.failsNeeded === 2
 
-const introSteps = [
-  {
-    heading: `${theme.emoji} Welcome to the ${theme.displayName}!`,
-    roleName: '',
-    body: theme.intro,
-  },
-  ...(gameConfig
-    ? [{
-        heading: 'Team Counts',
-        roleName: '',
-        body: `Since this game has ${players.length} players, there will be ${gameConfig.goodCount} ${roleTerms.goodTeam} players trying to ${roleTerms.passMission} and ${gameConfig.badCount} opposing players with ${roleTerms.badTeam}.${needsTwoFails ? `\n\n**Because there are 7 or more players in the game, ${roleTerms.mission} 4 will require 2 ${roleTerms.failMission}s to fail.**` : ''}`,
-      }]
-    : []),
-  ...(myRoleInfo
-    ? [{
-        heading: 'Your Role:',
-        roleName: myRoleInfo.name,
-        body: myRoleInfo.description,
-      }]
-    : []),
-  {
-    heading: `General Tip`,
-    roleName: '',
-    body: `➤ If you can see red or green around other player seats, you have a special role. Referencing those in gameplay will give away your role (unless you're bluffing).`,
-  },
-]
+  const introSteps = [
+    {
+      heading: `${theme.emoji} Welcome to the ${theme.displayName}!`,
+      roleName: '',
+      body: theme.intro,
+    },
+    ...(gameConfig
+      ? [{
+          heading: 'Team Counts',
+          roleName: '',
+          body: `Since this game has ${players.length} players, there will be ${gameConfig.goodCount} ${roleTerms.goodTeam} players trying to ${roleTerms.passMission} and ${gameConfig.badCount} opposing players with ${roleTerms.badTeam}.${needsTwoFails ? `\n\n**Because there are 7 or more players in the game, ${roleTerms.mission} 4 will require 2 ${roleTerms.failMission}s to fail.**` : ''}`,
+        }]
+      : []),
+    ...(myRoleInfo
+      ? [{
+          heading: 'Your Role:',
+          roleName: myRoleInfo.name,
+          body: myRoleInfo.description,
+        }]
+      : []),
+    {
+      heading: `General Tip`,
+      roleName: '',
+      body: `➤ If you can see red or green around other player seats, you have a special role. Referencing those in gameplay will give away your role (unless you're bluffing).`,
+    },
+  ]
 
   const isRoomPhase = game.status === 'in_progress' || game.status === 'captain_guess'
 
-  return (
-    <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
+return (
+  <HMSRoomProvider>
+  <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
       {game.status === 'lobby' ? (
-       <GameLobby
-  gameId={game.id}
-  skin={game.skin}
-  hostUserId={game.host_user_id}
-  joinCode={game.join_code}
-  isPrivate={game.is_private}
-  displayName={game.display_name}
-  onGameStarted={() => loadGame()}
-  chatLeagueId={game.chat_league_id}
-/>
+        <GameLobby
+          gameId={game.id}
+          skin={game.skin}
+          hostUserId={game.host_user_id}
+          joinCode={game.join_code}
+          isPrivate={game.is_private}
+          displayName={game.display_name}
+          onGameStarted={() => loadGame()}
+          chatLeagueId={game.chat_league_id}
+        />
       ) : game.status === 'good_wins' || game.status === 'evil_wins' ? (
-<GameOver skin={game.skin} status={game.status} players={players} captainGuessTarget={game.captain_guess_target} gameId={game.id} myUserId={user!.id} />
-) : game.status === 'disbanded' ? (
-  <div style={{ maxWidth: '460px', margin: '60px auto', textAlign: 'center' }}>
-    <h2 style={{ color: '#ff6b6b', fontSize: '1.4rem', marginBottom: '12px' }}>Game Disbanded</h2>
-    <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '24px' }}>
-      A player ended this game early. It won&apos;t count toward anyone&apos;s record.
-    </p>
-    <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-      <button
-        onClick={() => router.push('/social-game')}
-        style={{
-          backgroundColor: '#f0b429', color: '#0a0a0f', padding: '12px 32px',
-          borderRadius: '8px', border: 'none', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer'
-        }}
-      >
-        ← Back to Game Lobby
-      </button>
-      {isSeated && (
-        <button
-          onClick={() => setShowReportModal(true)}
-          style={{
-            backgroundColor: 'transparent', color: '#a0a0b0', border: '1px solid #2a2a3e',
-            padding: '12px 24px', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.9rem', cursor: 'pointer'
-          }}
-        >
-         🚩 Report Player
-        </button>
-      )}
-    </div>
-  </div>
-) : isRoomPhase ? (
-<div style={{
-  backgroundColor: '#0a0a0f',
-  ...(game.skin !== 'neutral' && {
-    backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.4), rgba(10, 10, 15, 0.4)), url(/images/social-game/backgrounds/${game.skin}.jpg)`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    backgroundAttachment: 'fixed',
-  }),
-  minHeight: '100vh',
-  margin: '-60px -40px',
-  padding: '60px 40px'
-}}>
-  <div style={{ maxWidth: '1125px', margin: '0 auto' }}>
-    <div style={{ marginBottom: '12px', textAlign: 'left' }}>
-      <button
-        onClick={() => router.push('/social-game')}
-        style={{
-          background: 'none',
-          border: 'none',
-          color: '#c8c8d2',
-          fontSize: '0.85rem',
-          cursor: 'pointer',
-          textDecoration: 'none',
-          textShadow: '0 1px 3px rgba(0,0,0,0.8)'
-        }}
-      >
-        ← Back to Game Lobby
-      </button>
-    </div>
-  </div>
+        <GameOver skin={game.skin} status={game.status} players={players} captainGuessTarget={game.captain_guess_target} gameId={game.id} myUserId={user!.id} />
+      ) : game.status === 'disbanded' ? (
+        <div style={{ maxWidth: '460px', margin: '60px auto', textAlign: 'center' }}>
+          <h2 style={{ color: '#ff6b6b', fontSize: '1.4rem', marginBottom: '12px' }}>Game Disbanded</h2>
+          <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '24px' }}>
+            A player ended this game early. It won&apos;t count toward anyone&apos;s record.
+          </p>
+          <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+            <button
+              onClick={() => router.push('/social-game')}
+              style={{
+                backgroundColor: '#f0b429', color: '#0a0a0f', padding: '12px 32px',
+                borderRadius: '8px', border: 'none', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer'
+              }}
+            >
+              ← Back to Game Lobby
+            </button>
+            {isSeated && (
+              <button
+                onClick={() => setShowReportModal(true)}
+                style={{
+                  backgroundColor: 'transparent', color: '#a0a0b0', border: '1px solid #2a2a3e',
+                  padding: '12px 24px', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.9rem', cursor: 'pointer'
+                }}
+              >
+                🚩 Report Player
+              </button>
+            )}
+          </div>
+        </div>
+      ) : isRoomPhase ? (
+        <div style={{
+          backgroundColor: '#0a0a0f',
+          ...(game.skin !== 'neutral' && {
+            backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.4), rgba(10, 10, 15, 0.4)), url(/images/social-game/backgrounds/${game.skin}.jpg)`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed',
+          }),
+          minHeight: '100vh',
+          margin: '-60px -40px',
+          padding: '60px 40px'
+        }}>
+          <div style={{ maxWidth: '1125px', margin: '0 auto' }}>
+            <div style={{ marginBottom: '12px', textAlign: 'left' }}>
+              <button
+                onClick={() => router.push('/social-game')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#c8c8d2',
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                  textDecoration: 'none',
+                  textShadow: '0 1px 3px rgba(0,0,0,0.8)'
+                }}
+              >
+                ← Back to Game Lobby
+              </button>
+            </div>
+          </div>
 
-  <div style={{ maxWidth: '1300px', margin: '0 auto' }}>
-    <h2 style={{ color: '#ffffff', fontSize: '1.4rem', marginBottom: '24px', textAlign: 'center' }}>
-      {theme.emoji} <span style={{ color: '#f0b429' }}>{game.display_name}</span> Game Room
-    </h2>
+          <div style={{ maxWidth: '1300px', margin: '0 auto' }}>
+            <h2 className="mobile-top-spacing" style={{ color: '#ffffff', fontSize: '1.4rem', marginBottom: '24px', textAlign: 'center' }}>
+              {theme.emoji} <span style={{ color: '#f0b429' }}>{game.display_name}</span> Game Room
+            </h2>
 
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: '24px',
-            maxWidth: '1300px',
-            margin: '0 auto',
-            alignItems: 'flex-start'
-          }}>
-<div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '340px', flexShrink: 0 }}>  
-    <button
-  onClick={() => setShowRuleCards(!showRuleCards)}
-  style={{
-    backgroundColor: showRuleCards ? 'transparent' : 'rgba(26, 26, 46, 0.97)',
-    border: showRuleCards ? '1px solid #a0a0b0' : '2px solid #f0b429',
-    borderRadius: '10px',
-    padding: '10px 16px',
-    color: showRuleCards ? '#a0a0b0' : '#f0b429',
-    fontSize: '0.9rem',
-    cursor: 'pointer',
-    alignSelf: 'flex-start'
-  }}
->
-{showRuleCards ? '▲ Hide Rules' : 'Show Rules ▼'}</button>
-  {showRuleCards && (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      {isRoomPhase && (
-        <RuleCorner card={ruleCards[0]} isActive={ruleCards[0].phase === activePhase} />
-      )}
-      {isRoomPhase && (
-        <RuleCorner card={ruleCards[1]} isActive={ruleCards[1].phase === activePhase} />
-      )}
-    </div>
-  )}
-</div>
-
-            <div style={{ width: '460px', flexShrink: 0, textAlign: 'center' }}>
-              <div style={{ position: 'relative', display: 'inline-block' }}>
-      <SeatCircle
-  players={players}
-  hostUserId={game.host_user_id}
-  myUserId={isSeated ? user?.id : undefined}
-  myRole={myRole}
-  circleSize={players.length >= 8 ? 460 : players.length >= 6 ? 420 : 380}
-  seatSize={players.length >= 9 ? 80 : players.length >= 7 ? 90 : players.length >= 6 ? 100 : 110}
-  currentLeaderUserId={players.find((p) => p.seat_order === currentLeaderSeat)?.user_id}
-  missionLeaderLabel={roleTerms.missionLeader}
-  canViewRecords={canViewRecords(myTier)}
-  skin={game.skin}
-  speakingUserIds={speakingUserIds}
-/>
-                <div style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  textAlign: 'center',
-                  pointerEvents: 'none'
-                }}>
-                  <p style={{ color: '#c8c8d2', fontSize: '2.25rem', margin: 0, textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
-  {game.status === 'captain_guess' ? `${roleTerms.badCaptain} Guess` : `${roleTerms.mission} ${currentMission}`}
-</p>
-                  {isSeated && (
-                    <button
-                      onClick={() => setShowRole(true)}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: '#f0b429',
-                        fontSize: '.85rem',
-                        fontWeight: 'bold',
-                        marginTop: '4px',
-                        cursor: 'pointer',
-                        pointerEvents: 'auto',
-                        textDecoration: 'underline'
-                      }}
-                    >
-                      View Role
-                    </button>
-                  )}
-                </div>
+            <div className="game-room-columns" style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '24px',
+              maxWidth: '1300px',
+              margin: '0 auto',
+              alignItems: 'flex-start'
+            }}>
+              <div className="game-room-col-rules desktop-only-block" style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '340px', flexShrink: 0 }}>
+                <button
+                  onClick={() => setShowRuleCards(!showRuleCards)}
+                  style={{
+                    backgroundColor: showRuleCards ? 'transparent' : 'rgba(26, 26, 46, 0.97)',
+                    border: showRuleCards ? '1px solid #a0a0b0' : '2px solid #f0b429',
+                    borderRadius: '10px',
+                    padding: '10px 16px',
+                    color: showRuleCards ? '#a0a0b0' : '#f0b429',
+                    fontSize: '0.9rem',
+                    cursor: 'pointer',
+                    alignSelf: 'flex-start'
+                  }}
+                >
+                  {showRuleCards ? '▲ Hide Rules' : 'Show Rules ▼'}
+                </button>
+                {showRuleCards && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                    {isRoomPhase && (
+                      <RuleCorner card={ruleCards[0]} isActive={ruleCards[0].phase === activePhase} />
+                    )}
+                    {isRoomPhase && (
+                      <RuleCorner card={ruleCards[1]} isActive={ruleCards[1].phase === activePhase} />
+                    )}
+                  </div>
+                )}
               </div>
 
-              {game.status === 'captain_guess' ? (
-                isSeated ? (
-                  <CaptainGuess
-                    gameId={game.id}
-                    skin={game.skin}
+              <div className="game-room-col-center" style={{ width: '460px', flexShrink: 0, textAlign: 'center' }}>
+                <div className="seat-circle-scale-wrap" style={{ position: 'relative', display: 'inline-block' }}>
+                  <SeatCircle
                     players={players}
-                    myUserId={user!.id}
+                    hostUserId={game.host_user_id}
+                    myUserId={isSeated ? user?.id : undefined}
                     myRole={myRole}
-                    onGuessed={() => loadGame()}
+                    circleSize={players.length >= 8 ? 460 : players.length >= 6 ? 420 : 380}
+                    seatSize={players.length >= 9 ? 80 : players.length >= 7 ? 90 : players.length >= 6 ? 100 : 110}
+                    currentLeaderUserId={players.find((p) => p.seat_order === currentLeaderSeat)?.user_id}
+                    missionLeaderLabel={roleTerms.missionLeader}
+                    canViewRecords={canViewRecords(myTier)}
+                    skin={game.skin}
+                    speakingUserIds={speakingUserIds}
                   />
-                ) : (
-<p style={{ color: '#c8c8d2', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>Final guess in progress...</p>               
- )
-              ) : isSeated ? (
-                (() => {
-                  const leaderSeatHere = players.find((p) => p.seat_order === currentLeaderSeat)
-                  const isMeLeaderHere = leaderSeatHere?.user_id === user?.id
+                  <div style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    textAlign: 'center',
+                    pointerEvents: 'none'
+                  }}>
+                    <p style={{ color: '#c8c8d2', fontSize: '2.25rem', margin: 0, textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
+                      {game.status === 'captain_guess' ? `${roleTerms.badCaptain} Guess` : `${roleTerms.mission} ${currentMission}`}
+                    </p>
+                    {isSeated && (
+                      <button
+                        onClick={() => setShowRole(true)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: '#f0b429',
+                          fontSize: '.85rem',
+                          fontWeight: 'bold',
+                          marginTop: '4px',
+                          cursor: 'pointer',
+                          pointerEvents: 'auto',
+                          textDecoration: 'underline'
+                        }}
+                      >
+                        View Role
+                      </button>
+                    )}
+                  </div>
+                </div>
 
-                  if (activeMission && activeMission.vote_result !== 'rejected') {
-                    if (activeMission.vote_result === 'approved' && !activeMission.mission_result) {
-                      return (
-                    <MissionCards
-  missionId={activeMission.id}
-  missionNumber={currentMission}
-  skin={game.skin}
-  myUserId={user!.id}
-  myRole={myRole}
-  isOnTeam={activeMission.proposed_team.includes(user!.id)}
-  onResolved={() => loadGame()}
-/>
-                      )
+                {game.status === 'captain_guess' ? (
+                  isSeated ? (
+                    <CaptainGuess
+                      gameId={game.id}
+                      skin={game.skin}
+                      players={players}
+                      myUserId={user!.id}
+                      myRole={myRole}
+                      onGuessed={() => loadGame()}
+                    />
+                  ) : (
+                    <p style={{ color: '#c8c8d2', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>Final guess in progress...</p>
+                  )
+                ) : isSeated ? (
+                  (() => {
+                    const leaderSeatHere = players.find((p) => p.seat_order === currentLeaderSeat)
+                    const isMeLeaderHere = leaderSeatHere?.user_id === user?.id
+
+                    if (activeMission && activeMission.vote_result !== 'rejected') {
+                      if (activeMission.vote_result === 'approved' && !activeMission.mission_result) {
+                        return (
+                          <MissionCards
+                            missionId={activeMission.id}
+                            missionNumber={currentMission}
+                            skin={game.skin}
+                            myUserId={user!.id}
+                            myRole={myRole}
+                            isOnTeam={activeMission.proposed_team.includes(user!.id)}
+                            onResolved={() => loadGame()}
+                          />
+                        )
+                      }
+                      if (!activeMission.vote_result) {
+                        return (
+                          <TeamVote
+                            missionId={activeMission.id}
+                            skin={game.skin}
+                            players={players}
+                            proposedTeam={activeMission.proposed_team}
+                            leaderName={leaderSeatHere?.display_name ?? 'the leader'}
+                            myUserId={user!.id}
+                            onResolved={() => loadGame()}
+                          />
+                        )
+                      }
+                      return <p style={{ color: '#c8c8d2', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>Resolving...</p>
                     }
-                    if (!activeMission.vote_result) {
+
+                    if (isMeLeaderHere) {
                       return (
-                        <TeamVote
-                          missionId={activeMission.id}
+                        <MissionProposal
+                          gameId={game.id}
                           skin={game.skin}
                           players={players}
-                          proposedTeam={activeMission.proposed_team}
-                          leaderName={leaderSeatHere?.display_name ?? 'the leader'}
-                          myUserId={user!.id}
-                          onResolved={() => loadGame()}
+                          currentMission={currentMission}
+                          onProposed={() => loadGame()}
                         />
                       )
                     }
-return <p style={{ color: '#c8c8d2', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>Resolving...</p>
-                  }
 
-                  if (isMeLeaderHere) {
                     return (
-                      <MissionProposal
-                        gameId={game.id}
-                        skin={game.skin}
-                        players={players}
-                        currentMission={currentMission}
-                        onProposed={() => loadGame()}
+                      <WaitingForProposal
+                        leaderName={leaderSeatHere?.display_name ?? 'the leader'}
+                        missionLabel={`${roleTerms.mission} ${currentMission}`}
                       />
                     )
-                  }
+                  })()
+                ) : (
+                  <>
+                    <p style={{ color: '#f0b429', fontSize: '1rem', marginBottom: '4px', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
+                      You&apos;re in Spectator Mode!
+                    </p>
+                    <p style={{ color: '#c8c8d2', fontSize: '.85rem', marginBottom: '6px', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
+                      We know it&apos;s tempting, but let the players do the playing.
+                    </p>
+                    <p style={{ color: '#c8c8d2', fontSize: '.85rem', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
+                      Follow along with every action in the Game Log.
+                    </p>
+                  </>
+                )}
+              </div>
 
-                  return (
-                    <WaitingForProposal
-                      leaderName={leaderSeatHere?.display_name ?? 'the leader'}
-                      missionLabel={`${roleTerms.mission} ${currentMission}`}
-                    />
-                  )
-                })()
-              ) : (
-                <>
-                <p style={{ color: '#f0b429', fontSize: '1rem', marginBottom: '4px', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
-  You&apos;re in Spectator Mode!
-</p>
-<p style={{ color: '#c8c8d2', fontSize: '.85rem', marginBottom: '6px', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
-  We know it&apos;s tempting, but let the players do the playing.
-</p>
-<p style={{ color: '#c8c8d2', fontSize: '.85rem', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
-  Follow along with every action in the Game Log.
-</p>
-                </>
-              )}
-            </div>
+              <div className="game-room-col-sidebar" style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '280px', flexShrink: 0 }}>
+                {game.status !== 'lobby' && (
+                  <div className="desktop-only-block">
+                    <Scoreboard gameId={game.id} currentMission={currentMission} gameStatus={game.status} roleTerms={roleTerms} />
+                  </div>
+                )}
+                {game.status !== 'lobby' && (
+                  <div className="desktop-only-block">
+                    <GameLog gameId={game.id} players={players} roleTerms={roleTerms} gameStatus={game.status} captainGuessTarget={game.captain_guess_target} />
+                  </div>
+                )}
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '280px', flexShrink: 0 }}>
-            {game.status !== 'lobby' && (
-              <Scoreboard gameId={game.id} currentMission={currentMission} gameStatus={game.status} roleTerms={roleTerms} />
-            )}
-            {game.status !== 'lobby' && (
-              <GameLog gameId={game.id} players={players} roleTerms={roleTerms} gameStatus={game.status} captainGuessTarget={game.captain_guess_target} />
-            )}
+                <div className="desktop-only-block">
+                  <div style={{
+                    backgroundColor: 'rgba(26, 26, 46, 0.9)',
+                    border: '2px solid #f0b429',
+                    borderRadius: '10px',
+                    padding: '12px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '12px'
+                  }}>
+                    <h4 style={{ color: '#f0b429', fontSize: '0.9rem', marginBottom: '0px', textDecoration: 'underline' }}>
+                      Game Resources
+                    </h4>
+                    {game.hms_room_code && isSeated && (canUseVoiceChat(myTier) || hasAdminInGame) && (
+                      <VoiceChat
+                        roomCode={game.hms_room_code}
+                        displayName={players.find(p => p.user_id === user?.id)?.display_name ?? 'Player'}
+                        userId={user!.id}
+                        onSpeakersChange={setSpeakingUserIds}
+                      />
+                    )}
+                    {game.hms_room_code && isSeated && !canUseVoiceChat(myTier) && !hasAdminInGame && (
+                      <div style={{
+                        backgroundColor: 'rgba(26, 26, 46, 0.9)', border: '1px solid #2a2a3e',
+                        borderRadius: '8px', padding: '10px 16px', color: '#555570', fontSize: '0.8rem', textAlign: 'center'
+                      }}>
+                        <Mic size={16} />  Upgrade to Castaway+ for Voice Chat
+                      </div>
+                    )}
 
-           <div style={{
-  backgroundColor: 'rgba(26, 26, 46, 0.9)',
-  border: '2px solid #f0b429',
-  borderRadius: '10px',
-  padding: '12px',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '12px'
-}}>
-  <h4 style={{ color: '#f0b429', fontSize: '0.9rem', marginBottom: '0px', textDecoration: 'underline' }}>
-    Game Resources
-  </h4>
-{game.hms_room_code && isSeated && (canUseVoiceChat(myTier) || hasAdminInGame) && (
-<VoiceChat
-  roomCode={game.hms_room_code}
-  displayName={players.find(p => p.user_id === user?.id)?.display_name ?? 'Player'}
-  userId={user!.id}
-  onSpeakersChange={setSpeakingUserIds}
-/>
-)}
-{game.hms_room_code && isSeated && !canUseVoiceChat(myTier) && !hasAdminInGame && (
-  <div style={{
-    backgroundColor: 'rgba(26, 26, 46, 0.9)', border: '1px solid #2a2a3e',
-    borderRadius: '8px', padding: '10px 16px', color: '#555570', fontSize: '0.8rem', textAlign: 'center'
-  }}>
-    <Mic size={16} />  Upgrade to Castaway+ for Voice Chat
-  </div>
-)}
+                    {game.chat_league_id && (
+                      <button
+                        onClick={() => setShowChat(true)}
+                        style={{
+                          backgroundColor: 'rgba(6, 142, 56, 0.35)', color: '#ffffff', border: '1px solid #068e38',
+                          padding: '10px 16px', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.85rem', cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+                        }}
+                      >
+                        <MessageCircle size={16} /> Text Chat
+                      </button>
+                    )}
+                    {isSeated && (game.status === 'in_progress' || game.status === 'captain_guess') && (
+                      <button
+                        onClick={() => setShowReportModal(true)}
+                        style={{
+                          backgroundColor: 'rgba(240, 180, 41, 0.35)',
+                          color: '#ffffff',
+                          border: '1px solid #f0b429',
+                          padding: '10px 16px',
+                          borderRadius: '8px',
+                          fontWeight: 'bold',
+                          fontSize: '0.85rem',
+                          cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+                        }}
+                      >
+                        <FlagTriangleRight size={16} /> Report Player
+                      </button>
+                    )}
 
-       {game.chat_league_id && (
-  <button
-    onClick={() => setShowChat(true)}
-    style={{
-      backgroundColor: 'rgba(6, 142, 56, 0.35)', color: '#ffffff', border: '1px solid #068e38',
-      padding: '10px 16px', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.85rem', cursor: 'pointer',
-      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
-    }}
-  >
-    <MessageCircle size={16} /> Text Chat
-  </button>
-)}
-   {isSeated && (game.status === 'in_progress' || game.status === 'captain_guess') && (
-  <button
-    onClick={() => setShowReportModal(true)}
-    style={{
-      backgroundColor: 'rgba(240, 180, 41, 0.35)',
-      color: '#ffffff',
-      border: '1px solid #f0b429',
-      padding: '10px 16px',
-      borderRadius: '8px',
-      fontWeight: 'bold',
-      fontSize: '0.85rem',
-      cursor: 'pointer',
-      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
-    }}
-  >
-    <FlagTriangleRight size={16} /> Report Player
-  </button>
-)}
+                    {isSeated && (game.status === 'in_progress' || game.status === 'captain_guess') && (
+                      <button
+                        onClick={() => setShowDisbandConfirm(true)}
+                        disabled={disbanding}
+                        style={{
+                          backgroundColor: 'rgba(255, 107, 107, 0.35)',
+                          color: '#ffffff',
+                          border: '1px solid #ff6b6b',
+                          padding: '10px 16px',
+                          borderRadius: '8px',
+                          fontWeight: 'bold',
+                          fontSize: '0.85rem',
+                          cursor: disbanding ? 'not-allowed' : 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+                        }}
+                      >
+                        <Trash size={16} /> {disbanding ? 'Disbanding...' : 'Disband'}
+                      </button>
+                    )}
+                  </div>
+                </div>
 
-
-              {isSeated && (game.status === 'in_progress' || game.status === 'captain_guess') && (
-  <button
-    onClick={() => setShowDisbandConfirm(true)}
-    disabled={disbanding}
-    style={{
-      backgroundColor: 'rgba(255, 107, 107, 0.35)',
-      color: '#ffffff',
-      border: '1px solid #ff6b6b',
-      padding: '10px 16px',
-      borderRadius: '8px',
-      fontWeight: 'bold',
-      fontSize: '0.85rem',
-      cursor: disbanding ? 'not-allowed' : 'pointer',
-      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
-    }}
-  >
-    <Trash size={16} /> {disbanding ? 'Disbanding...' : 'Disband'}
-  </button>
-)}
-   
+                <div className="mobile-game-tray">
+                  <button onClick={() => setShowMobileRules(true)}><BookOpen size={20} /><span>Rules</span></button>
+                  <button onClick={() => setShowMobileLog(true)}><ClipboardList size={20} /><span>Game Log</span></button>
+                  <button onClick={() => setShowMobileVoice(true)}>
+                    <Mic size={20} color={voiceConnected ? (voiceMuted ? '#f0b429' : '#2bda25') : '#ff6b6b'} />
+                    <span>Voice Chat</span>
+                  </button>
+                  <button onClick={() => setShowChat(true)}><MessageCircle size={20} /><span>Text Chat</span></button>
+                  <button onClick={() => setShowMobileMore(true)}><Menu size={20} /><span>More</span></button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      </div>
       ) : null}
 
       {activeMission && (activeMission.vote_result === 'rejected' || activeMission.mission_result) && seenResultFor !== activeMission.id && (
@@ -763,90 +797,156 @@ return <p style={{ color: '#c8c8d2', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
       )}
 
       {showDisbandConfirm && (
-  <div
-    onClick={() => setShowDisbandConfirm(false)}
-    style={{
-      position: 'fixed',
-      top: 0, left: 0, right: 0, bottom: 0,
-      backgroundColor: 'rgba(0,0,0,0.75)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 400,
-      padding: '20px'
-    }}
-  >
-    <div
-      onClick={(e) => e.stopPropagation()}
-      style={{
-        backgroundColor: '#0a0a0f',
-        border: '2px solid #ff6b6b',
-        borderRadius: '12px',
-        padding: '28px',
-        maxWidth: '400px',
-        width: '100%',
-        textAlign: 'center'
-      }}
-    >
-      <h3 style={{ color: '#ff6b6b', fontSize: '1.1rem', marginBottom: '12px' }}>
-        Disband Game?
-      </h3>
-      <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '24px', lineHeight: '1.5' }}>
-        This will immediately end the game for everyone. It will <strong>not</strong> count toward anyone&apos;s record.
-      </p>
-      <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-        <button
-          onClick={handleDisband}
-          disabled={disbanding}
-          style={{
-            backgroundColor: '#ff6b6b',
-            color: '#ffffff',
-            padding: '10px 24px',
-            borderRadius: '8px',
-            border: 'none',
-            fontWeight: 'bold',
-            fontSize: '0.9rem',
-            cursor: disbanding ? 'not-allowed' : 'pointer'
-          }}
-        >
-          {disbanding ? 'Disbanding...' : 'Disband Game'}
-        </button>
-        <button
+        <div
           onClick={() => setShowDisbandConfirm(false)}
           style={{
-            backgroundColor: 'transparent',
-            color: '#a0a0b0',
-            border: '1px solid #2a2a3e',
-            padding: '10px 24px',
-            borderRadius: '8px',
-            fontWeight: 'bold',
-            fontSize: '0.9rem',
-            cursor: 'pointer'
+            position: 'fixed',
+            top: 0, left: 0, right: 0, bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.75)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 400,
+            padding: '20px'
           }}
         >
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: '#0a0a0f',
+              border: '2px solid #ff6b6b',
+              borderRadius: '12px',
+              padding: '28px',
+              maxWidth: '400px',
+              width: '100%',
+              textAlign: 'center'
+            }}
+          >
+            <h3 style={{ color: '#ff6b6b', fontSize: '1.1rem', marginBottom: '12px' }}>
+              Disband Game?
+            </h3>
+            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '24px', lineHeight: '1.5' }}>
+              This will immediately end the game for everyone. It will <strong>not</strong> count toward anyone&apos;s record.
+            </p>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+              <button
+                onClick={handleDisband}
+                disabled={disbanding}
+                style={{
+                  backgroundColor: '#ff6b6b',
+                  color: '#ffffff',
+                  padding: '10px 24px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  fontWeight: 'bold',
+                  fontSize: '0.9rem',
+                  cursor: disbanding ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {disbanding ? 'Disbanding...' : 'Disband Game'}
+              </button>
+              <button
+                onClick={() => setShowDisbandConfirm(false)}
+                style={{
+                  backgroundColor: 'transparent',
+                  color: '#a0a0b0',
+                  border: '1px solid #2a2a3e',
+                  padding: '10px 24px',
+                  borderRadius: '8px',
+                  fontWeight: 'bold',
+                  fontSize: '0.9rem',
+                  cursor: 'pointer'
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
-{showReportModal && user && (
-  <ReportPlayerModal
-    gameId={game.id}
-    reporterUserId={user.id}
-    players={players}
-    onClose={() => setShowReportModal(false)}
-  />
-)}
+      {showReportModal && user && (
+        <ReportPlayerModal
+          gameId={game.id}
+          reporterUserId={user.id}
+          players={players}
+          onClose={() => setShowReportModal(false)}
+        />
+      )}
 
-{showChat && game.chat_league_id && (
-  <ChatPanel forcedLeagueId={game.chat_league_id} onClose={() => setShowChat(false)} />
-)}
+      {showChat && game.chat_league_id && (
+        <ChatPanel forcedLeagueId={game.chat_league_id} onClose={() => setShowChat(false)} />
+      )}
+
+      {showMobileRules && (
+        <div onClick={() => setShowMobileRules(false)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.75)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ backgroundColor: '#0a0a0f', border: '1px solid #f0b429', borderRadius: '12px', padding: '16px', maxWidth: '400px', maxHeight: '80vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <RuleCorner card={ruleCards[0]} isActive={ruleCards[0].phase === activePhase} />
+            <RuleCorner card={ruleCards[1]} isActive={ruleCards[1].phase === activePhase} />
+          </div>
+        </div>
+      )}
+      {showMobileLog && (
+        <div onClick={() => setShowMobileLog(false)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.9)', zIndex: 300, display: 'flex', flexDirection: 'column', padding: '20px', overflowY: 'auto' }}>
+          <button
+            onClick={() => setShowMobileLog(false)}
+            style={{
+              alignSelf: 'flex-end',
+              background: 'none',
+              border: 'none',
+              color: '#a0a0b0',
+              fontSize: '1.5rem',
+              cursor: 'pointer',
+              marginBottom: '12px'
+            }}
+          >
+            ✕
+          </button>
+          <div onClick={(e) => e.stopPropagation()} style={{ width: '100%' }}>
+            <GameLog gameId={game.id} players={players} roleTerms={roleTerms} gameStatus={game.status} captainGuessTarget={game.captain_guess_target} />
+          </div>
+        </div>
+      )}
+      {showMobileVoice && (
+        <div onClick={() => setShowMobileVoice(false)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.75)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ backgroundColor: '#0a0a0f', border: '1px solid #f0b429', borderRadius: '12px', padding: '16px', maxWidth: '360px', width: '100%' }}>
+            {game.hms_room_code && isSeated && (canUseVoiceChat(myTier) || hasAdminInGame) ? (
+              <VoiceChat
+                roomCode={game.hms_room_code}
+                displayName={players.find(p => p.user_id === user?.id)?.display_name ?? 'Player'}
+                userId={user!.id}
+                onSpeakersChange={setSpeakingUserIds}
+                autoJoin
+                onConnectionChange={({ connected, muted }) => {
+                  setVoiceConnected(connected)
+                  setVoiceMuted(muted)
+                }}
+              />
+            ) : (
+              <p style={{ color: '#555570', fontSize: '0.85rem', textAlign: 'center' }}>Upgrade to Castaway+ for Voice Chat</p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {showMobileMore && (
+        <div onClick={() => setShowMobileMore(false)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.75)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ backgroundColor: '#0a0a0f', border: '1px solid #f0b429', borderRadius: '12px', padding: '16px', maxWidth: '360px', width: '100%', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <Scoreboard gameId={game.id} currentMission={currentMission} gameStatus={game.status} roleTerms={roleTerms} />
+            {isSeated && (game.status === 'in_progress' || game.status === 'captain_guess') && (
+              <>
+                <button onClick={() => { setShowMobileMore(false); setShowReportModal(true) }} style={{ backgroundColor: 'rgba(240,180,41,0.35)', color: '#ffffff', border: '1px solid #f0b429', padding: '10px', borderRadius: '8px', fontWeight: 'bold' }}>Report Player</button>
+                <button onClick={() => { setShowMobileMore(false); setShowDisbandConfirm(true) }} style={{ backgroundColor: 'rgba(255,107,107,0.35)', color: '#ffffff', border: '1px solid #ff6b6b', padding: '10px', borderRadius: '8px', fontWeight: 'bold' }}>Disband</button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       {showRole && user && (
         <RoleReveal gameId={game.id} skin={game.skin} myUserId={user.id} onClose={() => setShowRole(false)} />
       )}
-    </main>
+      </main>
+  </HMSRoomProvider>
   )
 }

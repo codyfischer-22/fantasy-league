@@ -127,19 +127,23 @@ export default function SocialGameLandingPage() {
   }
 
   const tierGridContent = (
-    <div className="tier-grid">
-      <div
-        className="tier-card"
-        onClick={() => router.push('/account?tier=stowaway')}
-        style={{
-          backgroundColor: '#1a1a2e',
-          border: '1px solid #2a2a3e',
-          borderRadius: '10px',
-          padding: '16px',
-          textAlign: 'center'
-        }}
-      >
-        <h3 style={{ fontSize: '1.2rem', color: '#a0a0b0', marginBottom: '8px' }}>Stowaway</h3>
+   <div
+  className="tier-grid"
+>
+  <p className="mobile-only-block" style={{ color: '#ffffff', fontSize: '1.45rem', marginBottom: '-4px', gridColumn: '1 / -1', textAlign: 'center' }}>Click to Upgrade</p>
+  <div
+    className="tier-card"
+    onClick={() => router.push('/account?tier=stowaway')}
+    style={{
+      backgroundColor: '#1a1a2e',
+      border: '1px solid #2a2a3e',
+      borderRadius: '10px',
+      padding: '16px',
+      textAlign: 'center'
+    }}
+  >
+    <h3 style={{ fontSize: '1.2rem', color: '#a0a0b0', marginBottom: '8px' }}>Stowaway</h3>
+
         <ul style={{ color: '#a0a0b0', fontSize: '0.9rem', textAlign: 'left', lineHeight: '1.7', listStyle: 'none', padding: 0 }}>
           <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rat size={14} strokeWidth={2} /> Join Public Games </li>
           <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rat size={14} strokeWidth={2} /> Join Private Games</li>
@@ -232,34 +236,23 @@ export default function SocialGameLandingPage() {
           ← Back to Trekkon Fantasy Leagues
         </a>
 
-    <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '0px', display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-  <PlayingCardsFan size={40} strokeWidth={1.5} color="#f0b429" style={{ position: 'relative', top: '-1px' }} />
-  <span style={{ color: '#f0b429' }}>Trust Issue5</span>{' '}
+        <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '0px', display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+          <PlayingCardsFan size={40} strokeWidth={1.5} color="#f0b429" style={{ position: 'relative', top: '-1px' }} />
+       <span className="desktop-only-text">
+  <span style={{ color: '#f0b429' }}>
+    Trust Issue<span style={{ fontSize: '0.70em', position: 'relative', top: '-0.15em' }}>5</span>
+  </span>{' '}
   <span style={{ color: '#ffffff' }}>Lobby</span>
-</h1>
+</span>
+          <span className="mobile-only-block">
+            <span style={{ color: '#f0b429' }}>Game</span>{' '}
+            <span style={{ color: '#ffffff' }}>Lobby</span>
+          </span>
+        </h1>
 
-        <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '36px' }}>
-          5-10 players are randomly assigned factions, where they compete in up to 5 missions. Evil players know their teammates and win by failing 3 missions. Good players win by passing 3 missions... if evil cannot guess their leader, that is. The good leader holds all the cards, knowing everyone's intentions, but say too much and they're a goner!
-        </p>
-
-        <button
-          className="mobile-only-block"
-          onClick={() => setShowMobilePerksModal(true)}
-          style={{
-            display: 'block',
-            margin: '0 auto 16px auto',
-            backgroundColor: 'transparent',
-            color: '#f0b429',
-            border: '1px solid #f0b429',
-            padding: '10px 20px',
-            borderRadius: '8px',
-            fontWeight: 'bold',
-            fontSize: '0.9rem',
-            cursor: 'pointer'
-          }}
-        >
-          Membership Perks
-        </button>
+       <p className="mobile-tighten-gap" style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '36px' }}>
+  5-10 players are randomly assigned factions, where they compete in up to 5 missions. Evil players know their teammates and win by failing 3 missions. Good players win by passing 3 missions... if evil cannot guess their leader, that is. The good leader holds all the cards, knowing everyone's intentions, but say too much and they're a goner!
+</p>
 
         <section id="hub-tiers" className="desktop-only-text" style={{ backgroundColor: '#0a0a0f', marginBottom: '8px' }}>
           {tierGridContent}
@@ -269,60 +262,65 @@ export default function SocialGameLandingPage() {
           <em>Features have yet to be built out.</em> * Usable while active, after three consecutive paid months.
         </p>
 
-        {isMobile === null ? null : isMobile ? (
-          <div style={{
-            backgroundColor: '#1a1a2e',
-            border: '1px solid #2a2a3e',
-            borderRadius: '10px',
-            padding: '20px',
-            textAlign: 'left',
-            marginBottom: '24px'
-          }}>
-            <p style={{ color: '#ff6b6b', fontSize: '0.95rem', lineHeight: '1.6', margin: 0 }}>
-              We currently have {openGames.length} joinable game{openGames.length === 1 ? '' : 's'} in the lobby, but they are, unfortunately, not yet configured to mobile. Hop onto a desktop computer to get in on the action!
-            </p>
-          </div>
-        ) : (
-          <>
-            {!showHostPicker ? (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '12px' }}>
-                <button
-                  onClick={() => {
-                    document.getElementById('public-games')?.scrollIntoView({ behavior: 'smooth' })
-                  }}
-                  style={{
-                    backgroundColor: 'transparent',
-                    color: '#f0b429',
-                    padding: '12px 24px',
-                    borderRadius: '8px',
-                    border: '1px solid #f0b429 ',
-                    fontWeight: 'bold',
-                    fontSize: '1rem',
-                    cursor: 'pointer',
-                    minWidth: '150px'
-                  }}
-                >
-                  Join Public
-                </button>
-                <span style={{ color: '#555570', fontSize: '1rem' }}>— OR —</span>
-                <button
-                  onClick={handleShowHostPicker}
-                  style={{
-                    backgroundColor: '#f0b429',
-                    color: '#0a0a0f',
-                    padding: '12px 24px',
-                    borderRadius: '8px',
-                    border: 'none',
-                    fontWeight: 'bold',
-                    fontSize: '1rem',
-                    cursor: 'pointer',
-                    minWidth: '150px'
-                  }}
-                >
-                  Create Game
-                </button>
-              </div>
-            ) : (
+       {isMobile === null ? null : (
+  <>
+           {!showHostPicker ? (
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '12px', flexWrap: 'wrap' }}>
+    <button
+      className="desktop-only-block"
+      onClick={() => {
+        document.getElementById('public-games')?.scrollIntoView({ behavior: 'smooth' })
+      }}
+      style={{
+        backgroundColor: 'transparent',
+        color: '#f0b429',
+        padding: '12px 24px',
+        borderRadius: '8px',
+        border: '1px solid #f0b429 ',
+        fontWeight: 'bold',
+        fontSize: '1rem',
+        cursor: 'pointer',
+        minWidth: '140px'
+      }}
+    >
+      Join Public
+    </button>
+    <span className="desktop-only-block" style={{ color: '#555570', fontSize: '1rem' }}>— OR —</span>
+    <button
+      className="mobile-only-block"
+      onClick={() => setShowMobilePerksModal(true)}
+      style={{
+        backgroundColor: 'transparent',
+        color: '#f0b429',
+        border: '1px solid #f0b429',
+        padding: '12px 24px',
+        borderRadius: '8px',
+        fontWeight: 'bold',
+        fontSize: '1rem',
+        cursor: 'pointer',
+        minWidth: '140px'
+      }}
+    >
+      Tier Perks
+    </button>
+    <button
+      onClick={handleShowHostPicker}
+      style={{
+        backgroundColor: '#f0b429',
+        color: '#0a0a0f',
+        padding: '12px 24px',
+        borderRadius: '8px',
+        border: 'none',
+        fontWeight: 'bold',
+        fontSize: '1rem',
+        cursor: 'pointer',
+        minWidth: '140px'
+      }}
+    >
+      Host Game
+    </button>
+  </div>
+) : (
               <div
                 onClick={() => setActiveSkinTab(null)}
                 style={{ marginBottom: '16px' }}
@@ -333,34 +331,34 @@ export default function SocialGameLandingPage() {
                   </p>
                 )}
 
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                  {selectableSkins.map((skin) => {
-                    const theme = themeContentBySkin[skin]
-                    return (
-                      <button
-                        key={skin}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setActiveSkinTab(skin)
-                        }}
-                        style={{
-                          backgroundColor: activeSkinTab === skin ? '#f0b429' : 'transparent',
-                          color: activeSkinTab === skin ? '#0a0a0f' : '#a0a0b0',
-                          border: '1px solid #f0b429',
-                          padding: '8px 16px',
-                          borderRadius: '6px',
-                          fontWeight: 'bold',
-                          fontSize: '0.9rem',
-                          cursor: 'pointer',
-                          minWidth: '110px',
-                          textAlign: 'center',
-                        }}
-                      >
-                        {theme.emoji} {theme.displayName}
-                      </button>
-                    )
-                  })}
-                </div>
+                <div className="skin-tab-row" style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
+  {selectableSkins.map((skin) => {
+    const theme = themeContentBySkin[skin]
+    return (
+      <button
+        key={skin}
+        onClick={(e) => {
+          e.stopPropagation()
+          setActiveSkinTab(skin)
+        }}
+        style={{
+          backgroundColor: activeSkinTab === skin ? '#f0b429' : 'transparent',
+          color: activeSkinTab === skin ? '#0a0a0f' : '#a0a0b0',
+          border: '1px solid #f0b429',
+          padding: '8px 16px',
+          borderRadius: '6px',
+          fontWeight: 'bold',
+          fontSize: '0.9rem',
+          cursor: 'pointer',
+          minWidth: '110px',
+          textAlign: 'center',
+        }}
+      >
+        {theme.emoji} {theme.displayName}
+      </button>
+    )
+  })}
+</div>
 
                 {activeSkinTab && (() => {
                   const skin = activeSkinTab
@@ -429,17 +427,17 @@ export default function SocialGameLandingPage() {
                 const isMyHost = user?.id === g.host_user_id
 
                 return (
-                  <div key={g.id} style={{
-                    backgroundColor: '#1a1a2e',
-                    border: isMine ? '1px solid #f0b429' : '1px solid #2a2a3e',
-                    borderRadius: '10px',
-                    padding: '14px 18px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    flexWrap: 'wrap',
-                    gap: '10px'
-                  }}>
+                  <div key={g.id} className="game-row-card" style={{
+  backgroundColor: '#1a1a2e',
+  border: isMine ? '1px solid #f0b429' : '1px solid #2a2a3e',
+  borderRadius: '10px',
+  padding: '14px 18px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  flexWrap: 'wrap',
+  gap: '10px'
+}}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <span style={{ fontSize: '1.4rem' }}>{theme.emoji}</span>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -465,12 +463,13 @@ export default function SocialGameLandingPage() {
                         <div style={{ color: '#a0a0b0', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                           <span>{g.player_count}/10 players</span>
                           {g.status !== 'lobby' && !isMine && (
-                            <span style={{
-                              color: '#ff6b6b', fontSize: '0.7rem', fontWeight: 'bold',
-                              border: '1px solid #ff6b6b', borderRadius: '4px', padding: '1px 6px'
-                            }}>
-                              GAME STARTED
-                            </span>
+                     <span style={{
+  color: '#ff6b6b', fontSize: '0.7rem', fontWeight: 'bold',
+  border: '1px solid #ff6b6b', borderRadius: '4px', padding: '1px 6px'
+}}>
+  <span className="desktop-only-text">GAME STARTED</span>
+  <span className="mobile-only-block">STARTED</span>
+</span>
                           )}
                         </div>
                       </div>

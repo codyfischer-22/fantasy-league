@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { Mic } from 'lucide-react'
 import {
-  HMSRoomProvider,
   useHMSActions,
   useHMSStore,
   selectIsConnectedToRoom,
@@ -17,9 +16,11 @@ type Props = {
   displayName: string
   userId: string
   onSpeakersChange?: (userIds: string[]) => void
+  autoJoin?: boolean
+  onConnectionChange?: (state: { connected: boolean; muted: boolean }) => void
 }
 
-function VoiceChatInner({ roomCode, displayName, userId, onSpeakersChange }: Props) {
+function VoiceChatInner({ roomCode, displayName, userId, onSpeakersChange, autoJoin, onConnectionChange }: Props) {
   const hmsActions = useHMSActions()
   const isConnected = useHMSStore(selectIsConnectedToRoom)
   const peers = useHMSStore(selectPeers)
@@ -27,28 +28,39 @@ function VoiceChatInner({ roomCode, displayName, userId, onSpeakersChange }: Pro
   const [joining, setJoining] = useState(false)
   const speakers = useHMSStore(selectSpeakers)
 
-const speakingUserIds = new Set(
-  Object.values(speakers ?? {})
-    .map((s) => peers.find((p) => p.id === s.peerID)?.customerUserId)
-    .filter((id): id is string => Boolean(id))
-)
+  const speakingUserIds = new Set(
+    Object.values(speakers ?? {})
+      .map((s) => peers.find((p) => p.id === s.peerID)?.customerUserId)
+      .filter((id): id is string => Boolean(id))
+  )
 
-useEffect(() => {
-  console.log('Page-level speakingUserIds:', speakingUserIds)
-  onSpeakersChange?.(Array.from(speakingUserIds))
-}, [speakers])
-
- const handleJoin = async () => {
-  setJoining(true)
-  try {
-    console.log('Joining with userId:', userId, 'roomCode:', roomCode)
-    const authToken = await hmsActions.getAuthTokenByRoomCode({ roomCode, userId })
-    await hmsActions.join({ userName: displayName, authToken })
-  } catch (e) {
-    console.error('Voice join failed:', e)
+  const handleJoin = async () => {
+    setJoining(true)
+    try {
+      console.log('Joining with userId:', userId, 'roomCode:', roomCode)
+      const authToken = await hmsActions.getAuthTokenByRoomCode({ roomCode, userId })
+      await hmsActions.join({ userName: displayName, authToken })
+    } catch (e) {
+      console.error('Voice join failed:', e)
+    }
+    setJoining(false)
   }
-  setJoining(false)
-}
+
+  useEffect(() => {
+    if (autoJoin && !isConnected && !joining) {
+      handleJoin()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoJoin])
+
+  useEffect(() => {
+    console.log('Page-level speakingUserIds:', speakingUserIds)
+    onSpeakersChange?.(Array.from(speakingUserIds))
+  }, [speakers])
+
+  useEffect(() => {
+    onConnectionChange?.({ connected: isConnected, muted: !isAudioOn })
+  }, [isConnected, isAudioOn])
 
   const handleLeave = async () => {
     await hmsActions.leave()
@@ -58,62 +70,60 @@ useEffect(() => {
     return () => { hmsActions.leave() }
   }, [])
 
-if (!isConnected) {
-  return (
-    <button
-      onClick={handleJoin}
-      disabled={joining}
-      style={{
-backgroundColor: 'rgba(202, 41, 202, 0.35)', color: '#ffffff', border: '1px solid #ca29ca',        padding: '10px 16px', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.85rem', cursor: 'pointer',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px'
-      }}
-    >
-      <span>{joining ? 'Connecting...' : (
-  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-    <Mic size={16} /> Voice Chat
-  </span>
-)}</span>
-    </button>
-  )
-}
-
-return (
-  <div style={{
-    backgroundColor: 'rgba(202, 41, 202, 0.35)', border: '1px solid #ca29ca',
-    borderRadius: '10px', padding: '14px'
-  }}>
-
-   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#ffffff', fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '8px' }}>
-  <Mic size={16} /> Voice Chat ({peers.length} Connected)
-</div>
-    <div style={{ display: 'flex', gap: '8px' }}>
-  <button
-  onClick={() => hmsActions.setLocalAudioEnabled(!isAudioOn)}
-  style={{
-    backgroundColor: 'transparent', color: '#ffffff',
-    border: '1px solid #a0a0b0', padding: '8px 14px', borderRadius: '6px', fontSize: '0.8rem', cursor: 'pointer'
-  }}
->
-  {isAudioOn ? 'Mute' : 'Unmute'}
-</button>
+  if (!isConnected) {
+    return (
       <button
-        onClick={handleLeave}
+        onClick={handleJoin}
+        disabled={joining}
         style={{
-          backgroundColor: 'transparent', color: '#ffffff', border: '1px solid #a0a0b0',
-          padding: '8px 14px', borderRadius: '6px', fontSize: '0.8rem', cursor: 'pointer'
+          backgroundColor: 'rgba(202, 41, 202, 0.35)', color: '#ffffff', border: '1px solid #ca29ca',
+          padding: '10px 16px', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.85rem', cursor: 'pointer',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px'
         }}
       >
-                Leave Voice
+        <span>{joining ? 'Connecting...' : (
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <Mic size={16} /> Voice Chat
+          </span>
+        )}</span>
       </button>
+    )
+  }
+
+  return (
+    <div style={{
+      backgroundColor: 'rgba(202, 41, 202, 0.35)', border: '1px solid #ca29ca',
+      borderRadius: '10px', padding: '14px'
+    }}>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#ffffff', fontSize: '0.8rem', fontWeight: 'bold', marginBottom: '8px' }}>
+        <Mic size={16} /> Voice Chat ({peers.length} Connected)
+      </div>
+      <div style={{ display: 'flex', gap: '8px' }}>
+        <button
+          onClick={() => hmsActions.setLocalAudioEnabled(!isAudioOn)}
+          style={{
+            backgroundColor: 'transparent', color: '#ffffff',
+            border: '1px solid #a0a0b0', padding: '8px 14px', borderRadius: '6px', fontSize: '0.8rem', cursor: 'pointer'
+          }}
+        >
+          {isAudioOn ? 'Mute' : 'Unmute'}
+        </button>
+        <button
+          onClick={handleLeave}
+          style={{
+            backgroundColor: 'transparent', color: '#ffffff', border: '1px solid #a0a0b0',
+            padding: '8px 14px', borderRadius: '6px', fontSize: '0.8rem', cursor: 'pointer'
+          }}
+        >
+          Leave Voice
+        </button>
+      </div>
     </div>
-  </div>
-)
+  )
 }
 
+export { VoiceChatInner }
 export default function VoiceChat(props: Props) {
-  return (
-    <HMSRoomProvider>
-      <VoiceChatInner {...props} />
-    </HMSRoomProvider>
-  )
+  return <VoiceChatInner {...props} />
 }
