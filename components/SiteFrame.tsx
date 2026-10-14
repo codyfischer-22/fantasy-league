@@ -21,7 +21,7 @@ export default function SiteFrame({ children }: { children: React.ReactNode }) {
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {!isMobileWidth && <Header />}
       <PardonOurMessModal />
-    <div style={{ flex: 1 }}>
+   <div className="site-content-wrap" style={{ flex: 1 }}>
   {children}
 </div>
       <Footer />

@@ -29,6 +29,7 @@ import VoiceChat from '@/components/social-game/VoiceChat'
 import ChatPanel from '@/components/ChatPanel'
 import { FlagTriangleRight, MessageCircle, Mic, Trash, BookOpen, ClipboardList, Menu } from 'lucide-react'
 import { HMSRoomProvider } from '@100mslive/react-sdk'
+import VoiceTrayButton from '@/components/social-game/VoiceTrayButton'
 
 
 type Game = {
@@ -85,10 +86,8 @@ export default function SocialGameRoomPage() {
   const [speakingUserIds, setSpeakingUserIds] = useState<string[]>([])
   const [showMobileRules, setShowMobileRules] = useState(false)
   const [showMobileLog, setShowMobileLog] = useState(false)
-  const [showMobileVoice, setShowMobileVoice] = useState(false)
   const [showMobileMore, setShowMobileMore] = useState(false)
-  const [voiceConnected, setVoiceConnected] = useState(false)
-  const [voiceMuted, setVoiceMuted] = useState(false)
+  const [showVoiceUpgradeModal, setShowVoiceUpgradeModal] = useState(false)
 
   const handleDisband = async () => {
     if (!game || !user) return
@@ -348,9 +347,9 @@ return (
             )}
           </div>
         </div>
-      ) : isRoomPhase ? (
-        <div style={{
-          backgroundColor: '#0a0a0f',
+   ) : isRoomPhase ? (
+<div className="mobile-shrink-game-room mobile-min-screen" style={{
+    backgroundColor: '#0a0a0f',
           ...(game.skin !== 'neutral' && {
             backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.4), rgba(10, 10, 15, 0.4)), url(/images/social-game/backgrounds/${game.skin}.jpg)`,
             backgroundSize: 'cover',
@@ -381,9 +380,16 @@ return (
           </div>
 
           <div style={{ maxWidth: '1300px', margin: '0 auto' }}>
-            <h2 className="mobile-top-spacing" style={{ color: '#ffffff', fontSize: '1.4rem', marginBottom: '24px', textAlign: 'center' }}>
+    
+            
+            <h2 className="mobile-top-spacing" style={{ color: '#ffffff', fontSize: '1.4rem', marginBottom: '4px', textAlign: 'center' }}>
               {theme.emoji} <span style={{ color: '#f0b429' }}>{game.display_name}</span> Game Room
             </h2>
+
+                           {game.is_private && game.join_code && (
+  <p style={{ color: '#a0a0b0', fontSize: '.7rem', textAlign: 'center', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>({game.join_code})
+  </p>
+)}
 
             <div className="game-room-columns" style={{
               display: 'flex',
@@ -428,7 +434,7 @@ return (
                     hostUserId={game.host_user_id}
                     myUserId={isSeated ? user?.id : undefined}
                     myRole={myRole}
-                    circleSize={players.length >= 8 ? 460 : players.length >= 6 ? 420 : 380}
+circleSize={players.length >= 8 ? 460 : players.length >= 6 ? 420 : players.length === 5 ? 420 : 380}
                     seatSize={players.length >= 9 ? 80 : players.length >= 7 ? 90 : players.length >= 6 ? 100 : 110}
                     currentLeaderUserId={players.find((p) => p.seat_order === currentLeaderSeat)?.user_id}
                     missionLeaderLabel={roleTerms.missionLeader}
@@ -540,9 +546,12 @@ return (
                     <p style={{ color: '#f0b429', fontSize: '1rem', marginBottom: '4px', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
                       You&apos;re in Spectator Mode!
                     </p>
-                    <p style={{ color: '#c8c8d2', fontSize: '.85rem', marginBottom: '6px', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
-                      We know it&apos;s tempting, but let the players do the playing.
-                    </p>
+                   <p className="desktop-only-text" style={{ color: '#c8c8d2', fontSize: '.85rem', marginBottom: '6px', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
+  We know it&apos;s tempting, but let the players do the playing.
+</p>
+<p className="mobile-only-block" style={{ color: '#c8c8d2', fontSize: '.85rem', marginBottom: '6px', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
+  It&apos;s tempting, but let the players do the playing.
+</p>
                     <p style={{ color: '#c8c8d2', fontSize: '.85rem', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
                       Follow along with every action in the Game Log.
                     </p>
@@ -575,22 +584,27 @@ return (
                     <h4 style={{ color: '#f0b429', fontSize: '0.9rem', marginBottom: '0px', textDecoration: 'underline' }}>
                       Game Resources
                     </h4>
-                    {game.hms_room_code && isSeated && (canUseVoiceChat(myTier) || hasAdminInGame) && (
-                      <VoiceChat
-                        roomCode={game.hms_room_code}
-                        displayName={players.find(p => p.user_id === user?.id)?.display_name ?? 'Player'}
-                        userId={user!.id}
-                        onSpeakersChange={setSpeakingUserIds}
-                      />
-                    )}
-                    {game.hms_room_code && isSeated && !canUseVoiceChat(myTier) && !hasAdminInGame && (
-                      <div style={{
-                        backgroundColor: 'rgba(26, 26, 46, 0.9)', border: '1px solid #2a2a3e',
-                        borderRadius: '8px', padding: '10px 16px', color: '#555570', fontSize: '0.8rem', textAlign: 'center'
-                      }}>
-                        <Mic size={16} />  Upgrade to Castaway+ for Voice Chat
-                      </div>
-                    )}
+                    {game.hms_room_code && user && (canUseVoiceChat(myTier) || hasAdminInGame) && (
+  <VoiceChat
+    roomCode={game.hms_room_code}
+    displayName={players.find(p => p.user_id === user?.id)?.display_name ?? 'Player'}
+    userId={user.id}
+    onSpeakersChange={setSpeakingUserIds}
+  />
+)}
+{game.hms_room_code && (!user || (!canUseVoiceChat(myTier) && !hasAdminInGame)) && (
+<button
+  onClick={() => setShowVoiceUpgradeModal(true)}
+  style={{
+    backgroundColor: 'rgba(202, 41, 202, 0.35)', border: '1px solid #ca29ca',
+    borderRadius: '10px', padding: '10px 16px', color: '#ffffff', fontSize: '0.85rem',
+    cursor: 'pointer', width: '100%', fontWeight: 'bold',
+    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+  }}
+>
+  <Mic size={16} /> Voice Chat
+</button>
+)}
 
                     {game.chat_league_id && (
                       <button
@@ -648,10 +662,22 @@ return (
                 <div className="mobile-game-tray">
                   <button onClick={() => setShowMobileRules(true)}><BookOpen size={20} /><span>Rules</span></button>
                   <button onClick={() => setShowMobileLog(true)}><ClipboardList size={20} /><span>Game Log</span></button>
-                  <button onClick={() => setShowMobileVoice(true)}>
-                    <Mic size={20} color={voiceConnected ? (voiceMuted ? '#f0b429' : '#2bda25') : '#ff6b6b'} />
-                    <span>Voice Chat</span>
-                  </button>
+                 {game.hms_room_code && isSeated && (canUseVoiceChat(myTier) || hasAdminInGame) ? (
+  <VoiceTrayButton
+    roomCode={game.hms_room_code}
+    displayName={players.find(p => p.user_id === user?.id)?.display_name ?? 'Player'}
+    userId={user!.id}
+    onSpeakersChange={setSpeakingUserIds}
+  />
+) : (
+  <button
+    onClick={() => setShowVoiceUpgradeModal(true)}
+    style={{ opacity: 0.6 }}
+  >
+    <Mic size={20} color="#555570" />
+    <span>Voice Chat</span>
+  </button>
+)}
                   <button onClick={() => setShowChat(true)}><MessageCircle size={20} /><span>Text Chat</span></button>
                   <button onClick={() => setShowMobileMore(true)}><Menu size={20} /><span>More</span></button>
                 </div>
@@ -822,12 +848,12 @@ return (
               textAlign: 'center'
             }}
           >
-            <h3 style={{ color: '#ff6b6b', fontSize: '1.1rem', marginBottom: '12px' }}>
+            <h3 style={{ color: '#ff6b6b', fontSize: '1.1rem', marginBottom: '6px' }}>
               Disband Game?
             </h3>
-            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '24px', lineHeight: '1.5' }}>
-              This will immediately end the game for everyone. It will <strong>not</strong> count toward anyone&apos;s record.
-            </p>
+            <p className="mobile-left-text" style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '24px', lineHeight: '1.5' }}>
+  This will immediately end the game for everyone. It will <strong>not</strong> count toward anyone&apos;s record.
+</p>
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
               <button
                 onClick={handleDisband}
@@ -907,27 +933,71 @@ return (
           </div>
         </div>
       )}
-      {showMobileVoice && (
-        <div onClick={() => setShowMobileVoice(false)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.75)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-          <div onClick={(e) => e.stopPropagation()} style={{ backgroundColor: '#0a0a0f', border: '1px solid #f0b429', borderRadius: '12px', padding: '16px', maxWidth: '360px', width: '100%' }}>
-            {game.hms_room_code && isSeated && (canUseVoiceChat(myTier) || hasAdminInGame) ? (
-              <VoiceChat
-                roomCode={game.hms_room_code}
-                displayName={players.find(p => p.user_id === user?.id)?.display_name ?? 'Player'}
-                userId={user!.id}
-                onSpeakersChange={setSpeakingUserIds}
-                autoJoin
-                onConnectionChange={({ connected, muted }) => {
-                  setVoiceConnected(connected)
-                  setVoiceMuted(muted)
-                }}
-              />
-            ) : (
-              <p style={{ color: '#555570', fontSize: '0.85rem', textAlign: 'center' }}>Upgrade to Castaway+ for Voice Chat</p>
-            )}
-          </div>
-        </div>
-      )}
+
+      {showVoiceUpgradeModal && (
+  <div
+    onClick={() => setShowVoiceUpgradeModal(false)}
+    style={{
+      position: 'fixed',
+      top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.7)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 400,
+      padding: '20px'
+    }}
+  >
+    <div
+      onClick={(e) => e.stopPropagation()}
+      style={{
+        backgroundColor: '#1a1a2e',
+        border: '1px solid #f0b429',
+        borderRadius: '12px',
+        padding: '24px',
+        maxWidth: '380px',
+        width: '100%',
+        textAlign: 'left'
+      }}
+    >
+      <h3 style={{ color: '#f0b429', fontWeight: 'bold', fontSize: '1.3rem', marginBottom: '12px' }}>
+        Castaway+ Required
+      </h3>
+      <p style={{ color: '#a0a0b0', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '24px' }}>
+        We're sorry, but this feature is only available to paid members. Upgrade now to start talking smack!
+      </p>
+      <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-start' }}>
+        <button
+          onClick={() => router.push('/account?tier=castaway')}
+          style={{
+            backgroundColor: '#f0b429',
+            color: '#0a0a0f',
+            padding: '10px 20px',
+            borderRadius: '6px',
+            border: 'none',
+            fontWeight: 'bold',
+            cursor: 'pointer'
+          }}
+        >
+          Upgrade
+        </button>
+        <button
+          onClick={() => setShowVoiceUpgradeModal(false)}
+          style={{
+            backgroundColor: 'transparent',
+            color: '#a0a0b0',
+            padding: '10px 20px',
+            borderRadius: '6px',
+            border: '1px solid #2a2a3e',
+            cursor: 'pointer'
+          }}
+        >
+          Not Now
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
       {showMobileMore && (
         <div onClick={() => setShowMobileMore(false)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.75)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>

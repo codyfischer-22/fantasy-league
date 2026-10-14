@@ -201,7 +201,7 @@ html, body {
 
 @media (max-width: 600px) {
   footer {
-    padding: 20px 16px 110px 16px !important;
+    padding: 20px 16px 90px 16px !important;
     font-size: 0.85rem !important;
   }
   footer p {
@@ -738,5 +738,41 @@ html, body {
 @media (max-width: 600px) {
   .mobile-top-spacing {
     margin-top: 36px;
+  }
+}
+
+@media (max-width: 600px) {
+  .mobile-tighten-footer-gap {
+    margin-bottom: 800px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .site-content-wrap {
+    flex: none;
+  }
+}
+
+@media (max-width: 600px) {
+  body.game-room-mobile-nav-hidden footer {
+    padding-bottom: 78px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .mobile-loosen-gap {
+    margin-top: -6px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .mobile-add-top-gap {
+    margin-top: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .mobile-shrink-game-room {
+    min-height: 110vh !important;
   }
 }

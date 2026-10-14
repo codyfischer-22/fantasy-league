@@ -278,7 +278,7 @@ export async function listOpenGames(): Promise<OpenGame[]> {
 const { data: games } = await supabase
   .from('social_games')
   .select('id, skin, is_private, display_name, status, host_user_id, join_code, counts_toward_records')
-  .in('status', ['lobby', 'in_progress'])
+.in('status', ['lobby', 'in_progress', 'captain_guess'])
   .order('created_at', { ascending: false })
 
   if (!games || games.length === 0) return []

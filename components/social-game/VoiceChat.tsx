@@ -58,9 +58,9 @@ function VoiceChatInner({ roomCode, displayName, userId, onSpeakersChange, autoJ
     onSpeakersChange?.(Array.from(speakingUserIds))
   }, [speakers])
 
-  useEffect(() => {
-    onConnectionChange?.({ connected: isConnected, muted: !isAudioOn })
-  }, [isConnected, isAudioOn])
+useEffect(() => {
+  onConnectionChange?.({ connected: !!isConnected, muted: !isAudioOn })
+}, [isConnected, isAudioOn])
 
   const handleLeave = async () => {
     await hmsActions.leave()

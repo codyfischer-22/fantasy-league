@@ -199,7 +199,7 @@ setSelectedIsShowChat(data?.is_show_chat ?? false);
           .from('episode_scores')
           .select('id')
           .eq('league_type', data.league_type)
-          .eq('episode_number', 1)
+          .eq('episode_number', 7)
           .limit(1);
         if (scoreError) {
           console.error('Error checking episode 1 scores:', JSON.stringify(scoreError, null, 2));
@@ -655,18 +655,18 @@ async function toggleReaction(messageId: string, emoji: string) {
   const readOnly = isGatedPublicLeague && !episode1Scored;
 
   return (
-    <div
-      onClick={onClose}
-      style={{
-        position: 'fixed',
-        top: 0, right: 0, bottom: 0,
-        backgroundColor: 'rgba(0,0,0,0.6)',
-        display: 'flex',
-        justifyContent: 'flex-end',
-        zIndex: 150,
-        left: 0
-      }}
-    >
+  <div
+  onClick={onClose}
+  style={{
+    position: 'fixed',
+    top: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    display: 'flex',
+    justifyContent: 'flex-end',
+    zIndex: 280,
+    left: 0
+  }}
+>
 <div
   className="mobile-chat-panel"
   onClick={(e) => e.stopPropagation()}
@@ -909,7 +909,7 @@ async function toggleReaction(messageId: string, emoji: string) {
             )}
             {readOnly ? (
               <p style={{ textAlign: 'center', color: '#555570', fontSize: '0.75rem', margin: 0 }}>
-                We are gifting read-only chat access until Episode 1 scores drop. To participate or continue viewing after Week 1, please upgrade to Castaway+!
+                We are gifting read-only chat access until Episode 7 scores drop. To participate or continue viewing after Week 7, please upgrade to Castaway+!
               </p>
             ) : (
               <div style={{ display: 'flex', gap: '6px' }}>

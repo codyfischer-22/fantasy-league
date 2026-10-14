@@ -70,9 +70,9 @@ useEffect(() => {
 
   return (
     <div style={{ maxWidth: '420px', margin: '0 auto', textAlign: 'center' }}>
-      <h3 style={{ color: '#f0b429', fontSize: '.95rem', marginTop: '-16px', marginBottom: '8px' }}>
-        {leaderName} Proposed:
-      </h3>
+      <h3 className="mobile-loosen-gap" style={{ color: '#f0b429', fontSize: '.95rem', marginTop: '-16px', marginBottom: '8px' }}>
+  {leaderName} Proposed:
+</h3>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '16px' }}>
         {proposedTeam.map((userId) => {
           const p = players.find((pl) => pl.user_id === userId)
@@ -120,8 +120,9 @@ useEffect(() => {
         </p>
       )}
 
-      <p style={{ color: '#c8c8d2', fontSize: '0.85rem', textAlign: 'center', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>        {votes.length} of {players.length} players have voted.
-      </p>
+     <p className="mobile-add-top-gap" style={{ color: '#c8c8d2', fontSize: '0.85rem', textAlign: 'center', textShadow: '0 1px 3px rgba(0,0,0,0.8)' }}>
+  {votes.length} of {players.length} players have voted.
+</p>
     </div>
   )
 }

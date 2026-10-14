@@ -19,7 +19,7 @@ export default function PlayerRecordHover({ userId, displayName, enabled, childr
   const [position, setPosition] = useState({ top: 0, left: 0 })
   const wrapperRef = useRef<HTMLDivElement>(null)
 
-  const handleEnter = async () => {
+  const loadAndShow = async () => {
     if (wrapperRef.current) {
       const rect = wrapperRef.current.getBoundingClientRect()
       setPosition({ top: rect.top - 8, left: rect.left + rect.width / 2 })
@@ -34,12 +34,22 @@ export default function PlayerRecordHover({ userId, displayName, enabled, childr
     setLoading(false)
   }
 
+  const handleTap = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (show) {
+      setShow(false)
+    } else {
+      loadAndShow()
+    }
+  }
+
   return (
     <div
       ref={wrapperRef}
       style={{ position: 'relative', display: 'inline-block', width: '100%', height: '100%' }}
-      onMouseEnter={handleEnter}
+      onMouseEnter={loadAndShow}
       onMouseLeave={() => setShow(false)}
+      onClick={handleTap}
     >
       {children}
       {show && typeof document !== 'undefined' && createPortal(
@@ -83,11 +93,11 @@ export default function PlayerRecordHover({ userId, displayName, enabled, childr
                       </div>
                     </>
                   )}
-   {reportCount !== null && reportCount > 0 && (
-  <div style={{ color: '#ff6b6b', marginTop: '4px' }}>
-    🚩 {reportCount} {reportCount === 1 ? 'Flag' : 'Flags'}
-  </div>
-)}
+                  {reportCount !== null && reportCount > 0 && (
+                    <div style={{ color: '#ff6b6b', marginTop: '4px' }}>
+                      🚩 {reportCount} {reportCount === 1 ? 'Flag' : 'Flags'}
+                    </div>
+                  )}
                 </>
               )}
             </>

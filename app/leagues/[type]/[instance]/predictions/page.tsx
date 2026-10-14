@@ -126,11 +126,11 @@ export default function PredictionLeaderboardPage() {
           ← Back to {leagueName || 'League'}
         </a>
 
-        <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <Dices size={36} strokeWidth={2} color="#f0b429" />
-          <span style={{ color: '#f0b429' }}>Prediction</span>{' '}
-          <span style={{ color: '#ffffff' }}>Leaderboard</span>
-        </h1>
+      <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px', display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+  <Dices size={36} strokeWidth={2} color="#f0b429" style={{ flexShrink: 0 }} />
+  <span style={{ color: '#f0b429' }}>Prediction</span>{' '}
+  <span style={{ color: '#ffffff' }}>Leaderboard</span>
+</h1>
         <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '24px' }}>
           Correctly predict who's going home each week for a chance to split +50 bonus points!
         </p>
