@@ -209,13 +209,14 @@ useEffect(() => {
 >
   <Home size={22} strokeWidth={2} />
   <span style={navLabelStyle}>Leagues</span>
+</button>
+
 
 <a href="/social-game" style={navItemStyle}>
   <PlayingCardsFan size={22} strokeWidth={2} />
   <span style={navLabelStyle}>Games</span>
 </a>
 
-</button>
         {user && (
           <button
             onClick={() => { setIsChatOpen(!isChatOpen); setShowNotifications(false); setShowHamburgerMenu(false) }}
@@ -267,13 +268,6 @@ useEffect(() => {
             <span style={navLabelStyle}>Alerts</span>
           </button>
         )}
-
-{!user && (
-  <a href="/social-game" style={navItemStyle}>
-    <PlayingCardsFan size={22} strokeWidth={2} />
-    <span style={navLabelStyle}>Games</span>
-  </a>
-)}
 
 {!user && (
   <a href="/leagues/all/rules" style={navItemStyle}>
