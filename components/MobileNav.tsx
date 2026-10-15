@@ -209,6 +209,12 @@ useEffect(() => {
 >
   <Home size={22} strokeWidth={2} />
   <span style={navLabelStyle}>Leagues</span>
+
+<a href="/social-game" style={navItemStyle}>
+  <PlayingCardsFan size={22} strokeWidth={2} />
+  <span style={navLabelStyle}>Games</span>
+</a>
+
 </button>
         {user && (
           <button
@@ -232,11 +238,6 @@ useEffect(() => {
             <span style={navLabelStyle}>Chat</span>
           </button>
         )}
-
-<a href="/social-game" style={navItemStyle}>
-  <PlayingCardsFan size={22} strokeWidth={2} />
-  <span style={navLabelStyle}>Games</span>
-</a>
 
         {user && (
           <button
