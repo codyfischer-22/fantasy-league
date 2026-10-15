@@ -45,7 +45,7 @@ export const roleTermsBySkin: Record<string, RoleTerms> = {
     badTeamMember: 'Villainous Rat',
     badCaptain: 'Villainous Snake',
     mission: 'Challenge',
-    missionLeader: 'Challenge Captain',
+    missionLeader: 'Captain',
     passMission: 'Win Immunity',
     failMission: 'Throw the Challenge',
     goodTeamMemberDescription: 'Your job is to help your alliance win immunity challenges! But be on the lookout for Villanous Rats and Snakes. You must keep them from throwing challenges, while also protecting the identity of the Fan Favorite.',

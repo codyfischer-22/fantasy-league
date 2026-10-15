@@ -43,6 +43,7 @@ export default function GameLobby({ gameId, skin, hostUserId, joinCode, isPrivat
   const [countsTowardRecords, setCountsTowardRecords] = useState(true)
 const [myTier, setMyTier] = useState('stowaway')
 const [showChat, setShowChat] = useState(false)
+const [openPlayerId, setOpenPlayerId] = useState<string | null>(null)
 
   const isHost = user?.id === hostUserId
   const theme = themeContentBySkin[skin]
@@ -364,9 +365,16 @@ return (
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <span style={{ color: '#555570', fontSize: '0.85rem', width: '20px' }}>{seatNum + 1}.</span>
-        {occupant ? (
-  <PlayerRecordHover userId={occupant.user_id} displayName={occupant.display_name} enabled={canViewRecords(myTier)}>
-    <span style={{ color: '#ffffff', fontSize: '0.9rem' }}>
+       {occupant ? (
+<PlayerRecordHover
+  userId={occupant.user_id}
+  displayName={occupant.display_name}
+  enabled={canViewRecords(myTier)}
+  isOpen={openPlayerId === occupant.user_id}
+  onOpen={() => setOpenPlayerId(occupant.user_id)}
+  onClose={() => setOpenPlayerId(null)}
+>
+ <span style={{ color: '#ffffff', fontSize: '0.9rem' }}>
       {occupant.display_name}
     </span>
   </PlayerRecordHover>

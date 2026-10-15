@@ -1,6 +1,7 @@
 'use client'
 
 import PlayerRecordHover from './PlayerRecordHover'
+import { useState } from 'react'
 
 type SeatPlayer = {
   user_id: string
@@ -57,6 +58,7 @@ export default function SeatCircle({
       return '/images/social-game/avatars/neutral-avatar.png'
   }
 }
+const [openPlayerId, setOpenPlayerId] = useState<string | null>(null)
 
 return (
   <div style={{
@@ -92,23 +94,30 @@ return (
         const showBadCaptainGlow = iAmEvil && p.role === 'badCaptain'
         const showGoodCaptainGlow = isMe && myRole === 'goodCaptain'
 
-        return (
-          <div
-            key={p.user_id}
-            style={{
-              position: 'absolute',
-              left: `${x - seatSize / 2}px`,
-              top: `${y - seatSize / 2}px`,
-              width: `${seatSize}px`,
-              height: `${seatSize}px`,
-              transform: isSpeaking ? undefined : 'scale(1)',
-              animation: isSpeaking ? 'speakingPulse 0.6s ease-in-out infinite' : 'none',
-              transition: isSpeaking ? 'none' : 'transform 0.2s ease-out',
-              zIndex: isSpeaking ? 2 : 1,
-            }}
-          >
-            <PlayerRecordHover userId={p.user_id} displayName={p.display_name} enabled={canViewRecords}>
-              <div style={{
+       return (
+  <div
+    key={p.user_id}
+    style={{
+      position: 'absolute',
+      left: `${x - seatSize / 2}px`,
+      top: `${y - seatSize / 2}px`,
+      width: `${seatSize}px`,
+      height: `${seatSize}px`,
+      transform: isSpeaking ? undefined : 'scale(1)',
+      animation: isSpeaking ? 'speakingPulse 0.6s ease-in-out infinite' : 'none',
+      transition: isSpeaking ? 'none' : 'transform 0.2s ease-out',
+      zIndex: openPlayerId === p.user_id ? 100 : (isSpeaking ? 2 : 1),
+    }}
+  >
+<PlayerRecordHover
+  userId={p.user_id}
+  displayName={p.display_name}
+  enabled={canViewRecords}
+  isOpen={openPlayerId === p.user_id}
+  onOpen={() => setOpenPlayerId(p.user_id)}
+  onClose={() => setOpenPlayerId(null)}
+>
+            <div style={{
   width: '100%',
   height: '100%',
   borderRadius: '50%',
