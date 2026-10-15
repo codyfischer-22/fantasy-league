@@ -88,6 +88,7 @@ export default function SocialGameRoomPage() {
   const [showMobileLog, setShowMobileLog] = useState(false)
   const [showMobileMore, setShowMobileMore] = useState(false)
   const [showVoiceUpgradeModal, setShowVoiceUpgradeModal] = useState(false)
+  const [hasUnreadGameChat, setHasUnreadGameChat] = useState(false)
 
   const handleDisband = async () => {
     if (!game || !user) return
@@ -168,6 +169,41 @@ export default function SocialGameRoomPage() {
 
     setLoading(false)
   }
+
+  useEffect(() => {
+  async function checkUnreadGameChat() {
+    if (!user || !game?.chat_league_id) {
+      setHasUnreadGameChat(false)
+      return
+    }
+    const { data: readRow } = await supabase
+      .from('chat_read_status')
+      .select('last_read_at')
+      .eq('user_id', user.id)
+      .eq('league_id', game.chat_league_id)
+      .maybeSingle()
+
+    const { data: latestMsg } = await supabase
+      .from('messages')
+      .select('created_at')
+      .eq('league_id', game.chat_league_id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
+    if (!latestMsg) {
+      setHasUnreadGameChat(false)
+      return
+    }
+
+    const lastRead = readRow?.last_read_at
+    setHasUnreadGameChat(!lastRead || new Date(latestMsg.created_at) > new Date(lastRead))
+  }
+
+  checkUnreadGameChat()
+  const interval = setInterval(checkUnreadGameChat, 5000)
+  return () => clearInterval(interval)
+}, [user, game?.chat_league_id, showChat])
 
   useEffect(() => {
     async function loadTier() {
@@ -611,18 +647,32 @@ circleSize={players.length >= 8 ? 460 : players.length >= 6 ? 420 : players.leng
 </button>
 )}
 
-                    {game.chat_league_id && (
-                      <button
-                        onClick={() => setShowChat(true)}
-                        style={{
-                          backgroundColor: 'rgba(6, 142, 56, 0.35)', color: '#ffffff', border: '1px solid #068e38',
-                          padding: '10px 16px', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.85rem', cursor: 'pointer',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
-                        }}
-                      >
-                        <MessageCircle size={16} /> Text Chat
-                      </button>
-                    )}
+                   {game.chat_league_id && (
+  <button
+    onClick={() => setShowChat(true)}
+    style={{
+      backgroundColor: 'rgba(6, 142, 56, 0.35)', color: '#ffffff', border: '1px solid #068e38',
+      padding: '10px 16px', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.85rem', cursor: 'pointer',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+    }}
+  >
+    <span style={{ position: 'relative', display: 'inline-flex' }}>
+      <MessageCircle size={16} />
+      {hasUnreadGameChat && (
+        <span style={{
+          position: 'absolute',
+          top: '-3px',
+          right: '-5px',
+          width: '7px',
+          height: '7px',
+          borderRadius: '50%',
+          backgroundColor: '#f0b429'
+        }} />
+      )}
+    </span>
+    Text Chat
+  </button>
+)}
                     {isSeated && (game.status === 'in_progress' || game.status === 'captain_guess') && (
                       <button
                         onClick={() => setShowReportModal(true)}
@@ -683,8 +733,23 @@ circleSize={players.length >= 8 ? 460 : players.length >= 6 ? 420 : players.leng
     <span>Voice Chat</span>
   </button>
 )}
-                  <button onClick={() => setShowChat(true)}><MessageCircle size={20} /><span>Text Chat</span></button>
-                  <button onClick={() => setShowMobileMore(true)}><Menu size={20} /><span>More</span></button>
+<button onClick={() => setShowChat(true)}>
+  <span style={{ position: 'relative', display: 'inline-flex' }}>
+    <MessageCircle size={20} />
+    {hasUnreadGameChat && (
+      <span style={{
+        position: 'absolute',
+        top: '-2px',
+        right: '-4px',
+        width: '8px',
+        height: '8px',
+        borderRadius: '50%',
+        backgroundColor: '#f0b429'
+      }} />
+    )}
+  </span>
+  <span>Text Chat</span>
+</button>                  <button onClick={() => setShowMobileMore(true)}><Menu size={20} /><span>More</span></button>
                 </div>
               </div>
             </div>
