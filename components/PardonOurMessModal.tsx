@@ -7,7 +7,7 @@ import { Flame } from 'lucide-react'
 const MODAL_ENABLED = true 
 
 // Bump this date/version string whenever you want the modal to show again after a new release
-const UPDATE_VERSION = '2026-09-29' 
+const UPDATE_VERSION = '2026-10-15' 
 
 export default function PardonOurMessModal() {
   const [showModal, setShowModal] = useState(false)
@@ -68,7 +68,18 @@ export default function PardonOurMessModal() {
           🔥 NEW FEATURES!
         </h3>
 
-        <p
+       <p
+  style={{
+    color: '#a0a0b0',
+    fontSize: '0.95rem',
+    marginBottom: '12px',
+    lineHeight: '1.6',
+  }}
+>
+  Check out our new social deduction game, <em>Trust Issue<span style={{ fontSize: '0.8em' }}>5</span></em>, to get in the games you've watched for so long!
+</p>
+
+          <p
           style={{
             color: '#a0a0b0',
             fontSize: '0.95rem',
@@ -76,8 +87,7 @@ export default function PardonOurMessModal() {
             lineHeight: '1.6',
           }}
         >
-          Remember to make your elimination prediction each week for a chance
-          to split +50 bonus points!
+<em>Trust Issue<span style={{ fontSize: '0.8em' }}>5</span></em> is a 5-round battle between good and evil factions, where you must correctly deduct who's who. Check out the new "Games" section to host or join a game!
         </p>
 
         <p
@@ -88,9 +98,7 @@ export default function PardonOurMessModal() {
             lineHeight: '1.6',
           }}
         >
-          In the Trade Portal, we added a Waiver Wire where you can swap an active
-          contestant for a draft leftover. Late joins can also draw directly
-          from this free agent well!
+          For fantasy leagues, remember to make your weekly elimination predictions and know when to swap a player in the Trade Portal!
         </p>
 
         <button
