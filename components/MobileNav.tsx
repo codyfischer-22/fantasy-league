@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import ChatPanel from '@/components/ChatPanel'
-import { Home, MessageCircle, Bell, KeyRound, Menu, UserPen, Mail, HandCoins, Settings, ScrollText, ClipboardList, Wallet, SquareLibrary, Swords, TreePalm, ChessRook, CarFront, Engine } from 'lucide-react'
+import { Home, MessageCircle, Bell, KeyRound, Menu, UserPen, Mail, HandCoins, Settings, ScrollText, ClipboardList, Wallet, SquareLibrary, Swords, TreePalm, ChessRook, CarFront, Engine, PlayingCardsFan } from 'lucide-react'
 
 export default function MobileNav() {
   const { user } = useAuth()
@@ -232,6 +232,12 @@ useEffect(() => {
             <span style={navLabelStyle}>Chat</span>
           </button>
         )}
+
+<a href="/social-game" style={navItemStyle}>
+  <PlayingCardsFan size={22} strokeWidth={2} />
+  <span style={navLabelStyle}>Games</span>
+</a>
+
         {user && (
           <button
             onClick={() => { setShowNotifications(!showNotifications); setIsChatOpen(false); setShowHamburgerMenu(false) }}
@@ -261,10 +267,10 @@ useEffect(() => {
           </button>
         )}
 
-        {user && (
-  <a href="/media" style={navItemStyle}>
-    <SquareLibrary size={22} strokeWidth={2} />
-    <span style={navLabelStyle}>Media</span>
+{!user && (
+  <a href="/social-game" style={navItemStyle}>
+    <PlayingCardsFan size={22} strokeWidth={2} />
+    <span style={navLabelStyle}>Games</span>
   </a>
 )}
 
@@ -272,13 +278,6 @@ useEffect(() => {
   <a href="/leagues/all/rules" style={navItemStyle}>
     <ScrollText size={22} strokeWidth={2} />
     <span style={navLabelStyle}>Scoring</span>
-  </a>
-)}
-
-{!user && (
-  <a href="/leagues/all/draft" style={navItemStyle}>
-    <ClipboardList size={22} strokeWidth={2} />
-    <span style={navLabelStyle}>Deadlines</span>
   </a>
 )}
 
@@ -425,21 +424,17 @@ useEffect(() => {
     <ScrollText size={22} strokeWidth={1} /> Rules
   </a>
 )}
-{user && (
-  <a href="/leagues/all/draft" style={hamburgerLinkStyle}>
-    <ClipboardList size={22} strokeWidth={1} /> Rosters
-  </a>
-)}
+<a href="/leagues/all/draft" style={hamburgerLinkStyle}>
+  <ClipboardList size={22} strokeWidth={1} /> Rosters
+</a>
 
           <a href="/#tiers" style={hamburgerLinkStyle}>
           <Wallet size={22} strokeWidth={1} /> Features
           </a>
 
-          {!user && (
-  <a href="/media" style={hamburgerLinkStyle}>
-    <SquareLibrary size={22} strokeWidth={1} /> Media
-  </a>
-)}
+    <a href="/media" style={hamburgerLinkStyle}>
+  <SquareLibrary size={22} strokeWidth={1} /> Media
+</a>
 
          <a href="/tip-jar" style={hamburgerLinkStyle}>
          <HandCoins size={22} strokeWidth={1} /> Support Us
