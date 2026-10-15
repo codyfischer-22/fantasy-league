@@ -584,27 +584,38 @@ await supabase
     .in('user_id', uniqueUserIds)
     .eq('email_opt_in', true)
 
-  if (profiles && profiles.length > 0) {
-      const { data: { session } } = await supabase.auth.getSession()
+if (profiles && profiles.length > 0) {
+  const { data: { session } } = await supabase.auth.getSession()
   const accessToken = session?.access_token
 
-  await fetch('/api/send-notification-email', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${accessToken}`,
-    },
+  const allRecipients = profiles.map((p) => ({
+    email: p.email,
+    playerName: p.display_name || 'Player',
+  }))
+
+  const CHUNK_SIZE = 30
+  for (let i = 0; i < allRecipients.length; i += CHUNK_SIZE) {
+    const chunk = allRecipients.slice(i, i + CHUNK_SIZE)
+    const res = await fetch('/api/send-notification-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
       body: JSON.stringify({
-        recipients: profiles.map((p) => ({
-          email: p.email,
-          playerName: p.display_name || 'Player',
-        })),
+        recipients: chunk,
         subject: `Episode ${episodeNumber} Scores Are Live!`,
-message: `It's official! Tallies for Episode ${episodeNumber} are live! Check Leaderboard and Analytics to see how you stack up. Then head to the chat to gloat or pout! 24 hours after episode airs, you can predict who will be eliminated next week; whoever has the most correct predictions splits +50 bonus points!`,        linkUrl: `https://trekkonleagues.com/leagues/${selectedLeagueType}/scoring-log`,
+        message: `It's official! Tallies for Episode ${episodeNumber} are live! Check Leaderboard and Analytics to see how you stack up. Then head to the chat to gloat or pout! 24 hours after episode airs, you can predict who will be eliminated next week; whoever has the most correct predictions splits +50 bonus points!`,
+        linkUrl: `https://trekkonleagues.com/leagues/${selectedLeagueType}/scoring-log`,
         linkText: 'View Scoring Log →',
       }),
     })
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}))
+      console.error('Score email batch failed:', res.status, errBody)
+    }
   }
+}
 }
 
    setSaving(false)
