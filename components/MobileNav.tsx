@@ -322,19 +322,25 @@ useEffect(() => {
                   marginBottom: '4px'
                 }}
               >
-                <a
-                  href={n.link ?? '#'}
-                  onClick={() => markAsRead(n.id)}
-                  style={{
-                    display: 'block',
-                    padding: '10px 32px 10px 12px',
-                    textDecoration: 'none',
-                    color: n.is_read ? '#a0a0b0' : '#ffffff',
-                    fontSize: '0.85rem'
-                  }}
-                >
-                  {n.message}
-                </a>
+              <a
+  href={n.link ?? '#'}
+  onClick={async (e) => {
+    e.preventDefault()
+    await markAsRead(n.id)
+    if (n.link) {
+      window.location.href = n.link
+    }
+  }}
+  style={{
+    display: 'block',
+    padding: '10px 32px 10px 12px',
+    textDecoration: 'none',
+    color: n.is_read ? '#a0a0b0' : '#ffffff',
+    fontSize: '0.85rem'
+  }}
+>
+  {n.message}
+</a>
                 <button
                   onClick={(e) => {
                     e.preventDefault()
