@@ -3,11 +3,13 @@ export function NotificationEmail({
   message,
   linkUrl,
   linkText,
+  imageUrl,
 }: {
   playerName: string
   message: string
   linkUrl?: string
   linkText?: string
+  imageUrl?: string
 }) {
   const messageParts = message.split('\n\n')
 
@@ -31,6 +33,22 @@ export function NotificationEmail({
                         {part}
                       </p>
                     ))}
+                    {imageUrl && (
+                      <table cellPadding={0} cellSpacing={0} border={0} style={{ marginBottom: '20px' }}>
+                        <tbody>
+                          <tr>
+                            <td>
+                              <img
+                                src={imageUrl}
+                                alt=""
+                                width="100%"
+                                style={{ maxWidth: '100%', borderRadius: '8px', display: 'block' }}
+                              />
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    )}
                     {linkUrl && (
                       <table cellPadding={0} cellSpacing={0} border={0}>
                         <tbody>
@@ -56,10 +74,10 @@ export function NotificationEmail({
                       </table>
                     )}
                     <p style={{ color: '#555570', fontSize: '0.8rem', fontFamily: 'Georgia, serif', marginTop: '32px' }}>
-  You&apos;re currently opted in to email updates at Trekkon Fantasy Leagues. You can opt out anytime in your{' '}
-  <a href="https://trekkonleagues.com/account" style={{ color: '#a0a0b0', textDecoration: 'underline' }}>
-    &quot;Account&quot;</a> tab.
-</p>
+                      You&apos;re currently opted in to email updates at Trekkon Fantasy Leagues. You can opt out anytime in your{' '}
+                      <a href="https://trekkonleagues.com/account" style={{ color: '#a0a0b0', textDecoration: 'underline' }}>
+                        &quot;Account&quot;</a> tab.
+                    </p>
                   </td>
                 </tr>
               </tbody>

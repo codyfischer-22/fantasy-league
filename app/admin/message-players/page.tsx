@@ -30,6 +30,43 @@ export default function MessagePlayersPage() {
 const [scheduledFor, setScheduledFor] = useState('')
   const [filterType, setFilterType] = useState('all')
 const [allLeagues, setAllLeagues] = useState<{ id: number; name: string; league_type: string; is_show_chat: boolean }[]>([])
+const [imageFile, setImageFile] = useState<File | null>(null)
+const [imagePreview, setImagePreview] = useState<string | null>(null)
+const [uploadingImage, setUploadingImage] = useState(false)
+const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null)
+
+const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+  setImageFile(file)
+  setImagePreview(URL.createObjectURL(file))
+  setUploadedImageUrl(null)
+}
+
+const uploadImage = async (): Promise<string | null> => {
+  if (!imageFile) return null
+  setUploadingImage(true)
+  const fileExt = imageFile.name.split('.').pop()
+  const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`
+  const { error } = await supabase.storage
+    .from('message-images')
+    .upload(fileName, imageFile)
+  setUploadingImage(false)
+  if (error) {
+    console.error('Image upload failed:', error)
+    return null
+  }
+  const { data } = supabase.storage.from('message-images').getPublicUrl(fileName)
+  return data.publicUrl
+}
+
+const removeImage = () => {
+  setImageFile(null)
+  setImagePreview(null)
+  setUploadedImageUrl(null)
+}
+
+
 const applyFilter = async (type: string) => {
   setFilterType(type)
 
@@ -174,18 +211,26 @@ const audienceLabel = () => {
   return labels[filterType] ?? 'Custom Selection'
 }
 
-  const handleSend = async () => {
-    if (!subject.trim() || !message.trim() || selectedIds.size === 0) {
-      setResult('Please fill out a subject, message, and select at least one recipient.')
+ const handleSend = async () => {
+  if (!subject.trim() || !message.trim() || selectedIds.size === 0) {
+    setResult('Please fill out a subject, message, and select at least one recipient.')
+    return
+  }
+  if (!sendAsNotification && !sendAsEmail) {
+    setResult('Please select at least one delivery method.')
+    return
+  }
+  if (!user) return
+
+  let finalImageUrl: string | null = uploadedImageUrl
+  if (imageFile && !finalImageUrl) {
+    finalImageUrl = await uploadImage()
+    if (!finalImageUrl) {
+      setResult('Image upload failed. Please try again or remove the image.')
       return
     }
-
-    if (!sendAsNotification && !sendAsEmail) {
-      setResult('Please select at least one delivery method.')
-      return
-    }
-
-if (!user) return
+    setUploadedImageUrl(finalImageUrl)
+  }
 
 if (scheduleEnabled) {
   const when = new Date(scheduledFor)
@@ -194,31 +239,35 @@ if (scheduleEnabled) {
     return
   }
   setSending(true)
-  const { error: scheduleError } = await supabase.from('admin_messages').insert({
-    sent_by: user.id,
-    subject,
-    message,
-    link_url: linkUrl || null,
-    link_text: linkText || null,
-    recipient_ids: Array.from(selectedIds),
-    recipient_count: selectedIds.size,
-    audience_label: audienceLabel(),
-    via_notification: sendAsNotification,
-    via_email: sendAsEmail,
-    status: 'scheduled',
-    scheduled_for: when.toISOString(),
-  })
+  
+const { error: scheduleError } = await supabase.from('admin_messages').insert({
+  sent_by: user.id,
+  subject,
+  message,
+  link_url: linkUrl || null,
+  link_text: linkText || null,
+  image_url: finalImageUrl,
+  recipient_ids: Array.from(selectedIds),
+  recipient_count: selectedIds.size,
+  audience_label: audienceLabel(),
+  via_notification: sendAsNotification,
+  via_email: sendAsEmail,
+  status: 'scheduled',
+  scheduled_for: when.toISOString(),
+})
+
   setSending(false)
   if (scheduleError) {
     console.error('Error scheduling message:', JSON.stringify(scheduleError, null, 2))
     setResult('Something went wrong scheduling this message.')
     return
   }
-setResult(`Scheduled for ${when.toLocaleString([], { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit' })}.`)  
+setResult(`Scheduled for ${when.toLocaleString([], { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit' })}.`)
 setSubject('')
   setMessage('')
   setScheduleEnabled(false)
   setScheduledFor('')
+  removeImage()
   return
 }
 
@@ -257,20 +306,21 @@ setSubject('')
           playerName: p.display_name || 'Player',
         }))
 
-        const res = await fetch('/api/send-admin-email', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify({
-            recipients,
-            subject,
-            message,
-            linkUrl: linkUrl || undefined,
-            linkText: linkText || undefined,
-          }),
-        })
+     const res = await fetch('/api/send-admin-email', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${accessToken}`,
+  },
+  body: JSON.stringify({
+    recipients,
+    subject,
+    message,
+    linkUrl: linkUrl || undefined,
+    linkText: linkText || undefined,
+    imageUrl: finalImageUrl || undefined,
+  }),
+})
 
         const data = await res.json()
         if (res.ok) {
@@ -281,12 +331,13 @@ setSubject('')
     }
 
     setSending(false)
-   const { error: archiveError } = await supabase.from('admin_messages').insert({
+const { error: archiveError } = await supabase.from('admin_messages').insert({
   sent_by: user.id,
   subject,
   message,
   link_url: linkUrl || null,
   link_text: linkText || null,
+  image_url: finalImageUrl,
   recipient_ids: selectedProfiles.map((p) => p.user_id),
   recipient_count: selectedProfiles.length,
   audience_label: audienceLabel(),
@@ -488,6 +539,53 @@ if (archiveError) {
           placeholder="View League →"
           style={{ width: '100%', padding: '10px', marginBottom: '24px', borderRadius: '6px', border: '1px solid #2a2a3e', backgroundColor: '#12121a', color: '#ffffff' }}
         />
+
+       <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '8px' }}>
+  Image (Optional)
+</label>
+<div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+  {imagePreview && (
+    <div style={{ position: 'relative', display: 'inline-block' }}>
+      <img src={imagePreview} alt="Preview" style={{ maxWidth: '240px', maxHeight: '180px', borderRadius: '8px', border: '1px solid #2a2a3e', display: 'block' }} />
+      <button
+        onClick={removeImage}
+        style={{
+          position: 'absolute', top: '-8px', right: '-8px',
+          backgroundColor: '#ff6b6b', color: '#ffffff', border: 'none',
+          borderRadius: '50%', width: '22px', height: '22px', cursor: 'pointer', fontSize: '0.75rem'
+        }}
+      >
+        ✕
+      </button>
+    </div>
+  )}
+  <input
+    type="file"
+    id="message-image-input"
+    accept="image/*"
+    onChange={handleImageSelect}
+    style={{ display: 'none' }}
+  />
+  <label
+    htmlFor="message-image-input"
+    style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '8px',
+      backgroundColor: 'transparent',
+      color: '#f0b429',
+      border: '1px solid #f0b429',
+      padding: '8px 16px',
+      borderRadius: '6px',
+      fontSize: '0.85rem',
+      fontWeight: 'bold',
+      cursor: 'pointer',
+      alignSelf: 'flex-start'
+    }}
+  >
+    {imageFile ? 'Change Image' : 'Choose Image'}
+  </label>
+</div>
 
 <div style={{ marginBottom: '20px' }}>
   <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem', marginBottom: scheduleEnabled ? '10px' : 0 }}>

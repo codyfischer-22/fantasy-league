@@ -45,55 +45,18 @@ export default function ExtrasPage() {
     <MicSignal size={22} strokeWidth={2} color="#f0b429" />
     Talkin' with Trekkon
   </h2>
-
-
-  <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-     <iframe
-      style={{ borderRadius: '12px', flex: '1 1 300px' }}
-      src="https://open.spotify.com/embed/episode/5QDUuQREckLCILuZaV32X8?utm_source=generator&si=e20ebf780bce4e53"
-      height="152"
-      frameBorder="0"
-      allowFullScreen
-      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-      loading="lazy"
-    ></iframe>
-     <iframe
-      style={{ borderRadius: '12px', flex: '1 1 300px' }}
-      src="https://open.spotify.com/embed/episode/6JdWbCQoCMWCqZb9Gy8x03?utm_source=generator&si=7824b2b237364544"
-      height="152"
-      frameBorder="0"
-      allowFullScreen
-      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-      loading="lazy"
-    ></iframe>
-      <iframe
-      style={{ borderRadius: '12px', flex: '1 1 300px' }}
-      src="https://open.spotify.com/embed/episode/16vIftajOIUeEr4rSLBs3Q?utm_source=generator&si=8e727ea878324b52"
-      height="152"
-      frameBorder="0"
-      allowFullScreen
-      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-      loading="lazy"
-    ></iframe>
-    <iframe
-      style={{ borderRadius: '12px', flex: '1 1 300px' }}
-      src="https://open.spotify.com/embed/episode/45wGCggZSPSvIRy2GjLjYM?utm_source=generator&si=5cdac251108e4ccc"
-      height="152"
-      frameBorder="0"
-      allowFullScreen
-      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-      loading="lazy"
-    ></iframe>
-    <iframe
-      style={{ borderRadius: '12px', flex: '1 1 300px' }}
-      src="https://open.spotify.com/embed/episode/65IXV5BJuozSfaYdN7CDWK?utm_source=generator&si=d9d592a8f7ff4e9d"
-      height="152"
-      frameBorder="0"
-      allowFullScreen
-      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-      loading="lazy"
-    ></iframe>
-  </div>
+<div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+  <iframe
+    data-testid="embed-iframe"
+    style={{ borderRadius: '12px' }}
+    src="https://open.spotify.com/embed/show/7HR9XTBY9tbnZWciUOM0NZ?utm_source=generator&si=7ecc85f5f4a44824"
+    width="100%"
+    height="352"
+    frameBorder="0"
+    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+    loading="lazy"
+    allowFullScreen
+  />
 </div>
         {/* Blog Section */}
         <div style={{ marginBottom: '0px' }}>
@@ -108,7 +71,7 @@ export default function ExtrasPage() {
             padding: '20px'
           }}>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6' }}>
-              We might do this... someday... Let us know if interested!
+              We might do this... someday... Let us know if interested!git
             </p>
           </div>
         </div>

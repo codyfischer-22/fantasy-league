@@ -38,12 +38,13 @@ export async function POST(req: Request) {
     return Response.json({ error: 'Forbidden.' }, { status: 403 })
   }
 
-  const { recipients, subject, message, linkUrl, linkText } = await req.json() as {
+  const { recipients, subject, message, linkUrl, linkText, imageUrl } = await req.json() as {
     recipients: Recipient[]
     subject: string
     message: string
     linkUrl?: string
     linkText?: string
+    imageUrl?: string
   }
 
   if (!recipients || recipients.length === 0) {
@@ -51,35 +52,36 @@ export async function POST(req: Request) {
   }
 
   const results = []
-for (const r of recipients) {
-  try {
-    const res = await resend.emails.send({
-      from: 'Trekkon Fantasy Leagues <notifications@trekkonleagues.com>',
-      replyTo: 'hello@trekkonleagues.com',
-      to: [r.email],
-      subject,
-      react: NotificationEmail({
-        playerName: r.playerName,
-        message,
-        linkUrl,
-        linkText,
-      }),
-    })
-    results.push(res)
-  } catch (err) {
-    results.push({ error: err })
+  for (const r of recipients) {
+    try {
+      const res = await resend.emails.send({
+        from: 'Trekkon Fantasy Leagues <notifications@trekkonleagues.com>',
+        replyTo: 'hello@trekkonleagues.com',
+        to: [r.email],
+        subject,
+        react: NotificationEmail({
+          playerName: r.playerName,
+          message,
+          linkUrl,
+          linkText,
+          imageUrl,
+        }),
+      })
+      results.push(res)
+    } catch (err) {
+      results.push({ error: err })
+    }
+    await new Promise((resolve) => setTimeout(resolve, 550))
   }
-  await new Promise((resolve) => setTimeout(resolve, 550)) // stay under ~2/sec
-}
 
-const failures = results.filter((r: any) => r.error)
-if (failures.length > 0) {
-  console.error('Some emails failed to send:', failures)
-}
+  const failures = results.filter((r: any) => r.error)
+  if (failures.length > 0) {
+    console.error('Some emails failed to send:', failures)
+  }
 
-return Response.json({
-  success: true,
-  sent: results.length - failures.length,
-  failed: failures.length,
-})
+  return Response.json({
+    success: true,
+    sent: results.length - failures.length,
+    failed: failures.length,
+  })
 }

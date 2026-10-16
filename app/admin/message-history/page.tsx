@@ -12,6 +12,7 @@ type AdminMessage = {
   message: string
   link_url: string | null
   link_text: string | null
+  image_url: string | null
   recipient_count: number
   audience_label: string | null
   via_notification: boolean
@@ -200,15 +201,19 @@ export default function MessageHistoryPage() {
                     </div>
                   </div>
                   {expanded && (
-                    <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #2a2a3e', color: '#a0a0b0', fontSize: '0.9rem', whiteSpace: 'pre-line' }}>
-                      {m.message}
-                      {m.link_url && (
-                        <div style={{ marginTop: '8px', color: '#555570', fontSize: '0.8rem' }}>
-                          Link: {m.link_text ?? ''} {m.link_url}
-                        </div>
-                      )}
-                    </div>
-                  )}
+  <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #2a2a3e', color: '#a0a0b0', fontSize: '0.9rem', whiteSpace: 'pre-line' }}>
+    {m.message}
+    {m.image_url && (
+      <img src={m.image_url} alt="" style={{ maxWidth: '280px', borderRadius: '8px', marginTop: '10px', display: 'block' }} />
+    )}
+    {m.link_url && (
+      <div style={{ marginTop: '8px', color: '#555570', fontSize: '0.8rem' }}>
+        Link: {m.link_text ?? ''} {m.link_url}
+      </div>
+    )}
+  </div>
+)}
+                
                 </div>
               )
             })}
