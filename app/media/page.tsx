@@ -58,6 +58,7 @@ export default function ExtrasPage() {
     allowFullScreen
   />
 </div>
+</div>
         {/* Blog Section */}
         <div style={{ marginBottom: '0px' }}>
           <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
