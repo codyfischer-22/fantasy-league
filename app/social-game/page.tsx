@@ -704,7 +704,7 @@ const handleCreate = async (skin: string, isPrivate: boolean) => {
           >
             {tierGridContent}
             <p style={{ color: '#555570', textAlign: 'center', fontSize: '0.85rem', marginTop: '16px', marginBottom: '0px' }}>
-              <em>Features have yet to be built out.</em> * Usable while active, after three consecutive paid months.
+              <em>* Yet to be built out; usable while active, after 3 consecutive paid months.</em>
             </p>
           </div>
         </div>
