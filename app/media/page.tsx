@@ -39,25 +39,34 @@ export default function ExtrasPage() {
           Check out podcasts, blogs, and who knows what from Trekkon Fantasy Leagues!
         </p>
 
-   {/* Podcast Section */}
+{/* Podcast Section */}
 <div style={{ marginBottom: '32px' }}>
   <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
     <MicSignal size={22} strokeWidth={2} color="#f0b429" />
     Talkin' with Trekkon
   </h2>
-<div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-  <iframe
-    data-testid="embed-iframe"
-    style={{ borderRadius: '12px' }}
-    src="https://open.spotify.com/embed/show/7HR9XTBY9tbnZWciUOM0NZ?utm_source=generator&si=7ecc85f5f4a44824"
-    width="100%"
-    height="352"
-    frameBorder="0"
-    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-    loading="lazy"
-    allowFullScreen
-  />
-</div>
+  <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+    <iframe
+      style={{ borderRadius: '12px', flex: '1 1 320px', minWidth: '280px' }}
+      src="https://www.youtube.com/embed/videoseries?list=PLCN30DbBuhtI"
+      width="100%"
+      height="200"
+      frameBorder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      loading="lazy"
+      allowFullScreen
+    />
+    <iframe
+      style={{ borderRadius: '12px', flex: '1 1 320px', minWidth: '280px' }}
+      src="https://www.youtube.com/embed/videoseries?list=PLW4pOTUl_apc"
+      width="100%"
+      height="200"
+      frameBorder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      loading="lazy"
+      allowFullScreen
+    />
+  </div>
 </div>
         {/* Blog Section */}
         <div style={{ marginBottom: '0px' }}>
