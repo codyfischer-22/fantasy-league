@@ -278,7 +278,7 @@ const handleCreate = async (skin: string, isPrivate: boolean) => {
         </section>
 
         <p className="desktop-only-text" style={{ color: '#555570', textAlign: 'center', fontSize: '0.9rem', marginBottom: '36px' }}>
-          <em>Features have yet to be built out.</em> * Usable while active, after three consecutive paid months.
+          <em>* Yet to be built out; usable while active, after 3 consecutive paid months.</em>
         </p>
 
        {isMobile === null ? null : (
