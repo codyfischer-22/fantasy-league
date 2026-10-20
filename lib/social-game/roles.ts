@@ -62,7 +62,7 @@ export const roleTermsBySkin: Record<string, RoleTerms> = {
     badTeamMember: 'Traitor',
     badCaptain: 'Turret Master',
     mission: 'Round Table',
-    missionLeader: 'First to Speak',
+    missionLeader: 'First Up',
     passMission: 'Banish the Traitor',
     failMission: 'Save the Traitor',
     goodTeamMemberDescription: 'Your job as a faithful is to hunt down and banish traitors at 3 Round Tables. Don\u0027t let your enemies save their fellow traitors, and protect the identity of the Most Faithful of the Faithfuls.',
