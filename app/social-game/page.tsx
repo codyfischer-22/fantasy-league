@@ -26,6 +26,20 @@ export default function SocialGameLandingPage() {
   const [privateJoinError, setPrivateJoinError] = useState<Record<number, string>>({})
   const [isMobile, setIsMobile] = useState<boolean | null>(null)
   const [showMobilePerksModal, setShowMobilePerksModal] = useState(false)
+  const [myTier, setMyTier] = useState('stowaway')
+const [customGameName, setCustomGameName] = useState('')
+
+useEffect(() => {
+  async function loadTier() {
+    if (!user) {
+      setMyTier('stowaway')
+      return
+    }
+    const { data } = await supabase.from('profiles').select('tier').eq('user_id', user.id).single()
+    setMyTier(data?.tier ?? 'stowaway')
+  }
+  loadTier()
+}, [user])
 
   useEffect(() => {
     setIsMobile(window.innerWidth < 768)
@@ -74,18 +88,23 @@ export default function SocialGameLandingPage() {
     setActiveSkinTab(selectableSkins[0] ?? null)
   }
 
-  const handleCreate = async (skin: string, isPrivate: boolean) => {
-    if (!user) return
-    setCreating(true)
-    setError('')
-    const { gameId, error: createError } = await createGame(user.id, skin, isPrivate)
-    setCreating(false)
-    if (createError || !gameId) {
-      setError(createError ?? 'Something went wrong.')
-      return
-    }
-    router.push(`/social-game/${gameId}`)
+const handleCreate = async (skin: string, isPrivate: boolean) => {
+  if (!user) return
+  setCreating(true)
+  setError('')
+  const { gameId, error: createError } = await createGame(
+    user.id,
+    skin,
+    isPrivate,
+    myTier === 'teamprincipal' ? customGameName : undefined
+  )
+  setCreating(false)
+  if (createError || !gameId) {
+    setError(createError ?? 'Something went wrong.')
+    return
   }
+  router.push(`/social-game/${gameId}`)
+}
 
   const handleJoinPublic = async (game: OpenGame) => {
     if (!user) {
@@ -218,7 +237,7 @@ export default function SocialGameLandingPage() {
         </h3>
         <ul style={{ color: '#a0a0b0', fontSize: '0.9rem', textAlign: 'left', lineHeight: '1.7', listStyle: 'none', padding: 0 }}>
           <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> All Previous Perks</li>
-          <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> <em>Rename Games</em></li>
+          <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> Rename Games</li>
           <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> Highlighted Chats</li>
           <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rocket size={14} strokeWidth={2} color="#f0b429" /> <em>Make Custom Skin *</em></li>
           <div style={{ fontSize: '1.5rem', color: '#f0b429', fontWeight: 'bold', textAlign: 'center', marginBottom: '0px' }}>
@@ -384,8 +403,8 @@ export default function SocialGameLandingPage() {
                       </p>
                       <div style={{ display: 'flex', gap: '8px' }}>
                         <button
-                          onClick={() => setPendingCreate({ skin, isPrivate: false })}
-                          disabled={creating}
+  onClick={() => { setCustomGameName(''); setPendingCreate({ skin, isPrivate: false }) }}
+                            disabled={creating}
                           style={{
                             flex: 1, backgroundColor: '#f0b429', color: '#0a0a0f', padding: '10px',
                             borderRadius: '6px', border: 'none', fontWeight: 'bold', fontSize: '0.85rem',
@@ -395,8 +414,8 @@ export default function SocialGameLandingPage() {
                           Public
                         </button>
                         <button
-                          onClick={() => setPendingCreate({ skin, isPrivate: true })}
-                          disabled={creating}
+  onClick={() => { setCustomGameName(''); setPendingCreate({ skin, isPrivate: true }) }}
+                            disabled={creating}
                           style={{
                             flex: 1, backgroundColor: 'transparent', color: '#f0b429', border: '1px solid #f0b429',
                             padding: '10px', borderRadius: '6px', fontWeight: 'bold', fontSize: '0.85rem',
@@ -584,12 +603,41 @@ export default function SocialGameLandingPage() {
                   <p style={{ color: '#ffffff', fontSize: '1rem', marginBottom: '12px', textAlign: 'left' }}>
                     Create new {pendingCreate.isPrivate ? 'private' : 'public'} league?
                   </p>
-                  <p style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '14px', textAlign: 'left' }}>
-                    {pendingCreate.isPrivate
-                      ? 'Players can only join this game with a special code, generated once your league is created.'
-                      : 'Any player will be able to join this league from our main lobby. Happy deceiving!'}
-                  </p>
-                  {freeRemaining !== null && freeRemaining > 0 && (
+                <p style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '14px', textAlign: 'left' }}>
+  {pendingCreate.isPrivate
+    ? 'Players can only join this game with a special code, generated once your league is created.'
+    : 'Any player will be able to join this league from our main lobby. Happy deceiving!'}
+</p>
+
+{myTier === 'teamprincipal' && (
+  <div style={{ marginBottom: '14px' }}>
+    <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.8rem', marginBottom: '4px' }}>
+      Custom Game Name (Optional)
+    </label>
+    <input
+      type="text"
+      value={customGameName}
+      onChange={(e) => setCustomGameName(e.target.value.slice(0, 24))}
+      maxLength={18}
+      placeholder={`${pendingCreate.isPrivate ? 'Private' : 'Public'} Game Name...`}
+      style={{
+        width: '100%',
+        padding: '8px 10px',
+        borderRadius: '6px',
+        border: '1px solid #2a2a3e',
+        backgroundColor: '#12121a',
+        color: '#ffffff',
+        fontSize: '0.85rem',
+        boxSizing: 'border-box'
+      }}
+    />
+    <div style={{ textAlign: 'right', color: '#555570', fontSize: '0.75rem', marginTop: '2px' }}>
+      {customGameName.length}/18
+    </div>
+  </div>
+)}
+
+{freeRemaining !== null && freeRemaining > 0 && (
                     <p style={{ color: '#555570', fontSize: '0.85rem', marginBottom: '16px', textAlign: 'center' }}>
                       After this, you will have {Math.max(0, freeRemaining - 1)} free host{Math.max(0, freeRemaining - 1) === 1 ? '' : 's'} remaining unless you upgrade to Crew Chief+.
                     </p>
@@ -610,15 +658,15 @@ export default function SocialGameLandingPage() {
                     >
                       {creating ? 'Creating...' : 'Create'}
                     </button>
-                    <button
-                      onClick={() => setPendingCreate(null)}
-                      style={{
-                        backgroundColor: 'transparent', color: '#a0a0b0', padding: '10px 24px',
-                        borderRadius: '6px', border: '1px solid #2a2a3e', cursor: 'pointer'
-                      }}
-                    >
-                      Cancel
-                    </button>
+                <button
+  onClick={() => { setCustomGameName(''); setPendingCreate(null) }}
+  style={{
+    backgroundColor: 'transparent', color: '#a0a0b0', padding: '10px 24px',
+    borderRadius: '6px', border: '1px solid #2a2a3e', cursor: 'pointer'
+  }}
+>
+  Cancel
+</button>
                   </div>
                 </div>
               </div>

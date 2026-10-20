@@ -18,6 +18,7 @@ type Profile = {
   is_global_admin: boolean
   email_opt_in: boolean
   chat_digest_opt_in: boolean
+  avatar_url: string | null
 }
 
 function AccountContent() {
@@ -42,9 +43,58 @@ function AccountContent() {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
   const [emailOptIn, setEmailOptIn] = useState(true)
   const [emailOptInSaving, setEmailOptInSaving] = useState(false)
-
+const [avatarFile, setAvatarFile] = useState<File | null>(null)
+const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+const [uploadingAvatar, setUploadingAvatar] = useState(false)
+const [avatarMessage, setAvatarMessage] = useState('')
   const [chatDigestOptIn, setChatDigestOptIn] = useState(false);
 const [chatDigestSaving, setChatDigestSaving] = useState(false);
+
+const handleAvatarSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+  setAvatarFile(file)
+  setAvatarPreview(URL.createObjectURL(file))
+  setAvatarMessage('')
+}
+
+const handleAvatarUpload = async () => {
+  if (!avatarFile || !user) return
+  setUploadingAvatar(true)
+  setAvatarMessage('')
+  const fileExt = avatarFile.name.split('.').pop()
+  const filePath = `${user.id}/avatar.${fileExt}`
+
+  const { error: uploadError } = await supabase.storage
+    .from('avatars')
+    .upload(filePath, avatarFile, { upsert: true })
+
+  if (uploadError) {
+    setUploadingAvatar(false)
+    setAvatarMessage('Upload failed. Please try again.')
+    return
+  }
+
+  const { data } = supabase.storage.from('avatars').getPublicUrl(filePath)
+  const avatarUrl = `${data.publicUrl}?t=${Date.now()}` // cache-bust so changes show immediately
+
+  const { error: dbError } = await supabase
+    .from('profiles')
+    .update({ avatar_url: avatarUrl })
+    .eq('user_id', user.id)
+
+  setUploadingAvatar(false)
+
+  if (dbError) {
+    setAvatarMessage('Uploaded, but failed to save. Please try again.')
+    return
+  }
+
+  setProfile((prev) => prev ? { ...prev, avatar_url: avatarUrl } : prev)
+  setAvatarFile(null)
+  setAvatarPreview(null)
+  setAvatarMessage('Profile picture updated!')
+}
 
 const handleToggleChatDigest = async (checked: boolean) => {
   if (!user) return;
@@ -292,7 +342,7 @@ const handleUpgrade = async (tier: string) => {
     if (user) {
    supabase
   .from('profiles')
-  .select('email, tier, display_name, is_global_admin, email_opt_in, chat_digest_opt_in')
+  .select('email, tier, display_name, is_global_admin, email_opt_in, chat_digest_opt_in, avatar_url')
   .eq('user_id', user.id)
   .single()
   .then(({ data, error }) => {
@@ -468,6 +518,56 @@ const handleSave = async () => {
     </button>
   ))}
 </div>
+
+{profile.tier !== 'stowaway' && (
+  <div style={{ marginBottom: '16px' }}>
+    <div style={{ color: '#a0a0b0', fontSize: '0.85rem', marginTop: '16px', marginBottom: '8px' }}>Profile Picture</div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <div style={{
+        width: '60px', height: '60px', borderRadius: '50%',
+        backgroundImage: `url(${avatarPreview || profile.avatar_url || ''})`,
+        backgroundSize: 'cover', backgroundPosition: 'center',
+        backgroundColor: '#12121a', border: '2px solid #2a2a3e', flexShrink: 0
+      }} />
+      <div>
+        <input
+          type="file"
+          id="avatar-input"
+          accept="image/*"
+          onChange={handleAvatarSelect}
+          style={{ display: 'none' }}
+        />
+        <label
+          htmlFor="avatar-input"
+          style={{
+            display: 'inline-block', backgroundColor: 'transparent', color: '#f0b429',
+            border: '1px solid #f0b429', padding: '6px 14px', borderRadius: '6px',
+            fontSize: '0.8rem', fontWeight: 'bold', cursor: 'pointer'
+          }}
+        >
+          Choose Photo
+        </label>
+        {avatarFile && (
+          <button
+            onClick={handleAvatarUpload}
+            disabled={uploadingAvatar}
+            style={{
+              marginLeft: '8px', backgroundColor: '#f0b429', color: '#0a0a0f',
+              border: 'none', padding: '6px 14px', borderRadius: '6px',
+              fontSize: '0.8rem', fontWeight: 'bold', cursor: uploadingAvatar ? 'not-allowed' : 'pointer'
+            }}
+          >
+            {uploadingAvatar ? 'Uploading...' : 'Save'}
+          </button>
+        )}
+      </div>
+    </div>
+    {avatarMessage && (
+      <div style={{ color: '#a0a0b0', fontSize: '0.8rem', marginTop: '8px' }}>{avatarMessage}</div>
+    )}
+  </div>
+)}
+
           {cancelMessage && (
             <div style={{ color: '#a0a0b0', fontSize: '0.8rem', marginTop: '8px' }}>
               {cancelMessage}

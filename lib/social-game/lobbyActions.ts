@@ -154,7 +154,8 @@ export async function checkHostEligibility(userId: string): Promise<{ canHost: b
 export async function createGame(
   hostUserId: string,
   skin: string,
-  isPrivate: boolean
+  isPrivate: boolean,
+  customName?: string
 ): Promise<{ gameId: number | null; error: string | null }> {
   const eligibility = await checkHostEligibility(hostUserId)
   if (!eligibility.canHost) {
@@ -174,7 +175,26 @@ export async function createGame(
     .select('*', { count: 'exact', head: true })
     .eq('is_private', isPrivate)
 
-  const displayName = `${isPrivate ? 'Private' : 'Public'} ${(sameTypeCount ?? 0) + 1}`
+  const autoName = `${isPrivate ? 'Private' : 'Public'} ${(sameTypeCount ?? 0) + 1}`
+
+  let displayName = autoName
+  const trimmedCustomName = customName?.trim()
+  if (trimmedCustomName) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('tier')
+      .eq('user_id', hostUserId)
+      .single()
+
+    if (profile?.tier !== 'teamprincipal') {
+      return { gameId: null, error: 'Custom game names are only available to Team Principals.' }
+    }
+    if (trimmedCustomName.length > 24) {
+      return { gameId: null, error: 'Game names must be 24 characters or fewer.' }
+    }
+    displayName = trimmedCustomName
+  }
+
   const joinCode = isPrivate ? Math.random().toString(36).substring(2, 8).toUpperCase() : null
 
   const { data: leagueData, error: leagueError } = await supabase

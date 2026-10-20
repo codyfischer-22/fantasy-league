@@ -142,17 +142,19 @@ export default function SocialGameRoomPage() {
         const userIds = seatRows.map((r) => r.user_id)
         const { data: profiles } = await supabase
           .from('profiles')
-          .select('user_id, display_name, is_global_admin')
+  .select('user_id, display_name, is_global_admin, avatar_url')
           .in('user_id', userIds)
-        const nameMap = new Map((profiles ?? []).map((p) => [p.user_id, p.display_name || 'Player']))
-        setPlayers(
-          seatRows.map((r) => ({
-            user_id: r.user_id,
-            seat_order: r.seat_order,
-            display_name: nameMap.get(r.user_id) ?? 'Player',
-            role: r.role,
-          }))
-        )
+    const nameMap = new Map((profiles ?? []).map((p) => [p.user_id, p.display_name || 'Player']))
+const avatarMap = new Map((profiles ?? []).map((p) => [p.user_id, p.avatar_url]))
+setPlayers(
+  seatRows.map((r) => ({
+    user_id: r.user_id,
+    seat_order: r.seat_order,
+    display_name: nameMap.get(r.user_id) ?? 'Player',
+    role: r.role,
+    avatar_url: avatarMap.get(r.user_id) ?? null,
+  }))
+)
         setHasAdminInGame((profiles ?? []).some((p) => p.is_global_admin))
       }
 

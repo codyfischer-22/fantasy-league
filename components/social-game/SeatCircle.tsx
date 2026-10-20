@@ -8,6 +8,7 @@ type SeatPlayer = {
   seat_order: number
   display_name: string
   role?: string
+  avatar_url?: string | null
 }
 
 type Props = {
@@ -121,7 +122,8 @@ return (
   width: '100%',
   height: '100%',
   borderRadius: '50%',
-backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.15), rgba(10, 10, 15, 0.15)), url(${avatarForSkin(skin)})`,  backgroundSize: 'cover',
+  backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.15), rgba(10, 10, 15, 0.15)), url(${p.avatar_url || avatarForSkin(skin)})`,
+  backgroundSize: 'cover',
   backgroundPosition: 'center',
   border: roleBorderColor ? `3px solid ${roleBorderColor}` : '2px solid #2a2a3e',
   boxShadow: showBadCaptainGlow
