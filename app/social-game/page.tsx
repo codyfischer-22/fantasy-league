@@ -166,7 +166,7 @@ const handleCreate = async (skin: string, isPrivate: boolean) => {
         <ul style={{ color: '#a0a0b0', fontSize: '0.9rem', textAlign: 'left', lineHeight: '1.7', listStyle: 'none', padding: 0 }}>
           <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rat size={14} strokeWidth={2} /> Join Public Games </li>
           <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rat size={14} strokeWidth={2} /> Join Private Games</li>
-          <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rat size={14} strokeWidth={2} /> Interactice Console</li>
+          <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rat size={14} strokeWidth={2} /> Interactive Console</li>
           <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Rat size={14} strokeWidth={2} /> Text Chat Access</li>
           <div style={{ fontSize: '1.5rem', color: '#a0a0b0', textAlign: 'center', fontWeight: 'bold', marginBottom: '0px' }}>
             $0.00
