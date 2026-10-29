@@ -225,6 +225,10 @@ const rulesContent: Record<string, {
             points: '+10',
             notes: ['Player finds and secures extra vote on a mission.']
           },
+            { event: 'Power of the Pardon',
+            points: '+10',
+            notes: ['Player finds and secures this power on a mission.']
+          }
         ],
       },
       {
@@ -263,7 +267,11 @@ const rulesContent: Record<string, {
             event: 'Successful Dagger',
             points: '+15',
             notes: ['If extra vote makes the difference in a player going home.']
-          }
+          },
+            { event: 'Pardoned from Banishment',
+            points: '+15',
+            notes: ['Player received enough votes for banishment but was saved.']
+          },
         ],
       },
       {
