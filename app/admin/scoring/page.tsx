@@ -78,6 +78,7 @@ const categoriesByLeague: Record<string, CategoryDef[]> = {
     { key: 'murdered_in_night', label: 'Murdered', points: -8 },
     { key: 'murdered_in_plain_sight', label: 'Murdered in Plain Sight', points: -15 },
     { key: 'escape_murder_with_shield', label: 'Shielded from Murder', points: 15 },
+       { key: 'pardoned_from_banishment', label: 'Pardoned from Banishment', points: 15 },
     { key: 'first_banished', label: 'First Banished', points: -5 },
     { key: 'banished_round_table', label: 'Banished at Round Table', points: -10 },
     { key: 'successful_dagger_play', label: 'Successful Dagger', points: 15 },
