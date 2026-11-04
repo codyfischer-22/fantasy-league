@@ -15,30 +15,19 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://trekkonleagues.com"),
   title: "Trekkon Fantasy Leagues",
   description: "Choose Fandoms. Draft Teams. Beat Buddies.",
-  icons: {
-    icon: "/favicon.svg",
-  },
   openGraph: {
     title: "Trekkon Fantasy Leagues",
     description: "Choose Fandoms. Draft Teams. Beat Buddies.",
     siteName: "Trekkon Fantasy Leagues",
-    images: [
-      {
-        url: "https://trekkonleagues.com/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Trekkon Fantasy Leagues",
-      },
-    ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Trekkon Fantasy Leagues",
     description: "Choose Fandoms. Draft Teams. Beat Buddies.",
-    images: ["https://trekkonleagues.com/og-image.png"],
   },
 };
 

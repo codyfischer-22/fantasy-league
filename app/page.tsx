@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { Rat, Anchor, Drill, Rocket, Earth, Lock, TestTubeDiagonal, Hammer, CornerLeftUp, Mail, Hourglass, TreePalm, ChessRook, CarFront, Engine, MessageCirclePlus } from 'lucide-react'
 
 type MyLeague = {
@@ -130,15 +131,15 @@ const realLeagues = (leagues ?? []).filter((l) => !l.is_show_chat && l.league_ty
   borderBottom: '2px solid #f0b429',
   backgroundColor: '#0a0a0f'
 }}>
-    <h1 style={{
-      color: '#f0b429',
-      fontSize: 'clamp(1rem, 5.9vw, 2.5rem)',
-      margin: 0,
-      letterSpacing: '1px',
-      fontWeight: 'bold',
-      whiteSpace: 'nowrap'
-    }}>
-      ⚜️ Trekkon Fantasy Leagues
+      <h1 style={{ margin: 0, display: 'flex', justifyContent: 'center' }}>
+      <Image
+        src="/logo-wide-v3.png"
+        alt="Trekkon Fantasy Leagues"
+        width={1278}
+        height={192}
+        priority
+        style={{ width: '90%', maxWidth: '520px', height: 'auto' }}
+      />
     </h1>
     <p style={{
       color: '#a0a0b0',

@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useRef } from 'react'
 import ChatPanel from '@/components/ChatPanel'
+import Image from 'next/image'
 import { MessageCircle, Bell, Settings, Menu, Mail, HandCoins, UserPen, SquareLibrary, Swords, TreePalm, ChessRook, CarFront, Engine } from 'lucide-react'
 
 type Notification = {
@@ -192,14 +193,15 @@ useEffect(() => {
       alignItems: 'center'
     }}>
       <a href="/" style={{ textDecoration: 'none' }}>
-        <h1 style={{
-          color: '#f0b429',
-          fontSize: '2rem',
-          margin: 0,
-          letterSpacing: '2px',
-          fontWeight: 'bold'
-        }}>
-          ⚜️ Trekkon Fantasy Leagues
+            <h1 style={{ margin: 0, lineHeight: 0 }}>
+          <Image
+            src="/logo-wide-v3.png"
+            alt="Trekkon Fantasy Leagues"
+            width={1218}
+            height={160}
+            priority
+            style={{ height: 65, width: 'auto' }}
+          />
         </h1>
         <p style={{
           color: '#a0a0b0',

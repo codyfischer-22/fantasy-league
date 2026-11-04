@@ -4,6 +4,7 @@ import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import ChatPanel from '@/components/ChatPanel'
 import { Home, MessageCircle, Bell, KeyRound, Menu, UserPen, Mail, HandCoins, Settings, ScrollText, ClipboardList, Wallet, SquareLibrary, Swords, TreePalm, ChessRook, CarFront, Engine, PlayingCardsFan } from 'lucide-react'
+import Image from 'next/image'
 
 export default function MobileNav() {
   const { user } = useAuth()
