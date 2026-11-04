@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/AuthContext";
@@ -18,6 +18,11 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://trekkonleagues.com"),
   title: "Trekkon Fantasy Leagues",
   description: "Choose Fandoms. Draft Teams. Beat Buddies.",
+  appleWebApp: {
+    capable: true,
+    title: "Trekkon",
+    statusBarStyle: "black",
+  },
   openGraph: {
     title: "Trekkon Fantasy Leagues",
     description: "Choose Fandoms. Draft Teams. Beat Buddies.",
@@ -29,6 +34,10 @@ export const metadata: Metadata = {
     title: "Trekkon Fantasy Leagues",
     description: "Choose Fandoms. Draft Teams. Beat Buddies.",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#12121a",
 };
 
 export default function RootLayout({
