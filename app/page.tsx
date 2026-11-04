@@ -133,7 +133,7 @@ const realLeagues = (leagues ?? []).filter((l) => !l.is_show_chat && l.league_ty
 }}>
       <h1 style={{ margin: 0, display: 'flex', justifyContent: 'center' }}>
       <Image
-        src="/logo-wide-v4.png"
+        src="/logo-wide-mobile.png"
         alt="Trekkon Fantasy Leagues"
         width={1278}
         height={192}

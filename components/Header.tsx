@@ -195,7 +195,7 @@ useEffect(() => {
       <a href="/" style={{ textDecoration: 'none' }}>
             <h1 style={{ margin: 0, lineHeight: 0 }}>
           <Image
-            src="/logo-wide-v4.png"
+            src="/logo-wide-desktop.png"
             alt="Trekkon Fantasy Leagues"
             width={1218}
             height={160}
