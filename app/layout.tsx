@@ -27,12 +27,21 @@ export const metadata: Metadata = {
     title: "Trekkon Fantasy Leagues",
     description: "Choose Fandoms. Draft Teams. Beat Buddies.",
     siteName: "Trekkon Fantasy Leagues",
+        images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Trekkon Fantasy Leagues",
+      },
+    ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Trekkon Fantasy Leagues",
     description: "Choose Fandoms. Draft Teams. Beat Buddies.",
+        images: ["/og-image.png"],
   },
 };
 
