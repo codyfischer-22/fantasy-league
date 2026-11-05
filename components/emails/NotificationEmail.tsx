@@ -22,9 +22,12 @@ export function NotificationEmail({
               <tbody>
                 <tr>
                   <td style={{ padding: '20px 10px' }}>
-                    <h1 style={{ color: '#f0b429', fontSize: '1.6rem', fontFamily: 'Georgia, serif', marginBottom: '20px' }}>
-                      ⚜️ Trekkon Fantasy Leagues
-                    </h1>
+                                      <img
+                      src="https://trekkonleagues.com/logo-email.png"
+                      alt="Trekkon Fantasy Leagues"
+                      width="300"
+                      style={{ display: 'block', width: '300px', maxWidth: '100%', height: 'auto', border: 0, marginBottom: '24px' }}
+                    />
                     <p style={{ color: '#ffffff', fontSize: '1rem', fontFamily: 'Georgia, serif', marginBottom: '16px' }}>
                       Hey {playerName},
                     </p>

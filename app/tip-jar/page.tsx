@@ -3,6 +3,7 @@ import { useAuth } from '@/lib/AuthContext'
 import { useSearchParams } from 'next/navigation'
 import { Suspense, useState } from 'react'
 import { HandCoins } from 'lucide-react'
+import Image from 'next/image'
 
 function ExtrasContent() {
   const { user } = useAuth()
@@ -79,7 +80,7 @@ function ExtrasContent() {
       textAlign: 'left',
     }}>
       <h3 style={{ color: '#f0b429', fontSize: '1.6rem', marginBottom: '12px' }}>
-        ⚜️ Thanks for your support!
+        <Image src="/logo-t.png" alt="" width={87} height={120} style={{ display: 'inline-block', height: '1.2em', width: 'auto', marginRight: '4px', verticalAlign: '-.1em' }} /> Thanks for your support!
       </h3>
       <p style={{ color: '#a0a0b0', fontSize: '1rem', marginBottom: '24px', lineHeight: '1.6' }}>
         Trekkon Fantasy Leagues could not continue without the patronage of league members like you! Now get out there and trek on!

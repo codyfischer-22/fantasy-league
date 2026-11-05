@@ -1,3 +1,5 @@
+import Image from 'next/image'
+
 export default function Footer() {
   return (
     <footer style={{
@@ -9,8 +11,7 @@ export default function Footer() {
       fontSize: '1.0rem'
     }}>
       <p className="footer-line"  style={{ marginBottom: '8px' }}>
-  ⚜️ <span style={{ color: '#f0b429', fontWeight: 'bold' }}>Trekkon Fantasy Leagues</span> — All Rights Reserved
-</p>
+  <Image src="/logo-t.png" alt="" width={87} height={120} style={{ display: 'inline-block', height: '1.3em', width: 'auto', verticalAlign: '-.1em', marginRight: '4px' }} />  <span style={{ color: '#f0b429', fontWeight: 'bold' }}>Trekkon Fantasy Leagues</span> — All Rights Reserved</p>
     <p className="footer-disclaimer-1" style={{ fontSize: '.9em', color: '#555570', marginBottom: '0px' }}>
   Trekkon Fantasy Leagues is an independent, fan-run platform not affiliated with,
   endorsed by, or connected to any official sports organization or television network.

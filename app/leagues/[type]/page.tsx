@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/AuthContext'
+import Image from 'next/image'
 import { Rat, Anchor, Drill, Rocket, ScrollText, ClipboardList, Earth, Lock, TestTubeDiagonal, TreePalm, ChessRook } from 'lucide-react'
 
 type League = {
@@ -211,15 +212,15 @@ if (!hubContent[type]) {
   backgroundColor: '#0a0a0f',
   zIndex: 140
 }}>
-    <h1 style={{
-      color: '#f0b429',
-      fontSize: 'clamp(1rem, 5.9vw, 2.5rem)',
-      margin: 0,
-      letterSpacing: '1px',
-      fontWeight: 'bold',
-      whiteSpace: 'nowrap'
-    }}>
-      ⚜️ Trekkon Fantasy Leagues
+     <h1 style={{ margin: 0, display: 'flex', justifyContent: 'center' }}>
+      <Image
+        src="/logo-wide-mobile.png"
+        alt="Trekkon Fantasy Leagues"
+        width={1681}
+        height={192}
+        priority
+        style={{ width: '90%', maxWidth: '520px', height: 'auto' }}
+      />
     </h1>
     <p style={{
       color: '#a0a0b0',
