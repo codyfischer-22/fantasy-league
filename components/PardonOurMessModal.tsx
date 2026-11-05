@@ -7,7 +7,7 @@ import { Flame } from 'lucide-react'
 const MODAL_ENABLED = true 
 
 // Bump this date/version string whenever you want the modal to show again after a new release
-const UPDATE_VERSION = '2026-10-15' 
+const UPDATE_VERSION = '2026-11-05'
 
 export default function PardonOurMessModal() {
   const [showModal, setShowModal] = useState(false)
@@ -65,41 +65,63 @@ export default function PardonOurMessModal() {
             gap: '8px',
           }}
         >
-          🔥 NEW FEATURES!
+          🔥 BIG NEWS!
         </h3>
 
-       <p
+          <p
   style={{
-    color: '#a0a0b0',
+    color: '#ffffff',
     fontSize: '0.95rem',
     marginBottom: '12px',
     lineHeight: '1.6',
   }}
 >
-  Check out our new social deduction game, <em>Trust Issue<span style={{ fontSize: '0.8em' }}>5</span></em>, to get in the games you've watched for so long!
+  You can now app-ify Trekkon Leagues so you don't have to go through web browser. Add us to home screen or desktop to access leagues with one click!
 </p>
 
-          <p
-          style={{
-            color: '#a0a0b0',
-            fontSize: '0.95rem',
-            marginBottom: '12px',
-            lineHeight: '1.6',
-          }}
-        >
-<em>Trust Issue<span style={{ fontSize: '0.8em' }}>5</span></em> is a 5-round battle between good and evil factions, where you must correctly deduct who's who. Check out the new "Games" section to host or join a game!
-        </p>
+  <p
+  style={{
+    color: '#a0a0b0',
+    fontSize: '0.8rem',
+    marginBottom: '8px',
+    lineHeight: '1.6',
+    textAlign: 'center',
+  }}
+>
+iPhone: Access Site → "Share" → "Add to Home Screen" or "Install App" </p>
 
-        <p
-          style={{
-            color: '#a0a0b0',
-            fontSize: '0.95rem',
-            marginBottom: '20px',
-            lineHeight: '1.6',
-          }}
-        >
-          For fantasy leagues, remember to make your weekly elimination predictions and know when to swap a player in the Trade Portal!
-        </p>
+  <p
+  style={{
+    color: '#a0a0b0',
+    fontSize: '0.8rem',
+    marginBottom: '8px',
+    lineHeight: '1.6',
+    textAlign: 'center',
+  }}
+>
+Android: Access Site → ⋮ Menu → "Add to Home Screen" </p>
+
+<p
+  style={{
+    color: '#a0a0b0',
+    fontSize: '0.8rem',
+    marginBottom: '12px',
+    lineHeight: '1.6',
+    textAlign: 'center',
+  }}
+>
+Desktop: Access Site → Install Icon Right of Search Bar (Chrome or Edge) OR "File" → "Add to Dock" (Safari)</p>
+
+       <p
+  style={{
+    color: '#ffffff',
+    fontSize: '0.95rem',
+    marginBottom: '12px',
+    lineHeight: '1.6',
+  }}
+>
+  Check out our new social deduction game to get in the games! <em>Trust Issue<span style={{ fontSize: '0.8em' }}>5</span></em> is a 5-round battle between good and evil, where you must correctly deduct who's who. Check out the "Games" section to host or join!
+</p>
 
         <button
           onClick={handleCloseModal}
