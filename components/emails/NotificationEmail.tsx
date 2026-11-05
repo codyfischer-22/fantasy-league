@@ -25,8 +25,8 @@ export function NotificationEmail({
                                                           <img
                       src="https://trekkonleagues.com/logo-email-v2.png"
                       alt="Trekkon Fantasy Leagues"
-                      width="410"
-                      style={{ display: 'block', width: '410px', maxWidth: '100%', height: 'auto', border: 0, marginBottom: '24px' }}
+                      width="480"
+                      style={{ display: 'block', width: '480px', maxWidth: '100%', height: 'auto', border: 0, marginBottom: '24px' }}
                     />
                     <p style={{ color: '#ffffff', fontSize: '1rem', fontFamily: 'Georgia, serif', marginBottom: '16px' }}>
                       Hey {playerName},
