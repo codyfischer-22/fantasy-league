@@ -215,7 +215,7 @@ setAllCastaways(allCastawayList ?? [])
     <Dices size={20} strokeWidth={2} /> Episode {currentEpisode} Prediction
   </h3>
 
- <a
+<a
   href={`/leagues/${leagueType}/${instanceSlug}/predictions`}
   style={{
     color: '#a0a0b0',
@@ -224,8 +224,7 @@ setAllCastaways(allCastawayList ?? [])
     whiteSpace: 'nowrap'
   }}
 >
-  <span className="desktop-only-text">Leaderboard →</span>
-  <span className="mobile-only-block">Standings →</span>
+  Standings →
 </a>
 </div>
             {loading ? (

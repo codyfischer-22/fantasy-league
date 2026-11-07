@@ -322,7 +322,7 @@ const leaderboardLink = `/leagues/${league.league_type}/${league.slug}/predictio
         subject: `Weekly Prediction Bonus | ${league.name}`,
         message: announcementMessage,
         linkUrl: `https://trekkonleagues.com${leaderboardLink}`,
-        linkText: 'View Prediction Leaderboard →',
+        linkText: 'View Prediction Standings →',
       }),
     })
   }
