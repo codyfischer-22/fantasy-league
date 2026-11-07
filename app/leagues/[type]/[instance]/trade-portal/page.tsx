@@ -970,12 +970,13 @@ return (
   <span className="mobile-full-width-break" style={{ color: '#ffffff' }}>Trade Portal</span>
 </h1>
 
-          <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '32px' }}>
+              <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '32px' }}>
             Didn&apos;t get your dream team in the draft? There&apos;s still time to secure your favorite players as long as they&apos;re in the game. Full trade policies can be found{' '}
             <a href={`/leagues/${type}/draft`} style={{ color: '#f0b429', textDecoration: 'underline' }}>
               here
             </a>.
           </p>
+          </div>
         </div>
 
 <div style={{
