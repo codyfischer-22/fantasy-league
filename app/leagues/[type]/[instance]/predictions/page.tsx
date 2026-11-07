@@ -126,7 +126,7 @@ export default function PredictionLeaderboardPage() {
           ← Back to {leagueName || 'League'}
         </a>
 
-      <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px', display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+<h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px', display: 'flex', alignItems: 'center', flexWrap: 'wrap', rowGap: '0px', columnGap: '10px' }}>
   <Dices size={36} strokeWidth={2} color="#f0b429" style={{ flexShrink: 0 }} />
   <span style={{ color: '#f0b429' }}>Prediction</span>{' '}
   <span style={{ color: '#ffffff' }}>Leaderboard</span>
