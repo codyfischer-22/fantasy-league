@@ -44,10 +44,46 @@ export default function GameLobby({ gameId, skin, hostUserId, joinCode, isPrivat
 const [myTier, setMyTier] = useState('stowaway')
 const [showChat, setShowChat] = useState(false)
 const [openPlayerId, setOpenPlayerId] = useState<string | null>(null)
+const [hasUnreadLobbyChat, setHasUnreadLobbyChat] = useState(false)
 
   const isHost = user?.id === hostUserId
   const theme = themeContentBySkin[skin]
   const isSeated = players.some((p) => p.user_id === user?.id)
+
+  useEffect(() => {
+  async function checkUnreadLobbyChat() {
+    if (!user || !chatLeagueId) {
+      setHasUnreadLobbyChat(false)
+      return
+    }
+    const { data: readRow } = await supabase
+      .from('chat_read_status')
+      .select('last_read_at')
+      .eq('user_id', user.id)
+      .eq('league_id', chatLeagueId)
+      .maybeSingle()
+
+    const { data: latestMsg } = await supabase
+      .from('messages')
+      .select('created_at')
+      .eq('league_id', chatLeagueId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
+    if (!latestMsg) {
+      setHasUnreadLobbyChat(false)
+      return
+    }
+
+    const lastRead = readRow?.last_read_at
+    setHasUnreadLobbyChat(!lastRead || new Date(latestMsg.created_at) > new Date(lastRead))
+  }
+
+  checkUnreadLobbyChat()
+  const interval = setInterval(checkUnreadLobbyChat, 5000)
+  return () => clearInterval(interval)
+}, [user, chatLeagueId, showChat])
 
 useEffect(() => {
   async function loadTier() {
@@ -418,11 +454,25 @@ return (
   <button
     onClick={() => setShowChat(true)}
     style={{
-backgroundColor: 'rgba(255, 255, 255, 0.15)', color: '#ffffff', border: '1px solid #ffffff',      padding: '12px 32px', borderRadius: '8px', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer',
+      backgroundColor: 'rgba(255, 255, 255, 0.15)', color: '#ffffff', border: '1px solid #ffffff',      padding: '12px 32px', borderRadius: '8px', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer',
       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', margin: '0 auto 16px auto'
     }}
   >
-    <MessageCircle size={16} /> Text Chat
+    <span style={{ position: 'relative', display: 'inline-flex' }}>
+      <MessageCircle size={16} />
+      {hasUnreadLobbyChat && (
+        <span style={{
+          position: 'absolute',
+          top: '-3px',
+          right: '-5px',
+          width: '7px',
+          height: '7px',
+          borderRadius: '50%',
+          backgroundColor: '#f0b429'
+        }} />
+      )}
+    </span>
+    Text Chat
   </button>
 )}
 

@@ -106,9 +106,11 @@ const rulesContent: Record<string, {
             notes: ['If used correctly, advantages should help castaways advance in the game and score points in other categories.'],
           },
           {
-            event: 'Idol in Possession | Addended for Billie',
+            event: 'Idol in Possession',
             points: '+10',
-            notes: ['Castaways do not lose points if the idol is given, freely or forcibly, to another player; if passed around, points abound.'],
+            notes: ['Original castaway does not lose points if the idol is given, freely or forcibly, to another player.',
+              'For points to be awarded, idol must be usable by receiving player.'
+            ],
           },
           {
             event: 'Successful Idol Play',
@@ -125,6 +127,12 @@ const rulesContent: Record<string, {
       {
         title: 'Tribal Councils & Exits',
         rows: [
+          {
+            event: 'Quit Season',
+            points: '\u221225',
+            notes: [
+              'Player decides to leave game of own volition (excluding med-evacs or self-engineered vote outs).'],
+          },
           {
             event: 'First Player to Leave Starter Tribe',
             points: '\u221210',

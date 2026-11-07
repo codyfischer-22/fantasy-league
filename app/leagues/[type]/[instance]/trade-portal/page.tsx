@@ -964,12 +964,11 @@ return (
             marginBottom: '8px'
           }}>
             
-         <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', margin: 0, marginBottom: '4px', display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+      <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', margin: 0, marginBottom: '4px', display: 'flex', alignItems: 'center', flexWrap: 'wrap', rowGap: '0px', columnGap: '10px' }}>
   <RefreshCw size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
   <span style={{ color: '#f0b429' }}>League</span>{' '}
   <span className="mobile-full-width-break" style={{ color: '#ffffff' }}>Trade Portal</span>
 </h1>
-          </div>
 
           <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '32px' }}>
             Didn&apos;t get your dream team in the draft? There&apos;s still time to secure your favorite players as long as they&apos;re in the game. Full trade policies can be found{' '}
