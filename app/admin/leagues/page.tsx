@@ -289,8 +289,8 @@ const filteredLeagues = leagues.filter((l) => {
           ← Back to Admin Dashboard
         </a>
 
-        <h1 style={{ fontSize: '2rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <Trophy size={32} strokeWidth={2} color="#f0b429" />
+             <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>
+          <Trophy size="1em" strokeWidth={2} color="#f0b429" style={{ display: 'inline-block', verticalAlign: '-0.12em', marginRight: '10px' }} />
           <span style={{ color: '#f0b429' }}>League & Season</span>{' '}
           <span style={{ color: '#ffffff' }}>Management</span>
         </h1>
