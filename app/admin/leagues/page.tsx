@@ -289,10 +289,10 @@ const filteredLeagues = leagues.filter((l) => {
           ← Back to Admin Dashboard
         </a>
 
-             <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>
-          <Trophy size="1em" strokeWidth={2} color="#f0b429" style={{ display: 'inline-block', verticalAlign: '-0.12em', marginRight: '10px' }} />
+                <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', margin: 0, marginBottom: '8px', display: 'flex', alignItems: 'center', flexWrap: 'wrap', rowGap: '0px', columnGap: '10px' }}>
+          <Trophy size={36} strokeWidth={2} color="#f0b429" />
           <span style={{ color: '#f0b429' }}>League & Season</span>{' '}
-          <span style={{ color: '#ffffff' }}>Management</span>
+          <span className="mobile-full-width-break" style={{ color: '#ffffff' }}>Management</span>
         </h1>
         <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '24px' }}>
           Keep tabs on every league on the platform, public and private. Create new public leagues, run draft simulations, or jump straight into any league's pages.

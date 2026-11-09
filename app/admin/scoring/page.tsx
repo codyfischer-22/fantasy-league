@@ -653,10 +653,10 @@ setMessage(`Saved ${entries.length} scoring events for Episode ${episodeNumber}!
           ← Back to Admin Dashboard
         </a>
 
-<h1 style={{ fontSize: '2rem', marginBottom: '16px' }}>
-    <Calculator size="1em" strokeWidth={2} color="#f0b429" style={{ display: 'inline-block', verticalAlign: '-0.12em', marginRight: '10px' }} />
-  <span style={{ color: '#f0b429' }}>{selectedLeagueType === 'sandbox' ? 'Sandbox League' : selectedLeagueType === 'uncharted-turretory' || selectedLeagueType === 'uncharted-turretory-demo' ? 'Uncharted Turretory' : 'Secrets on the Beach'}</span>{' '}  
-  <span style={{ color: '#ffffff' }}>Episode Scoring Guide</span>
+<h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', margin: 0, marginBottom: '16px', display: 'flex', alignItems: 'center', flexWrap: 'wrap', rowGap: '0px', columnGap: '10px' }}>
+  <Calculator size={36} strokeWidth={2} color="#f0b429" />
+  <span style={{ color: '#f0b429' }}>{selectedLeagueType === 'sandbox' ? 'Sandbox League' : selectedLeagueType === 'uncharted-turretory' || selectedLeagueType === 'uncharted-turretory-demo' ? 'Uncharted Turretory' : 'Secrets on the Beach'}</span>{' '}
+  <span className="mobile-full-width-break" style={{ color: '#ffffff' }}>Episode Scoring Guide</span>
 </h1>
 
         <div style={{ marginBottom: '24px' }}>

@@ -236,10 +236,10 @@ const handledGameReports = gameReports.filter((r) => r.resolved)
           ← Back to Admin Dashboard
         </a>
 
-      <h1 style={{ fontSize: '2rem', marginBottom: '4px' }}>
-  <MessageSquareWarning size="1em" strokeWidth={2} color="#f0b429" style={{ display: 'inline-block', verticalAlign: '-0.12em', marginRight: '10px' }} />
+      <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', margin: 0, marginBottom: '4px', display: 'flex', alignItems: 'center', flexWrap: 'wrap', rowGap: '0px', columnGap: '10px' }}>
+  <MessageSquareWarning size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
   <span style={{ color: '#f0b429' }}>Support Center</span>{' '}
-  <span style={{ color: '#ffffff' }}>Inbox</span>
+  <span className="mobile-full-width-break" style={{ color: '#ffffff' }}>Inbox</span>
 </h1>
       <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '32px' }}>
 Your handling center for and archive of contact/support inquiries and reported chat messages.
