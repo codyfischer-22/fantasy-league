@@ -45,6 +45,7 @@ const categoriesByLeague: Record<string, CategoryDef[]> = {
     { key: 'idol_found', label: 'Idol Found', points: 10 },
     { key: 'successful_idol_play', label: 'Successful Idol Play', points: 15 },
     { key: 'idol_in_pocket', label: 'Left with Idol in Pocket', points: -20 },
+         { key: 'self_elimination', label: 'Quit Survivor', points: -25 },
     { key: 'first_off_starter_tribe', label: 'First Off Starter Tribe', points: -10 },
     { key: 'first_boot', label: 'First Boot (Voted Off)', points: -10 },
     { key: 'votes_against', label: 'Votes Against', points: -2, allowCount: true },
@@ -650,7 +651,7 @@ setMessage(`Saved ${entries.length} scoring events for Episode ${episodeNumber}!
 
 <h1 style={{ fontSize: 'clamp(1.6rem, 6vw, 2rem)', marginBottom: '16px', lineHeight: 1.25 }}>
   <Calculator size="1em" strokeWidth={2} color="#f0b429" style={{ display: 'inline-block', verticalAlign: '-0.12em', marginRight: '10px' }} />
-  <span style={{ color: '#f0b429' }}>{selectedLeagueType === 'uncharted-turretory' || selectedLeagueType === 'uncharted-turretory-demo' ? 'Uncharted Turretory' : 'Secrets on the Beach'}</span>{' '}
+  <span style={{ color: '#f0b429' }}>{selectedLeagueType === 'sandbox' ? 'Sandbox' : selectedLeagueType === 'uncharted-turretory' || selectedLeagueType === 'uncharted-turretory-demo' ? 'Uncharted Turretory' : 'Secrets on the Beach'}</span>{' '}  
   <span style={{ color: '#ffffff' }}>Episode Scoring Guide</span>
 </h1>
 
