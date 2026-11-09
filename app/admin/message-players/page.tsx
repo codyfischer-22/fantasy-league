@@ -386,10 +386,10 @@ if (archiveError) {
           ← Back to Admin Dashboard
         </a>
 
-              <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', margin: 0, marginBottom: '-4px', display: 'flex', alignItems: 'center', flexWrap: 'wrap', rowGap: '0px', columnGap: '10px' }}>
-          <Mail size={36} strokeWidth={2} color="#f0b429" />
+        <h1 style={{ fontSize: '2rem', marginBottom: '-4px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <Mail size={32} strokeWidth={2} color="#f0b429" />
           <span style={{ color: '#f0b429' }}>Message</span>{' '}
-          <span className="mobile-full-width-break" style={{ color: '#ffffff' }}>Players</span>
+          <span style={{ color: '#ffffff' }}>Players</span>
         </h1>
 
    <a     
