@@ -649,6 +649,10 @@ setMessage(`Saved ${entries.length} scoring events for Episode ${episodeNumber}!
     <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
 
+                <a href="/admin/dashboard" style={{ color: '#a0a0b0', fontSize: '0.85rem', textDecoration: 'none', display: 'inline-block', marginBottom: '24px' }}>
+          ← Back to Admin Dashboard
+        </a>
+
 <h1 style={{ fontSize: '2rem', marginBottom: '16px' }}>
     <Calculator size="1em" strokeWidth={2} color="#f0b429" style={{ display: 'inline-block', verticalAlign: '-0.12em', marginRight: '10px' }} />
   <span style={{ color: '#f0b429' }}>{selectedLeagueType === 'sandbox' ? 'Sandbox League' : selectedLeagueType === 'uncharted-turretory' || selectedLeagueType === 'uncharted-turretory-demo' ? 'Uncharted Turretory' : 'Secrets on the Beach'}</span>{' '}  

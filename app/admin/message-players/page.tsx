@@ -381,6 +381,11 @@ if (archiveError) {
   return (
     <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
       <div style={{ maxWidth: '700px', margin: '0 auto' }}>
+
+        <a href="/admin/dashboard" style={{ color: '#a0a0b0', fontSize: '0.85rem', textDecoration: 'none', display: 'inline-block', marginBottom: '24px' }}>
+          ← Back to Admin Dashboard
+        </a>
+
         <h1 style={{ fontSize: '2rem', marginBottom: '-4px', display: 'flex', alignItems: 'center', gap: '10px' }}>
           <Mail size={32} strokeWidth={2} color="#f0b429" />
           <span style={{ color: '#f0b429' }}>Message</span>{' '}
