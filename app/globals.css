@@ -780,3 +780,12 @@ html, body {
 body.hide-site-footer footer {
   display: none;
 }
+
+@media (max-width: 600px) {
+  .filter-select-row {
+    flex-direction: column;
+  }
+  .filter-select-row select {
+    width: 100%;
+  }
+}

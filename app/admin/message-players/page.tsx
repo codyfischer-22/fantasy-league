@@ -412,6 +412,7 @@ if (archiveError) {
             Recipients ({selectedIds.size} of {allProfiles.length} selected)
           </label>
 
+  <div className="filter-select-row" style={{ display: 'flex', gap: '8px', marginBottom: '18px' }}>
   <select
     value={filterType}
     onChange={(e) => applyFilter(e.target.value)}
@@ -421,7 +422,7 @@ if (archiveError) {
       border: '1px solid #2a2a3e',
       backgroundColor: '#12121a',
       color: '#ffffff',
-      marginBottom: '10px'
+      textAlign: 'left'
     }}
   >
     <option value="all">Everyone</option>
@@ -436,27 +437,27 @@ if (archiveError) {
   </select>
 
   <select
-  value={filterType.startsWith('league-') ? filterType : ''}
-  onChange={(e) => {
-    if (e.target.value) applyFilter(e.target.value)
-  }}
-  style={{
-    padding: '8px 12px',
-    borderRadius: '6px',
-    border: '1px solid #2a2a3e',
-    backgroundColor: '#12121a',
-    color: '#ffffff',
-    marginBottom: '18px',
-    marginLeft: '8px'
-  }}
->
-  <option value="">Specific League</option>
-  {allLeagues.map((league) => (
-    <option key={league.id} value={`league-${league.id}`}>
-      {league.name}
-    </option>
-  ))}
-</select>
+    value={filterType.startsWith('league-') ? filterType : ''}
+    onChange={(e) => {
+      if (e.target.value) applyFilter(e.target.value)
+    }}
+    style={{
+      padding: '8px 12px',
+      borderRadius: '6px',
+      border: '1px solid #2a2a3e',
+      backgroundColor: '#12121a',
+      color: '#ffffff',
+      textAlign: 'left'
+    }}
+  >
+    <option value="">Specific League</option>
+    {allLeagues.map((league) => (
+      <option key={league.id} value={`league-${league.id}`}>
+        {league.name}
+      </option>
+    ))}
+  </select>
+</div>
 
           <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
             <button onClick={selectAll} style={{ backgroundColor: 'transparent', color: '#f0b429', border: '1px solid #f0b429', padding: '6px 14px', borderRadius: '6px', fontSize: '0.8rem', cursor: 'pointer' }}>
