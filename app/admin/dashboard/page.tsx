@@ -119,7 +119,7 @@ export default function AdminDashboardPage() {
 </h1>
         <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '36px' }}>
           {isGlobalAdmin
-            ? 'Manage Trekkon Fantasy Leagues with a bird\'s eye view.'
+            ? 'Your eye-in-the-sky management hub for Trekkon Fantasy Leagues.'
             : 'League Admin access is restricted to the "Available" sections below.'}
         </p>
 

@@ -648,8 +648,8 @@ setMessage(`Saved ${entries.length} scoring events for Episode ${episodeNumber}!
     <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
 
-<h1 style={{ fontSize: '2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-  <Calculator size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
+<h1 style={{ fontSize: 'clamp(1.6rem, 6vw, 2rem)', marginBottom: '16px', lineHeight: 1.25 }}>
+  <Calculator size="1em" strokeWidth={2} color="#f0b429" style={{ display: 'inline-block', verticalAlign: '-0.12em', marginRight: '10px' }} />
   <span style={{ color: '#f0b429' }}>{selectedLeagueType === 'uncharted-turretory' || selectedLeagueType === 'uncharted-turretory-demo' ? 'Uncharted Turretory' : 'Secrets on the Beach'}</span>{' '}
   <span style={{ color: '#ffffff' }}>Episode Scoring Guide</span>
 </h1>
