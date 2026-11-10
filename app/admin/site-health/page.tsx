@@ -122,7 +122,7 @@ export default function SiteHealthPage() {
 
         <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'nowrap', gap: '10px', marginBottom: '28px' }}>
           <p style={{ color: '#a0a0b0', fontSize: '0.9rem', margin: 0 }}>
-            {health ? `Updated ${new Date(health.generatedAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}` : 'Loading stats...'}
+            {health ? `Updated ${new Date(health.generatedAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}` : 'Loading Stats...'}
           </p>
           <button
             onClick={load}
