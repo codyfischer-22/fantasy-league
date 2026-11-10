@@ -132,27 +132,27 @@ export default function SiteHealthPage() {
         {health && (
           <>
             <Section title="Players">
-              <Stat value={show(health.players.total)} label="Total players" accent="#f0b429" />
-              <Stat value={show(health.players.paying)} label="Paid members" />
-              <Stat value={show(health.players.new7)} label="New this week" />
-              <Stat value={show(health.players.new30)} label="New in 30 days" />
-              <Stat value={show(health.players.active7)} label="Signed in this week" />
-              <Stat value={show(health.players.active30)} label="Signed in, 30 days" />
-              <Stat value={show(health.players.emailOptIn)} label="Get email updates" />
+              <Stat value={show(health.players.total)} label="Total Players" accent="#f0b429" />
+              <Stat value={show(health.players.paying)} label="Paid Members" />
+              <Stat value={show(health.players.new7)} label="New This Week" />
+              <Stat value={show(health.players.new30)} label="New in 30 Days" />
+              <Stat value={show(health.players.active7)} label="Signed in This Week" />
+              <Stat value={show(health.players.active30)} label="Signed in 30 Days" />
+              <Stat value={show(health.players.emailOptIn)} label="Get Email Updates" />
             </Section>
 
-            <Section title="Membership tiers">
+            <Section title="Membership Tiers">
               {TIER_LABELS.map(([key, label, color]) => (
                 <Stat key={key} value={show(health.players.tiers[key])} label={label} accent={color} />
               ))}
             </Section>
 
             <Section title="Leagues">
-              <Stat value={show(health.leagues.active)} label="Active leagues" accent="#f0b429" />
+              <Stat value={show(health.leagues.active)} label="Active Leagues" accent="#f0b429" />
               <Stat value={show(health.leagues.public)} label="Public" />
               <Stat value={show(health.leagues.private)} label="Private" />
-              <Stat value={show(health.leagues.draftsLive)} label="Drafts live now" accent={health.leagues.draftsLive > 0 ? '#4ecdc4' : undefined} />
-              <Stat value={show(health.leagues.memberships)} label="League spots filled" />
+              <Stat value={show(health.leagues.draftsLive)} label="Drafts Live Now" accent={health.leagues.draftsLive > 0 ? '#4ecdc4' : undefined} />
+              <Stat value={show(health.leagues.memberships)} label="League Spots Filled" />
               <Stat value={show(health.leagues.archived)} label="Archived" />
               {Object.entries(health.leagues.byType).map(([type, n]) => (
                 <Stat key={type} value={show(n)} label={LEAGUE_LABELS[type] ?? type} />
@@ -160,10 +160,10 @@ export default function SiteHealthPage() {
             </Section>
 
             <Section title="Activity">
-              <Stat value={show(health.activity.chat24h)} label="Chat messages, 24 hours" />
-              <Stat value={show(health.activity.chat7d)} label="Chat messages, 7 days" />
-              <Stat value={show(health.activity.predictions7d)} label="Predictions, 7 days" />
-              <Stat value={show(health.activity.notifications7d)} label="Notifications sent, 7 days" />
+              <Stat value={show(health.activity.chat24h)} label="Chat Messages in 24 Hours" />
+              <Stat value={show(health.activity.chat7d)} label="Chat Messages in 7 Days" />
+              <Stat value={show(health.activity.predictions7d)} label="Predictions in 7 days" />
+              <Stat value={show(health.activity.notifications7d)} label="Notifications Sent in 7 Days" />
             </Section>
           </>
         )}
