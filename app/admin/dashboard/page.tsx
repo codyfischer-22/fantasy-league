@@ -5,7 +5,7 @@ import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import {
   LayoutDashboard, Mail, Calculator, Users, Trophy, Shield,
-  MessageSquareWarning, Activity, Archive, Settings, Lock
+  MessageSquareWarning, Activity, Archive, Settings, Lock, HeartPulse
 } from 'lucide-react'
 
 type CardDef = {
@@ -58,14 +58,14 @@ const sections: CardDef[] = [
     status: 'live',
     globalOnly: true,
   },
-  {
-    label: 'Site Health',
-    description: 'Basic statistics and monitoring: player counts, active leagues, error logs, etc.',
-    icon: Activity,
-    href: null,
-    status: 'planned',
-    globalOnly: true,
-  },
+{
+  label: 'Site Health',
+  description: 'Basic statistics and monitoring: player counts, active leagues, social game, and more.',
+  icon: HeartPulse,
+  href: '/admin/site-health',
+  status: 'live',
+  globalOnly: true,
+},
 ]
 
 export default function AdminDashboardPage() {

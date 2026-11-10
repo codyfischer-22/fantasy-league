@@ -62,8 +62,8 @@ export async function GET(req: Request) {
   const since = (days: number) => new Date(now - days * DAY).toISOString()
 
   // Players
-  const { data: profiles } = await supabaseAdmin.from('profiles').select('tier, email_opt_in, email')
-  const tierCounts: Record<string, number> = { stowaway: 0, castaway: 0, crewchief: 0, teamprincipal: 0 }
+const { data: profiles } = await supabaseAdmin.from('profiles').select('user_id, tier, email_opt_in, email, last_seen_at')
+    const tierCounts: Record<string, number> = { stowaway: 0, castaway: 0, crewchief: 0, teamprincipal: 0 }
   let emailOptIn = 0
   for (const p of profiles ?? []) {
     const t = p.tier ?? 'stowaway'
@@ -84,7 +84,7 @@ export async function GET(req: Request) {
 
   const authUsers = await listAllAuthUsers()
   const newSince = (days: number) => authUsers.filter((u) => u.created_at >= since(days)).length
-  const activeSince = (days: number) => authUsers.filter((u) => u.last_sign_in_at && u.last_sign_in_at >= since(days)).length
+  const activeSince = (days: number) => (profiles ?? []).filter((p) => p.last_seen_at && p.last_seen_at >= since(days)).length
 
   // Leagues (real ones only: not archived, not chat rooms, not the social game)
   const { data: leagues } = await supabaseAdmin
@@ -93,6 +93,50 @@ export async function GET(req: Request) {
   const real = (leagues ?? []).filter((l) => !l.is_archived && !l.is_show_chat && l.league_type !== 'social_game')
   const byType: Record<string, number> = {}
   for (const l of real) byType[l.league_type] = (byType[l.league_type] ?? 0) + 1
+
+// Trust Issue5 (social deduction game)
+const { data: socialGames } = await supabaseAdmin
+  .from('social_games')
+  .select('id, status, skin, host_user_id, created_at')
+
+const games = socialGames ?? []
+const liveGames = games.filter((g) => g.status === 'in_progress' || g.status === 'captain_guess').length
+const openLobbies = games.filter((g) => g.status === 'lobby').length
+const completed7 = games.filter((g) => (g.status === 'good_wins' || g.status === 'evil_wins') && g.created_at >= since(7)).length
+const completed30 = games.filter((g) => (g.status === 'good_wins' || g.status === 'evil_wins') && g.created_at >= since(30)).length
+const disbanded30 = games.filter((g) => g.status === 'disbanded' && g.created_at >= since(30)).length
+
+const skinCounts: Record<string, number> = {}
+for (const g of games) skinCounts[g.skin] = (skinCounts[g.skin] ?? 0) + 1
+const topSkin = Object.entries(skinCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null
+
+const { data: allSeats } = await supabaseAdmin
+  .from('social_game_players')
+  .select('user_id, game_id')
+const seats = allSeats ?? []
+const uniquePlayers30 = new Set(
+  seats
+    .filter((s) => games.find((g) => g.id === s.game_id && g.created_at >= since(30)))
+    .map((s) => s.user_id)
+).size
+const seatCountsByGame = new Map<number, number>()
+for (const s of seats) seatCountsByGame.set(s.game_id, (seatCountsByGame.get(s.game_id) ?? 0) + 1)
+const finishedGameIds = games.filter((g) => ['good_wins', 'evil_wins', 'disbanded'].includes(g.status)).map((g) => g.id)
+const finishedSeatCounts = finishedGameIds.map((id) => seatCountsByGame.get(id) ?? 0).filter((n) => n > 0)
+const avgPlayersPerGame = finishedSeatCounts.length > 0
+  ? Math.round((finishedSeatCounts.reduce((a, b) => a + b, 0) / finishedSeatCounts.length) * 10) / 10
+  : null
+
+const goodWins = games.filter((g) => g.status === 'good_wins').length
+const evilWins = games.filter((g) => g.status === 'evil_wins').length
+const totalDecided = goodWins + evilWins
+const goodWinRate = totalDecided > 0 ? Math.round((goodWins / totalDecided) * 100) : null
+
+const castawayHosts = (profiles ?? []).filter((p) => p.tier === 'castaway').length
+const castawayHostedGames = games.filter((g) => {
+  const hostProfile = (profiles ?? []).find((p) => p.user_id === g.host_user_id)
+  return hostProfile?.tier === 'castaway'
+}).length
 
   return NextResponse.json({
     generatedAt: new Date(now).toISOString(),
@@ -105,6 +149,18 @@ export async function GET(req: Request) {
       new30: newSince(30),
       active7: activeSince(7),
       active30: activeSince(30),
+    },
+        socialGame: {
+      liveGames,
+      openLobbies,
+      completed7,
+      completed30,
+      uniquePlayers30,
+      avgPlayersPerGame,
+      disbanded30,
+reports30: await safeCount('social_game_reports', (q) => q.gte('created_at', since(30))),      goodWinRate,
+      topSkin,
+      castawayHostedGames,
     },
     leagues: {
       active: real.length,
