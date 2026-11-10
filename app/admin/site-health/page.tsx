@@ -8,13 +8,17 @@ import { HeartPulse, RefreshCw } from 'lucide-react'
 type Health = {
   generatedAt: string
   players: {
-    total: number; paying: number; tiers: Record<string, number>; emailOptIn: number
+    total: number; paidTier: number; tiers: Record<string, number>; emailOptIn: number
     new7: number; new30: number; active7: number; active30: number
   }
   leagues: {
     active: number; public: number; private: number; draftsLive: number; archived: number
     byType: Record<string, number>; memberships: number | null
   }
+  payments: {
+    activeSubscriptions: number; pastDue: number; monthlyRevenue: number
+    payingPlayers: number | null; comped: number | null
+  } | null
   activity: {
     chat24h: number | null; chat7d: number | null; predictions7d: number | null; notifications7d: number | null
   }
@@ -133,12 +137,28 @@ export default function SiteHealthPage() {
           <>
             <Section title="Players">
               <Stat value={show(health.players.total)} label="Total Players" accent="#f0b429" />
-              <Stat value={show(health.players.paying)} label="Paid Members" />
+              <Stat value={show(health.players.paidTier)} label="On a Paid Tier" />
               <Stat value={show(health.players.new7)} label="New This Week" />
               <Stat value={show(health.players.new30)} label="New in 30 Days" />
               <Stat value={show(health.players.active7)} label="Signed in This Week" />
               <Stat value={show(health.players.active30)} label="Signed in 30 Days" />
               <Stat value={show(health.players.emailOptIn)} label="Get Email Updates" />
+            </Section>
+
+            <Section title="Payments">
+              {health.payments ? (
+                <>
+                  <Stat value={show(health.payments.payingPlayers)} label="Paying Through Stripe" accent="#4ecdc4" />
+                  <Stat value={show(health.payments.comped)} label="Comp'd (Paid Tier, No Subscription)" />
+                  <Stat value={`$${health.payments.monthlyRevenue.toFixed(2)}`} label="Monthly Recurring Revenue" accent="#f0b429" />
+                  <Stat value={show(health.payments.activeSubscriptions)} label="Active Subscriptions" />
+                  <Stat value={show(health.payments.pastDue)} label="Payment Failed, Past Due" accent={health.payments.pastDue > 0 ? '#ff6b6b' : undefined} />
+                </>
+              ) : (
+                <p style={{ color: '#a0a0b0', fontSize: '0.9rem', margin: 0 }}>
+                  Stripe stats unavailable. Check that STRIPE_SECRET_KEY is set for this environment.
+                </p>
+              )}
             </Section>
 
             <Section title="Membership Tiers">
