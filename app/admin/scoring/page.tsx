@@ -354,9 +354,13 @@ const allLeagueTypeOptions = [
   { value: 'sandbox', label: 'Sand Box League (Testing)' },
 ]
 
+const nonAdminExcludedTypes = ['sotb-demo', 'uncharted-turretory-demo', 'sandbox']
+
 const visibleLeagueTypeOptions = isGlobalAdmin
   ? allLeagueTypeOptions
-  : allLeagueTypeOptions.filter((opt) => allowedLeagueTypes.includes(opt.value))
+  : allLeagueTypeOptions.filter(
+      (opt) => allowedLeagueTypes.includes(opt.value) && !nonAdminExcludedTypes.includes(opt.value)
+    )
 
 
 const loadExistingScores = async (leagueType: string, episode: string) => {

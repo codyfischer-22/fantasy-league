@@ -4,14 +4,15 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import {
-  LayoutDashboard, Mail, Calculator, Users, Trophy, Shield,
-  MessageSquareWarning, Activity, Archive, Settings, Lock, HeartPulse
+  LayoutDashboard, Mail, Calculator, UserCog, Trophy,
+  MessageSquareWarning, Lock, HeartPulse
 } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
 type CardDef = {
   label: string
   description: string
-  icon: any
+   icon: LucideIcon
   href: string | null
   status: 'live' | 'planned'
   globalOnly: boolean
@@ -35,11 +36,11 @@ const sections: CardDef[] = [
     globalOnly: false,
   },
   {
-    label: 'Player / Account Management',
-    description: 'Search, view, and edit player accounts. Toggle tiers, admin scope, and more.',
-    icon: Users,
-    href: null,
-    status: 'planned',
+    label: 'Manage Players',
+    description: 'Search players, change membership tiers, and grant League Admin scoring access.',
+    icon: UserCog,
+    href: '/admin/players',
+    status: 'live',
     globalOnly: true,
   },
   {

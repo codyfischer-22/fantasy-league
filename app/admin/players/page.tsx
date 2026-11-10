@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
-import { UserCog, Search } from 'lucide-react'
+import { UserCog, Search, Mail } from 'lucide-react'
 
 type Player = {
   user_id: string
@@ -29,15 +29,19 @@ const TIER_OPTIONS = [
 
 const LEAGUE_TYPE_OPTIONS = [
   { value: 'secrets-on-the-beach', label: 'Secrets on the Beach' },
-  { value: 'sotb-demo', label: 'Beach Demo' },
   { value: 'uncharted-turretory', label: 'Uncharted Turretory' },
-  { value: 'uncharted-turretory-demo', label: 'Turretory Demo' },
-  { value: 'sandbox', label: 'Sandbox' },
+  { value: 'the-oval-offset', label: 'The Oval Offset' },
+  { value: 'paddock-politicks', label: 'Paddock Politicks' },
 ]
 
-function formatDate(iso: string | null) {
+function formatDate(iso: string | null): string {
   if (!iso) return 'Never'
-  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  const date = new Date(iso)
+  const month = date.toLocaleDateString('en-US', { month: 'short' })
+  const day = date.getDate()
+  const year = date.getFullYear()
+  const monthWithPeriod = month === 'May' ? month : `${month}.`
+  return `${monthWithPeriod} ${day}, ${year}`
 }
 
 async function authHeaders() {
@@ -170,7 +174,7 @@ export default function PlayerManagementPage() {
         </h1>
         <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '24px', lineHeight: 1.6 }}>
           Change a player&apos;s membership tier or give them League Admin access to score episodes.
-          Tier changes here skip payment and don&apos;t touch their Stripe subscription.
+          Tier changes here skip payment and don&apos;t touch Stripe.
         </p>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginBottom: '20px' }}>
@@ -178,16 +182,16 @@ export default function PlayerManagementPage() {
             <Search size={16} color="#555570" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
             <input
               type="search"
-              placeholder="Search by name or email"
+              placeholder="Search by Name or Email"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               style={{ ...inputStyle, width: '100%', paddingLeft: '36px', boxSizing: 'border-box' }}
             />
           </label>
           <select value={tierFilter} onChange={(e) => setTierFilter(e.target.value)} style={inputStyle}>
-            <option value="all">All tiers</option>
+            <option value="all">All Tiers</option>
             {TIER_OPTIONS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
-            <option value="admins">Admins only</option>
+            <option value="admins">Admins Only</option>
           </select>
         </div>
 
@@ -209,37 +213,39 @@ export default function PlayerManagementPage() {
                 backgroundColor: '#1a1a2e',
                 border: `1px solid ${changed ? '#f0b429' : '#2a2a3e'}`,
                 borderRadius: '10px',
-                padding: '16px 18px',
-              }}>
-                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '12px' }}>
-                  <div style={{ minWidth: 0 }}>
-                    <div style={{ fontWeight: 'bold', fontSize: '1.05rem', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                      {p.display_name || 'Unnamed Player'}
-                      {p.is_global_admin && (
-                        <span style={{ fontSize: '0.7rem', color: '#0a0a0f', backgroundColor: '#ca29ca', borderRadius: '20px', padding: '2px 10px' }}>Global Admin</span>
-                      )}
-                    </div>
-                    <div style={{ color: '#a0a0b0', fontSize: '0.85rem', overflowWrap: 'anywhere' }}>{p.email ?? 'No email'}</div>
-                    <div style={{ color: '#555570', fontSize: '0.8rem', marginTop: '4px' }}>
-                      Joined {formatDate(p.joined_at)} · Last signed in {formatDate(p.last_sign_in_at)}
-                      {p.email_opt_in ? ' · Gets emails' : ''}
-                    </div>
+                padding: '14px 16px',
+                              }}>
+                           <div style={{ minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px 8px' }}>
+                    <span style={{ fontWeight: 'bold', fontSize: '1.05rem' }}>{p.display_name || 'Unnamed Player'}</span>
+                    {p.is_global_admin && (
+                      <span style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#0a0a0f', backgroundColor: '#ca29ca', borderRadius: '20px', padding: '2px 8px' }}>Global Admin</span>
+                    )}
                   </div>
-
-                  <label style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.8rem', color: '#a0a0b0' }}>
-                    Tier
-                    <select
-                      value={d.tier}
-                      onChange={(e) => updateDraft(p.user_id, { tier: e.target.value })}
-                      style={{ ...inputStyle, color: tierColor, fontWeight: 'bold' }}
-                    >
-                      {TIER_OPTIONS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
-                    </select>
-                  </label>
+                  <div style={{ color: '#a0a0b0', fontSize: '0.85rem', overflowWrap: 'anywhere', marginTop: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span>{p.email ?? 'No Email'}</span>
+                    {p.email_opt_in && (
+                      <Mail size={16} strokeWidth={2} color="#a0a0b0" aria-label="Gets Email Updates" style={{ flexShrink: 0 }}>
+                        <title>Gets Email Updates</title>
+                      </Mail>
+                    )}
+                  </div>                  <div style={{ color: '#555570', fontSize: '0.75rem', marginTop: '6px', lineHeight: 1.5 }}>
+                    <div>Joined {formatDate(p.joined_at)}</div>
+                    <div>Last signed in {formatDate(p.last_sign_in_at)}</div>
+                  </div>
                 </div>
 
-                <div style={{ borderTop: '1px solid #2a2a3e', marginTop: '14px', paddingTop: '12px' }}>
-                  <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
+                <div style={{ borderTop: '1px solid #2a2a3e', marginTop: '12px', paddingTop: '12px', display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px 16px' }}>
+                  <select
+                    value={d.tier}
+                    onChange={(e) => updateDraft(p.user_id, { tier: e.target.value })}
+                    aria-label="Tier"
+                    style={{ ...inputStyle, color: tierColor, fontWeight: 'bold', flex: '1 1 150px', maxWidth: '220px' }}
+                  >
+                    {TIER_OPTIONS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                  </select>
+
+                  <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem', whiteSpace: 'nowrap' }}>
                     <input
                       type="checkbox"
                       checked={d.is_league_admin}
@@ -248,36 +254,36 @@ export default function PlayerManagementPage() {
                     />
                     League Admin
                   </label>
-
-                  {d.is_league_admin && (
-                    <div style={{ marginTop: '10px' }}>
-                      <div style={{ color: '#a0a0b0', fontSize: '0.8rem', marginBottom: '6px' }}>Can score:</div>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                        {LEAGUE_TYPE_OPTIONS.map((lt) => {
-                          const on = d.admin_league_types.includes(lt.value)
-                          return (
-                            <button
-                              key={lt.value}
-                              type="button"
-                              onClick={() => toggleLeagueType(p.user_id, lt.value)}
-                              aria-pressed={on}
-                              style={{
-                                padding: '6px 12px', borderRadius: '20px', fontSize: '0.8rem', cursor: 'pointer',
-                                fontFamily: 'inherit',
-                                border: `1px solid ${on ? '#f0b429' : '#2a2a3e'}`,
-                                backgroundColor: on ? '#f0b429' : 'transparent',
-                                color: on ? '#0a0a0f' : '#a0a0b0',
-                                fontWeight: on ? 'bold' : 'normal',
-                              }}
-                            >
-                              {lt.label}
-                            </button>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  )}
                 </div>
+
+                {d.is_league_admin && (
+                  <div style={{ marginTop: '10px' }}>
+                    <div style={{ color: '#a0a0b0', fontSize: '0.75rem', marginBottom: '6px' }}>Can Score:</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '6px' }}>
+                      {LEAGUE_TYPE_OPTIONS.map((lt) => {
+                        const on = d.admin_league_types.includes(lt.value)
+                        return (
+                          <button
+                            key={lt.value}
+                            type="button"
+                            onClick={() => toggleLeagueType(p.user_id, lt.value)}
+                            aria-pressed={on}
+                            style={{
+                              padding: '6px 8px', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer',
+                              fontFamily: 'inherit', textAlign: 'center', lineHeight: 1.3,
+                              border: `1px solid ${on ? '#f0b429' : '#2a2a3e'}`,
+                              backgroundColor: on ? '#f0b429' : 'transparent',
+                              color: on ? '#0a0a0f' : '#a0a0b0',
+                              fontWeight: on ? 'bold' : 'normal',
+                            }}
+                          >
+                            {lt.label}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
 
                 {(changed || msg) && (
                   <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginTop: '14px' }}>
@@ -291,7 +297,7 @@ export default function PlayerManagementPage() {
                           cursor: savingId === p.user_id ? 'not-allowed' : 'pointer',
                         }}
                       >
-                        {savingId === p.user_id ? 'Saving...' : 'Save changes'}
+                        {savingId === p.user_id ? 'Saving...' : 'Save Changes'}
                       </button>
                     )}
                     {msg && <span style={{ color: msg === 'Saved.' ? '#4ecdc4' : '#ff6b6b', fontSize: '0.85rem' }}>{msg}</span>}
