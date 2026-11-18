@@ -84,6 +84,25 @@ if (league.is_frozen) {
           return
         }
 
+                // League full?
+        const { data: capHost } = await supabase
+          .from('profiles')
+          .select('tier')
+          .eq('user_id', league.host_user_id)
+          .single()
+        const cap = league.max_members ?? (capHost?.tier === 'teamprincipal' ? 18 : 8)
+
+        const { count: memberTotal } = await supabase
+          .from('league_members')
+          .select('*', { count: 'exact', head: true })
+          .eq('league_id', league.id)
+
+        if (memberTotal !== null && memberTotal >= cap) {
+          setStatus('error')
+          setMessage(`This league has already reached its ${cap}-player capacity. Consult league host for further information.`)
+          return
+        }
+
         const minFree = ['paddock-politicks', 'the-oval-offset'].includes(league.league_type) ? 5 : 3
         const pool = await getFreeAgentPool(league.id, league.league_type)
         if (pool.length < minFree) {
