@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import type { FreeAgent } from '@/lib/freeAgents'
+import { emailHostAboutJoin } from '@/lib/emailHostAboutJoin'
 
 type Props = {
   open: boolean
@@ -69,6 +70,10 @@ export default function FreeAgentClaimModal({
     if (error) {
       setMessage(error.message)
       return
+    }
+
+    if (!isReplacement) {
+      await emailHostAboutJoin(leagueId, 'late_join')
     }
 
     onClaimed()

@@ -16,6 +16,14 @@ export async function runLeagueDraft(league: DraftLeague): Promise<{ error: stri
   const { error } = await supabase.rpc(isAuto ? 'run_auto_draft' : 'start_draft', { p_league_id: league.id })
   if (error) return { error: error.message, isAuto }
 
+    // A live draft can finish instantly if every player chose "draft for me right away"
+  let finishedAtStart = false
+  if (!isAuto) {
+    const { data: after } = await supabase.from('leagues').select('draft_status').eq('id', league.id).single()
+    finishedAtStart = after?.draft_status === 'completed'
+  }
+  const sendAsComplete = isAuto || finishedAtStart
+
   // Emails (in-app notifications are already sent by the database)
   try {
     const { data: members } = await supabase
@@ -45,12 +53,12 @@ export async function runLeagueDraft(league: DraftLeague): Promise<{ error: stri
             email: p.email,
             playerName: p.display_name || 'Player',
           })),
-          subject: isAuto ? `Draft results for ${league.name} are live!` : `The ${league.name} draft has started!`,
-          message: isAuto
+          subject: sendAsComplete ? `Draft results for ${league.name} are live!` : `The ${league.name} draft has started!`,
+          message: sendAsComplete
             ? `It's official! The draft for ${league.name} is complete. Check out your roster, make trade offers, and get ready for the season!`
             : `That's right, silly season is upon us! The draft for ${league.name} has started. Head to the draft room and make your picks!`,
-          linkUrl: isAuto ? `${base}/roster` : `${base}/draft-room`,
-          linkText: isAuto ? 'View Rosters →' : 'Go to Draft Room →',
+          linkUrl: sendAsComplete ? `${base}/roster` : `${base}/draft-room`,
+          linkText: sendAsComplete ? 'View Rosters →' : 'Go to Draft Room →',
         }),
       })
     }
@@ -58,5 +66,5 @@ export async function runLeagueDraft(league: DraftLeague): Promise<{ error: stri
     console.error('Draft email failed:', e)   // the draft still ran; only the email failed
   }
 
-  return { error: null, isAuto }
+   return { error: null, isAuto: sendAsComplete }
 }

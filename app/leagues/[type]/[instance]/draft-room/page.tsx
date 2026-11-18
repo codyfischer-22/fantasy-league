@@ -88,10 +88,14 @@ if (leagueData?.league_type === 'sandbox') {
 setLeague(leagueData)
 
     if (leagueData) {
-      const { data: castawayList } = await supabase
+           let castawayQuery = supabase
         .from('castaways')
         .select('id, name')
         .eq('league_type', leagueData.league_type)
+      castawayQuery = leagueData.season
+        ? castawayQuery.eq('season', leagueData.season)
+        : castawayQuery.is('season', null)
+      const { data: castawayList } = await castawayQuery
 
       setCastaways(castawayList ?? [])
 
@@ -280,6 +284,10 @@ setLeague(leagueData)
         data.missed_user_id,
         `You failed to draft a player before the timer went off in ${league.name}. Per the host-selected policy, this pick has been moved to the end of the draft.`
       )
+
+          if (data.completed) {
+        await sendDraftCompleteEmails()
+      }
         } else if (data?.result === 'auto_picked') {
       await emailMissedPlayer(
         data.missed_user_id,

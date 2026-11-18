@@ -9,7 +9,7 @@ export type FreeAgent = {
 export async function getFreeAgentPool(leagueId: number, leagueType: string): Promise<FreeAgent[]> {
   const { data: league } = await supabase
     .from('leagues')
-    .select('base_clone_count')
+    .select('base_clone_count, season')
     .eq('id', leagueId)
     .single()
 
@@ -18,11 +18,15 @@ export async function getFreeAgentPool(leagueId: number, leagueType: string): Pr
     return []
   }
 
-  const { data: castawayList } = await supabase
+  let castawayQuery = supabase
     .from('castaways')
     .select('id, name')
     .eq('league_type', leagueType)
     .eq('status', 'active')
+  castawayQuery = league.season
+    ? castawayQuery.eq('season', league.season)
+    : castawayQuery.is('season', null)
+  const { data: castawayList } = await castawayQuery
 
   if (!castawayList || castawayList.length === 0) return []
 

@@ -45,7 +45,7 @@ export default function RankingsPage() {
 
       const { data: league } = await supabase
         .from('leagues')
-        .select('id, name, league_type, is_archived, draft_mode, pick_timer_seconds, draft_status')
+        .select('id, name, league_type, is_archived, draft_mode, pick_timer_seconds, draft_status, season')
         .eq('league_type', type)
         .eq('slug', instance)
         .single()
@@ -114,10 +114,14 @@ if (league?.is_archived) {
       const savedMode = membership.autodraft_mode ?? 'end_of_turn'
       setAutodraftMode(!timer && savedMode === 'end_of_turn' ? 'off' : savedMode)
 
-      const { data: castawayList } = await supabase
+           let castawayQuery = supabase
         .from('castaways')
         .select('id, name, status')
         .eq('league_type', league.league_type)
+      castawayQuery = league.season
+        ? castawayQuery.eq('season', league.season)
+        : castawayQuery.is('season', null)
+      const { data: castawayList } = await castawayQuery
         .order('default_rank', { ascending: true, nullsFirst: false })
 
       const { data: existingRankings } = await supabase

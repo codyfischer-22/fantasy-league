@@ -12,6 +12,7 @@ import { getFreeAgentPool, type FreeAgent } from '@/lib/freeAgents'
 import FreeAgentClaimModal from '@/components/FreeAgentClaimModal'
 import { castawayTermByLeague, backgroundsByType } from '@/lib/leagueConfig'
 import { runLeagueDraft } from '@/lib/runDraft'
+import { emailHostAboutJoin } from '@/lib/emailHostAboutJoin'
 
 type League = {
   id: number
@@ -288,7 +289,8 @@ effectiveCap = league.max_members ?? (hostProfile?.tier === 'teamprincipal' ? 18
         setJoinMessage(rejoinError.message)
         return
       }
-            const lost = rejoin?.lost ?? 0
+      await emailHostAboutJoin(league.id, 'rejoin')
+      const lost = rejoin?.lost ?? 0
       setIsMember(true)
       setIsReturning(false)
       setMemberCount((prev) => (prev ?? 0) + 1)
@@ -924,7 +926,7 @@ const content = (
     </button>
   ) : hasDrafted ? (
     freeAgentPool.length >= minFreeAgents ? (
-        <button onClick={() => setShowFreeAgentModal(true)} style={{
+        <button onClick={handleClimbAboard} style={{
       backgroundColor: '#f0b429',
       color: '#0a0a0f',
       padding: '14px 32px',
