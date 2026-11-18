@@ -25,7 +25,7 @@ export default function TermsPage() {
           Terms & Conditions
         </h1>
         <p style={{ color: '#555570', fontSize: '0.85rem', marginBottom: '24px' }}>
-          Last updated: August 2026
+          Last updated: November 2026
         </p>
 
         <div style={{ color: '#a0a0b0', fontSize: '0.95rem', lineHeight: '1.5' }}>
@@ -58,7 +58,7 @@ export default function TermsPage() {
             cancel. If a payment fails or your subscription is canceled before the end of a 
             particular league, your account will automatically be downgraded to the free Stowaway
             tier. Being downgraded to the free tier will affect your participation in certain group
-            features like public league chats or anayltics, but it will be more detrimental to any 
+            features like public league chats or analytics, but it will be more detrimental to any 
             private leagues you are hosting (which cannot run without their active host). There are
             no free trials, no partial refunds for unused time in a billing period, and no mid-season
             downgrades that allow you to keep membership perks. You may cancel your subscription at 
@@ -70,8 +70,8 @@ export default function TermsPage() {
             4. No Refunds
           </h2>
           <p>
-            All payments are final. This includes situations where a players' private league host fails to
-            perform their hosting duties (e.g. running a draft, entering scores, or managing league).
+            All payments are final. This includes situations where private league hosts fail to
+            perform voluntary duties (e.g. running a draft, entering scores, or managing league).
             Trekkon Fantasy Leagues is not responsible for issuing refunds in cases of league host withdrawal 
             or negligence. We are merely providing an opportunity for users to privately host fantasy leagues 
             for friends and family, but cannot guarantee any one league will run to completion without its 
@@ -100,20 +100,24 @@ export default function TermsPage() {
             Membership fees pay for access to bonus app features (hosting tools, analytics, chat,
             etc.) and not entry into any contest for money. All leagues are played for standings,
             bragging rights, and fun; they can be played on equal terms with or without a paid 
-            membership tier. You may not copy, resell, sublicense, or use Trekkon Fantasy League&apos; software, design, or systems to build a competing product or service.
+            membership tier. You may not copy, resell, sublicense, or use Trekkon Fantasy Leagues&apos; software, design, or systems to build a competing product or service.
           </p>
 
           <h2 style={{ color: '#f0b429', fontSize: '1.0rem', marginTop: '12px', marginBottom: '0px' }}>
             7. Draft & Scoring Decisions
           </h2>
           <p>
-            Final league scoring is determined by Trekkon Fantasy Leagues Administration based on 
-            real-world episode or sporting events. Administrators will do their best to adhere to the 
+            Drafts may be live (pick-by-pick) or offline (simulated automatically), as set by private
+            hosts or Trekkon Fantasy Leagues. Private hosts may adjust draft style, order, and missed pick
+            consequences before initiating the draft. In live drafts, players may pick round-by-round or opt to pre-rank
+            and auto-draft. Failing to attend live draft or submit pre-rankings (for live or offline draft) will ultimately result in a randomly-assigned team, 
+            which may not be petitioned. Final league scoring is determined by Trekkon Fantasy Leagues based on
+            real-world episode or sporting events. Administrators will do their best to adhere to the
             spirit and letter of the rules published for each respective league. Questions about a
-            specific ruling (which will inevitably arise given the unpredictable nature of sports and 
-            reality television) are welcome via the Trekkon Fantasy Leagues contact page, but appeals 
+            specific ruling (which will inevitably arise given the unpredictable nature of sports and
+            reality television) are welcome via the Trekkon Fantasy Leagues contact page, but appeals
             are not guaranteed to change a result. That is to say all scoring decisions are final unless
-            administrator decide of their own volition to change the original decision.
+            administrators decide to change the original decision. 
           </p>
 
           <h2 style={{ color: '#f0b429', fontSize: '1.0rem', marginTop: '12px', marginBottom: '0px' }}>
@@ -142,7 +146,16 @@ We do not claim ownership of Survivor, NASCAR, F1, or any other underlying telev
 </p>
 
           <h2 style={{ color: '#f0b429', fontSize: '1.0rem', marginTop: '12px', marginBottom: '0px' }}>
-            10. Account Termination
+            10. Leaving, Rejoining & Late Joins
+          </h2>
+          <p>
+            When a player leaves or is ejected from a league, their picks are released back to
+            the Waiver Wire, where they may be claimed by others. Upon rejoin, these picks will be restored as possible but no guarantees can be made.
+            Players who join a league after its draft select from leftover free agents, but registration closes when too few remain.
+          </p>
+
+          <h2 style={{ color: '#f0b429', fontSize: '1.0rem', marginTop: '12px', marginBottom: '0px' }}>
+            11. Account Termination
           </h2>
           <p>
             We reserve the right to suspend or terminate accounts that violate these terms, abuse 
@@ -151,7 +164,7 @@ We do not claim ownership of Survivor, NASCAR, F1, or any other underlying telev
           </p>
 
           <h2 style={{ color: '#f0b429', fontSize: '1.0rem', marginTop: '12px', marginBottom: '0px' }}>
-            11. Changes to These Terms
+            12. Changes to These Terms
           </h2>
           <p>
             These terms may be updated from time to time as our platform grows. Continued use of
@@ -159,18 +172,18 @@ We do not claim ownership of Survivor, NASCAR, F1, or any other underlying telev
           </p>
 
           <h2 style={{ color: '#f0b429', fontSize: '1.0rem', marginTop: '12px', marginBottom: '0px' }}>
-  12. Disclaimer of Liability
+  13. Disclaimer of Liability
 </h2>
 <p>
   Trekkon Fantasy Leagues is provided &quot;as is&quot; without warranties of any kind. We
   do our best to keep the platform running smoothly, but we are not liable for lost draft
   picks, missed deadlines, scoring errors, downtime, data loss, or any other issue arising
   from your use of the site. We will, of course, do everything in our power to solve problems
-  as they arrive and eliminate bugs in our platform for the betterment of the league experiences.
+  as they arise and eliminate bugs in our platform for the betterment of the league experiences.
 </p>
 
 <h2 style={{ color: '#f0b429', fontSize: '1.0rem', marginTop: '12px', marginBottom: '0px' }}>
-  13. Governing Law
+  14. Governing Law
 </h2>
 <p>
   These terms are governed by the laws of the State of Nebraska, without regard to
@@ -178,7 +191,7 @@ We do not claim ownership of Survivor, NASCAR, F1, or any other underlying telev
 </p>
           
           <h2 style={{ color: '#f0b429', fontSize: '1.0rem', marginTop: '12px', marginBottom: '0px' }}>
-            14. Questions
+            15. Questions
           </h2>
           <p>
             Reach out via our contact link with any questions about these terms.

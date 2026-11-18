@@ -21,26 +21,27 @@ const draftContent: Record<string, {
     leagueName: 'Secrets on the Beach',
  intro: [],
     draftFormatPublic: [
-      '➤ Public leagues use an offline snake draft, with a randomly-assigned draft order, where players pre-rank castaways in the order they\u2019d pick them if available.',
+      '➤ Public leagues default to an offline snake draft with a randomly-assigned draft order, but Trekkon Fantasy Leagues may opt to draft live or manually assign pick order.',
+      '➤ For offline drafts, players pre-rank castaways in the order they\u2019d pick them if available. Failure to rank castaways will result in a randomly-generated tribe (sans petition).',
+      '➤ In the event of a live draft, players may utilize the ranking and auto-draft feature to pre-select castaways in their absence.',
       '➤ Castaways will be cloned until each player can draft a 4-person tribe.',
       '(If there are 50 players, for example, we\u2019d need 200 draftable castaways. All 21 contestants would be cloned 10 times to make a 210-person draft pool.)',
-      '➤ Players failing to submit castaway rankings before the draft will have them randomly ranked without petition.',
-      '➤ Simulated draft results are final once shared; if players don\u2019t get their top choices, it\u2019s because those castaways were popular and ran out before their turn.',
-      '➤ Don\u2019t like your 4-person tribe? Visit the Trade Portal to offer trades or claim from the Waiver Wire.',
+      '➤ Draft results are final once shared; if you don\u2019t get your top choices, it\u2019s because popular castaways ran out before your turn.',
+      '➤ Don\u2019t like your 4-person tribe? Visit the Trade Portal to offer trades or swap out of the Waiver Wire.',
     ],
   draftFormatPrivate: [
-      '➤ Private league hosts may randomly generate or manually assign draft order.',
-      '➤ Hosts are responsible for coordinating and manually starting the live snake draft.',
-      '➤ Hosts opt in or out for selection time limits (recommended) between 45 seconds and 15 minutes.',
-      '➤ Players receive time warning notifications at 10, 5, and 1 minutes remaining for a given pick.',
-      '➤ Hosts decide if expired timers result in A) picks being skipped and moved to the end of the draft or B) a castaway being randomly selected.',
-      '➤ In the case of no selection timer (not recommended) and players failing to draft, it is the host\u2019s responsibility to communicate with Trekkon Fantasy Leagues. Players ignoring draft procedures outlined by the league host are unable to petition their roster.',
+      '➤ Private leagues default to live snake drafts, but hosts may opt for offline, automatic drafts (see details above).',
+      '➤ League hosts choose between manual or randomly-assigned draft order.',
+      '➤ Hosts are responsible for coordinating and manually starting their draft.',
+      '➤ Hosts opt in for selection time limits (recommended) between 45 seconds and 15 minutes. If timers expire, they decide if a player\u2019s turn is bumped to the back of the draft or if a castaway is randomly assigned.',
+      '➤ After 4 bumped turns, further missed picks will be randomly assigned. It would be better, however, for absent players to utilize ranking and auto-draft feature.',
+      '➤ If a private draft stalls out on one player with no selection timer (not recommended), it is the host\u2019s responsibility to communicate with Trekkon Fantasy Leagues. At host discretion, players may be randomly assigned a tribe or ejected after draft.',
       '➤ Trekkon Fantasy Leagues is not responsible for private league hosts failing to communicate or coordinate live draft. Before joining a league, players should trust hosts to lead responsibly.',
     ],
     trades: [
       '➤ Every player, regardless of membership tier, can propose and accept trades.',
       '➤ After rosters are drafted, uneliminated castaways can be traded up until the finale.',
-      '➤ The trade window closes for 24 hours following each episode airtime.',
+      '➤ To allow time to input scores, the trade window closes for 24 hours following each episode airtime.',
       '➤ League hosts may elect to confirm player-to-player trades before they\u2019re official.',
       '➤ Individual castaways cannot be included in more than one trade offer at a time.',
       '➤ Trade offers do not expire; they sit until accepted, declined, or withdrawn by sender.',
@@ -48,35 +49,37 @@ const draftContent: Record<string, {
       '➤ If players are caught manipulating trades with multiple accounts or friends, they will be banned from current and future league participation.',
     ],
     lateJoinsWaiverWire: [
-  '➤ Once drafts are complete, leftover clones become free agents until eliminated.',
+'➤ No one may join, leave, or be ejected from a league while live draft is running.',
+  '➤ Once drafts are complete, leftover clones become available in the Waiver Wire (until eliminated and in standard trade window).',
   '➤ Newcomers can join a post-draft league and claim free agents if 3+ remain.',
-  '➤ In the standard trade window, league members may swap rostered castaways with free agents in the Waiver Wire.',
-],
+  '➤ If a player leaves a league, there is no guarantee they will recoup their starting 4 castaways.'
+]
   },
   'uncharted-turretory': {
     leagueName: 'Uncharted Turretory',
   intro: [],
    draftFormatPublic: [
-      '➤ Public leagues use an offline snake draft, with a randomly-assigned draft order, where players pre-rank castle-goers in the order they\u2019d pick them if available.',
+      '➤ Public leagues default to an offline snake draft with a randomly-assigned draft order, but Trekkon Fantasy Leagues may opt to draft live or manually assign pick order.',
+      '➤ For offline drafts, players pre-rank castle-goers in the order they\u2019d pick them if available. Failure to rank castle-goers will result in a randomly-generated roster (sans petition).',
+      '➤ In the event of a live draft, players may utilize the ranking and auto-draft feature to pre-select castle-goers in their absence.',
       '➤ Castle-goers will be cloned until each player can draft a 4-person roster.',
       '(If there are 50 players, for example, we\u2019d need 200 draftable castle-goers. All 22 contestants would be cloned 10 times to make a 220-person draft pool.)',
-      '➤ Players failing to submit castle-goer rankings before the draft will have them randomly ranked without petition.',
-      '➤ Simulated draft results are final once shared; if players don\u2019t get their top choices, it\u2019s because those castle-goers were popular and ran out before their turn.',
-      '➤ Don\u2019t like your 4-person roster? Visit the Trade Portal to offer trades or claim from the Waiver Wire.',
+      '➤ Draft results are final once shared; if you don\u2019t get your top choices, it\u2019s because popular castle-goers ran out before your turn.',
+      '➤ Don\u2019t like your 4-person roster? Visit the Trade Portal to offer trades or swap out of the Waiver Wire.',
     ],
     draftFormatPrivate: [
-      '➤ Private league hosts may randomly generate or manually assign draft order.',
-      '➤ Hosts are responsible for coordinating and manually starting the live snake draft.',
-      '➤ Hosts opt in or out for selection time limits (recommended) between 45 seconds and 15 minutes.',
-      '➤ Players receive time warning notifications at 10, 5, and 1 minutes remaining for a given pick.',
-      '➤ Hosts decide if expired timers result in A) picks being skipped and moved to the end of the draft or B) a castle-goer being randomly selected.',
-      '➤ In the case of no selection timer (not recommended) and players failing to draft, it is the host\u2019s responsibility to communicate with Trekkon Fantasy Leagues. Players ignoring draft procedures outlined by the league host are unable to petition their roster.',
+      '➤ Private leagues default to live snake drafts, but hosts may opt for offline, automatic drafts (see details above).',
+      '➤ League hosts choose between manual or randomly-assigned draft order.',
+      '➤ Hosts are responsible for coordinating and manually starting their draft.',
+      '➤ Hosts opt in for selection time limits (recommended) between 45 seconds and 15 minutes. If timers expire, they decide if a player\u2019s turn is bumped to the back of the draft or if a castle-goer is randomly assigned.',
+      '➤ After 4 bumped turns, further missed picks will be randomly assigned. It would be better, however, for absent players to utilize ranking and auto-draft feature.',
+      '➤ If a private draft stalls out on one player with no selection timer (not recommended), it is the host\u2019s responsibility to communicate with Trekkon Fantasy Leagues. At host discretion, players may be randomly assigned a roster or ejected after draft.',
       '➤ Trekkon Fantasy Leagues is not responsible for private league hosts failing to communicate or coordinate live draft. Before joining a league, players should trust hosts to lead responsibly.',
     ],
        trades: [
       '➤ Every player, regardless of membership tier, can propose and accept trades.',
       '➤ After rosters are drafted, uneliminated castle-goers can be traded up until the finale.',
-      '➤ The trade window closes for 24 hours following each episode airtime.',
+      '➤ To allow time to input scores, the trade window closes for 24 hours following each episode airtime.',
       '➤ League hosts may elect to confirm player-to-player trades before they\u2019re official.',
       '➤ Individual castle-goers cannot be included in more than one trade offer at a time.',
       '➤ Trade offers do not expire; they sit until accepted, declined, or withdrawn by sender.',
@@ -84,14 +87,13 @@ const draftContent: Record<string, {
       '➤ If players are caught manipulating trades with multiple accounts or friends, they will be banned from current and future league participation.',
        ],
     lateJoinsWaiverWire: [
-  '➤ Once drafts are complete, leftover clones become free agents until eliminated.',
+  '➤ No one may join, leave, or be ejected from a league while live draft is running.',
+  '➤ Once drafts are complete, leftover clones become available in the Waiver Wire (until eliminated and in standard trade window).',
   '➤ Newcomers can join a post-draft league and claim free agents if 3+ remain.',
-  '➤ In the standard trade window, league members may swap rostered castle-goers with free agents in the Waiver Wire.',
+  '➤ If a player leaves a league, there is no guarantee they will recoup their starting 4 castle-goers.'
 ],
   },
 }
-
-
 
 const draftTypeOptions = [
   { value: 'secrets-on-the-beach', label: '🏝️ Secrets on the Beach', comingSoon: false },
@@ -287,8 +289,7 @@ export default function DraftPage() {
 
 <div style={{ marginBottom: '32px' }}>
   <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '6px' }}>
-    Check out "Draft & Trading" for another league:
-  </label>
+    Check out &quot;Draft, Trades &amp; Waivers&quot; for another league:  </label>
   <select
     value={type ?? ''}
     onChange={(e) => handleDraftTypeChange(e.target.value)}
