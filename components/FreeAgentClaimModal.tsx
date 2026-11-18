@@ -13,6 +13,8 @@ type Props = {
   userId: string
   pool: FreeAgent[]
   castawayTerm: string
+  requiredCount: number        // full roster for new players; number lost for returning players
+  isReplacement?: boolean      // true when a returning player is replacing lost picks
   onClose: () => void
   onClaimed: () => void
 }
@@ -20,12 +22,10 @@ type Props = {
 export default function FreeAgentClaimModal({
   open,
   leagueId,
-  leagueName,
-  leagueSlug,
-  leagueType,
-  userId,
   pool,
   castawayTerm,
+  requiredCount,
+  isReplacement = false,
   onClose,
   onClaimed,
 }: Props) {
@@ -35,7 +35,8 @@ export default function FreeAgentClaimModal({
 
   if (!open) return null
 
-  const rosterSize = Math.min(4, pool.length)
+  const rosterSize = Math.min(requiredCount, pool.length)
+  const term = castawayTerm.toLowerCase()
 
   const toggleSelect = (castawayId: number) => {
     setSelectedIds((prev) => {
@@ -51,88 +52,25 @@ export default function FreeAgentClaimModal({
 
   const handleClaim = async () => {
     if (selectedIds.size !== rosterSize) {
-      setMessage(`Please select exactly ${rosterSize} ${castawayTerm.toLowerCase()}${rosterSize === 1 ? '' : 's'}.`)
+      setMessage(`Please select exactly ${rosterSize} ${term}${rosterSize === 1 ? '' : 's'}.`)
       return
     }
 
     setSubmitting(true)
     setMessage('')
 
-    // Re-check each selected castaway still has room — closes the race window
-    // between opening this modal and actually submitting.
-    const { data: currentPicks } = await supabase
-      .from('draft_picks')
-      .select('castaway_id')
-      .eq('league_id', leagueId)
-
-    const { data: leagueRow } = await supabase
-      .from('leagues')
-      .select('base_clone_count')
-      .eq('id', leagueId)
-      .single()
-
-    const draftedCounts = new Map<number, number>()
-    ;(currentPicks ?? []).forEach((p) => {
-      draftedCounts.set(p.castaway_id, (draftedCounts.get(p.castaway_id) ?? 0) + 1)
+    const { error } = await supabase.rpc('claim_free_agents', {
+      p_league_id: leagueId,
+      p_castaway_ids: Array.from(selectedIds),
     })
-
-    const stillAvailable = Array.from(selectedIds).every((id) => {
-      const drafted = draftedCounts.get(id) ?? 0
-      return (leagueRow?.base_clone_count ?? 0) - drafted > 0
-    })
-
-    if (!stillAvailable) {
-      setSubmitting(false)
-      setMessage('One of your selections was just claimed by someone else. Please pick again.')
-      return
-    }
-
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('tier')
-      .eq('user_id', userId)
-      .single()
-
-    const { error: memberError } = await supabase.from('league_members').insert({
-      user_id: userId,
-      league_id: leagueId,
-      tier_at_join: profile?.tier ?? 'stowaway',
-    })
-
-    if (memberError) {
-      setSubmitting(false)
-      setMessage('Something went wrong joining this league. Please try again.')
-      return
-    }
-
-   const { data: maxPickRow } = await supabase
-  .from('draft_picks')
-  .select('pick_number')
-  .eq('league_id', leagueId)
-  .order('pick_number', { ascending: false })
-  .limit(1)
-  .maybeSingle()
-
-let nextPickNumber = (maxPickRow?.pick_number ?? 0) + 1
-
-const pickRows = Array.from(selectedIds).map((castawayId) => ({
-  league_id: leagueId,
-  user_id: userId,
-  castaway_id: castawayId,
-  round: 5,
-  pick_number: nextPickNumber++,
-  original_user_id: userId,
-  is_free_agent_claim: true,
-}))
-
-const { error: pickError } = await supabase.from('draft_picks').insert(pickRows)
-    if (pickError) {
-      setSubmitting(false)
-      setMessage('Something went wrong assigning your roster. Please contact support.')
-      return
-    }
 
     setSubmitting(false)
+
+    if (error) {
+      setMessage(error.message)
+      return
+    }
+
     onClaimed()
   }
 
@@ -157,10 +95,12 @@ const { error: pickError } = await supabase.from('draft_picks').insert(pickRows)
         overflowY: 'auto',
       }}>
         <h3 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '4px' }}>
-          Join League Post-Draft
+          {isReplacement ? 'Welcome Back!' : 'Join League Post-Draft'}
         </h3>
         <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '16px', lineHeight: '1.6' }}>
-          This league has already drafted, but you're in luck! {pool.length} active {castawayTerm.toLowerCase()}{pool.length === 1 ? '' : 's'} remain unclaimed. Select {rosterSize} to build your roster:
+          {isReplacement
+            ? `${requiredCount} of your ${term}s ${requiredCount === 1 ? 'was' : 'were'} claimed while you were away. Select ${rosterSize} replacement${rosterSize === 1 ? '' : 's'}:`
+            : `This league has already drafted, but you're in luck! ${pool.length} active ${term}${pool.length === 1 ? '' : 's'} remain unclaimed. Select ${rosterSize} to build your roster:`}
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '16px' }}>
@@ -219,7 +159,7 @@ const { error: pickError } = await supabase.from('draft_picks').insert(pickRows)
               cursor: submitting ? 'not-allowed' : 'pointer',
             }}
           >
-            Cancel
+            {isReplacement ? 'Later' : 'Cancel'}
           </button>
           <button
             onClick={handleClaim}
@@ -235,7 +175,7 @@ const { error: pickError } = await supabase.from('draft_picks').insert(pickRows)
               opacity: (submitting || selectedIds.size !== rosterSize) ? 0.5 : 1,
             }}
           >
-            {submitting ? 'Joining...' : 'Confirm Roster'}
+            {submitting ? 'Saving...' : 'Confirm Roster'}
           </button>
         </div>
       </div>

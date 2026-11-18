@@ -789,3 +789,13 @@ body.hide-site-footer footer {
     width: 100%;
   }
 }
+
+/* Admin Leagues: let the action buttons wrap onto a second line on phones */
+@media (max-width: 600px) {
+  .admin-league-actions {
+    flex-wrap: wrap;
+    flex-shrink: 1 !important;
+    width: 100%;
+    row-gap: 8px;
+  }
+}

@@ -8,10 +8,10 @@ import { useState, useEffect } from 'react'
 import { leagueTypeLabels } from '@/lib/leagueTypeLabels'
 
 const leagueTypeEmojis: Record<string, string> = {
-  'secrets-on-the-beach': '🌴',
-  'americans-turning-left': '🚗',
-  'european-rocket-ships': '🏎️',
+  'secrets-on-the-beach': '🏝️',
   'uncharted-turretory': '🗡️',
+  'paddock-politicks': '🏎️',
+  'the-oval-offset': '🚗',
 }
 
 export default function CreateLeaguePage() {
@@ -28,6 +28,7 @@ export default function CreateLeaguePage() {
   const [creating, setCreating] = useState(false)
   const [message, setMessage] = useState('')
   const [missedPickBehavior, setMissedPickBehavior] = useState('bump_to_back')
+  const [draftMode, setDraftMode] = useState('live')
   const requiredEmoji = leagueTypeEmojis[type] ?? ''
   const [requireHostTradeApproval, setRequireHostTradeApproval] = useState(false)
   const [allowCustomScoring, setAllowCustomScoring] = useState(false)
@@ -67,8 +68,7 @@ if (!leagueTypeLabels[type]) {
       gap: '16px'
     }}>
       <p>This league doesn&apos;t exist.</p>
-      <a href="/
-    " style={{ color: '#f0b429' }}>← Back to Trekkon Fantasy Leagues</a>
+      <a href="/" style={{ color: '#f0b429' }}>← Back to Trekkon Fantasy Leagues</a>
     </main>
   )
 }
@@ -145,8 +145,9 @@ if (!isAdmin) {
     draft_order_method: draftOrderMethod,
     guarantee_full_coverage: guaranteeFullCoverage,
     missed_pick_behavior: missedPickBehavior,
+    draft_mode: draftMode,
+    allow_custom_scoring: (userTier === 'teamprincipal' || profile?.is_global_admin) ? allowCustomScoring : false,
     require_host_trade_approval: requireHostTradeApproval,
-    allow_custom_scoring: userTier === 'teamprincipal' ? allowCustomScoring : false,
   })
       .select()
       .single()
@@ -234,6 +235,15 @@ if (!isAdmin) {
           style={inputStyle}
         />
 
+                <label style={labelStyle}>Draft Style</label>
+        <select value={draftMode} onChange={(e) => setDraftMode(e.target.value)} style={selectStyle}>
+          <option value="live">Live Draft (Pick-by-Pick)</option>
+          <option value="auto">Offline Draft (Automatic)</option>
+        </select>
+
+        {draftMode === 'live' && (
+          <>
+
         <label style={labelStyle}>Selection Timer for Each Draft Pick</label>
         <select
           value={pickTimerSeconds}
@@ -241,12 +251,12 @@ if (!isAdmin) {
           style={selectStyle}
         >
           <option value="">No Limit</option>
+          <option value="45">45 Seconds</option>
           <option value="120">2 Minutes</option>
           <option value="300">5 Minutes</option>
           <option value="900">15 Minutes</option>
-          <option value="3600">1 Hour</option>
-          <option value="10800">3 Hours</option>
         </select>
+
 
                <label style={labelStyle}>If Selection Timer Runs Out</label>
 <select
@@ -258,6 +268,9 @@ if (!isAdmin) {
   <option value="random_select">Randomly Assign Pick</option>
 </select>
 
+      </>
+        )}
+
         <label style={labelStyle}>Draft Order</label>
         <select
           value={draftOrderMethod}
@@ -267,18 +280,6 @@ if (!isAdmin) {
           <option value="random">Randomize</option>
           <option value="host_set">Manually Set Order</option>
         </select>
-
-        <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '24px', cursor: 'pointer' }}>
-          <input
-            type="checkbox"
-            checked={guaranteeFullCoverage}
-            onChange={(e) => setGuaranteeFullCoverage(e.target.checked)}
-            style={{ marginTop: '3px' }}
-          />
-        <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
-  <strong>OPTIONAL:</strong> Require every contesant to be drafted if more than 4 league players. <em>(Contestants will be cloned as necessary to give all rosters 4 unique members.)</em>
-</span>
-        </label>
         
 <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '24px', cursor: 'pointer' }}>
   <input
@@ -301,10 +302,21 @@ if (!isAdmin) {
       style={{ marginTop: '3px' }}
     />
     <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
-      <strong>OPTIONAL:</strong> Create up to 3 custom scoring categories for your league (exclusive to Team Principals).
+      <strong>OPTIONAL:</strong> Create up to 3 custom scoring categories for your league (exclusive to Team Principal).
     </span>
   </label>
 )}
+
+   <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '24px', cursor: 'pointer' }}>
+          <input
+            type="checkbox"
+            checked={guaranteeFullCoverage}
+            onChange={(e) => setGuaranteeFullCoverage(e.target.checked)}
+            style={{ marginTop: '3px' }}
+          />
+        <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
+  <strong>NOT RECOMMENDED:</strong> Require every competitor to be chosen at least once before clones are draftable.</span>
+        </label>
 
         <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '24px', cursor: 'pointer' }}>
           <input

@@ -5,19 +5,13 @@ import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import ConfirmModal from '@/components/ConfirmModal'
-import { Cog, Palette, Trophy, Calculator, TrendingUp, Users, ClipboardList, RefreshCw, Puzzle, Microscope, Lock} from 'lucide-react'
+import { Cog, Palette, Trophy, Calculator, TrendingUp, Shuffle, Play, Users, ClipboardList, RefreshCw, Puzzle, Microscope, Lock} from 'lucide-react'
 import ResourcesModal from '@/components/ResourcesModal'
 import PredictionCard from '@/components/PredictionCard'
 import { getFreeAgentPool, type FreeAgent } from '@/lib/freeAgents'
 import FreeAgentClaimModal from '@/components/FreeAgentClaimModal'
-
-const castawayTermByLeague: Record<string, string> = {
-  'secrets-on-the-beach': 'Castaway',
-  'sotb-demo': 'Castaway',
-  'uncharted-turretory': 'Castle-Goer',
-  'uncharted-turretory-demo': 'Castle-Goer',
-  'sandbox': 'Contestant',
-}
+import { castawayTermByLeague, backgroundsByType } from '@/lib/leagueConfig'
+import { runLeagueDraft } from '@/lib/runDraft'
 
 type League = {
   id: number
@@ -34,15 +28,13 @@ type League = {
   draft_order_method?: string | null
   custom_draft_order?: string[] | null
   allow_custom_scoring: boolean
+  draft_mode?: string | null
+  draft_rounds?: number | null
 }
 
-const backgroundsByType: Record<string, string> = {
-  'secrets-on-the-beach': '/images/social-game/backgrounds/island.jpg',
-  'sotb-demo': '/images/social-game/backgrounds/island.jpg',
-  'uncharted-turretory': '/images/social-game/backgrounds/traitors.jpg',
-  'uncharted-turretory-demo': '/images/social-game/backgrounds/traitors.jpg',
-  'paddock-politicks': '/images/social-game/backgrounds/f1.jpg',
-  'the-oval-offset': '/images/social-game/backgrounds/nascar.jpg',
+const draftWindowByLeague: Record<string, { name: string; window: string }> = {
+  'secrets-on-the-beach': { name: 'Secrets on the Beach', window: 'September 16-20 (7 PM CT)' },
+  'uncharted-turretory': { name: 'Uncharted Turretory', window: 'September 16-17 (7 PM CT)' },
 }
 
 export default function LeagueInstancePage() {
@@ -74,10 +66,13 @@ export default function LeagueInstancePage() {
 const [freeAgentPool, setFreeAgentPool] = useState<FreeAgent[]>([])
 const [isMobileWidth, setIsMobileWidth] = useState(false)
 const [startingDraft, setStartingDraft] = useState(false)
-
+const [isReturning, setIsReturning] = useState(false)
+const [replaceCount, setReplaceCount] = useState<number | null>(null)
 
 
 const castawayTerm = castawayTermByLeague[type] ?? 'Contestant'
+
+const minFreeAgents = ['paddock-politicks', 'the-oval-offset'].includes(type) ? 5 : 3
 
 useEffect(() => {
   function checkWidth() {
@@ -180,6 +175,14 @@ if (draftHasRun) {
             setIsMember(true)
             setMemberTier(profileData?.tier ?? memberData.tier_at_join)
           }
+                    else {
+            const { count: oldPicks } = await supabase
+              .from('draft_picks')
+              .select('*', { count: 'exact', head: true })
+              .eq('league_id', leagueData.id)
+              .eq('user_id', user.id)
+            setIsReturning((oldPicks ?? 0) > 0)
+          }
         }
       }
       setPageLoading(false)
@@ -189,123 +192,20 @@ if (draftHasRun) {
     }
   }, [type, instance, user, loading])
 
-    const handleStartDraft = async () => {
-  if (startingDraft) return
-  setStartingDraft(true)
+      const handleStartDraft = async () => {
+    if (startingDraft || !user || !league) return
+    setStartingDraft(true)
 
-  if (!user || !league) {
-    setStartingDraft(false)
-    return
-  }
+    const { error, isAuto } = await runLeagueDraft(league)
 
-  if (league.draft_status === 'in_progress' || league.draft_status === 'completed') {
-    setStartingDraft(false)
-    return
-  }
-
-  const { count: memberCount } = await supabase
-    .from('league_members')
-    .select('*', { count: 'exact', head: true })
-    .eq('league_id', league.id)
-  if (memberCount !== null && memberCount < 3) {
-    alert(`You need at least 3 players to start the draft.`)
-    setStartingDraft(false)
-    return
-  }
-  const { data: members } = await supabase
-    .from('league_members')
-    .select('user_id')
-    .eq('league_id', league.id)
-  if (!members || members.length === 0) {
-    setStartingDraft(false)
-    return
-  }
-  let orderedMembers = [...members]
-  if (league.draft_order_method === 'host_set' && league.custom_draft_order) {
-    orderedMembers = league.custom_draft_order
-      .map((userId: string) => members.find((m) => m.user_id === userId))
-      .filter((m): m is { user_id: string; display_name: string } => m !== undefined)
-  } else {
-    orderedMembers = orderedMembers.sort(() => Math.random() - 0.5)
-  }
-  const turnOrderRows = orderedMembers.map((m, index) => ({
-    league_id: league.id,
-    user_id: m.user_id,
-    position: index + 1,
-  }))
-  const { error: turnOrderError } = await supabase
-    .from('draft_turn_order')
-    .insert(turnOrderRows)
-  if (turnOrderError) {
-    alert('Something went wrong setting up the draft order. Please try again.')
-    setStartingDraft(false)
-    return
-  }
-  const baseOrder = orderedMembers.map((m) => m.user_id)
-  const totalRounds = 4
-  const fullSequence: string[] = []
-  for (let round = 1; round <= totalRounds; round++) {
-    const roundOrder = round % 2 === 1 ? baseOrder : [...baseOrder].reverse()
-    fullSequence.push(...roundOrder)
-  }
-  const pickTimerMs = league.pick_timer_seconds ? league.pick_timer_seconds * 1000 : null
-  const deadline = pickTimerMs ? new Date(Date.now() + pickTimerMs).toISOString() : null
-  await supabase
-    .from('leagues')
-    .update({
-      draft_status: 'in_progress',
-      current_pick_number: 1,
-      pick_deadline: deadline,
-      draft_order: fullSequence,
-    })
-    .eq('id', league.id)
-  await supabase.from('notifications').insert(
-    orderedMembers.map((m) => ({
-      user_id: m.user_id,
-      message: `The draft for ${league.name} has started! That\u2019s right: silly season is upon us. Head to the draft room and make your picks!`,
-      link: `/leagues/${type}/${instance}/draft-room`,
-    }))
-  )
-
-  const memberIds = orderedMembers.map((m) => m.user_id)
-  const { data: profiles } = await supabase
-    .from('profiles')
-    .select('email, display_name, email_opt_in')
-    .in('user_id', memberIds)
-    .eq('email_opt_in', true)
-
-  if (profiles && profiles.length > 0) {
-    const { data: { session } } = await supabase.auth.getSession()
-    const accessToken = session?.access_token
-
-    const emailResponse = await fetch('/api/send-notification-email', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify({
-        recipients: profiles.map((p) => ({
-          email: p.email,
-          playerName: p.display_name || 'Player',
-        })),
-        subject: `${league.name} draft ${league.name} has started!`,
-        message: `That's right, silly season is upon us! The draft for ${league.name} has started. Head to the draft room and make your picks!`,
-        linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}/draft-room`,
-        linkText: 'Go to Draft Room →',
-      }),
-    })
-
-    if (!emailResponse.ok) {
-      const errorData = await emailResponse.json().catch(() => null)
-      console.error('Draft start email failed:', emailResponse.status, errorData)
+    if (error) {
+      alert(error)
+      setStartingDraft(false)
+      return
     }
-  } else {
-    console.log('No opted-in profiles found — skipping draft start email.')
-  }
 
-  router.push(`/leagues/${type}/${instance}/draft-room`)
-}
+    router.push(isAuto ? `/leagues/${type}/${instance}/roster` : `/leagues/${type}/${instance}/draft-room`)
+  }
 
  const handleClimbAboard = () => {
   if (!user) {
@@ -322,6 +222,16 @@ if (draftHasRun) {
     if (!user || !league) return
     setJoining(true)
     setJoinMessage('')
+    const { data: freshLeague } = await supabase
+      .from('leagues')
+      .select('draft_status')
+      .eq('id', league.id)
+      .single()
+    if (freshLeague?.draft_status === 'in_progress') {
+      setJoinMessage('This league is drafting right now. Provided there are unused competitors, registration will reopen once draft is complete.')
+      setJoining(false)
+      return
+    }
     let effectiveCap: number | null = league.max_members
     if (league.is_private && league.host_user_id) {
       const { data: hostProfile } = await supabase
@@ -371,24 +281,64 @@ effectiveCap = league.max_members ?? (hostProfile?.tier === 'teamprincipal' ? 18
       setJoining(false)
       return
     }
-const { count: pickCount } = await supabase
-  .from('draft_picks')
-  .select('*', { count: 'exact', head: true })
-  .eq('league_id', league.id)
+        if (isReturning) {
+      const { data: rejoin, error: rejoinError } = await supabase.rpc('rejoin_league', { p_league_id: league.id })
+      setJoining(false)
+      if (rejoinError) {
+        setJoinMessage(rejoinError.message)
+        return
+      }
+            const lost = rejoin?.lost ?? 0
+      setIsMember(true)
+      setIsReturning(false)
+      setMemberCount((prev) => (prev ?? 0) + 1)
 
-if (pickCount && pickCount > 0) {
-  const pool = await getFreeAgentPool(league.id, league.league_type)
-  if (pool.length < 3) {
-    setJoinMessage('This league has already drafted and no free agent spots remain. Registration is closed.')
-    setJoining(false)
-    return
-  }
-  setJoining(false)
-  setShowJoinModal(false)
-  setFreeAgentPool(pool)
-  setShowFreeAgentModal(true)
-  return
-}
+      if (lost > 0) {
+        // Offer replacements for picks claimed while they were away
+        const fullPool = await getFreeAgentPool(league.id, league.league_type)
+        const { data: mine } = await supabase
+          .from('draft_picks')
+          .select('castaway_id')
+          .eq('league_id', league.id)
+          .eq('user_id', user.id)
+        const owned = new Set((mine ?? []).map((p) => p.castaway_id))
+        const replacementPool = fullPool.filter((c) => !owned.has(c.id))
+
+        if (replacementPool.length > 0) {
+          setShowJoinModal(false)
+          setFreeAgentPool(replacementPool)
+          setReplaceCount(lost)
+          setShowFreeAgentModal(true)
+          return
+        }
+        setJoinMessage(`Welcome back! ${lost} of your players were claimed while you were away, and no free agents are left to replace them.`)
+      } else {
+        setJoinMessage('Welcome back! Your full roster has been restored.')
+      }
+          setTimeout(() => window.location.reload(), 2500)
+      return
+    }
+
+    const { count: pickCount } = await supabase
+      .from('draft_picks')
+      .select('*', { count: 'exact', head: true })
+      .eq('league_id', league.id)
+
+    if (pickCount && pickCount > 0) {
+      const pool = await getFreeAgentPool(league.id, league.league_type)
+      if (pool.length < minFreeAgents) {
+        setJoinMessage('This league has already drafted and no free agent spots remain. Registration is closed.')
+        setJoining(false)
+        return
+      }
+      setJoining(false)
+      setShowJoinModal(false)
+      setFreeAgentPool(pool)
+      setReplaceCount(null)
+      setShowFreeAgentModal(true)
+      return
+    }
+
     const { error } = await supabase.from('league_members').insert({
       user_id: user.id,
       league_id: league.id,
@@ -421,22 +371,22 @@ if (pickCount && pickCount > 0) {
           .single()
 
         if (hostProfile?.email_opt_in) {
-            const { data: { session } } = await supabase.auth.getSession()
-  const accessToken = session?.access_token
+          const { data: { session } } = await supabase.auth.getSession()
+          const accessToken = session?.access_token
 
-  await fetch('/api/send-notification-email', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${accessToken}`,
-    },
+          await fetch('/api/send-notification-email', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${accessToken}`,
+            },
             body: JSON.stringify({
               recipients: [{
                 email: hostProfile.email,
                 playerName: hostProfile.display_name || 'Host',
               }],
               subject: `A new player joined ${league.name}!`,
-              message: `${profile?.display_name || 'A new Player'} has joined ${league.name}. The competetion is on!`,
+              message: `${profile?.display_name || 'A new Player'} has joined ${league.name}. The competition is on!`,
               linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}`,
               linkText: 'View League →',
             }),
@@ -593,8 +543,8 @@ if (pickCount && pickCount > 0) {
       { label: 'Draft Room', icon: Puzzle, href: `/leagues/${type}/${instance}/draft-room` },
       { label: 'Draft Research', icon: Microscope, href: null },
     ].filter((item) =>
-      !(item.label === 'Draft Room' && (!league.is_private || league.draft_status === 'completed' || type === 'sotb-demo' || type === 'uncharted-turretory-demo')) &&
-      !(item.label === 'Draft Research' && (hasDrafted || type === 'sotb-demo' || type === 'uncharted-turretory-demo'))
+      !(item.label === 'Draft Room' && (league.draft_mode !== 'live' || league.draft_status === 'completed' || type === 'sotb-demo' || type === 'uncharted-turretory-demo')) &&
+      !(item.label === 'Draft Research' && ((hasDrafted && league.draft_status !== 'in_progress') || type === 'sotb-demo' || type === 'uncharted-turretory-demo'))
     ),
   },
 ]
@@ -669,7 +619,7 @@ if (pickCount && pickCount > 0) {
           )}
 
          {(isHost || isGlobalAdmin) && league.is_private && (
-  <div style={{
+            <div style={{
     backgroundColor: '#1a1a2e',
     border: '1px solid #f0b429',
     borderRadius: '10px',
@@ -677,6 +627,8 @@ if (pickCount && pickCount > 0) {
     marginBottom: '20px',
     marginTop: '16px'
   }}>
+    {league.is_private && (
+      <>
     <p style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '8px' }}>
       Share to invite players into <strong>this</strong> private league (anyone with link can join):
     </p>
@@ -721,8 +673,10 @@ if (pickCount && pickCount > 0) {
   {copied ? 'Copied!' : 'Copy'}
 </button>
     </div>
-    <div style={{ marginTop: '-4px', paddingTop: '16px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '16px' }}>
-      <a href={`/leagues/${type}/${instance}/host-settings`}
+     </>
+    )}
+    
+    <div style={{ marginTop: league.is_private ? '-4px' : '0', paddingTop: league.is_private ? '16px' : '0', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '16px' }}>      <a href={`/leagues/${type}/${instance}/host-settings`}
         className="btn"
         style={{
           display: 'inline-flex',
@@ -737,8 +691,8 @@ if (pickCount && pickCount > 0) {
       >
         <Cog size={16} color="#ffffff" strokeWidth={2} style={{ flexShrink: 0 }} /> League Settings
       </a>
-      {league.allow_custom_scoring && hostTier === 'teamprincipal' && (
-        <a href={`/leagues/${type}/${instance}/custom-scoring`}
+      {league.allow_custom_scoring && (isGlobalAdmin || hostTier === 'teamprincipal') && (
+                <a href={`/leagues/${type}/${instance}/custom-scoring`}
           className="btn"
           style={{
             display: 'inline-flex',
@@ -754,12 +708,13 @@ if (pickCount && pickCount > 0) {
           <Palette size={16} color="#ffffff" strokeWidth={2} style={{ flexShrink: 0 }} /> Custom Scoring
         </a>
       )}
+
     </div>
   </div>
 )}
 
-{(isHost || isGlobalAdmin) && league.is_private && league.draft_status !== 'in_progress' && league.draft_status !== 'completed' && (
-  <div style={{ marginBottom: '24px', textAlign: 'center' }}>
+{(isHost || isGlobalAdmin) && league.is_private && !hasDrafted && league.draft_status !== 'in_progress' && league.draft_status !== 'completed' && (
+  <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
     <button
       onClick={() => setShowStartDraftConfirm(true)}
       className="league-card"
@@ -774,10 +729,11 @@ if (pickCount && pickCount > 0) {
         cursor: 'pointer'
       }}
     >
-      Start Draft Procedure
+      {league.draft_mode === 'auto' ? 'Run Offline Draft' : 'Start Live Draft'}
     </button>
   </div>
 )}
+
           <div style={{ margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '30px', marginBottom: '40px' }}>
             {toolGroups.map((group) => (
               <div key={group.label}>
@@ -863,7 +819,9 @@ const content = (
   }}>
     {isMember ? (
       <div>
-<PredictionCard leagueId={league.id} leagueType={type} instanceSlug={instance} />
+{!['paddock-politicks', 'the-oval-offset'].includes(type) && (
+  <PredictionCard leagueId={league.id} leagueType={type} instanceSlug={instance} />
+)}
 
         <p className="league-welcome-text" style={{
                   color: '#f0b429',
@@ -881,8 +839,8 @@ const content = (
                   justifyContent: 'flex-start',
                   gap: '12px'
                 }}>
-                  {!league.is_private && (
-                    <a href={`/leagues/${type}/${instance}/rankings`} className="btn" style={{
+                  {(!hasDrafted || league.draft_status === 'in_progress') && (
+                                                            <a href={`/leagues/${type}/${instance}/rankings`} className="btn" style={{
                       display: 'inline-block',
                       backgroundColor: 'transparent',
                       border: '1px solid #f0b429',
@@ -909,8 +867,8 @@ const content = (
                   }}>
                     {memberTier === 'teamprincipal' ? 'Manage Membership' : 'Upgrade Membership'}
                   </a>
-                  {!isHost && (
-                    <button
+               {!isHost && league.draft_status !== 'in_progress' && (
+                                    <button
                       onClick={() => setShowLeaveConfirm(true)}
                       disabled={leaving}
                       style={{
@@ -931,9 +889,42 @@ const content = (
                 </div>
               </div>
             ) : (
-             hasDrafted ? (
-  freeAgentPool.length >= 3 ? (
-    <button onClick={() => setShowFreeAgentModal(true)} style={{
+             league.draft_status === 'in_progress' ? (
+    <div style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '14px',
+      backgroundColor: '#1a1a2e',
+      color: '#555570',
+      padding: '14px 32px',
+      borderRadius: '8px',
+      border: '1px solid #2a2a3e',
+      fontWeight: 'bold',
+      fontSize: '1rem'
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <Lock size={32} strokeWidth={2} color="#f0b429" />
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
+          <span>Registration will reopen after active draft if enough {castawayTerm.toLowerCase()}s remain.</span>
+      </div>
+    </div>
+  ) : isReturning ? (
+    <button onClick={handleClimbAboard} style={{
+      backgroundColor: '#f0b429',
+      color: '#0a0a0f',
+      padding: '14px 32px',
+      borderRadius: '8px',
+      border: 'none',
+      fontWeight: 'bold',
+      fontSize: '1rem',
+      cursor: 'pointer'
+    }}>
+      Rejoin League
+    </button>
+  ) : hasDrafted ? (
+    freeAgentPool.length >= minFreeAgents ? (
+        <button onClick={() => setShowFreeAgentModal(true)} style={{
       backgroundColor: '#f0b429',
       color: '#0a0a0f',
       padding: '14px 32px',
@@ -976,6 +967,43 @@ const content = (
           </div>
         </div>
       </div>
+
+             {isGlobalAdmin && !league.is_private && (
+        <div style={{
+          maxWidth: '800px',
+          margin: '48px auto 0',
+          paddingTop: '12px',
+          borderTop: '1px solid #2a2a3e',
+          display: 'flex',
+          flexWrap: isMobileWidth ? 'nowrap' : 'wrap',
+          alignItems: 'center',
+                   justifyContent: 'flex-start',
+          gap: isMobileWidth ? '14px' : '8px',
+          fontSize: isMobileWidth ? '0.8rem' : '1rem',
+          whiteSpace: 'nowrap',
+          color: '#555570'
+        }}>
+          {!isMobileWidth && <span>Global Admin:</span>}
+          <a href={`/leagues/${type}/${instance}/host-settings`} style={{ color: '#a0a0b0', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+            <Cog size={14} color="#a0a0b0" strokeWidth={2} /> League Settings
+          </a>
+          {league.allow_custom_scoring && (
+            <a href={`/leagues/${type}/${instance}/custom-scoring`} style={{ color: '#a0a0b0', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px', marginLeft: isMobileWidth ? '0' : '12px' }}>
+              <Palette size={14} color="#a0a0b0" strokeWidth={2} /> Custom Scoring
+            </a>
+          )}
+          {!hasDrafted && league.draft_status !== 'in_progress' && league.draft_status !== 'completed' && (
+            <button
+              onClick={() => setShowStartDraftConfirm(true)}
+              style={{ background: 'none', border: 'none', padding: 0, marginLeft: isMobileWidth ? '0' : '12px', color: '#2bda25', fontSize: 'inherit', cursor: 'pointer', fontFamily: 'inherit', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+            >
+              {league.draft_mode === 'auto'
+                ? <><Shuffle size={14} color="#ffffff" strokeWidth={2} /> Run Offline Draft</>
+                : <><Play size={14} color="#ffffff" strokeWidth={2} /> Start Live Draft</>}
+            </button>
+          )}
+        </div>
+      )}
 
       {showJoinModal && (
         <div style={{
@@ -1063,13 +1091,22 @@ const content = (
       <ConfirmModal
         open={showStartDraftConfirm}
         title="Start the Draft?"
-        message={[
-          'The draft window for Secrets on the Beach runs September 16-20 (7 PM CT). League hosts are responsible for communicating draft start times (anywhere in that window), selection time limits, consequences of missing picks, etc.',
-          'Clicking "Start Draft" will immediately start the selection timer for the first player up.',
-          'Note: All players should be actively engaged in your draft window (whether it lasts 60 minutes or 2 days).'
-        ]}
-     confirmText={startingDraft ? 'Starting...' : 'Start Draft'}
-  onConfirm={() => { setShowStartDraftConfirm(false); handleStartDraft() }}
+               message={
+          league.draft_mode === 'auto'
+            ? [
+                'This runs the entire draft at once. Each player gets their highest-ranked pick still available, and players without rankings get random picks.',
+                'Results are final once the draft runs, and every player is notified.',
+              ]
+            : [
+                draftWindowByLeague[type]
+                  ? `The draft window for ${draftWindowByLeague[type].name} runs ${draftWindowByLeague[type].window}. League hosts are responsible for communicating draft start times, selection time limits, consequences of missing picks, etc.`
+                  : 'League hosts are responsible for communicating draft start times, selection time limits, consequences of missing picks, etc.',
+                'Clicking "Start Draft" will immediately start the selection timer for the first player up.',
+                'Note: All players should be actively engaged in your draft window (whether it lasts 15 minutes or 2 days).',
+              ]
+        }
+     confirmText={startingDraft ? 'Starting...' : league.draft_mode === 'auto' ? 'Run Draft' : 'Start Draft'}
+       onConfirm={() => { setShowStartDraftConfirm(false); handleStartDraft() }}
   onCancel={() => setShowStartDraftConfirm(false)}
 />
 
@@ -1085,7 +1122,7 @@ const content = (
 
 <ResourcesModal open={showResources} onClose={() => setShowResources(false)} type={type} />   
 
-  {league && user && (
+ {user && (
   <FreeAgentClaimModal
     open={showFreeAgentModal}
     leagueId={league.id}
@@ -1095,15 +1132,22 @@ const content = (
     userId={user.id}
     pool={freeAgentPool}
     castawayTerm={castawayTerm}
-    onClose={() => setShowFreeAgentModal(false)}
+    requiredCount={replaceCount ?? (league.draft_rounds ?? 4)}
+    isReplacement={replaceCount !== null}
+    onClose={() => {
+      setShowFreeAgentModal(false)
+      if (replaceCount !== null) window.location.reload()
+    }}
     onClaimed={() => {
       setShowFreeAgentModal(false)
-      setIsMember(true)
-      setMemberCount((prev) => (prev ?? 0) + 1)
+      if (replaceCount === null) {
+        setIsMember(true)
+        setMemberCount((prev) => (prev ?? 0) + 1)
+      }
       window.location.reload()
     }}
   />
-)} 
+  )}
   
 </main>
   )

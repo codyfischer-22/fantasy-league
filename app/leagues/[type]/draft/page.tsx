@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation'
 import { useState, type ReactNode } from 'react'
-import { Lock, ListOrdered, RefreshCw, Calendar, ClipboardList } from 'lucide-react'
+import { Lock, ListOrdered, RefreshCw, ClipboardList } from 'lucide-react'
 
 type InfoRow = {
   label: string
@@ -26,15 +26,15 @@ const draftContent: Record<string, {
       '(If there are 50 players, for example, we\u2019d need 200 draftable castaways. All 21 contestants would be cloned 10 times to make a 210-person draft pool.)',
       '➤ Players failing to submit castaway rankings before the draft will have them randomly ranked without petition.',
       '➤ Simulated draft results are final once shared; if players don\u2019t get their top choices, it\u2019s because those castaways were popular and ran out before their turn.',
-      '➤ Don\u2019t like your 4-person tribe? Visit the Trade Portal to offer trades or poach from the Waiver Wire.',
+      '➤ Don\u2019t like your 4-person tribe? Visit the Trade Portal to offer trades or claim from the Waiver Wire.',
     ],
   draftFormatPrivate: [
       '➤ Private league hosts may randomly generate or manually assign draft order.',
       '➤ Hosts are responsible for coordinating and manually starting the live snake draft.',
-      '➤ Hosts opt in or out for selection time limits (recommended) between 2 minutes and 3 hours.',
+      '➤ Hosts opt in or out for selection time limits (recommended) between 45 seconds and 15 minutes.',
       '➤ Players receive time warning notifications at 10, 5, and 1 minutes remaining for a given pick.',
       '➤ Hosts decide if expired timers result in A) picks being skipped and moved to the end of the draft or B) a castaway being randomly selected.',
-      '➤ In the case of no selection timer (not recommended) and players failing to draft, is the host\u2019s responsibility to communicate with Trekkon Fantasy Leagues. Players ignoring draft procedures outlined by the league host are unable to petition their roster.',
+      '➤ In the case of no selection timer (not recommended) and players failing to draft, it is the host\u2019s responsibility to communicate with Trekkon Fantasy Leagues. Players ignoring draft procedures outlined by the league host are unable to petition their roster.',
       '➤ Trekkon Fantasy Leagues is not responsible for private league hosts failing to communicate or coordinate live draft. Before joining a league, players should trust hosts to lead responsibly.',
     ],
     trades: [
@@ -50,7 +50,7 @@ const draftContent: Record<string, {
     lateJoinsWaiverWire: [
   '➤ Once drafts are complete, leftover clones become free agents until eliminated.',
   '➤ Newcomers can join a post-draft league and claim free agents if 3+ remain.',
-  '➤ In the standard trade window, league members may swap rostered castle-goers with free agents in the Waiver Wire.',
+  '➤ In the standard trade window, league members may swap rostered castaways with free agents in the Waiver Wire.',
 ],
   },
   'uncharted-turretory': {
@@ -59,18 +59,18 @@ const draftContent: Record<string, {
    draftFormatPublic: [
       '➤ Public leagues use an offline snake draft, with a randomly-assigned draft order, where players pre-rank castle-goers in the order they\u2019d pick them if available.',
       '➤ Castle-goers will be cloned until each player can draft a 4-person roster.',
-      '(If there are 50 players, for example, we\u2019d need 200 draftable castle-goers. All 21 contestants would be cloned 10 times to make a 210-person draft pool.)',
+      '(If there are 50 players, for example, we\u2019d need 200 draftable castle-goers. All 22 contestants would be cloned 10 times to make a 220-person draft pool.)',
       '➤ Players failing to submit castle-goer rankings before the draft will have them randomly ranked without petition.',
       '➤ Simulated draft results are final once shared; if players don\u2019t get their top choices, it\u2019s because those castle-goers were popular and ran out before their turn.',
-      '➤ Don\u2019t like your 4-person roster? Visit the Trade Portal to offer trades or poach from the Waiver Wire.',
+      '➤ Don\u2019t like your 4-person roster? Visit the Trade Portal to offer trades or claim from the Waiver Wire.',
     ],
     draftFormatPrivate: [
       '➤ Private league hosts may randomly generate or manually assign draft order.',
       '➤ Hosts are responsible for coordinating and manually starting the live snake draft.',
-      '➤ Hosts opt in or out for selection time limits (recommended) between 2 minutes and 3 hours.',
+      '➤ Hosts opt in or out for selection time limits (recommended) between 45 seconds and 15 minutes.',
       '➤ Players receive time warning notifications at 10, 5, and 1 minutes remaining for a given pick.',
       '➤ Hosts decide if expired timers result in A) picks being skipped and moved to the end of the draft or B) a castle-goer being randomly selected.',
-      '➤ In the case of no selection timer (not recommended) and players failing to draft, is the host\u2019s responsibility to communicate with Trekkon Fantasy Leagues. Players ignoring draft procedures outlined by the league host are unable to petition their roster.',
+      '➤ In the case of no selection timer (not recommended) and players failing to draft, it is the host\u2019s responsibility to communicate with Trekkon Fantasy Leagues. Players ignoring draft procedures outlined by the league host are unable to petition their roster.',
       '➤ Trekkon Fantasy Leagues is not responsible for private league hosts failing to communicate or coordinate live draft. Before joining a league, players should trust hosts to lead responsibly.',
     ],
        trades: [
@@ -91,10 +91,7 @@ const draftContent: Record<string, {
   },
 }
 
-const generalIntro = (
-  <>Here&rsquo;s everything you need to know about public drafts, private drafts, trades, waiver wires, and late joins. Official deadlines for this season can be found in{' '}
-  <a href="/leagues/secrets-on-the-beach/rules" style={{ color: '#f0b429', textDecoration: 'underline' }}>Rules & Scoring</a>.</>
-)
+
 
 const draftTypeOptions = [
   { value: 'secrets-on-the-beach', label: '🏝️ Secrets on the Beach', comingSoon: false },
@@ -108,6 +105,12 @@ export default function DraftPage() {
   const router = useRouter()
   const type = params.type as string | undefined
   const content = type ? draftContent[type] : null
+  const rulesHref = type && draftContent[type] ? `/leagues/${type}/rules` : '/leagues/secrets-on-the-beach/rules'
+
+  const generalIntro = (
+    <>Here&rsquo;s everything you need to know about public drafts, private drafts, trades, waiver wires, and late joins. Official deadlines for this season can be found in{' '}
+    <a href={rulesHref} style={{ color: '#f0b429', textDecoration: 'underline' }}>Rules & Scoring</a>.</>
+  )
   const [showComingSoon, setShowComingSoon] = useState(false)
 
   const handleDraftTypeChange = (selectedType: string) => {
@@ -138,32 +141,36 @@ export default function DraftPage() {
           ← Back to Trekkon Fantasy Leagues
         </a>
 
-        <h1 style={{
-  fontSize: 'clamp(1.6rem, 8vw, 2.25rem)',
-  marginBottom: '4px',
-  display: 'flex',
-  alignItems: 'center',
-  flexWrap: 'wrap',
-  gap: '8px 10px'
-}}>
-  <ListOrdered size={32} strokeWidth={2} color="#f0b429" style={{ flexShrink: 0 }} />
-          <span style={{ color: '#f0b429' }}>Trekkon</span>{' '}
-          <span style={{ color: '#ffffff' }}>Draft, Trades & Waivers</span>
+            <h1 style={{
+          fontSize: 'clamp(1.6rem, 8vw, 2.25rem)',
+          margin: 0,
+          marginBottom: '8px',
+          display: 'flex',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          rowGap: '0px',
+          columnGap: '10px'
+        }}>
+          <ListOrdered size={32} strokeWidth={2} color="#f0b429" style={{ flexShrink: 0 }} />
+          <span style={{ color: '#f0b429' }}>Trekkon Leagues</span>
+          <span className="mobile-full-width-break" style={{ color: '#ffffff' }}>Draft, Trades & Waivers</span>
         </h1>
 
-        <p style={{ color: '#a0a0b0', fontSize: '0.95rem', lineHeight: '1.45', marginBottom: '24px' }}>
-  {generalIntro}
-</p>
+        <p style={{ color: '#a0a0b0', fontSize: '0.95rem', lineHeight: '1.7', margin: '0 0 16px 0' }}>
+          {generalIntro}
+        </p>
 
         {!content && (
           <div style={{ marginBottom: '32px' }}>
             <label style={{ display: 'block', color: '#a0a0b0', fontSize: '0.95rem', marginBottom: '8px' }}>
-              View "Draft & Trading" for the following league:
+              View &quot;Draft, Trades &amp; Waivers&quot; for the following league:
             </label>
             <select
               value={type === 'all' ? '' : type ?? ''}
               onChange={(e) => handleDraftTypeChange(e.target.value)}
               style={{
+                display: 'block',
+                marginLeft: 0,
                 padding: '10px 14px',
                 borderRadius: '6px',
                 border: '1px solid #2a2a3e',

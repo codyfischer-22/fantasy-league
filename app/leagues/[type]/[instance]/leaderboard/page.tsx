@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/AuthContext'
 import { Trophy } from 'lucide-react'
+   import { backgroundsByType } from '@/lib/leagueConfig'
 
 type CastawayScore = {
   castaway_id: number
@@ -16,15 +17,6 @@ type PlayerStanding = {
   total: number
   bonusPoints: number
   castaways: CastawayScore[]
-}
-
-const backgroundsByType: Record<string, string> = {
-  'secrets-on-the-beach': '/images/social-game/backgrounds/island.jpg',
-  'sotb-demo': '/images/social-game/backgrounds/island.jpg',
-  'uncharted-turretory': '/images/social-game/backgrounds/traitors.jpg',
-  'uncharted-turretory-demo': '/images/social-game/backgrounds/traitors.jpg',
-  'paddock-politicks': '/images/social-game/backgrounds/f1.jpg',
-  'the-oval-offset': '/images/social-game/backgrounds/nascar.jpg',
 }
 
 export default function LeaderboardPage() {
@@ -165,21 +157,21 @@ const bonusByUser = new Map<string, number>()
     })
   }
 
-  if (pageLoading) {
-    return (
-      <main style={{
-        backgroundColor: '#0a0a0f',
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: '#a0a0b0',
-        fontFamily: 'Georgia, serif'
-      }}>
-        Loading...
-      </main>
-    )
-  }
+if (pageLoading) {
+  return (
+    <main style={{
+      backgroundColor: '#0a0a0f',
+      minHeight: '100vh',
+      display: 'flex',
+      justifyContent: 'center',
+      color: '#a0a0b0',
+      fontFamily: 'Georgia, serif',
+      paddingTop: '120px'
+    }}>
+      Loading...
+    </main>
+  )
+}
 
   if (isFrozen) {
     return (
@@ -233,8 +225,7 @@ const bonusByUser = new Map<string, number>()
   <span style={{ color: '#ffffff' }}>Leaderboard</span>
 </h1>
       <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '32px' }}>
-  Where do you stack up on the leaderboard? Expand a player to see their {type === 'uncharted-turretory' ? 'roster' : 'tribe'} of 4!
-</p>
+  Where do you stack up on the leaderboard? Expand a player to see their {type.startsWith('uncharted-turretory') ? 'roster' : 'tribe'} of 4!</p>
         {standings.length === 0 ? (
           <p style={{ color: '#555570' }}>No players have joined this league yet.</p>
         ) : (

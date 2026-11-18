@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import ConfirmModal from '@/components/ConfirmModal'
+import { castawayTermByLeague } from '@/lib/leagueConfig'
 
 type Castaway = {
   id: number
@@ -18,14 +19,6 @@ type CustomEntry = {
   points: number
   notes: string | null
   created_at: string
-}
-
-const castawayTermByLeague: Record<string, string> = {
-  'secrets-on-the-beach': 'Castaway',
-  'sotb-demo': 'Castaway',
-  'uncharted-turretory': 'Castle-Goer',
-  'uncharted-turretory-demo': 'Castle-Goer',
-  'sandbox': 'Contestant'
 }
 
 export default function CustomScoringPage() {
@@ -67,18 +60,16 @@ export default function CustomScoringPage() {
   .eq('slug', instance)
   .single()
 
-if (!leagueData || leagueData.host_user_id !== user.id || !leagueData.allow_custom_scoring) {
-  router.push(`/leagues/${type}/${instance}`)
-  return
-}
-
 const { data: profileData } = await supabase
   .from('profiles')
-  .select('tier')
+  .select('tier, is_global_admin')
   .eq('user_id', user.id)
   .single()
 
-if (profileData?.tier !== 'teamprincipal') {
+const isAdmin = profileData?.is_global_admin ?? false
+const isTeamPrincipalHost = leagueData?.host_user_id === user.id && profileData?.tier === 'teamprincipal'
+
+if (!leagueData || !leagueData.allow_custom_scoring || !(isAdmin || isTeamPrincipalHost)) {
   router.push(`/leagues/${type}/${instance}`)
   return
 }
@@ -136,7 +127,7 @@ const handleAddEntry = async () => {
     .insert({
       league_id: league.id,
       castaway_id: parseInt(selectedCastawayId),
-      episode_number: parseInt(episodeNumber),
+      episode_number: parseFloat(episodeNumber),
       category_label: finalCategory,
       points: parseInt(points),
       notes: notes.trim() || null,
@@ -225,7 +216,7 @@ setNotes('')
           <span style={{ color: '#ffffff' }}>Custom Scoring</span>
         </h1>
         <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '28px', lineHeight: '1.6' }}>
-          Here's your chance to create up to 3 custom scoring categories for your league! Episodes with multiple elimination events (e.g. tribal council or round table) may be broken into multiple may be broken down into multiple entries (e.g. Ep. 4 and Ep. 4.5). Players can see these entries in the Scoring Log, alongside standard categories.
+          Here's your chance to create up to 3 custom scoring categories for your league! Episodes with multiple elimination events (e.g. tribal council or round table) may be broken down into multiple entries (e.g. Ep. 4 and Ep. 4.5). Players can see these entries in the Scoring Log, alongside standard categories.
         </p>
 
 

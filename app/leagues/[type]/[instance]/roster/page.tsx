@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/AuthContext'
 import { Users } from 'lucide-react'
+import { rosterTermByLeague, backgroundsByType } from '@/lib/leagueConfig'
 
 type RosterMember = {
   user_id: string
@@ -30,23 +31,6 @@ const tierLabelsMobile: Record<string, string> = {
   castaway: 'Castaway',
   crewchief: 'Crew Chief',
   teamprincipal: 'Principal',
-}
-
-const rosterTermByLeague: Record<string, string> = {
-  'secrets-on-the-beach': 'Tribe',
-  'sotb-demo': 'Tribe',
-  'uncharted-turretory': 'Roster',
-    'uncharted-turretory-demo': 'Roster',
-  'sandbox': 'Roster',
-}
-
-const backgroundsByType: Record<string, string> = {
-  'secrets-on-the-beach': '/images/social-game/backgrounds/island.jpg',
-  'sotb-demo': '/images/social-game/backgrounds/island.jpg',
-  'uncharted-turretory': '/images/social-game/backgrounds/traitors.jpg',
-  'uncharted-turretory-demo': '/images/social-game/backgrounds/traitors.jpg',
-  'paddock-politicks': '/images/social-game/backgrounds/f1.jpg',
-  'the-oval-offset': '/images/social-game/backgrounds/nascar.jpg',
 }
 
 export default function RosterPage() {
@@ -327,7 +311,7 @@ return (
                     </div>
                   </div>
                   <p style={{ color: '#3a3a44', fontSize: '0.8rem' }}>
-                    {rosterTerm} (Out of Play): {member.castaways.join(', ')}
+                    Released to Trade Portal: {member.castaways.join(', ')}
                   </p>
                 </div>
               ))}

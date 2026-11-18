@@ -7,6 +7,7 @@ import { useAuth } from '@/lib/AuthContext'
 import { leagueTypeLabels } from '@/lib/leagueTypeLabels'
 import { Calculator } from 'lucide-react'
 import { Lock } from 'lucide-react'
+   import { castawayTermByLeague, backgroundsByType } from '@/lib/leagueConfig'
 
 const categoryLabelsByLeague: Record<string, Record<string, string>> = {
   'secrets-on-the-beach': {
@@ -128,15 +129,6 @@ type ScoreEntry = {
 type EpisodeGroup = {
   episode_number: number
   entries: ScoreEntry[]
-}
-
-const backgroundsByType: Record<string, string> = {
-  'secrets-on-the-beach': '/images/social-game/backgrounds/island.jpg',
-  'sotb-demo': '/images/social-game/backgrounds/island.jpg',
-  'uncharted-turretory': '/images/social-game/backgrounds/traitors.jpg',
-  'uncharted-turretory-demo': '/images/social-game/backgrounds/traitors.jpg',
-  'paddock-politicks': '/images/social-game/backgrounds/f1.jpg',
-  'the-oval-offset': '/images/social-game/backgrounds/nascar.jpg',
 }
 
 export default function ScoringLogPage() {

@@ -21,6 +21,7 @@ export default function LeagueSettingsPage() {
   const [draftOrderMethod, setDraftOrderMethod] = useState('random')
   const [guaranteeFullCoverage, setGuaranteeFullCoverage] = useState(false)
   const [missedPickBehavior, setMissedPickBehavior] = useState('bump_to_back')
+    const [draftMode, setDraftMode] = useState('live')
 
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
@@ -30,6 +31,7 @@ export default function LeagueSettingsPage() {
   const [requireHostTradeApproval, setRequireHostTradeApproval] = useState(false)
   const [allowCustomScoring, setAllowCustomScoring] = useState(false)
   const [userTier, setUserTier] = useState<string | null>(null)
+  const [isAdminUser, setIsAdminUser] = useState(false)
   const [ejectingPlayer, setEjectingPlayer] = useState<{ id: string; name: string } | null>(null)
   const [showScrapConfirm, setShowScrapConfirm] = useState(false)
 
@@ -53,6 +55,7 @@ export default function LeagueSettingsPage() {
   .eq('user_id', user.id)
   .maybeSingle()
 const isGlobalAdmin = profileCheck?.is_global_admin ?? false
+setIsAdminUser(isGlobalAdmin)
 
 if (!leagueData || (leagueData.host_user_id !== user.id && !isGlobalAdmin)) {
   router.push(`/leagues/${type}/${instance}`)
@@ -90,6 +93,7 @@ if (leagueData?.league_type === 'sandbox') {
       setGuaranteeFullCoverage(leagueData.guarantee_full_coverage ?? false)
       setRequireHostTradeApproval(leagueData.require_host_trade_approval ?? false)
       setMissedPickBehavior(leagueData.missed_pick_behavior ?? 'bump_to_back')
+      setDraftMode(leagueData.draft_mode ?? 'live')
       setAllowCustomScoring(leagueData.allow_custom_scoring ?? false)
 
 const { data: profileData } = await supabase
@@ -130,29 +134,36 @@ setCustomOrder([...stillValidOrder, ...missingFromOrder])
     if (!loading) {
       loadLeague()
     }
-  }, [user, loading, type, instance, router])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, loading, type, instance])
 
-  const handleSave = async () => {
+     const handleSave = async () => {
     if (!league) return
     setSaving(true)
     setMessage('')
 
- const { error } = await supabase
-  .from('leagues')
-  .update({
-    pick_timer_seconds: pickTimerSeconds ? parseInt(pickTimerSeconds) : null,
-    draft_order_method: draftOrderMethod,
-    guarantee_full_coverage: guaranteeFullCoverage,
-    missed_pick_behavior: missedPickBehavior,
-    custom_draft_order: draftOrderMethod === 'host_set' ? customOrder : null,
-    require_host_trade_approval: requireHostTradeApproval,
-    allow_custom_scoring: userTier === 'teamprincipal' ? allowCustomScoring : false,
-  })
-  .eq('id', league.id)
+    const locked = league.draft_status === 'in_progress' || league.draft_status === 'completed'
+
+    const { data: savedRows, error } = await supabase
+      .from('leagues')
+      .update({
+        pick_timer_seconds: pickTimerSeconds ? parseInt(pickTimerSeconds) : null,
+        missed_pick_behavior: missedPickBehavior,
+        require_host_trade_approval: requireHostTradeApproval,
+        allow_custom_scoring: (userTier === 'teamprincipal' || isAdminUser) ? allowCustomScoring : false,
+        ...(locked ? {} : {
+          draft_order_method: draftOrderMethod,
+          guarantee_full_coverage: guaranteeFullCoverage,
+          draft_mode: draftMode,
+          custom_draft_order: draftOrderMethod === 'host_set' ? customOrder : null,
+        }),
+      })
+      .eq('id', league.id)
+      .select('id')
 
     setSaving(false)
 
-    if (error) {
+    if (error || !savedRows || savedRows.length === 0) {
       setMessage('Something went wrong saving your settings. Please try again.')
     } else {
       setMessage('Settings saved!')
@@ -261,7 +272,7 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
     }
   }
 
-  const { error } = await supabase
+   const { error } = await supabase
     .from('leagues')
     .update({ is_archived: true })
     .eq('id', league.id)
@@ -306,6 +317,8 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
     return null
   }
 
+  const draftLocked = league?.draft_status === 'in_progress' || league?.draft_status === 'completed'
+
   return (
     <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '40px 20px' }}>
       <div style={{ backgroundColor: '#1a1a2e', border: '1px solid #f0b429', borderRadius: '12px', padding: '40px', width: '100%', maxWidth: '480px' }}>
@@ -317,30 +330,48 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
           League Settings
         </h1>
 
-        <label style={labelStyle}>Selection Timer for Each Draft Pick</label>
-        <select value={pickTimerSeconds} onChange={(e) => setPickTimerSeconds(e.target.value)} style={selectStyle}>
-          <option value="">No Limit</option>
-          <option value="120">2 Minutes</option>
-          <option value="300">5 Minutes</option>
-          <option value="900">15 Minutes</option>
-          <option value="3600">1 Hour</option>
-          <option value="10800">3 Hours</option>
+               <label style={labelStyle}>Draft Style</label>
+        <select value={draftMode} onChange={(e) => setDraftMode(e.target.value)} disabled={draftLocked} style={{ ...selectStyle, opacity: draftLocked ? 0.5 : 1 }}>          <option value="live">Live Draft (Pick-by-Pick)</option>
+          <option value="auto">Offline Draft (Automatic)</option>
         </select>
 
-        <label style={labelStyle}>If Selection Timer Runs Out</label>
-        <select value={missedPickBehavior} onChange={(e) => setMissedPickBehavior(e.target.value)} style={selectStyle}>
-          <option value="bump_to_back">Bump Pick to Back of Draft</option>
-          <option value="random_select">Randomly Assign Pick</option>
-        </select>
+                {draftLocked && (
+          <p style={{ color: '#555570', fontSize: '0.8rem', marginTop: '-16px', marginBottom: '20px', paddingLeft: '4px' }}>
+            Toggle locked following draft start procedure.
+          </p>
+        )}
+
+        {draftMode === 'live' && (
+          <>
+            <label style={labelStyle}>Selection Timer for Each Draft Pick</label>
+            <select value={pickTimerSeconds} onChange={(e) => setPickTimerSeconds(e.target.value)} style={selectStyle}>
+              <option value="">No Limit</option>
+              <option value="45">45 Seconds</option>
+              <option value="120">2 Minutes</option>
+              <option value="300">5 Minutes</option>
+              <option value="900">15 Minutes</option>
+            </select>
+
+            <label style={labelStyle}>If Selection Timer Runs Out without Pre-Rankings & Auto-Draft</label>
+            <select value={missedPickBehavior} onChange={(e) => setMissedPickBehavior(e.target.value)} style={selectStyle}>
+              <option value="bump_to_back">Bump Pick to Back of Draft</option>
+              <option value="random_select">Randomly Assign Pick</option>
+            </select>
+          </>
+        )}
 
         <label style={labelStyle}>Draft Order</label>
-        <select value={draftOrderMethod} onChange={(e) => setDraftOrderMethod(e.target.value)} style={selectStyle}>
+        <select value={draftOrderMethod} onChange={(e) => setDraftOrderMethod(e.target.value)} disabled={draftLocked} style={{ ...selectStyle, opacity: draftLocked ? 0.5 : 1 }}>          
           <option value="random">Randomize</option>
           <option value="host_set">Manually Set Order</option>
         </select>
 
-        {draftOrderMethod === 'host_set' && (
-  <div style={{ marginBottom: '24px' }}>
+                {draftLocked && (
+          <p style={{ color: '#555570', fontSize: '0.8rem', marginTop: '-16px', marginBottom: '20px', paddingLeft: '4px' }}>
+            Toggle locked following draft start procedure.
+          </p>
+        )}
+        {draftOrderMethod === 'host_set' && !draftLocked && (  <div style={{ marginBottom: '24px' }}>
     <label style={labelStyle}>Set Pick Order</label>
     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
       {customOrder.map((userId, index) => {
@@ -403,28 +434,34 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
   </div>
 )}
 
-        <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '24px', cursor: 'pointer' }}>
-          <input type="checkbox" checked={guaranteeFullCoverage} onChange={(e) => setGuaranteeFullCoverage(e.target.checked)} style={{ marginTop: '3px' }} />
-          <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
-            <strong>OPTIONAL:</strong> Require every player to be drafted if more than 4 league players. <em>(Contestants will be cloned as necessary to give all rosters 4 unique members.)</em>
-          </span>
-        </label>
-
-        <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '24px', cursor: 'pointer' }}>
+        <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '16px', cursor: 'pointer' }}>
   <input type="checkbox" checked={requireHostTradeApproval} onChange={(e) => setRequireHostTradeApproval(e.target.checked)} style={{ marginTop: '3px' }} />
   <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
     <strong>OPTIONAL:</strong> Require host to approve or deny all league trades (or they sit idle as pending).
   </span>
 </label>
 
-{userTier === 'teamprincipal' && (
-  <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '24px', cursor: 'pointer' }}>
+{(userTier === 'teamprincipal' || isAdminUser) && (
+  <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '16px', cursor: 'pointer' }}>
     <input type="checkbox" checked={allowCustomScoring} onChange={(e) => setAllowCustomScoring(e.target.checked)} style={{ marginTop: '3px' }} />
     <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
       <strong>OPTIONAL:</strong> Create up to 3 custom scoring categories for your league (exclusive to Team Principal).
     </span>
   </label>
 )}
+
+   <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '24px', cursor: 'pointer' }}>
+          <input type="checkbox" checked={guaranteeFullCoverage} disabled={draftLocked} onChange={(e) => setGuaranteeFullCoverage(e.target.checked)} style={{ marginTop: '3px' }} />          <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
+            <strong>NOT RECOMMENDED:</strong> Require every competitor to be chosen at least once before clones are draftable.
+          </span>
+        </label>
+
+                  {draftLocked && (
+          <p style={{ color: '#555570', fontSize: '0.8rem', marginTop: '-22px', marginBottom: '20px', paddingLeft: '21px' }}>
+            Toggle locked following draft start procedure.
+          </p>
+        )}
+
 
         <button
           onClick={handleSave}
@@ -478,8 +515,8 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
               {members.map((m) => (
                 <div key={m.user_id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: '1px solid #2a2a3e' }}>
                   <span style={{ fontSize: '0.85rem' }}>{m.display_name}</span>
-                  {m.user_id !== user?.id && (
-                    <button
+                  {m.user_id !== user?.id && league?.draft_status !== 'in_progress' && (
+                                        <button
                      onClick={() => setEjectingPlayer({ id: m.user_id, name: m.display_name })}
                       style={{
                         background: 'none',

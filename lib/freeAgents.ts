@@ -18,7 +18,7 @@ export async function getFreeAgentPool(leagueId: number, leagueType: string): Pr
     return []
   }
 
-    const { data: castawayList } = await supabase
+  const { data: castawayList } = await supabase
     .from('castaways')
     .select('id, name')
     .eq('league_type', leagueType)
@@ -26,15 +26,24 @@ export async function getFreeAgentPool(leagueId: number, leagueType: string): Pr
 
   if (!castawayList || castawayList.length === 0) return []
 
+  // Only current members' picks count; departed Players' picks are free agents again
+  const { data: members } = await supabase
+    .from('league_members')
+    .select('user_id')
+    .eq('league_id', leagueId)
+  const memberIds = new Set((members ?? []).map((m) => m.user_id))
+
   const { data: picks } = await supabase
     .from('draft_picks')
-    .select('castaway_id')
+    .select('castaway_id, user_id')
     .eq('league_id', leagueId)
 
   const draftedCounts = new Map<number, number>()
-  ;(picks ?? []).forEach((p) => {
-    draftedCounts.set(p.castaway_id, (draftedCounts.get(p.castaway_id) ?? 0) + 1)
-  })
+  ;(picks ?? [])
+    .filter((p) => memberIds.has(p.user_id))
+    .forEach((p) => {
+      draftedCounts.set(p.castaway_id, (draftedCounts.get(p.castaway_id) ?? 0) + 1)
+    })
 
   const pool: FreeAgent[] = castawayList
     .map((c) => ({

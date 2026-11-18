@@ -5,6 +5,7 @@ import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { RefreshCw } from 'lucide-react'
 import { getFreeAgentPool, type FreeAgent } from '@/lib/freeAgents'
+import { castawayTermByLeague, backgroundsByType } from '@/lib/leagueConfig'
 
 type Castaway = {
   id: number
@@ -25,23 +26,6 @@ type Trade = {
   created_at: string
   resolved_at: string | null
   is_waiver_move: boolean
-}
-
-const castawayTermByLeague: Record<string, string> = {
-  'secrets-on-the-beach': 'Castaway',
-  'sotb-demo': 'Castaway',
-  'uncharted-turretory': 'Castle-Goer',
-    'uncharted-turretory-demo': 'Castle-Goer',
-  'sandbox': 'Contestant',
-}
-
-const backgroundsByType: Record<string, string> = {
-  'secrets-on-the-beach': '/images/social-game/backgrounds/island.jpg',
-  'sotb-demo': '/images/social-game/backgrounds/island.jpg',
-  'uncharted-turretory': '/images/social-game/backgrounds/traitors.jpg',
-  'uncharted-turretory-demo': '/images/social-game/backgrounds/traitors.jpg',
-  'paddock-politicks': '/images/social-game/backgrounds/f1.jpg',
-  'the-oval-offset': '/images/social-game/backgrounds/nascar.jpg',
 }
 
 const episodeAirTimeByLeague: Record<string, { dayOfWeek: number; hour: number }> = {
@@ -1412,7 +1396,7 @@ return (
     fontSize: '0.85rem'
   }}>
 {t.is_waiver_move ? (
-  <>{displayNames[t.proposing_user_id]} dropped <strong style={{ color: '#f0b429' }}>{castawayNames[t.offered_castaway_id]}</strong> and picked up <strong style={{ color: '#f0b429' }}>{castawayNames[t.requested_castaway_id]}</strong> in waiver wire</>
+  <>{displayNames[t.proposing_user_id]} dropped <strong style={{ color: '#f0b429' }}>{castawayNames[t.offered_castaway_id]}</strong> and picked up <strong style={{ color: '#f0b429' }}>{castawayNames[t.requested_castaway_id]}</strong> in Waiver Wire</>
 ) : (
   <>{displayNames[t.proposing_user_id]} offered <strong style={{ color: '#f0b429' }}>{castawayNames[t.offered_castaway_id]}</strong> to {displayNames[t.receiving_user_id ?? '']} for <strong style={{ color: '#f0b429' }}>{castawayNames[t.requested_castaway_id]}</strong></>
 )}

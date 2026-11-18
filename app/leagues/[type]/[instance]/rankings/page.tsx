@@ -6,28 +6,12 @@ import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import ResourcesModal from '@/components/ResourcesModal'
 import { Search, ListOrdered } from 'lucide-react'
+   import { castawayTermByLeague, backgroundsByType } from '@/lib/leagueConfig'
 
 type Castaway = {
   id: number
   name: string
   status: string
-}
-
-const backgroundsByType: Record<string, string> = {
-  'secrets-on-the-beach': '/images/social-game/backgrounds/island.jpg',
-  'sotb-demo': '/images/social-game/backgrounds/island.jpg',
-  'uncharted-turretory': '/images/social-game/backgrounds/traitors.jpg',
-  'uncharted-turretory-demo': '/images/social-game/backgrounds/traitors.jpg',
-  'paddock-politicks': '/images/social-game/backgrounds/f1.jpg',
-  'the-oval-offset': '/images/social-game/backgrounds/nascar.jpg',
-}
-
-const castawayTermByLeague: Record<string, string> = {
-  'secrets-on-the-beach': 'Castaway',
-  'sotb-demo': 'Castaway',
-  'uncharted-turretory': 'Castle-Goer',
-  'uncharted-turretory-demo': 'Castle-Goer',
-  'sandbox': 'Contestant',
 }
 
 export default function RankingsPage() {
@@ -47,6 +31,10 @@ export default function RankingsPage() {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
   const [showResources, setShowResources] = useState(false)
   const castawayTerm = castawayTermByLeague[type] ?? 'Castaway'
+  const [isLiveDraft, setIsLiveDraft] = useState(false)
+  const [hasTimer, setHasTimer] = useState(false)
+  const [autodraftMode, setAutodraftMode] = useState('end_of_turn')
+  const [draftIsLive, setDraftIsLive] = useState(false)
 
   useEffect(() => {
     async function loadData() {
@@ -57,7 +45,7 @@ export default function RankingsPage() {
 
       const { data: league } = await supabase
         .from('leagues')
-        .select('id, name, league_type, is_archived')
+        .select('id, name, league_type, is_archived, draft_mode, pick_timer_seconds, draft_status')
         .eq('league_type', type)
         .eq('slug', instance)
         .single()
@@ -67,14 +55,14 @@ export default function RankingsPage() {
         return
       }
 
-if (league?.is_archived) {   // or leagueData?.is_archived — match whatever variable name that file uses
+if (league?.is_archived) {
   router.push(`/leagues/${type}`)
   return
 }
 
       const { data: membership } = await supabase
         .from('league_members')
-        .select('user_id')
+        .select('user_id, autodraft_mode')
         .eq('league_id', league.id)
         .eq('user_id', user.id)
         .maybeSingle()
@@ -104,8 +92,11 @@ if (league?.is_archived) {   // or leagueData?.is_archived — match whatever va
         .select('*', { count: 'exact', head: true })
         .eq('league_id', league.id)
 
-      if (pickCount && pickCount > 0) {
-        setAlreadyDrafted(true)
+      const draftDone =
+        league.draft_status === 'completed' ||
+        (league.draft_status !== 'in_progress' && (pickCount ?? 0) > 0)
+
+      if (draftDone) {        setAlreadyDrafted(true)
         setLeagueId(league.id)
         setLeagueName(league.name)
         setPageLoading(false)
@@ -115,11 +106,19 @@ if (league?.is_archived) {   // or leagueData?.is_archived — match whatever va
       setLeagueId(league.id)
       setLeagueName(league.name)
 
+      const live = (league.draft_mode ?? 'live') === 'live'
+      setDraftIsLive(league.draft_status === 'in_progress')
+      const timer = !!league.pick_timer_seconds
+      setIsLiveDraft(live)
+      setHasTimer(timer)
+      const savedMode = membership.autodraft_mode ?? 'end_of_turn'
+      setAutodraftMode(!timer && savedMode === 'end_of_turn' ? 'off' : savedMode)
+
       const { data: castawayList } = await supabase
         .from('castaways')
         .select('id, name, status')
         .eq('league_type', league.league_type)
-        .order('id')
+        .order('default_rank', { ascending: true, nullsFirst: false })
 
       const { data: existingRankings } = await supabase
         .from('draft_rankings')
@@ -133,7 +132,8 @@ if (league?.is_archived) {   // or leagueData?.is_archived — match whatever va
         const rankedCastaways = rankedIds
           .map((id) => castawayList.find((c) => c.id === id))
           .filter((c): c is Castaway => !!c)
-        setCastaways(rankedCastaways)
+        const unranked = castawayList.filter((c) => !rankedIds.includes(c.id))
+        setCastaways([...rankedCastaways, ...unranked])
       } else {
         setCastaways(castawayList ?? [])
       }
@@ -217,25 +217,25 @@ const handleTouchEnd = () => {
     setSaving(true)
     setMessage('')
 
-    await supabase
-      .from('draft_rankings')
-      .delete()
-      .eq('league_id', leagueId)
-      .eq('user_id', user.id)
+    const { error } = await supabase.rpc('save_draft_rankings', {
+      p_league_id: leagueId,
+      p_castaway_ids: castaways.map((c) => c.id),
+    })
 
-    const rows = castaways.map((castaway, index) => ({
-      league_id: leagueId,
-      user_id: user.id,
-      castaway_id: castaway.id,
-      rank_position: index + 1,
-    }))
-
-    const { error } = await supabase.from('draft_rankings').insert(rows)
+       if (!error && isLiveDraft) {
+      const { error: modeError } = await supabase.rpc('set_autodraft_mode', {
+        p_league_id: leagueId,
+        p_mode: autodraftMode,
+      })
+      setSaving(false)
+      setMessage(modeError ? modeError.message : 'Your rankings have been saved!')
+      return
+    }
 
     setSaving(false)
 
     if (error) {
-      setMessage('Something went wrong saving your rankings. Please try again.')
+      setMessage(error.message || 'Something went wrong saving your rankings. Please try again.')
     } else {
       setMessage('Your rankings have been saved!')
     }
@@ -294,7 +294,7 @@ return (
   This league has already drafted!
 </h1>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '24px' }}>
-              Rankings are locked now that the draft has run. Check out the results below.
+              Rankings are locked now that the draft is complete. Check out the results below.
             </p>
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
               <a href={`/leagues/${type}/${instance}/roster`} className="btn" style={{
@@ -328,9 +328,20 @@ return (
   <ListOrdered size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '1px' }} />
   Rank {castawayTerm}s
 </h1>
-           <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '16px', lineHeight: '1.6' }}>
-  Drag and drop your most-wanted {castawayTerm.toLowerCase()} to the top, and work your way down from there. If you need to make a tweak before the offline snake draft begins, just re-edit and save your rankings. Happy drafting, friends!
+
+           {draftIsLive && (
+             <p style={{ color: '#2bda25', fontSize: '0.9rem', fontWeight: 'bold', marginBottom: '8px' }}>
+               The draft is live, but you can still reorder rankings or change auto-draft preferences (applied to next turn)!
+             </p>
+           )}
+
+           <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '8px', lineHeight: '1.6' }}>
+  Drag and drop your most-wanted {castawayTerm.toLowerCase()} to the top, and work your way down from there. If you need to make a tweak before snake draft begins, just re-edit and save your rankings.
 </p>
+
+<p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '16px', lineHeight: '1.6' }}>
+In the event of a live draft, players without saved auto-draft rankings default to host settings (randomly generated or bumped to back).</p> 
+
 <button
   onClick={() => setShowResources(true)}
   style={{
@@ -426,6 +437,31 @@ return (
                 </div>
               ))}
             </div>
+
+                        {isLiveDraft && (
+              <div style={{ marginBottom: '24px' }}>
+                <p style={{ color: '#ffffff', fontSize: '0.95rem', fontWeight: 'bold', marginBottom: '10px' }}>
+                  Automatically apply to live draft?
+                </p>
+                {[
+                  { value: 'instant', label: 'Auto-draft at the start of my turn.' },
+                  ...(hasTimer ? [{ value: 'end_of_turn', label: "Auto-draft to end timer (if no manual pick)." }] : []),
+                  { value: 'off', label: "No auto-draft; apply host rules for missed pick." },
+                ].map((opt) => (
+                  <label key={opt.value} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '8px', cursor: 'pointer' }}>
+                    <input
+                      type="radio"
+                      name="autodraft"
+                      value={opt.value}
+                      checked={autodraftMode === opt.value}
+                      onChange={() => setAutodraftMode(opt.value)}
+                      style={{ marginTop: '4px' }}
+                    />
+                    <span style={{ color: '#a0a0b0', fontSize: '0.9rem' }}>{opt.label}</span>
+                  </label>
+                ))}
+              </div>
+            )}
 
             <button
               onClick={handleSubmit}

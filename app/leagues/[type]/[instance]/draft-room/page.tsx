@@ -6,6 +6,7 @@ import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import ConfirmModal from '@/components/ConfirmModal'
 import { Puzzle, Timer } from 'lucide-react'
+  import { castawayTermByLeague, backgroundsByType } from '@/lib/leagueConfig'
 
 type Castaway = { id: number; name: string }
 type Pick = { user_id: string; castaway_id: number }
@@ -13,18 +14,9 @@ type Pick = { user_id: string; castaway_id: number }
 const draftCompleteTitleByLeague: Record<string, string> = {
   'secrets-on-the-beach': '🔥 Tribes Are Set',
   'sotb-demo': '🔥 Tribes Are Set',
-  'turret-mafia': '🗡️ Rosters Are Set',
-  'turret-mafia-demo': '🗡️ Rosters Are Set',
+  'uncharted-turretory': '🗡️ Rosters Are Set',
+  'uncharted-turretory-demo': '🗡️ Rosters Are Set',
   'sandbox': '🧪 Sandbox Draft Complete',
-}
-
-const backgroundsByType: Record<string, string> = {
-  'secrets-on-the-beach': '/images/social-game/backgrounds/island.jpg',
-  'sotb-demo': '/images/social-game/backgrounds/island.jpg',
-  'uncharted-turretory': '/images/social-game/backgrounds/traitors.jpg',
-  'uncharted-turretory-demo': '/images/social-game/backgrounds/traitors.jpg',
-  'paddock-politicks': '/images/social-game/backgrounds/f1.jpg',
-  'the-oval-offset': '/images/social-game/backgrounds/nascar.jpg',
 }
 
 const draftInstructionsByLeague: Record<string, { countLine: string }> = {
@@ -34,20 +26,15 @@ const draftInstructionsByLeague: Record<string, { countLine: string }> = {
   'sotb-demo': {
     countLine: 'There are 21 castaways in Survivor 51 so any league with over 5 players will have castaways "cloned" as necessary (e.g. 10 players → 40 castaways needed → clone each castaway twice for 42 selectable options).',
   },
-  'turret-mafia': {
+  'uncharted-turretory': {
+    countLine: 'There are 22 castle-goers in Uncharted Turretory so any league with over 5 players will have castle-goers "cloned" as necessary (e.g. 10 players → 40 castle-goers needed → clone each castle-goer twice for 44 selectable options).',
+  },
+    'uncharted-turretory-demo': {
     countLine: 'There are 22 castle-goers in Uncharted Turretory so any league with over 5 players will have castle-goers "cloned" as necessary (e.g. 10 players → 40 castle-goers needed → clone each castle-goer twice for 44 selectable options).',
   },
   'sandbox': {
     countLine: 'This is a sandbox testing environment with 20 fake contestants. Clone math works the same as a real league.',
   },
-}
-
-const castawayTermByLeague: Record<string, string> = {
-  'secrets-on-the-beach': 'Castaway',
-  'sotb-demo': 'Castaway',
-  'turret-mafia': 'Castle-Goer',
-  'turret-mafia-demo': 'Castle-Goer',
-  'sandbox': 'Contestant',
 }
 
 export default function DraftRoomPage() {
@@ -151,7 +138,7 @@ setLeague(leagueData)
   const secondsRemaining = deadlineMs !== null ? Math.max(0, Math.ceil((deadlineMs - now) / 1000)) : null
   const [showCompleteModal, setShowCompleteModal] = useState(false)
   const currentRound = league ? Math.ceil(league.current_pick_number / members.length) : 1
-  const totalPicksNeeded = members.length * 4
+  const totalPicksNeeded = members.length * (league?.draft_rounds ?? 4)
   const baseClone = castaways.length > 0 ? Math.ceil(totalPicksNeeded / castaways.length) : 1
   const [showInstructions, setShowInstructions] = useState(true)
   const [pendingPick, setPendingPick] = useState<{ id: number; name: string } | null>(null)
@@ -198,315 +185,112 @@ setLeague(leagueData)
   })
 
   // ---- Actions ---- //
+    const sendDraftCompleteEmails = async () => {
+    if (!league) return
+    const memberIds = members.map((m) => m.user_id)
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('email, display_name, email_opt_in')
+      .in('user_id', memberIds)
+      .eq('email_opt_in', true)
+    if (!profiles || profiles.length === 0) return
+    const { data: { session } } = await supabase.auth.getSession()
+    await fetch('/api/send-notification-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token}` },
+      body: JSON.stringify({
+        recipients: profiles.map((p) => ({ email: p.email, playerName: p.display_name || 'Player' })),
+        subject: `The draft for ${league.name} is complete!`,
+        message: `The draft for ${league.name} is complete. Check out your roster, make trade offers, and get ready for the season!`,
+        linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}`,
+        linkText: 'View League →',
+      }),
+    })
+  }
+
+  const emailMissedPlayer = async (missedUserId: string, message: string) => {
+    if (!league) return
+    const { data: missedProfile } = await supabase
+      .from('profiles')
+      .select('email, display_name, email_opt_in')
+      .eq('user_id', missedUserId)
+      .single()
+    if (!missedProfile?.email_opt_in) return
+    const { data: { session } } = await supabase.auth.getSession()
+    await fetch('/api/send-notification-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token}` },
+      body: JSON.stringify({
+        recipients: [{ email: missedProfile.email, playerName: missedProfile.display_name || 'Player' }],
+        subject: `You missed your pick in ${league.name}..`,
+        message,
+        linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}/draft-room`,
+        linkText: 'Go to Draft Room →',
+      }),
+    })
+  }
+
   const handleMakePick = async (castawayId: number, castawayName: string) => {
     if (!user || !league || !isMyTurn) return
-
- const { data: existingPick } = await supabase
-  .from('draft_picks')
-  .select('id')
-  .eq('league_id', league.id)
-  .eq('pick_number', league.current_pick_number)
-  .maybeSingle()
-
-if (existingPick) {
-  console.warn('Pick already made for this slot; skipping duplicate.')
-  return
-}
-
-    const currentRound = Math.ceil(league.current_pick_number / members.length)
     setPicking(true)
 
-   const { error } = await supabase.from('draft_picks').insert({
-  league_id: league.id,
-  user_id: user.id,
-  castaway_id: castawayId,
-  round: currentRound,
-  pick_number: league.current_pick_number,
-  original_user_id: user.id,
-})
+    const { data, error } = await supabase.rpc('make_draft_pick', {
+      p_league_id: league.id,
+      p_castaway_id: castawayId,
+    })
 
     if (error) {
-      alert('Something went wrong making your pick. Please try again.')
+      alert(`Couldn't draft ${castawayName}: ${error.message}`)
       setPicking(false)
+      await loadDraftState()
       return
     }
 
-   const nextPickNumber = league.current_pick_number + 1
-const isDraftComplete = nextPickNumber > draftOrder.length
-const pickTimerMs = league.pick_timer_seconds ? league.pick_timer_seconds * 1000 : null
-const nextDeadline = pickTimerMs && !isDraftComplete
-  ? new Date(Date.now() + pickTimerMs).toISOString()
-  : null
-const { error: advanceError } = await supabase
-  .from('leagues')
-  .update({
-    current_pick_number: nextPickNumber,
-    pick_deadline: nextDeadline,
-    draft_status: isDraftComplete ? 'completed' : 'in_progress',
-  })
-  .eq('id', league.id)
-if (advanceError) {
-  console.log('Failed to advance draft:', advanceError)
-}
-
-if (isDraftComplete) {
-await supabase
-    .from('leagues')
-    .update({ base_clone_count: baseClone })
-    .eq('id', league.id)
-
-  await supabase.from('notifications').insert(
-    members.map((m) => ({
-      user_id: m.user_id,
-      message: `The draft for ${league.name} is complete. Check out your roster, make trade offers, and get ready for the season!`,
-      link: `/leagues/${type}/${instance}`,
-    }))
-  )
-
-  const memberIds = members.map((m) => m.user_id)
-  const { data: profiles } = await supabase
-    .from('profiles')
-    .select('email, display_name, email_opt_in')
-    .in('user_id', memberIds)
-    .eq('email_opt_in', true)
-
-  if (profiles && profiles.length > 0) {
-      const { data: { session } } = await supabase.auth.getSession()
-  const accessToken = session?.access_token
-
-  await fetch('/api/send-notification-email', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${accessToken}`,
-    },
-      body: JSON.stringify({
-        recipients: profiles.map((p) => ({
-          email: p.email,
-          playerName: p.display_name || 'Player',
-        })),
-        subject: `The draft for ${league.name} is complete!`,
-        message: `The draft for ${league.name} is complete. Check out your roster, make trade offers, and get ready for the season!`,
-        linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}`,
-        linkText: 'View League →',
-      }),
-    })
-  }
-}
-
-setPicking(false)
-await loadDraftState()
-}
-
-const handleMissedPick = async () => {
-  if (!league) return
-
-const { data: existingPick } = await supabase
-    .from('draft_picks')
-    .select('id')
-    .eq('league_id', league.id)
-    .eq('pick_number', league.current_pick_number)
-    .maybeSingle()
-
-  if (existingPick) {
-    console.warn('Pick already made for this slot — skipping duplicate.')
-    setHandlingMissedPick(false)
-    return
-  }
-
-  const missedUserId = currentPickerId
-  const configuredBehavior = league.missed_pick_behavior || 'bump_to_back'
-
-  let behavior = configuredBehavior
-  if (configuredBehavior === 'bump_to_back') {
-    const { count: priorBumps } = await supabase
-      .from('draft_events')
-      .select('*', { count: 'exact', head: true })
-      .eq('league_id', league.id)
-      .eq('user_id', missedUserId)
-      .eq('event_type', 'bumped_to_back')
-
-    if (priorBumps && priorBumps >= 4) {
-      behavior = 'random_select'
+    if (data?.completed) {
+      await sendDraftCompleteEmails()
     }
+
+    setPicking(false)
+    await loadDraftState()
   }
 
-  if (behavior === 'random_select') {
-      const eligibleCastaways = castaways.filter(
-        (c) => remainingByCastaway[c.id] > 0 && !currentPickerAlreadyHas.has(c.id)
+  const handleMissedPick = async () => {
+    if (!league) return
+
+    const { data, error } = await supabase.rpc('handle_missed_pick', {
+      p_league_id: league.id,
+      p_pick_number: league.current_pick_number,
+    })
+
+    if (error) {
+      console.warn('Missed pick could not be handled:', error.message)
+      setHandlingMissedPick(false)
+      await loadDraftState()
+      return
+    }
+
+    if (data?.result === 'not_expired') {
+      // This device's clock ran slightly ahead of the server's; try again shortly
+      setTimeout(() => setHandlingMissedPick(false), 2000)
+      return
+    }
+
+    if (data?.result === 'bumped') {
+      await emailMissedPlayer(
+        data.missed_user_id,
+        `You failed to draft a player before the timer went off in ${league.name}. Per the host-selected policy, this pick has been moved to the end of the draft.`
       )
-
-      if (eligibleCastaways.length === 0) {
-        setHandlingMissedPick(false)
-        return
+        } else if (data?.result === 'auto_picked') {
+      await emailMissedPlayer(
+        data.missed_user_id,
+        data.from_rankings
+          ? `Your timer ran out in ${league.name} without a manual pick. Based on your ranking and auto-draft preferences, you received ${data.castaway_name}.`
+          : `You failed to draft a player before the timer went off in ${league.name}. Per the host-selected policy, the system selected ${data.castaway_name} for you.`
+      )
+      if (data.completed) {
+        await sendDraftCompleteEmails()
       }
-
-      const randomPick = eligibleCastaways[Math.floor(Math.random() * eligibleCastaways.length)]
-
-const { error: insertError } = await supabase.from('draft_picks').insert({
-  league_id: league.id,
-  user_id: missedUserId,
-  castaway_id: randomPick.id,
-  round: Math.ceil(league.current_pick_number / members.length),
-  pick_number: league.current_pick_number,
-  was_auto_assigned: true,
-  original_user_id: missedUserId,
-})
-
-if (insertError) {
-  console.warn('Missed-pick insert failed (likely a duplicate race) — aborting this run.', insertError)
-  setHandlingMissedPick(false)
-  return
-}
-
-      const nextPickNumber = league.current_pick_number + 1
-      const isDraftComplete = nextPickNumber > draftOrder.length
-      const pickTimerMs = league.pick_timer_seconds ? league.pick_timer_seconds * 1000 : null
-      const nextDeadline = pickTimerMs && !isDraftComplete
-        ? new Date(Date.now() + pickTimerMs).toISOString()
-        : null
-
-      await supabase
-  .from('leagues')
-  .update({
-    current_pick_number: nextPickNumber,
-    pick_deadline: nextDeadline,
-    draft_status: isDraftComplete ? 'completed' : 'in_progress',
-  })
-  .eq('id', league.id)
-
-await supabase.from('notifications').insert({
-  user_id: missedUserId,
-  message: `You failed to draft a player before the timer went off in ${league.name}. Per the host-selected policy, the system randomly selected ${randomPick.name} for you.`,
-  link: `/leagues/${type}/${instance}/draft-room`,
-})
-
-const { data: missedProfile } = await supabase
-  .from('profiles')
-  .select('email, display_name, email_opt_in')
-  .eq('user_id', missedUserId)
-  .single()
-
-if (missedProfile?.email_opt_in) {
-    const { data: { session } } = await supabase.auth.getSession()
-  const accessToken = session?.access_token
-
-  await fetch('/api/send-notification-email', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify({
-      recipients: [{
-        email: missedProfile.email,
-        playerName: missedProfile.display_name || 'Player',
-      }],
-      subject: `You missed your pick in ${league.name}..`,
-      message: `You failed to draft a player before the timer went off in ${league.name}. Per the host-selected policy, the system randomly selected ${randomPick.name} for you.`,
-      linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}/draft-room`,
-      linkText: 'Go to Draft Room →',
-    }),
-  })
-}
-
-if (isDraftComplete) {
-  await supabase
-    .from('leagues')
-    .update({ base_clone_count: baseClone })
-    .eq('id', league.id)
-
-  await supabase.from('notifications').insert(
-    members.map((m) => ({
-      user_id: m.user_id,
-      message: `The draft for ${league.name} is complete. Check out your roster, make trade offers, and get ready for the season!`,
-    }))
-  )
-
-  const memberIds = members.map((m) => m.user_id)
-  const { data: profiles } = await supabase
-    .from('profiles')
-    .select('email, display_name, email_opt_in')
-    .in('user_id', memberIds)
-    .eq('email_opt_in', true)
-
-  if (profiles && profiles.length > 0) {
-      const { data: { session } } = await supabase.auth.getSession()
-  const accessToken = session?.access_token
-
-  await fetch('/api/send-notification-email', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${accessToken}`,
-    },
-      body: JSON.stringify({
-        recipients: profiles.map((p) => ({
-          email: p.email,
-          playerName: p.display_name || 'Player',
-        })),
-        subject: `The draft for ${league.name} is complete!`,
-        message: `The draft for ${league.name} is complete. Check out your roster, make trade offers, and get ready for the season!`,
-        linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}`,
-        linkText: 'View League →',
-      }),
-    })
-  }
-}
-    } else {
-  const newOrder = [...draftOrder]
-  newOrder.splice(currentPickIndex, 1)
-  newOrder.push(missedUserId)
-  const pickTimerMs = league.pick_timer_seconds ? league.pick_timer_seconds * 1000 : null
-  const nextDeadline = pickTimerMs ? new Date(Date.now() + pickTimerMs).toISOString() : null
-  await supabase
-    .from('leagues')
-    .update({
-      draft_order: newOrder,
-      pick_deadline: nextDeadline,
-    })
-    .eq('id', league.id)
-  await supabase.from('draft_events').insert({
-    league_id: league.id,
-    user_id: missedUserId,
-    event_type: 'bumped_to_back',
-    pick_number: league.current_pick_number,
-  })
-  await supabase.from('notifications').insert({
-    user_id: missedUserId,
-    message: `You failed to draft a player before the timer went off in ${league.name}. Per the host-selected policy, this pick has been moved to the end of the draft.`,
-    link: `/leagues/${type}/${instance}/draft-room`,
-  })
-
-  const { data: bumpedProfile } = await supabase
-  .from('profiles')
-  .select('email, display_name, email_opt_in')
-  .eq('user_id', missedUserId)
-  .single()
-
-if (bumpedProfile?.email_opt_in) {
-    const { data: { session } } = await supabase.auth.getSession()
-  const accessToken = session?.access_token
-
-  await fetch('/api/send-notification-email', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify({
-      recipients: [{
-        email: bumpedProfile.email,
-        playerName: bumpedProfile.display_name || 'Player',
-      }],
-      subject: `You missed your pick in ${league.name}..`,
-      message: `You failed to draft a player before the timer went off in ${league.name}. Per the host-selected policy, this pick has been moved to the end of the draft.`,
-      linkUrl: `https://trekkonleagues.com/leagues/${type}/${instance}/draft-room`,
-      linkText: 'Go to Draft Room →',
-    }),
-  })
-}
-}
+    }
 
     setHandlingMissedPick(false)
     await loadDraftState()
@@ -544,7 +328,7 @@ useEffect(() => {
     setHandlingMissedPick(true)
     handleMissedPick()
   }
-}, [isExpired, members.length])
+}, [isExpired, members.length, handlingMissedPick])
 
 useEffect(() => {
   const prevStatus = previousStatusRef.current
@@ -647,10 +431,19 @@ if (league.draft_status !== 'in_progress' && league.draft_status !== 'completed'
         }}>
           ← Back to {league.name}
         </a>
-      <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-  <Puzzle size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
-  <span style={{ color: '#f0b429' }}>League</span>{' '}
-  <span style={{ color: '#ffffff' }}>Draft Room</span>
+ <h1 style={{
+  fontSize: 'clamp(1.75rem, 6vw, 2.25rem)',
+  margin: 0,
+  marginBottom: '4px',
+  display: 'flex',
+  alignItems: 'center',
+  flexWrap: 'wrap',
+  rowGap: '0px',
+  columnGap: '10px'
+}}>
+  <Puzzle size={36} strokeWidth={2} color="#f0b429" style={{ flexShrink: 0 }} />
+  <span style={{ color: '#f0b429' }}>League</span>
+  <span className="mobile-full-width-break" style={{ color: '#ffffff' }}>Draft Room</span>
 </h1>
 <p style={{ color: '#555570', marginBottom: '8px' }}>
   Ready to piece your team together? Please check with your host to see when your draft starts.</p>

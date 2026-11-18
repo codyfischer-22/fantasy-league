@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { Dices } from 'lucide-react'
+   import { castawayTermByLeague } from '@/lib/leagueConfig'
 
 type Castaway = {
   id: number
@@ -15,14 +16,6 @@ type Props = {
   leagueId: number
   leagueType: string
   instanceSlug: string
-}
-
-const castawayTermByLeague: Record<string, string> = {
-  'secrets-on-the-beach': 'Castaway',
-  'sotb-demo': 'Castaway',
-  'uncharted-turretory': 'Castle-Goer',
-  'uncharted-turretory-demo': 'Castle-Goer',
-  'sandbox': 'Contestant',
 }
 
 const episodeAirTimeByLeague: Record<string, { dayOfWeek: number; hour: number }> = {

@@ -4,6 +4,7 @@ import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { TrendingUp, Lock } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
+import { castawayTermByLeague, backgroundsByType } from '@/lib/leagueConfig'
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts'
@@ -80,23 +81,6 @@ const categoryLabelsByLeague: Record<string, Record<string, string>> = {
     win_solo: 'Win the Game Solo',
     manual_adjustment: 'Manual Adjustment',
   },
-}
-
-const backgroundsByType: Record<string, string> = {
-  'secrets-on-the-beach': '/images/social-game/backgrounds/island.jpg',
-  'sotb-demo': '/images/social-game/backgrounds/island.jpg',
-  'uncharted-turretory': '/images/social-game/backgrounds/traitors.jpg',
-  'uncharted-turretory-demo': '/images/social-game/backgrounds/traitors.jpg',
-  'paddock-politicks': '/images/social-game/backgrounds/f1.jpg',
-  'the-oval-offset': '/images/social-game/backgrounds/nascar.jpg',
-}
-
-const castawayTermByLeague: Record<string, string> = {
-  'secrets-on-the-beach': 'Castaway',
-  'sotb-demo': 'Castaway',
-  'uncharted-turretory': 'Castle-Goer',
-  'uncharted-turretory-demo': 'Castle-Goer',
-  'sandbox': 'Contestant',
 }
 
 type EventDetail = {
@@ -455,7 +439,6 @@ episodeNumbers.forEach((ep) => {
   })
   playerRows.push(row)
 })
-setPlayerChartData(playerRows)
         setPlayerChartData(playerRows)
       }
     }
@@ -594,7 +577,7 @@ return (
 </p>
             {valueReport.length === 0 ? (
               <p style={{ color: '#555570', marginBottom: '48px' }}>
-                No draft rankings on record yet. Check back once the draft has run!
+                No rankings on record. Check back after draft has run and scores are inputted!
               </p>
             ) : (
               <>

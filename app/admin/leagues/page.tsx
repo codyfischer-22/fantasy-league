@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
-import { Trophy, Earth, Lock, RefreshCw, ExternalLink, Plus } from 'lucide-react'
+import { Trophy, Earth, Lock, ExternalLink, Plus, Shuffle, Play } from 'lucide-react'
+import { runLeagueDraft } from '@/lib/runDraft'
 
 type LeagueRow = {
   id: number
@@ -18,6 +19,7 @@ type LeagueRow = {
   host_user_id: string | null
   memberCount: number
   hostName: string | null
+  draft_mode: string | null
 }
 
 const leagueTypeOptions = [
@@ -79,7 +81,7 @@ const [deleting, setDeleting] = useState(false)
 
     const { data: leagueRows } = await supabase
   .from('leagues')
-  .select('id, name, slug, league_type, is_private, is_archived, is_show_chat, draft_status, base_clone_count, host_user_id')
+  .select('id, name, slug, league_type, is_private, is_archived, is_show_chat, draft_status, draft_mode, base_clone_count, host_user_id')
   .order('name')
 
     const allLeagues = leagueRows ?? []
@@ -203,6 +205,7 @@ const handleDeleteLeague = async (league: LeagueRow) => {
     is_private: false,
     host_user_id: null,
     is_show_chat: false,
+    draft_mode: 'auto',
   })
 
   setCreating(false)
@@ -219,30 +222,28 @@ const handleDeleteLeague = async (league: LeagueRow) => {
   await loadLeagues()
 }
 
-  const handleRunPublicDraft = async (league: LeagueRow) => {
-    if (league.memberCount < 3) {
-      setRunMessage((prev) => ({ ...prev, [league.id]: 'Needs at least 3 members before drafting.' }))
-      return
-    }
+   const handleRunPublicDraft = async (league: LeagueRow) => {
+    const isAuto = league.draft_mode === 'auto'
     const confirmed = window.confirm(
-      `Run the public draft simulation for "${league.name}"? This cannot be undone.`
+      isAuto
+        ? `Run the offline draft for "${league.name}"? Each player gets their highest-ranked pick still available; players without rankings get random picks. Results are final.`
+        : `Start the LIVE draft for "${league.name}"? The first player's selection timer starts immediately.`
     )
     if (!confirmed) return
 
     setRunningId(league.id)
     setRunMessage((prev) => ({ ...prev, [league.id]: '' }))
 
-    const { error } = await supabase.rpc('run_public_draft', { target_league_id: league.id })
+    const { error } = await runLeagueDraft(league)
 
     setRunningId(null)
 
     if (error) {
-      console.error('Error running public draft:', error)
-      setRunMessage((prev) => ({ ...prev, [league.id]: 'Something went wrong. Check console.' }))
+      setRunMessage((prev) => ({ ...prev, [league.id]: error }))
       return
     }
 
-    setRunMessage((prev) => ({ ...prev, [league.id]: 'Draft complete!' }))
+    setRunMessage((prev) => ({ ...prev, [league.id]: isAuto ? 'Draft complete!' : 'Live draft started! Players can head to the Draft Room.' }))
     await loadLeagues()
   }
 
@@ -351,10 +352,17 @@ const filteredLeagues = leagues.filter((l) => {
   style={{
     width: '100%',
     padding: '10px',
+    paddingRight: '36px',
     borderRadius: '6px',
     border: '1px solid #2a2a3e',
     backgroundColor: '#12121a',
     color: '#ffffff',
+    appearance: 'none',
+    WebkitAppearance: 'none',
+    backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f0b429' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'right 12px center',
+    backgroundSize: '16px',
   }}
 >
   {leagueTypeOptions.map((opt) => (
@@ -475,7 +483,7 @@ const filteredLeagues = leagues.filter((l) => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {filteredLeagues.map((league) => {
               const status = statusLabel(league.draft_status)
-const canRunDraft = !league.is_private && !league.is_show_chat && (league.draft_status === null || league.draft_status === 'not_started')
+const canRunDraft = !league.is_private && !league.is_show_chat && !league.base_clone_count && (league.draft_status === null || league.draft_status === 'not_started')
               return (
                 <div key={league.id} style={{
                   backgroundColor: '#1a1a2e',
@@ -507,7 +515,7 @@ const canRunDraft = !league.is_private && !league.is_show_chat && (league.draft_
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}> 
+                  <div className="admin-league-actions" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}> 
                   {!league.is_show_chat && (
   <span style={{
     fontSize: '0.75rem',
@@ -524,7 +532,6 @@ const canRunDraft = !league.is_private && !league.is_show_chat && (league.draft_
                       <button
                         onClick={() => handleRunPublicDraft(league)}
                         disabled={runningId === league.id}
-                        title={league.memberCount < 3 ? 'Needs at least 3 members' : undefined}
                         style={{
                           backgroundColor: 'transparent',
                           color: '#f0b429',
@@ -539,8 +546,8 @@ const canRunDraft = !league.is_private && !league.is_show_chat && (league.draft_
                           gap: '6px',
                         }}
                       >
-                        <RefreshCw size={14} strokeWidth={2} />
-                        {runningId === league.id ? 'Running...' : 'Run Draft'}
+                        {league.draft_mode === 'auto' ? <Shuffle size={14} strokeWidth={2} /> : <Play size={14} strokeWidth={2} />}
+                        {runningId === league.id ? 'Running...' : league.draft_mode === 'auto' ? 'Run Offline Draft' : 'Start Live Draft'}
                       </button>
                     )}
 {!league.is_show_chat && (

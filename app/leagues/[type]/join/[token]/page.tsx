@@ -6,14 +6,7 @@ import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { getFreeAgentPool, type FreeAgent } from '@/lib/freeAgents'
 import FreeAgentClaimModal from '@/components/FreeAgentClaimModal'
-
-const castawayTermByLeague: Record<string, string> = {
-  'secrets-on-the-beach': 'Castaway',
-  'sotb-demo': 'Castaway',
-  'uncharted-turretory': 'Castle-Goer',
-  'uncharted-turretory-demo': 'Castle-Goer',
-  'sandbox': 'Contestant',
-}
+   import { castawayTermByLeague } from '@/lib/leagueConfig'
 
 export default function JoinLeaguePage() {
   const params = useParams()

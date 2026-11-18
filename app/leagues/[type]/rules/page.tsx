@@ -343,22 +343,23 @@ export default function RulesPage() {
           ← Back to Trekkon Fantasy Leagues
         </a>
 
-        <h1 style={{
+                <h1 style={{
   fontSize: 'clamp(1.6rem, 8vw, 2.25rem)',
-  marginBottom: '4px',
+  margin: 0,
+  marginBottom: '8px',
   display: 'flex',
   alignItems: 'center',
   flexWrap: 'wrap',
-  gap: '8px 10px'
+  rowGap: '0px',
+  columnGap: '10px'
 }}>
   <ScrollText size={32} strokeWidth={2} color="#f0b429" style={{ flexShrink: 0 }} />
-  <span style={{ color: '#f0b429' }}>Trekkon</span>
-  <span style={{ color: '#ffffff' }}>Rules & Scoring</span>
-</h1>
+  <span style={{ color: '#f0b429' }}>Trekkon Leagues</span>
+  <span className="mobile-full-width-break" style={{ color: '#ffffff' }}>Rules & Scoring</span></h1>
 
-<div style={{ marginBottom: '28px' }}>
+<div style={{ marginBottom: '16px' }}>
   {(type ? neutralIntroByType[type] ?? defaultNeutralIntro : defaultNeutralIntro).map((para, i) => (
-    <p key={i} style={{ color: '#a0a0b0', fontSize: '0.95rem', lineHeight: '1.7', marginBottom: '12px' }}>
+    <p key={i} style={{ color: '#a0a0b0', fontSize: '0.95rem', lineHeight: '1.7', margin: '0 0 12px 0' }}>
       {para}
     </p>
   ))}
@@ -380,7 +381,9 @@ export default function RulesPage() {
     color: '#ffffff',
     fontSize: '1rem',
     width: '100%',
-    maxWidth: '320px'
+    maxWidth: '320px',
+    display: 'block',
+    marginLeft: 0,
   }}
 >
           <option value="" disabled>Select League...</option>

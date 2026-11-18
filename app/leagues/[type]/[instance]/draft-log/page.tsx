@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { ClipboardList } from 'lucide-react'
+import { ClipboardList, TimerReset } from 'lucide-react'
 import { useAuth } from '@/lib/AuthContext'
+import { castawayTermByLeague, backgroundsByType } from '@/lib/leagueConfig'
 
 type LogEntry = {
   pick_number: number
@@ -15,23 +16,7 @@ type LogEntry = {
   was_auto_assigned: boolean
   is_free_agent_claim: boolean
   event_type: 'pick' | 'bumped_to_back'
-}
-
-const backgroundsByType: Record<string, string> = {
-  'secrets-on-the-beach': '/images/social-game/backgrounds/island.jpg',
-  'sotb-demo': '/images/social-game/backgrounds/island.jpg',
-  'uncharted-turretory': '/images/social-game/backgrounds/traitors.jpg',
-  'uncharted-turretory-demo': '/images/social-game/backgrounds/traitors.jpg',
-  'paddock-politicks': '/images/social-game/backgrounds/f1.jpg',
-  'the-oval-offset': '/images/social-game/backgrounds/nascar.jpg',
-}
-
-const castawayTermByLeague: Record<string, string> = {
-  'secrets-on-the-beach': 'Castaway',
-  'sotb-demo': 'Castaway',
-  'uncharted-turretory': 'Castle-Goer',
-  'uncharted-turretory-demo': 'Castle-Goer',
-  'sandbox': 'Contestant',
+  auto_from_rankings: boolean
 }
 
 export default function DraftLogPage() {
@@ -45,6 +30,7 @@ export default function DraftLogPage() {
   const [log, setLog] = useState<LogEntry[]>([])
   const [pageLoading, setPageLoading] = useState(true)
   const [isPrivateLeague, setIsPrivateLeague] = useState(false)
+  const [isAutoDraft, setIsAutoDraft] = useState(false)
   const castawayTerm = castawayTermByLeague[type] ?? 'Contestant'
 
 useEffect(() => {
@@ -52,7 +38,7 @@ useEffect(() => {
       if (authLoading) return
    const { data: league } = await supabase
   .from('leagues')
-  .select('id, name, is_private, is_archived, league_type')
+  .select('id, name, is_private, is_archived, league_type, draft_mode')
   .eq('league_type', type)
   .eq('slug', instance)
   .single()
@@ -84,10 +70,11 @@ if (league.league_type === 'sandbox') {
 
       setLeagueName(league.name)
       setIsPrivateLeague(league.is_private ?? false)
+      setIsAutoDraft(league.draft_mode === 'auto')
 
 const { data: picks } = await supabase
   .from('draft_picks')
-  .select('pick_number, round, original_user_id, castaway_id, drafted_at, was_auto_assigned, is_free_agent_claim')
+  .select('pick_number, round, original_user_id, castaway_id, drafted_at, was_auto_assigned, is_free_agent_claim, auto_from_rankings, rank_at_pick')
   .eq('league_id', league.id)
   .order('pick_number')
 
@@ -157,25 +144,29 @@ const castawayIds = [...new Set(safePicks.map((p) => p.castaway_id))]
 pick_number: displayNumberByPick.get(p.pick_number) ?? p.pick_number,  round: p.round,
   display_name: nameMap.get(p.original_user_id) ?? 'Unnamed Player',
   castaway_name: castawayMap.get(p.castaway_id) ?? `Unknown ${castawayTerm}`,
-  rank_choice: rankMap.get(`${p.original_user_id}-${p.castaway_id}`) ?? null,
+  rank_choice: p.rank_at_pick ?? rankMap.get(`${p.original_user_id}-${p.castaway_id}`) ?? null,
   was_auto_assigned: p.was_auto_assigned ?? false,
   is_free_agent_claim: p.is_free_agent_claim ?? false,
+  auto_from_rankings: p.auto_from_rankings ?? false,
   event_type: 'pick',
 }))
 
-       const eventEntries: LogEntry[] = safeEvents.map((e) => ({
+const roundByPick = new Map(safePicks.map((p) => [p.pick_number, p.round]))
+const eventEntries: LogEntry[] = safeEvents.map((e) => ({
   pick_number: e.pick_number,
-  round: null,
+  round: roundByPick.get(e.pick_number) ?? null,
   display_name: nameMap.get(e.user_id) ?? 'Unnamed Player',
   castaway_name: null,
   rank_choice: null,
   was_auto_assigned: false,
   is_free_agent_claim: false,
+  auto_from_rankings: false,
   event_type: 'bumped_to_back',
 }))
 
-        const entries = [...pickEntries, ...eventEntries].sort((a, b) => a.pick_number - b.pick_number)
-
+        const entries = [...pickEntries, ...eventEntries].sort(
+          (a, b) => a.pick_number - b.pick_number || (a.event_type === 'pick' ? 1 : 0) - (b.event_type === 'pick' ? 1 : 0)
+        )
         setLog(entries)
       }
 
@@ -246,7 +237,7 @@ return (
     overflow: 'hidden'
   }}>
 {log.map((entry, i) => (
-  <div key={`${entry.pick_number}-${entry.event_type}`} style={{
+  <div key={`${entry.pick_number}-${entry.event_type}-${i}`} style={{
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -254,21 +245,25 @@ return (
         borderBottom: i < log.length - 1 ? '1px solid #2a2a3e' : 'none'
       }}>
         <div>
-         <div style={{ fontSize: '0.95rem' }}>
-            <span style={{ color: '#f0b429', fontWeight: 'bold' }}>#{entry.pick_number}</span>
+          <div style={{ fontSize: '0.95rem', color: entry.event_type === 'bumped_to_back' ? '#7a7a92' : undefined }}>
+                                    {entry.event_type === 'bumped_to_back'
+              ? <TimerReset size={16} strokeWidth={2.5} color="#555570" style={{ display: 'inline-block', verticalAlign: 'middle', position: 'relative', top: '-2px', margin: '0 4px' }} />                            : <span style={{ color: '#f0b429', fontWeight: 'bold' }}>#{entry.pick_number}</span>}
             {entry.event_type === 'bumped_to_back' ? (
-              <> — <strong>{entry.display_name}</strong> missed their pick and was bumped to back of the draft.</>
-            ) : (
+               <> (Round {entry.round}) — <strong>{entry.display_name}</strong> missed pick & bumped to back.</>
+                          ) : (
               <>
 {entry.is_free_agent_claim ? (
   <> (Late Join) — <strong>{entry.display_name}</strong> claimed {entry.castaway_name}.</>
 ) : (
-  <> (Round {entry.round}) — <strong>{entry.display_name}</strong> {entry.was_auto_assigned ? 'missed pick & randomly assigned' : 'selected'} {entry.castaway_name}.</>
+  <> (Round {entry.round}) — <strong>{entry.display_name}</strong> 
+{' '}{entry.was_auto_assigned
+  ? (isAutoDraft ? 'failed to rank & randomly assigned' : 'missed pick & randomly assigned')
+  : entry.auto_from_rankings ? 'auto-drafted' : 'selected'}  {entry.castaway_name}.</>
 )}              </>
             )}
           </div>
-{!entry.was_auto_assigned && !entry.is_free_agent_claim && !isPrivateLeague && (
-    <div style={{ color: '#555570', fontSize: '0.8rem', marginTop: '2px' }}>
+{entry.event_type === 'pick' && !entry.was_auto_assigned && !entry.is_free_agent_claim && (
+        <div style={{ color: '#555570', fontSize: '0.95rem', marginTop: '2px' }}>
     {entry.rank_choice
       ? `Their #${entry.rank_choice} ranked choice.`
       : 'Ranking not on record.'}
