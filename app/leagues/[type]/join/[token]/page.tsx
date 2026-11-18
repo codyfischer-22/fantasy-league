@@ -19,13 +19,14 @@ export default function JoinLeaguePage() {
   const [status, setStatus] = useState<'checking' | 'error' | 'joining' | 'free-agent'>('checking')
 const [freeAgentPool, setFreeAgentPool] = useState<FreeAgent[]>([])
 
-const [freeAgentLeague, setFreeAgentLeague] = useState<{ id: number; name: string; slug: string } | null>(null)
+const [freeAgentLeague, setFreeAgentLeague] = useState<{ id: number; name: string; slug: string; draftRounds: number } | null>(null)
 
   useEffect(() => {
     async function handleJoin() {
 const { data: league } = await supabase
   .from('leagues')
-.select('id, name, slug, league_type, host_user_id, is_frozen, max_members, draft_status')  .eq('invite_token', token)
+  .select('id, name, slug, league_type, host_user_id, is_frozen, max_members, draft_status, draft_rounds')
+  .eq('invite_token', token)
   .eq('is_private', true)
   .single()
 
@@ -48,21 +49,7 @@ if (league.is_frozen) {
 }
 
 
-if (league.draft_status === 'in_progress' || league.draft_status === 'completed') {
-  const pool = await getFreeAgentPool(league.id, league.league_type)
-  if (pool.length < 3) {
-    setStatus('error')
-    setMessage('This league\u2019s draft procedure has already started and no free agent spots remain. Registration is closed.')
-    return
-  }
-  setFreeAgentPool(pool)
-  setFreeAgentLeague({ id: league.id, name: league.name, slug: league.slug })
-  setStatus('free-agent')
-  return
-}
-
-      setStatus('joining')
-
+      // Already in the league? Go straight there.
       const { data: existingMembership } = await supabase
         .from('league_members')
         .select('user_id')
@@ -75,6 +62,42 @@ if (league.draft_status === 'in_progress' || league.draft_status === 'completed'
         router.push(`/leagues/${type}/${league.slug}`)
         return
       }
+
+      // No joining while a live draft is running
+      if (league.draft_status === 'in_progress') {
+        setStatus('error')
+        setMessage('This league is drafting right now. Registration will reopen after the draft if enough players remain.')
+        return
+      }
+
+      if (league.draft_status === 'completed') {
+        // Returning player? Send them to the league page to rejoin with their old roster
+        const { count: oldPicks } = await supabase
+          .from('draft_picks')
+          .select('*', { count: 'exact', head: true })
+          .eq('league_id', league.id)
+          .eq('user_id', user.id)
+
+        if ((oldPicks ?? 0) > 0) {
+          localStorage.removeItem('pendingInvitePath')
+          router.push(`/leagues/${type}/${league.slug}`)
+          return
+        }
+
+        const minFree = ['paddock-politicks', 'the-oval-offset'].includes(league.league_type) ? 5 : 3
+        const pool = await getFreeAgentPool(league.id, league.league_type)
+        if (pool.length < minFree) {
+          setStatus('error')
+          setMessage('This league has already drafted and no free agent spots remain. Registration is closed.')
+          return
+        }
+        setFreeAgentPool(pool)
+        setFreeAgentLeague({ id: league.id, name: league.name, slug: league.slug, draftRounds: league.draft_rounds ?? 4 })
+        setStatus('free-agent')
+        return
+      }
+
+      setStatus('joining')
 
       const { data: hostProfile } = await supabase
         .from('profiles')
@@ -189,6 +212,7 @@ const { data: hostNotifyProfile } = await supabase
     userId={user!.id}
     pool={freeAgentPool}
     castawayTerm={castawayTermByLeague[type] ?? 'Contestant'}
+    requiredCount={freeAgentLeague!.draftRounds}
     onClose={() => router.push(`/leagues/${type}`)}
     onClaimed={() => router.push(`/leagues/${type}/${freeAgentLeague!.slug}`)}
   />
