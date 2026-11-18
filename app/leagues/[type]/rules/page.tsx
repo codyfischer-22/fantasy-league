@@ -178,7 +178,7 @@ const rulesContent: Record<string, {
       },
     ],
     tiebreaker: [
-      'In the event of a season-end tie (whether tribes have the same three scored players or different combinations), tie breakers will be as follows: 1) Whose first-round draft pick scored more points? 2) Second? 3) Third? 4) \u201cBench player\u201d?',
+      'In the event of a season-end tie, finishing order will be as follows: 1) Whose highest-scoring castaway earned more points? the castaway with the  points? 2) Second-highest? 3) Third-highest? 4) \u201cBench player\u201d?',
     ]
   },
   'uncharted-turretory': {
@@ -297,7 +297,7 @@ const rulesContent: Record<string, {
       },
     ],
     tiebreaker: [
-      'In the event of a season-end tie, tie breakers will be as follows: 1) Whose first-round draft pick scored more points? 2) Second? 3) Third? 4) \u201cBench player\u201d?',
+'In the event of a season-end tie, finishing order will be as follows: 1) Whose highest-scoring castle-goer earned more points? 2) Second-highest? 3) Third-highest? 4) \u201cBench player\u201d?',
     ],
   },
 }

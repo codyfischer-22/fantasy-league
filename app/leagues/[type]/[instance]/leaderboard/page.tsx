@@ -138,7 +138,17 @@ const bonusByUser = new Map<string, number>()
     castaways: castawayBreakdown,
   }
 })
-      playerStandings.sort((a, b) => b.total - a.total)
+      // Ties: compare each roster's castaways from highest-scoring down (1st, 2nd, 3rd, then bench)
+      playerStandings.sort((a, b) => {
+        if (b.total !== a.total) return b.total - a.total
+        const aScores = a.castaways.map((c) => c.total).sort((x, y) => y - x)
+        const bScores = b.castaways.map((c) => c.total).sort((x, y) => y - x)
+        for (let i = 0; i < Math.max(aScores.length, bScores.length); i++) {
+          const diff = (bScores[i] ?? 0) - (aScores[i] ?? 0)
+          if (diff !== 0) return diff
+        }
+        return 0
+      })
       setStandings(playerStandings)
       setPageLoading(false)
     }
