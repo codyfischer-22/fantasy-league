@@ -178,7 +178,7 @@ const rulesContent: Record<string, {
       },
     ],
     tiebreaker: [
-      'In the event of a season-end tie, finishing order will be as follows: 1) Whose highest-scoring castaway earned more points? the castaway with the  points? 2) Second-highest? 3) Third-highest? 4) \u201cBench player\u201d?',
+      'In the event of a season-end tie, finishing order will be as follows: 1) Whose highest-scoring castaway earned more points? 2) Second-highest? 3) Third-highest? 4) \u201cBench player\u201d?',
     ]
   },
   'uncharted-turretory': {
