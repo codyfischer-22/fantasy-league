@@ -136,7 +136,7 @@ export default function ScoringLogPage() {
   const router = useRouter()
   const type = params.type as string
   const searchParams = useSearchParams()
-  const fromInstance = searchParams.get('from')
+  const fromInstance = searchParams.get('from') ?? (params.instance as string | undefined) ?? null
   const [leagueName, setLeagueName] = useState<string | null>(null)
   const [episodes, setEpisodes] = useState<EpisodeGroup[]>([])
   const [pageLoading, setPageLoading] = useState(true)
@@ -251,11 +251,11 @@ if ((scores && scores.length > 0) || (customEntries && customEntries.length > 0)
 })
 
   const episodeGroups = Object.keys(grouped)
-    .map((ep) => ({
-      episode_number: parseInt(ep),
-      entries: grouped[parseInt(ep)],
-    }))
-    .sort((a, b) => b.episode_number - a.episode_number)
+  .map((ep) => ({
+    episode_number: parseFloat(ep),
+    entries: grouped[ep as unknown as number],
+  }))
+  .sort((a, b) => b.episode_number - a.episode_number)
   setEpisodes(episodeGroups)
 }
       setPageLoading(false)
@@ -348,7 +348,7 @@ if ((scores && scores.length > 0) || (customEntries && customEntries.length > 0)
     color: '#ffffff',
     padding: '60px 40px',
     ...(backgroundsByType[type] && {
-      backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.75), rgba(10, 10, 15, 0.85)), url(${backgroundsByType[type]})`,
+      backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.6), rgba(10, 10, 15, 0.7)), url(${backgroundsByType[type]})`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       backgroundAttachment: 'fixed',

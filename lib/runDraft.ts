@@ -57,8 +57,8 @@ export async function runLeagueDraft(league: DraftLeague): Promise<{ error: stri
           message: sendAsComplete
             ? `It's official! The draft for ${league.name} is complete. Check out your roster, make trade offers, and get ready for the season!`
             : `That's right, silly season is upon us! The draft for ${league.name} has started. Head to the draft room and make your picks!`,
-          linkUrl: sendAsComplete ? `${base}/roster` : `${base}/draft-room`,
-          linkText: sendAsComplete ? 'View Rosters →' : 'Go to Draft Room →',
+          linkUrl: sendAsComplete ? `${base}/leaderboard` : `${base}/draft-room`,
+          linkText: sendAsComplete ? 'View Leaderboard →' : 'Go to Draft Room →',
         }),
       })
     }

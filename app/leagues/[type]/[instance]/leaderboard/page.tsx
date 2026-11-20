@@ -4,7 +4,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/AuthContext'
 import { Trophy } from 'lucide-react'
-   import { backgroundsByType } from '@/lib/leagueConfig'
+import { backgroundsByType, rosterTermByLeague } from '@/lib/leagueConfig'
 
 type CastawayScore = {
   castaway_id: number
@@ -14,10 +14,33 @@ type CastawayScore = {
 type PlayerStanding = {
   user_id: string
   display_name: string
+  tier: string
   total: number
   bonusPoints: number
   castaways: CastawayScore[]
 }
+
+type DepartedMember = {
+  user_id: string
+  display_name: string
+  castaways: string[]
+}
+
+const tierLabels: Record<string, string> = {
+  stowaway: 'Stowaway',
+  castaway: 'Castaway',
+  crewchief: 'Crew Chief',
+  teamprincipal: 'Team Principal',
+}
+const tierLabelsMobile: Record<string, string> = {
+  stowaway: 'Stowaway',
+  castaway: 'Castaway',
+  crewchief: 'Crew Chief',
+  teamprincipal: 'Principal',
+}
+
+// Gold, silver, bronze for the top 3
+const podiumColors = ['#f0b429', '#c0c0c8', '#cd7f32']
 
 export default function LeaderboardPage() {
   const params = useParams()
@@ -29,7 +52,20 @@ export default function LeaderboardPage() {
   const [pageLoading, setPageLoading] = useState(true)
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
   const [isFrozen, setIsFrozen] = useState(false)
+  const [departed, setDeparted] = useState<DepartedMember[]>([])
+  const [isMobileWidth, setIsMobileWidth] = useState(false)
   const router = useRouter()
+  const rosterTerm = rosterTermByLeague[type] ?? 'Roster'
+  const [rosterSize, setRosterSize] = useState(4)
+
+  useEffect(() => {
+    function checkWidth() {
+      setIsMobileWidth(window.innerWidth <= 600)
+    }
+    checkWidth()
+    window.addEventListener('resize', checkWidth)
+    return () => window.removeEventListener('resize', checkWidth)
+  }, [])
 
   useEffect(() => {
     async function loadLeaderboard() {
@@ -37,7 +73,7 @@ export default function LeaderboardPage() {
 
   const { data: league } = await supabase
   .from('leagues')
-  .select('id, name, league_type, is_frozen, is_archived')
+  .select('id, name, league_type, is_frozen, is_archived, draft_rounds')
   .eq('league_type', type)
   .eq('slug', instance)
   .single()
@@ -67,6 +103,7 @@ if (league?.league_type === 'sandbox') {
 }
 
 setLeagueName(league.name)
+setRosterSize(league.draft_rounds ?? 4)
 setIsFrozen(league.is_frozen ?? false)
       const { data: members } = await supabase
         .from('league_members')
@@ -79,7 +116,7 @@ setIsFrozen(league.is_frozen ?? false)
       const userIds = members.map((m) => m.user_id)
       const { data: profiles } = await supabase
         .from('profiles')
-        .select('user_id, display_name')
+        .select('user_id, display_name, tier')
         .in('user_id', userIds)
       const { data: picks } = await supabase
         .from('draft_picks')
@@ -133,6 +170,7 @@ const bonusByUser = new Map<string, number>()
   return {
     user_id: profile.user_id,
     display_name: profile.display_name || 'Unnamed Player',
+    tier: profile.tier ?? 'stowaway',
     total: playerTotal,
     bonusPoints,
     castaways: castawayBreakdown,
@@ -150,6 +188,27 @@ const bonusByUser = new Map<string, number>()
         return 0
       })
       setStandings(playerStandings)
+
+      // Departed Players: anyone holding picks in this league who is no longer a member
+      const memberIdSet = new Set(userIds)
+      const departedIds = [...new Set((picks ?? []).map((p) => p.user_id).filter((id) => !memberIdSet.has(id)))]
+      if (departedIds.length > 0) {
+        const { data: departedProfiles } = await supabase
+          .from('profiles')
+          .select('user_id, display_name')
+          .in('user_id', departedIds)
+        setDeparted(departedIds.map((uid) => ({
+          user_id: uid,
+          display_name: (departedProfiles ?? []).find((p) => p.user_id === uid)?.display_name || 'Unnamed Player',
+          castaways: (picks ?? [])
+            .filter((p) => p.user_id === uid)
+            .map((p) => castawayNameMap.get(p.castaway_id))
+            .filter((n): n is string => !!n),
+        })))
+      } else {
+        setDeparted([])
+      }
+
       setPageLoading(false)
     }
         loadLeaderboard()
@@ -213,7 +272,7 @@ if (pageLoading) {
     color: '#ffffff',
     padding: '60px 40px',
     ...(backgroundsByType[type] && {
-      backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.75), rgba(10, 10, 15, 0.85)), url(${backgroundsByType[type]})`,
+      backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.6), rgba(10, 10, 15, 0.7)), url(${backgroundsByType[type]})`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       backgroundAttachment: 'fixed',
@@ -235,16 +294,16 @@ if (pageLoading) {
   <span style={{ color: '#ffffff' }}>Leaderboard</span>
 </h1>
       <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '32px' }}>
-  Where do you stack up on the leaderboard? Expand a player to see their {type.startsWith('uncharted-turretory') ? 'roster' : 'tribe'} of 4!</p>
-        {standings.length === 0 ? (
+  Where do you stack up on the leaderboard? Expand a player to see their {rosterTerm.toLowerCase()} of {rosterSize}. Standings and {rosterTerm.toLowerCase()}s update automatically as episode scores, trades, and swaps occur!</p>        
+  {standings.length === 0 ? (
           <p style={{ color: '#555570' }}>No players have joined this league yet.</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {standings.map((player, index) => (
               <div key={player.user_id} style={{
                 backgroundColor: '#1a1a2e',
-                border: index === 0 ? '2px solid #f0b429' : '1px solid #2a2a3e',
-                borderRadius: '10px',
+                border: index < 3 ? `2px solid ${podiumColors[index]}` : '1px solid #2a2a3e',
+                                borderRadius: '10px',
                 overflow: 'hidden'
               }}>
                 <button
@@ -263,7 +322,7 @@ if (pageLoading) {
                   }}
                 >
 <div style={{ display: 'flex', alignItems: 'center', gap: '14px', minWidth: 0, maxWidth: '60%' }}>                    <span style={{
-                      color: index === 0 ? '#f0b429' : '#555570',
+                      color: index < 3 ? podiumColors[index] : '#555570',
                       fontWeight: 'bold',
                       fontSize: '1.1rem',
                       minWidth: '28px',
@@ -295,14 +354,14 @@ if (pageLoading) {
   }}>
     {player.castaways.length === 0 ? (
       <p style={{ color: '#555570', fontSize: '0.85rem', marginTop: '12px' }}>
-        No castaways drafted yet.
+        {rosterTerm}: Pending the draft!
       </p>
     ) : (
       (() => {
         const sorted = [...player.castaways].sort((a, b) => b.total - a.total)
         const benchId = sorted[3]?.castaway_id ?? null
-        return player.castaways.map((c) => {
-          const isBench = c.castaway_id === benchId
+        return sorted.map((c) => {
+                   const isBench = c.castaway_id === benchId
           return (
             <div key={c.castaway_id} style={{
               display: 'flex',
@@ -346,6 +405,43 @@ if (pageLoading) {
 
               </div>
             ))}
+          </div>
+        )}
+
+        {departed.length > 0 && (
+          <div style={{ marginTop: '32px' }}>
+            <h2 style={{ color: '#555570', fontSize: '1.1rem', marginBottom: '16px' }}>
+              Departed Players
+            </h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {departed.map((member) => (
+                <div key={member.user_id} style={{
+                  backgroundColor: '#12121a',
+                  border: '1px solid #2a2a3e',
+                  borderRadius: '10px',
+                  padding: '16px 20px'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <div style={{ fontSize: '1rem', color: '#555570' }}>
+                      {member.display_name}
+                    </div>
+                    <div style={{
+                      backgroundColor: '#1a1a2e',
+                      color: '#555570',
+                      padding: '3px 10px',
+                      borderRadius: '20px',
+                      fontSize: '0.75rem',
+                      fontWeight: 'bold'
+                    }}>
+                      Left League
+                    </div>
+                  </div>
+                  <p style={{ color: '#3a3a44', fontSize: '0.8rem' }}>
+                    Released to Free Agents: {member.castaways.join(', ')}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>

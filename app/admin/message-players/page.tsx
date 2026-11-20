@@ -27,13 +27,14 @@ export default function MessagePlayersPage() {
   const [sendAsNotification, setSendAsNotification] = useState(true)
   const [sendAsEmail, setSendAsEmail] = useState(true)
   const [scheduleEnabled, setScheduleEnabled] = useState(false)
-const [scheduledFor, setScheduledFor] = useState('')
+  const [scheduledFor, setScheduledFor] = useState('')
   const [filterType, setFilterType] = useState('all')
-const [allLeagues, setAllLeagues] = useState<{ id: number; name: string; league_type: string; is_show_chat: boolean }[]>([])
-const [imageFile, setImageFile] = useState<File | null>(null)
-const [imagePreview, setImagePreview] = useState<string | null>(null)
-const [uploadingImage, setUploadingImage] = useState(false)
-const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null)
+  const [allLeagues, setAllLeagues] = useState<{ id: number; name: string; league_type: string; is_show_chat: boolean }[]>([])
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [uploadingImage, setUploadingImage] = useState(false)
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null)
+  const [failedEmails, setFailedEmails] = useState<string[]>([])
 
 const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
   const file = e.target.files?.[0]
@@ -273,6 +274,7 @@ setSubject('')
 
     setSending(true)
     setResult('')
+    setFailedEmails([])
 
     const selectedProfiles = allProfiles.filter((p) => selectedIds.has(p.user_id))
     let notifSuccess = 0
@@ -326,6 +328,7 @@ setSubject('')
         if (res.ok) {
           emailSuccess = data.sent
           emailFailed = data.failed
+          setFailedEmails(data.failedEmails ?? [])
         }
       }
     }
@@ -619,6 +622,25 @@ if (archiveError) {
         {result && (
           <p style={{ color: '#f0b429', fontWeight: 'bold', marginTop: '16px' }}>{result}</p>
         )}
+
+        {failedEmails.length > 0 && (
+          <div style={{ marginTop: '12px', color: '#ff6b6b', fontSize: '0.85rem' }}>
+            <strong>Didn&apos;t receive the email ({failedEmails.length}):</strong>
+            <p style={{ color: '#a0a0b0', wordBreak: 'break-all', marginTop: '6px' }}>
+              {failedEmails.join(', ')}
+            </p>
+            <button
+              onClick={() => {
+                const failed = new Set(failedEmails)
+                setSelectedIds(new Set(allProfiles.filter((p) => failed.has(p.email)).map((p) => p.user_id)))
+              }}
+              style={{ marginTop: '8px', backgroundColor: 'transparent', color: '#f0b429', border: '1px solid #f0b429', padding: '6px 14px', borderRadius: '6px', fontSize: '0.8rem', cursor: 'pointer' }}
+            >
+              Select Only These Players
+            </button>
+          </div>
+        )}
+
       </div>
     </main>
   )

@@ -911,7 +911,7 @@ const isEliminatedThisEpisode =
   gap: '12px',
 }}>
   <h3 style={{ color: '#f0b429', fontSize: '1.1rem', marginBottom: '10px' }}>
-    Weekly Predictions Mini Game
+    Weekly Prediction Mini Game
   </h3>
   <p style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '16px' }}>
     Automatically scores every player's prediction for this episode using whoever's marked eliminated (💀) above.

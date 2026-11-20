@@ -799,3 +799,7 @@ body.hide-site-footer footer {
     row-gap: 8px;
   }
 }
+
+.tool-scroll::-webkit-scrollbar {
+  display: none;
+}

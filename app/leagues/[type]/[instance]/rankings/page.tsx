@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import ResourcesModal from '@/components/ResourcesModal'
-import { Search, ListOrdered } from 'lucide-react'
+import { Search, ArrowUpDown } from 'lucide-react'
    import { castawayTermByLeague, backgroundsByType } from '@/lib/leagueConfig'
 
 type Castaway = {
@@ -35,6 +35,7 @@ export default function RankingsPage() {
   const [hasTimer, setHasTimer] = useState(false)
   const [autodraftMode, setAutodraftMode] = useState('end_of_turn')
   const [draftIsLive, setDraftIsLive] = useState(false)
+  const [liveNoticeDismissed, setLiveNoticeDismissed] = useState(false)
 
   useEffect(() => {
     async function loadData() {
@@ -273,7 +274,7 @@ return (
     color: '#ffffff',
     padding: '60px 40px',
     ...(backgroundsByType[type] && {
-      backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.75), rgba(10, 10, 15, 0.85)), url(${backgroundsByType[type]})`,
+      backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.6), rgba(10, 10, 15, 0.7)), url(${backgroundsByType[type]})`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       backgroundAttachment: 'fixed',
@@ -294,14 +295,14 @@ return (
         {alreadyDrafted ? (
           <div style={{ textAlign: 'center' }}>
             <h1 style={{ color: '#f0b429', fontSize: '2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-  <ListOrdered size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '1px' }} />
+  <ArrowUpDown size={30} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '1px' }} />
   This league has already drafted!
 </h1>
             <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '24px' }}>
               Rankings are locked now that the draft is complete. Check out the results below.
             </p>
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <a href={`/leagues/${type}/${instance}/roster`} className="btn" style={{
+              <a href={`/leagues/${type}/${instance}/leaderboard`} className="btn" style={{
                 backgroundColor: '#f0b429',
                 color: '#0a0a0f',
                 padding: '10px 22px',
@@ -310,7 +311,7 @@ return (
                 fontWeight: 'bold',
                 fontSize: '0.9rem'
               }}>
-                View Roster →
+                View Leaderboard →
               </a>
               <a href={`/leagues/${type}/${instance}/draft-log`} className="btn" style={{
                 backgroundColor: 'transparent',
@@ -329,15 +330,61 @@ return (
         ) : (
           <>
            <h1 style={{ color: '#f0b429', fontSize: 'clamp(1.72rem, 6vw, 2.25rem)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-  <ListOrdered size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '1px' }} />
+  <ArrowUpDown size={30} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '1px' }} />
   Rank {castawayTerm}s
 </h1>
 
-           {draftIsLive && (
-             <p style={{ color: '#2bda25', fontSize: '0.9rem', fontWeight: 'bold', marginBottom: '8px' }}>
-               The draft is live, but you can still reorder rankings or change auto-draft preferences (applied to next turn)!
-             </p>
-           )}
+        {draftIsLive && !liveNoticeDismissed && (
+  <div
+    onClick={() => setLiveNoticeDismissed(true)}
+    style={{
+      position: 'fixed',
+      inset: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.7)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 100
+    }}
+  >
+   <div
+      onClick={(e) => e.stopPropagation()}
+      style={{
+        backgroundColor: '#1a1a2e',
+        border: '1px solid #f0b429',
+        borderRadius: '12px',
+        padding: '24px',
+        maxWidth: '380px',
+        width: '90%',
+        textAlign: 'center'
+      }}
+    >
+            <h3 className="mobile-left-text" style={{ color: '#f0b429', fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '12px' }}>
+        Draft Is Currently Live
+      </h3>
+      <p className="mobile-left-text" style={{ color: '#a0a0b0', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '20px' }}>
+        You can still reorder rankings or change auto-draft preferences, applied for next turn!
+      </p>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <button
+          onClick={() => setLiveNoticeDismissed(true)}
+          style={{
+            backgroundColor: 'transparent',
+            color: '#f0b429',
+            border: '1px solid #f0b429',
+            padding: '10px 24px',
+            borderRadius: '6px',
+            fontWeight: 'bold',
+            fontSize: '0.9rem',
+            cursor: 'pointer'
+          }}
+        >
+          Got it!
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '8px', lineHeight: '1.6' }}>
   Drag and drop your most-wanted {castawayTerm.toLowerCase()} to the top, and work your way down from there. If you need to make a tweak before snake draft begins, just re-edit and save your rankings.

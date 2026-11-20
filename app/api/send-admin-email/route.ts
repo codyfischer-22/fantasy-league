@@ -51,7 +51,7 @@ export async function POST(req: Request) {
     return Response.json({ error: 'No recipients provided.' }, { status: 400 })
   }
 
-  const results = []
+  const results: any[] = []
   for (const r of recipients) {
     try {
       const res = await resend.emails.send({
@@ -79,9 +79,14 @@ export async function POST(req: Request) {
     console.error('Some emails failed to send:', failures)
   }
 
+    const failedEmails = recipients
+    .filter((_, i) => (results[i] as any)?.error)
+    .map((r) => r.email)
+
   return Response.json({
     success: true,
     sent: results.length - failures.length,
     failed: failures.length,
+    failedEmails,
   })
 }

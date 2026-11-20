@@ -16,6 +16,8 @@ type Props = {
   leagueId: number
   leagueType: string
   instanceSlug: string
+  open?: boolean
+  onClose?: () => void
 }
 
 const episodeAirTimeByLeague: Record<string, { dayOfWeek: number; hour: number }> = {
@@ -23,8 +25,11 @@ const episodeAirTimeByLeague: Record<string, { dayOfWeek: number; hour: number }
   'uncharted-turretory': { dayOfWeek: 4, hour: 19 }, // Thursday, 7 PM
 }
 
-export default function PredictionCard({ leagueId, leagueType, instanceSlug }: Props) {  const { user } = useAuth()
+export default function PredictionCard({ leagueId, leagueType, instanceSlug, open, onClose }: Props) {  const { user } = useAuth()
   const [showModal, setShowModal] = useState(false)
+  const isControlled = open !== undefined
+  const modalOpen = isControlled ? open : showModal
+  const closeModal = () => (isControlled ? onClose?.() : setShowModal(false))
   const [loading, setLoading] = useState(true)
   const [currentEpisode, setCurrentEpisode] = useState<number | null>(null)
   const [allCastaways, setAllCastaways] = useState<Castaway[]>([])
@@ -156,6 +161,7 @@ setAllCastaways(allCastawayList ?? [])
 
   return (
     <>
+    {!isControlled && (
       <button
         onClick={() => setShowModal(true)}
         style={{
@@ -178,10 +184,11 @@ setAllCastaways(allCastawayList ?? [])
       >
         <Dices size={18} strokeWidth={2} /> Weekly Prediction Mini-Game
       </button>
+      )}
 
-      {showModal && (
+      {modalOpen && (
         <div
-          onClick={() => setShowModal(false)}
+onClick={closeModal}
           style={{
             position: 'fixed',
             top: 0, left: 0, right: 0, bottom: 0,
@@ -239,7 +246,7 @@ setAllCastaways(allCastawayList ?? [])
                   <p style={{ color: '#555570', fontSize: '0.85rem' }}>Prediction logged! Now watch to see if you were right!</p>
                 )}
                 <button
-                  onClick={() => setShowModal(false)}
+onClick={closeModal}
                   style={{
                     marginTop: '16px',
                     backgroundColor: 'transparent',
@@ -262,7 +269,7 @@ setAllCastaways(allCastawayList ?? [])
       Predictions are locked from the start of the episode for 24 hours. You're too late or too early!
     </p>
     <button
-      onClick={() => setShowModal(false)}
+onClick={closeModal}
       style={{
         marginTop: '16px',
         backgroundColor: 'transparent',
@@ -332,7 +339,7 @@ setAllCastaways(allCastawayList ?? [])
         {submitting ? 'Submitting...' : 'Lock In'}
       </button>
       <button
-        onClick={() => setShowModal(false)}
+        onClick={closeModal}
         style={{
           backgroundColor: 'transparent',
           color: '#a0a0b0',
