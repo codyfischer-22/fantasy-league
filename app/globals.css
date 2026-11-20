@@ -614,7 +614,7 @@ html, body {
 
 @media (max-width: 768px) {
   .mobile-shrink-main {
-    min-height: auto !important;
+    min-height: calc(100dvh / 0.85) !important;
   }
 }
 
