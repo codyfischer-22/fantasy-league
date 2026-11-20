@@ -5,8 +5,8 @@ import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import ConfirmModal from '@/components/ConfirmModal'
-import { Puzzle, Timer } from 'lucide-react'
-  import { castawayTermByLeague, backgroundsByType } from '@/lib/leagueConfig'
+import { Timer } from 'lucide-react'
+  import { castawayTermByLeague } from '@/lib/leagueConfig'
 
 type Castaway = { id: number; name: string }
 type Pick = { user_id: string; castaway_id: number }
@@ -388,80 +388,26 @@ supabase.from('notifications').insert({
 
 // ---- Early-return renders ----
 if (loading || pageLoading) {
-  return (
-    <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '30px 16px' }}>
-      Loading...
-    </main>
-  )
+  return <p style={{ color: '#a0a0b0' }}>Loading...</p>
 }
 
 if (!league) {
-  return (
-    <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-        <a href={`/leagues/${type}`} style={{
-          color: '#a0a0b0',
-          fontSize: '0.85rem',
-          textDecoration: 'none',
-          display: 'inline-block',
-          marginBottom: '24px'
-        }}>
-          ← Back to League
-        </a>
-        <p style={{ color: '#555570' }}>Sorry, that league doesn&apos;t exist.</p>
-      </div>
-    </main>
-  )
+  return <p style={{ color: '#555570' }}>Sorry, that league doesn&apos;t exist.</p>
 }
 
 if (league.draft_status !== 'in_progress' && league.draft_status !== 'completed') {
   return (
-    <main style={{
-      backgroundColor: '#0a0a0f',
-      minHeight: '100vh',
-      fontFamily: 'Georgia, serif',
-      color: '#ffffff',
-      padding: '60px 40px',
-      ...(backgroundsByType[type] && {
-        backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.6), rgba(10, 10, 15, 0.7)), url(${backgroundsByType[type]})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-      }),
-    }}>
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-        <a href={`/leagues/${type}/${instance}`} style={{
-          color: '#a0a0b0',
-          fontSize: '0.85rem',
-          textDecoration: 'none',
-          display: 'inline-block',
-          marginBottom: '24px'
-        }}>
-          ← Back to {league.name}
-        </a>
- <h1 style={{
-  fontSize: 'clamp(1.75rem, 6vw, 2.25rem)',
-  margin: 0,
-  marginBottom: '4px',
-  display: 'flex',
-  alignItems: 'center',
-  flexWrap: 'wrap',
-  rowGap: '0px',
-  columnGap: '10px'
-}}>
-  <Puzzle size={36} strokeWidth={2} color="#f0b429" style={{ flexShrink: 0 }} />
-  <span style={{ color: '#f0b429' }}>League</span>
-  <span className="mobile-full-width-break" style={{ color: '#ffffff' }}>Draft Room</span>
-</h1>
-<p style={{ color: '#555570', marginBottom: '8px' }}>
-  Ready to piece your team together? Please check with your host to see when your draft starts.</p>
-  <p style={{ color: '#555570' }}>Full draft policies may be found{' '}
-  <a href={`/leagues/${type}/draft`} style={{ color: '#f0b429', textDecoration: 'underline' }}>
-    here
-  </a>, but your host has control over draft order, time limits, addressing missed turns, etc.
-</p>
-</div>
-    </main>
+    <div>
+      <p style={{ color: '#ffffff', fontSize: '0.9rem', marginBottom: '8px' }}>
+        Ready to piece your team together? Please check with your host to see when your draft starts.
+      </p>
+      <p style={{ color: '#a0a0b0', fontSize: '0.9rem' }}>
+        Full draft policies may be found{' '}
+        <a href={`/leagues/${type}/draft`} style={{ color: '#f0b429', textDecoration: 'underline' }}>
+          here
+        </a>, but your host has control over draft type, draft order, time limits, addressing missed turns, etc.
+      </p>
+    </div>
   )
 }
 
@@ -470,48 +416,28 @@ if (
   !showCompleteModal &&
   previousStatusRef.current !== 'in_progress'
 ) {
-  return (
-    <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '30px 16px' }}>
-      Redirecting...
-    </main>
-  )
+  return <p style={{ color: '#a0a0b0' }}>Redirecting...</p>
 }
-
-  if (!league) {
-    return (
-<main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '30px 16px' }}>        <p>Sorry, that league doesn&apos;t exist.</p>
-      </main>
-    )
-  }
 
   // ---- Main render ----
   return (
-<main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '30px 16px' }}>      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-        <a href={`/leagues/${type}/${instance}`} style={{ color: '#a0a0b0', fontSize: '0.85rem', textDecoration: 'none', display: 'inline-block', marginBottom: '24px' }}>
-          ← Back to {league.name}
-        </a>
-
-       <h1 style={{ color: '#f0b429', fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-  <Puzzle size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
-  <span style={{ color: '#f0b429' }}>League</span>{' '}
-  <span style={{ color: '#ffffff' }}>Draft Room</span>
-</h1>
+    <div>
 {showInstructions && (
   <>
-    <p style={{ color: '#a0a0b0', fontSize: '1rem', lineHeight: '1.6', marginBottom: '8px', maxWidth: '800px' }}>
+    <p style={{ color: '#ffffff', fontSize: '1rem', lineHeight: '1.6', marginBottom: '8px', maxWidth: '800px' }}>
      Ready to piece your team together? It's time for the draft (some call this casting or silly season)! <span style={{ color: '#f0b429' }}>Please note we recommend a computer screen for the optimal drafting experience.</span> A few reminders to get you started:
     </p>
    <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginLeft: '30px', lineHeight: '1.6', marginBottom: '8px', maxWidth: '800px' }}>
   ➤ {draftInstructions.countLine}
 </p>
     <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginLeft: '30px', lineHeight: '1.6', marginBottom: '8px', maxWidth: '800px' }}>
-  ➤ League hosts determine whether or not all {castawayTerm.toLowerCase()}s need to be chosen before clones open up. Regardless, no player may recruit the same {castawayTerm.toLowerCase()} twice.
+  ➤ League hosts determine whether or not all {castawayTerm.toLowerCase()}s need to be chosen before clones open up (not recommended). Regardless, no player may recruit the same {castawayTerm.toLowerCase()} twice.
 </p>
     <p style={{ color: '#a0a0b0', fontSize: '0.95rem', marginLeft: '30px', lineHeight: '1.6', marginBottom: '8px', maxWidth: '800px' }}>
       ➤ Hosts are responsible for setting selection times, deciding what happens if timer goes off (system randomly assigns or turn bumped to end of draft), and assigning draft order (randomly generated or manually-set).
     </p>
-    <p style={{ color: '#a0a0b0', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '16px', maxWidth: '800px' }}>
-  When it&apos;s your turn, click any non-faded {castawayTerm.toLowerCase()} to add them to your roster. Once confirmed, selections cannot be changed outside of trade portal. <strong>Let&apos;s get it on!</strong>
+    <p style={{ color: '#ffffff', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '16px', maxWidth: '800px' }}>
+  When it&apos;s your turn, click any non-faded {castawayTerm.toLowerCase()} to add them to your roster. Once confirmed, selections cannot be changed outside of Trade Portal. <strong>Let&apos;s get it on!</strong>
 </p>
   </>
 )}
@@ -521,7 +447,7 @@ if (
   style={{
     background: 'none',
     border: 'none',
-    color: '#33334c',
+    color: '#85859b',
     fontSize: '0.85rem',
     cursor: 'pointer',
     padding: 0,
@@ -534,9 +460,9 @@ if (
 </button>
 
         {league.draft_status === 'in_progress' && (
-          <p style={{ color: isMyTurn ? '#068e38' : '#f0b429', fontSize: 'clamp(.9rem, 6vw, 1.6rem)', fontWeight: isMyTurn ? 'bold' : 'normal', marginBottom: '24px' }}>
-            {isMyTurn ? "You're up to draft for" : `${currentPicker?.display_name ?? 'the next Player'} is up to draft for`}
-            {' '}pick {league.current_pick_number} of {draftOrder.length}:
+                 <p style={{ color: isMyTurn ? '#2bda25' : '#f0b429', fontSize: 'clamp(.9rem, 6vw, 1.6rem)', fontWeight: isMyTurn ? 'bold' : 'normal', marginBottom: '24px' }}>
+            {isMyTurn ? "You're up for pick" : `${currentPicker?.display_name ?? 'The next Player'} is up for pick`}
+            {' '}{league.current_pick_number} of {draftOrder.length}:
           </p>
         )}
 
@@ -707,6 +633,5 @@ if (
 />
 
       </div>
-    </main>
   )
 }

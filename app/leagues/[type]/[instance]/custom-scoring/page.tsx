@@ -187,37 +187,22 @@ setNotes('')
   }
 
   if (loading || pageLoading) {
-    return (
-      <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0a0b0', fontFamily: 'Georgia, serif' }}>
-        Loading...
-      </main>
-    )
+    return <p style={{ color: '#a0a0b0' }}>Loading...</p>
   }
 
   if (!isHost) {
     return null
   }
 
-  return (
-    <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
-      <div style={{ maxWidth: '700px', margin: '0 auto' }}>
-        <a href={`/leagues/${type}/${instance}`} style={{
-          color: '#a0a0b0',
-          fontSize: '0.85rem',
-          textDecoration: 'none',
-          display: 'inline-block',
-          marginBottom: '24px'
-        }}>
-          ← Back to {league?.name}
-        </a>
-
-        <h1 style={{ fontSize: '2.25rem', marginBottom: '4px' }}>
-          <span style={{ color: '#f0b429' }}>🎯 Team Principal</span>{' '}
-          <span style={{ color: '#ffffff' }}>Custom Scoring</span>
-        </h1>
-        <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '28px', lineHeight: '1.6' }}>
-          Here's your chance to create up to 3 custom scoring categories for your league! Episodes with multiple elimination events (e.g. tribal council or round table) may be broken down into multiple entries (e.g. Ep. 4 and Ep. 4.5). Players can see these entries in the Scoring Log, alongside standard categories.
-        </p>
+    return (
+    <div>
+      <h2 style={{ fontSize: 'clamp(1.4rem, 5vw, 1.6rem)', marginTop: 0, marginBottom: '4px' }}>
+        <span style={{ color: '#f0b429' }}>Team Principal</span>{' '}
+        <span style={{ color: '#ffffff' }}>Custom Scoring</span>
+      </h2>
+      <p style={{ color: '#ffffff', fontSize: '0.9rem', marginBottom: '28px', lineHeight: '1.6' }}>
+        Here&apos;s your chance to create up to 3 custom scoring categories for your league! Episodes with multiple elimination events (e.g. tribal council or round table) may be broken down into multiple entries (e.g. Ep. 4 and 4.5). Players can see these entries in the Scoring Log, alongside standard categories.
+      </p>
 
 
         <div style={{
@@ -283,7 +268,7 @@ setNotes('')
         backgroundColor: '#12121a',
         color: '#ffffff',
         fontSize: '0.85rem',
-        textAlign: 'center'
+        textAlign: 'left'
       }}
     />
   )}
@@ -381,7 +366,6 @@ setNotes('')
   onCancel={() => setDeletingEntryId(null)}
 />
 
-      </div>
-    </main>
+     </div>
   )
 }

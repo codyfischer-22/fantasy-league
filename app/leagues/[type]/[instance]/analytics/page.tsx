@@ -2,9 +2,9 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
-import { TrendingUp, Lock } from 'lucide-react'
+import { Lock } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
-import { castawayTermByLeague, backgroundsByType } from '@/lib/leagueConfig'
+import { castawayTermByLeague } from '@/lib/leagueConfig'
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts'
@@ -463,110 +463,50 @@ episodeNumbers.forEach((ep) => {
     : false
 
   if (loading || access === 'checking') {
-    return (
-      <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0a0b0', fontFamily: 'Georgia, serif' }}>
-        Loading...
-      </main>
-    )
+    return <p style={{ color: '#a0a0b0' }}>Loading...</p>
   }
 
   if (access === 'denied') {
-  return (
-    <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
-      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-        <a href={`/leagues/${type}/${instance}`} style={{
-          color: '#a0a0b0', fontSize: '0.85rem', textDecoration: 'none', display: 'inline-block', marginBottom: '24px'
-        }}>
-          ← Back to Previous Page
-        </a>
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          textAlign: 'center',
-          gap: '16px',
-          padding: '80px 40px'
-        }}>
-          <Lock size={50} strokeWidth={2} color="#a0a0b0" />
-          <h1 style={{ color: '#f0b429', fontSize: '1.6rem' }}>Analytics is a Castaway+ perk.</h1>
-          <p style={{ maxWidth: '400px' }}>
-            Upgrade your membership to unlock full-season analytics and track every player and {castawayTerm.toLowerCase()}&apos;s journey week by week.
-          </p>
-          <a href="/account" className="btn" style={{
-            backgroundColor: '#f0b429',
-            color: '#0a0a0f',
-            padding: '12px 28px',
-            borderRadius: '8px',
-            textDecoration: 'none',
-            fontWeight: 'bold'
-          }}>
-            Upgrade Tier →
-          </a>
-        </div>
-      </div>
-    </main>
-  )
-}
-  if (isFrozen) {
     return (
-      <main style={{
-        backgroundColor: '#0a0a0f',
-        minHeight: '100vh',
+      <div style={{
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
-        color: '#a0a0b0',
-        fontFamily: 'Georgia, serif',
+        textAlign: 'center',
         gap: '16px',
-        padding: '40px'
+        padding: '40px 20px'
       }}>
-        <p style={{ maxWidth: '400px', textAlign: 'center' }}>
-          🚩 This league is no longer receiving updates as the host&apos;s membership dropped below Crew Chief.
+        <Lock size={50} strokeWidth={2} color="#a0a0b0" />
+        <h2 style={{ color: '#f0b429', fontSize: '1.4rem', margin: 0 }}>Analytics is a Castaway+ perk.</h2>
+        <p style={{ maxWidth: '400px', color: '#ffffff', fontSize: '0.9rem' }}>
+          Upgrade your membership to unlock full-season analytics and track every player and {castawayTerm.toLowerCase()}&apos;s journey week by week.
         </p>
-        <a href={`/leagues/${type}/${instance}`} style={{ color: '#f0b429' }}>← Back to League</a>
-      </main>
+        <a href="/account" className="btn" style={{
+          backgroundColor: '#f0b429',
+          color: '#0a0a0f',
+          padding: '10px 24px',
+          borderRadius: '8px',
+          textDecoration: 'none',
+          fontWeight: 'bold'
+        }}>
+          Upgrade Tier →
+        </a>
+      </div>
+    )
+  }
+    if (isFrozen) {
+    return (
+      <p style={{ color: '#ffffff', textAlign: 'center', maxWidth: '400px', margin: '0 auto' }}>
+        Analytics are paused while this league is frozen.
+      </p>
     )
   }
 
-return (
-  <main style={{
-    backgroundColor: '#0a0a0f',
-    minHeight: '100vh',
-    fontFamily: 'Georgia, serif',
-    color: '#ffffff',
-    padding: '60px 40px',
-    ...(backgroundsByType[type] && {
-      backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.75), rgba(10, 10, 15, 0.85)), url(${backgroundsByType[type]})`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundAttachment: 'fixed',
-    }),
-  }}>      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-        <a href={`/leagues/${type}/${instance}`} style={{
-          color: '#a0a0b0', fontSize: '0.85rem', textDecoration: 'none', display: 'inline-block', marginBottom: '24px'
-        }}>
-          ← Back to {leagueName ?? 'League'}
-        </a>
-<h1 style={{
-  fontSize: 'clamp(1.75rem, 6vw, 2.25rem)',
-  marginBottom: '4px',
-  display: 'flex',
-  alignItems: 'flex-start',
-  gap: '10px'
-}}>
-  <TrendingUp size={36} strokeWidth={2} color="#f0b429" style={{ flexShrink: 0, marginTop: '2px' }} />
-  <span style={{ flex: 1, minWidth: 0 }}>
-    <span style={{ color: '#f0b429' }}>
-      League
-    </span>{' '}
-    <span style={{ color: '#ffffff' }}>Analytics</span>
-  </span>
-</h1>
-<p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '36px' }}>
-  Paid members get exclusive access to league analytic charts to visual process along the way! Please note episodes with more than one elimination (e.g. tribal council) may be broken down into multiple entries (e.g. Ep. 4 and Ep. 4.5).
-</p>
+  return (
+    <div>
+      <p style={{ color: '#ffffff', fontSize: '0.9rem', marginBottom: '36px' }}>
+        Paid members get exclusive access to league analytics to visualize progress along the way! Please note episodes with more than one elimination event (e.g. tribal council) may be broken down into multiple entries (e.g. Ep. 4 and 4.5).
+      </p>
 
           <>
             <h2 style={{ color: '#f0b429', fontSize: '1.5rem', marginBottom: '4px', textAlign: 'left' }}>
@@ -870,7 +810,6 @@ return (
             )}
           </>
         )}
-      </div>
-    </main>
+        </div>
   )
 }

@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { ClipboardList, TimerReset } from 'lucide-react'
+import { TimerReset } from 'lucide-react'
 import { useAuth } from '@/lib/AuthContext'
-import { castawayTermByLeague, backgroundsByType } from '@/lib/leagueConfig'
+import { castawayTermByLeague } from '@/lib/leagueConfig'
 
 type LogEntry = {
   pick_number: number
@@ -176,58 +176,17 @@ const eventEntries: LogEntry[] = safeEvents.map((e) => ({
     loadLog()
   }, [type, instance, user, authLoading])
 
-  if (pageLoading) {
-    return (
-      <main style={{
-        backgroundColor: '#0a0a0f',
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: '#a0a0b0',
-        fontFamily: 'Georgia, serif'
-      }}>
-        Loading...
-      </main>
-    )
+   if (pageLoading) {
+    return <p style={{ color: '#a0a0b0' }}>Loading...</p>
   }
 
-return (
-  <main style={{
-    backgroundColor: '#0a0a0f',
-    minHeight: '100vh',
-    fontFamily: 'Georgia, serif',
-    color: '#ffffff',
-    padding: '60px 40px',
-    ...(backgroundsByType[type] && {
-      backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.6), rgba(10, 10, 15, 0.7)), url(${backgroundsByType[type]})`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundAttachment: 'fixed',
-    }),
-  }}>
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-
-        <a href={`/leagues/${type}/${instance}`} style={{
-          color: '#a0a0b0',
-          fontSize: '0.85rem',
-          textDecoration: 'none',
-          display: 'inline-block',
-          marginBottom: '24px'
-        }}>
-          ← Back to {leagueName || 'League'}
-        </a>
-
-       <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-  <ClipboardList size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
-  <span style={{ color: '#f0b429' }}>League</span>{' '}
-  <span style={{ color: '#ffffff' }}>Draft Log</span>
-</h1>
-      <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '32px' }}>
-  {draftDate
-    ? `Every pick, in order, exactly as the draft ran on ${draftDate}:`
-    : 'This league hasn\u2019t drafted yet. Keep an eye peeled for results!'}
-</p>
+  return (
+    <div>
+      <p style={{ color: '#ffffff', fontSize: '0.9rem', marginBottom: '24px' }}>
+        {draftDate
+          ? `Every pick, in order, exactly as the draft ran on ${draftDate}:`
+          : 'This league hasn\u2019t drafted yet. Keep an eye peeled for results!'}
+      </p>
 
    {log.length > 0 && (
   <div style={{
@@ -275,7 +234,6 @@ return (
   </div>
 )}
 
-      </div>
-    </main>
+    </div>
   )
 }

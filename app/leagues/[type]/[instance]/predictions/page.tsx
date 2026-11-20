@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/AuthContext'
-import { Dices, Trophy } from 'lucide-react'
+import { Trophy } from 'lucide-react'
+import PredictionCard from '@/components/PredictionCard'
 
 type PredictionStanding = {
   user_id: string
@@ -13,14 +14,15 @@ type PredictionStanding = {
   correct: number
 }
 
-export default function PredictionLeaderboardPage() {
+export default function PredictionsPage() {
   const params = useParams()
   const { user, loading: authLoading } = useAuth()
   const type = params.type as string
   const instance = params.instance as string
   const [loading, setLoading] = useState(true)
   const [standings, setStandings] = useState<PredictionStanding[]>([])
-  const [leagueName, setLeagueName] = useState('')
+  const [leagueId, setLeagueId] = useState<number | null>(null)
+  const [isMember, setIsMember] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -57,9 +59,7 @@ export default function PredictionLeaderboardPage() {
           return
         }
       }
-      setLeagueName(league.name)
-
-      // ...rest of the function stays exactly the same
+      setLeagueId(league.id)
 
       const { data: members } = await supabase
         .from('league_members')
@@ -72,6 +72,7 @@ export default function PredictionLeaderboardPage() {
       }
 
       const memberIds = members.map((m) => m.user_id)
+      setIsMember(!!user && memberIds.includes(user.id))
 
       const { data: profiles } = await supabase
         .from('profiles')
@@ -106,79 +107,71 @@ export default function PredictionLeaderboardPage() {
       setStandings(results)
       setLoading(false)
     }
-        loadStandings()
+    loadStandings()
   }, [type, instance, authLoading, user])
 
   if (loading) {
-    return (
-      <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0a0b0', fontFamily: 'Georgia, serif' }}>
-        Loading...
-      </main>
-    )
+    return <p style={{ color: '#a0a0b0' }}>Loading...</p>
   }
 
   return (
-    <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
-      <div style={{ maxWidth: '700px', margin: '0 auto' }}>
-        <a href={`/leagues/${type}/${instance}`} style={{
-          color: '#a0a0b0', fontSize: '0.85rem', textDecoration: 'none', display: 'inline-block', marginBottom: '24px'
-        }}>
-          ← Back to {leagueName || 'League'}
-        </a>
+    <div>
+      <p style={{ color: '#ffffff', fontSize: '0.9rem', marginBottom: '20px', lineHeight: '1.6' }}>
+        Correctly predict who&apos;s going home each week for a chance to split +50 bonus points! You can still play even if your entire roster is eliminated.
+      </p>
 
-<h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px', display: 'flex', alignItems: 'center', flexWrap: 'wrap', rowGap: '0px', columnGap: '10px' }}>
-  <Dices size={36} strokeWidth={2} color="#f0b429" style={{ flexShrink: 0 }} />
-  <span style={{ color: '#f0b429' }}>Prediction</span>{' '}
-  <span style={{ color: '#ffffff' }}>Standings</span>
-</h1>
-        <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '24px' }}>
-          Correctly predict who's going home each week for a chance to split +50 bonus points!
-        </p>
-
-        {standings.length === 0 ? (
-          <p style={{ color: '#555570' }}>No results yet. Check back once episodes and scores come in!</p>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-           {standings.map((s, idx) => {
-  const topScore = standings[0]?.correct ?? 0
-  const isTiedForFirst = s.correct === topScore && topScore > 0
-  return (
-  <div key={s.user_id} style={{
-  backgroundColor: '#1a1a2e',
-  border: isTiedForFirst ? '2px solid #f0b429' : '1px solid #2a2a3e',
-  borderRadius: '10px',
-  padding: '16px 20px'
-}}>
-  <div className="prediction-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-      {isTiedForFirst && (
-        <Trophy size={18} strokeWidth={2} color="#f0b429" />
+      {isMember && leagueId !== null && (
+        <div style={{ marginBottom: '32px' }}>
+          <PredictionCard leagueId={leagueId} leagueType={type} instanceSlug={instance} inline />
+        </div>
       )}
-      <span style={{ fontWeight: 'bold', fontSize: '1rem' }}>{s.display_name}</span>
-    </div>
-    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-      <span style={{
-        backgroundColor: '#12121a',
-        color: '#f0b429',
-        padding: '4px 12px',
-        borderRadius: '20px',
-        fontWeight: 'bold',
-        fontSize: '0.9rem'
-      }}>
-        {s.correct} Correct
-      </span>
-      <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
-        ({s.total} Guessed)
-      </span>
-    </div>
-  </div>
-</div>
-  )
-})}
-          </div>
-        )}
 
-      </div>
-    </main>
+      <h3 style={{ color: '#f0b429', fontSize: '1.2rem', marginBottom: '12px' }}>
+        Mini-Game Standings
+      </h3>
+
+      {standings.length === 0 ? (
+        <p style={{ color: '#555570' }}>No results yet. Check back once episodes and scores come in!</p>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {standings.map((s) => {
+            const topScore = standings[0]?.correct ?? 0
+            const isTiedForFirst = s.correct === topScore && topScore > 0
+            return (
+              <div key={s.user_id} style={{
+                backgroundColor: '#1a1a2e',
+                border: isTiedForFirst ? '2px solid #f0b429' : '1px solid #2a2a3e',
+                borderRadius: '10px',
+                padding: '16px 20px'
+              }}>
+                <div className="prediction-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    {isTiedForFirst && (
+                      <Trophy size={18} strokeWidth={2} color="#f0b429" />
+                    )}
+                    <span style={{ fontWeight: 'bold', fontSize: '1rem' }}>{s.display_name}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{
+                      backgroundColor: '#12121a',
+                      color: '#f0b429',
+                      padding: '4px 12px',
+                      borderRadius: '20px',
+                      fontWeight: 'bold',
+                      fontSize: '0.9rem'
+                    }}>
+                      {s.correct} Correct
+                    </span>
+                    <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
+                      ({s.total} Guessed)
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
   )
 }

@@ -803,3 +803,13 @@ body.hide-site-footer footer {
 .tool-scroll::-webkit-scrollbar {
   display: none;
 }
+
+.league-title-link span {
+  transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+@media (hover: hover) {
+  .league-title-link:hover span {
+    color: #f5ff9c !important;
+    text-shadow: 0 0 12px rgba(240, 180, 41, 0.5);
+  }
+}

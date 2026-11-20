@@ -8,7 +8,6 @@ import { supabase } from '@/lib/supabase'
 import ConfirmModal from '@/components/ConfirmModal'
 import { Cog, Palette, Trophy, Calculator, TrendingUp, Shuffle, Dices, ChevronRight, ChevronLeft, Play, ClipboardList, RefreshCw, Puzzle, Microscope, Lock, ArrowUpDown } from 'lucide-react'
 import ResourcesModal from '@/components/ResourcesModal'
-import PredictionCard from '@/components/PredictionCard'
 import { getFreeAgentPool, type FreeAgent } from '@/lib/freeAgents'
 import FreeAgentClaimModal from '@/components/FreeAgentClaimModal'
 import { castawayTermByLeague, backgroundsByType } from '@/lib/leagueConfig'
@@ -128,7 +127,6 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false)
   const [copied, setCopied] = useState(false)
   const [showResources, setShowResources] = useState(false)
-  const [showPredictions, setShowPredictions] = useState(false)
   const [isGlobalAdmin, setIsGlobalAdmin] = useState(false)
   const [showFreeAgentModal, setShowFreeAgentModal] = useState(false)
   const [freeAgentPool, setFreeAgentPool] = useState<FreeAgent[]>([])
@@ -577,8 +575,9 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
     color: '#ffffff',
     padding: '60px 40px',
     ...(backgroundsByType[type] && {
-      backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.6), rgba(10, 10, 15, 0.70)), url(${backgroundsByType[type]})`,
-      backgroundSize: 'cover',
+      backgroundImage: pathname.endsWith('/analytics')
+        ? `linear-gradient(rgba(10, 10, 15, 0.75), rgba(10, 10, 15, 0.85)), url(${backgroundsByType[type]})`
+        : `linear-gradient(rgba(10, 10, 15, 0.6), rgba(10, 10, 15, 0.70)), url(${backgroundsByType[type]})`,      backgroundSize: 'cover',
       backgroundPosition: 'center',
       backgroundAttachment: 'fixed',
     }),
@@ -601,7 +600,7 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
     { label: 'Research', icon: Microscope, href: null },
     { label: 'Draft Room', icon: Puzzle, href: `${basePath}/draft-room` },
     { label: 'Leaderboard', icon: Trophy, href: `${basePath}/leaderboard` },
-    { label: 'Predictions', icon: Dices, href: null },
+    { label: 'Predictions', icon: Dices, href: `${basePath}/predictions` },
     { label: 'Trade Portal', icon: RefreshCw, href: `${basePath}/trade-portal` },
     { label: 'Scoring Log', icon: Calculator, href: `${basePath}/scoring-log` },
     { label: 'Analytics', icon: TrendingUp, href: `${basePath}/analytics` },
@@ -609,7 +608,7 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
   ].filter((item) =>
     !(item.label === 'Draft Room' && (league.draft_mode !== 'live' || league.draft_status === 'completed' || type === 'sotb-demo' || type === 'uncharted-turretory-demo')) &&
     !(item.label === 'Research' && ((hasDrafted && league.draft_status !== 'in_progress') || type === 'sotb-demo' || type === 'uncharted-turretory-demo')) &&
-    !(item.label === 'Predictions' && (!isMember || ['paddock-politicks', 'the-oval-offset'].includes(type)))
+    !(item.label === 'Predictions' && ['paddock-politicks', 'the-oval-offset'].includes(type))
   )
 
   return (
@@ -642,8 +641,7 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
           }}>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', margin: 0, lineHeight: '1.2' }}>
-                <Link href={basePath} style={{ textDecoration: 'none' }}>
-                  {type === 'sotb-demo' && league.name.includes('Demo!') ? (
+                <Link href={basePath} className={isHome ? undefined : 'league-title-link'} style={{ textDecoration: 'none' }}>                                                  {type === 'sotb-demo' && league.name.includes('Demo!') ? (
                     <>
                       <span style={{ color: '#f0b429' }}>{league.name.replace('Demo!', '').trim()}</span>{' '}
                       <span style={{ color: '#ffffff' }}>Demo!</span>
@@ -877,14 +875,13 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
                       className={shouldPulse ? 'draft-room-emoji' : ''}
                       style={{ marginBottom: '4px', display: 'flex', justifyContent: 'center' }}
                     >
-                      <Icon size={isMobileWidth ? 26 : 34} strokeWidth={isActive ? 2 : 1.5} color={isActive ? '#f0b429' : 'rgb(245, 255, 156)'} />
+                      <Icon size={isMobileWidth ? 26 : 34} strokeWidth={isActive ? 2 : 1.5} color={isActive ? '#f0b429' : '#a0a0b0'} />
                     </div>
-                    <div style={{
+                                      <div style={{
                       fontSize: isMobileWidth ? '0.65rem' : '0.8rem',
                       lineHeight: 1.2,
                       textAlign: 'center',
-                      color: isActive ? '#f0b429' : undefined,
-                      fontWeight: isActive ? 'bold' : undefined
+                      color: isActive ? 'rgb(245, 255, 156)' : undefined
                     }}>
                       {page.label}
                     </div>
@@ -898,14 +895,6 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
                   color: '#ffffff',
                   flex: isMobileWidth ? '0 0 16%' : '1 0 72px',
                   minWidth: 0,
-                }
-
-                if (page.label === 'Predictions') {
-                  return (
-                    <div key={page.label} className="subpage-card" style={cardStyle} onClick={() => setShowPredictions(true)}>
-                      {content}
-                    </div>
-                  )
                 }
 
                 if (page.label === 'Research') {
@@ -1127,16 +1116,6 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
       />
 
       <ResourcesModal open={showResources} onClose={() => setShowResources(false)} type={type} />
-
-      {isMember && !['paddock-politicks', 'the-oval-offset'].includes(type) && (
-        <PredictionCard
-          leagueId={league.id}
-          leagueType={type}
-          instanceSlug={instance}
-          open={showPredictions}
-          onClose={() => setShowPredictions(false)}
-        />
-      )}
 
       {user && (
         <FreeAgentClaimModal

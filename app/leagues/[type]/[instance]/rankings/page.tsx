@@ -5,8 +5,8 @@ import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import ResourcesModal from '@/components/ResourcesModal'
-import { Search, ArrowUpDown } from 'lucide-react'
-   import { castawayTermByLeague, backgroundsByType } from '@/lib/leagueConfig'
+import { Search } from 'lucide-react'
+import { castawayTermByLeague } from '@/lib/leagueConfig'
 
 type Castaway = {
   id: number
@@ -247,59 +247,20 @@ const handleTouchEnd = () => {
   }
 
   if (loading || pageLoading) {
-    return (
-      <main style={{
-        backgroundColor: '#0a0a0f',
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: '#a0a0b0',
-        fontFamily: 'Georgia, serif'
-      }}>
-        Loading...
-      </main>
-    )
+    return <p style={{ color: '#a0a0b0' }}>Loading...</p>
   }
 
   if (!user) {
     return null
   }
 
-return (
-  <main style={{
-    backgroundColor: '#0a0a0f',
-    minHeight: '100vh',
-    fontFamily: 'Georgia, serif',
-    color: '#ffffff',
-    padding: '60px 40px',
-    ...(backgroundsByType[type] && {
-      backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.6), rgba(10, 10, 15, 0.7)), url(${backgroundsByType[type]})`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundAttachment: 'fixed',
-    }),
-  }}>
-      <div style={{ maxWidth: '700px', margin: '0 auto' }}>
-
-        <a href={`/leagues/${type}/${instance}`} style={{
-          color: '#a0a0b0',
-          fontSize: '0.85rem',
-          textDecoration: 'none',
-          display: 'inline-block',
-          marginBottom: '24px'
-        }}>
-          ← Back to {leagueName || 'League'}
-        </a>
+  return (
+    <div>
 
         {alreadyDrafted ? (
-          <div style={{ textAlign: 'center' }}>
-            <h1 style={{ color: '#f0b429', fontSize: '2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-  <ArrowUpDown size={30} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '1px' }} />
-  This league has already drafted!
-</h1>
-            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '24px' }}>
-              Rankings are locked now that the draft is complete. Check out the results below.
+                    <div>
+            <p style={{ color: '#ffffff', fontSize: '0.9rem', marginBottom: '20px' }}>
+              This league has already drafted, preventing ranking updates. See current rosters and draft results at the links below:
             </p>
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
               <a href={`/leagues/${type}/${instance}/leaderboard`} className="btn" style={{
@@ -329,10 +290,6 @@ return (
           </div>
         ) : (
           <>
-           <h1 style={{ color: '#f0b429', fontSize: 'clamp(1.72rem, 6vw, 2.25rem)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-  <ArrowUpDown size={30} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '1px' }} />
-  Rank {castawayTerm}s
-</h1>
 
         {draftIsLive && !liveNoticeDismissed && (
   <div
@@ -386,11 +343,11 @@ return (
   </div>
 )}
 
-           <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '8px', lineHeight: '1.6' }}>
+           <p style={{ color: '#ffffff', fontSize: '0.9rem', marginBottom: '8px', lineHeight: '1.6' }}>
   Drag and drop your most-wanted {castawayTerm.toLowerCase()} to the top, and work your way down from there. If you need to make a tweak before snake draft begins, just re-edit and save your rankings.
 </p>
 
-<p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '16px', lineHeight: '1.6' }}>
+<p style={{ color: '#ffffff', fontSize: '0.9rem', marginBottom: '16px', lineHeight: '1.6' }}>
 In the event of a live draft, players without saved auto-draft rankings default to host settings (randomly generated or bumped to back).</p> 
 
 <button
@@ -540,7 +497,6 @@ In the event of a live draft, players without saved auto-draft rankings default 
           </>
         )}
 
-      </div>
-    </main>
+     </div>
   )
 }

@@ -111,10 +111,10 @@ const categoryLabelsByLeague: Record<string, Record<string, string>> = {
 }
 
 const scoringLogIntro: Record<string, string> = {
-  'secrets-on-the-beach': 'Check out the fully-transparent points breakdown for Secrets on the Beach! Please note episodes with more than one tribal council (e.g. premiere or finale) may be broken down into multiple entries (e.g. Ep. 4 and Ep. 4.5).',
-  'sotb-demo': 'Check out the fully-transparent points breakdown for Secrets on the Beach! Please note episodes with more than one tribal council (e.g. premiere or finale) may be broken down into multiple multiple entries (e.g. Ep. 4 and Ep. 4.5).',
-  'uncharted-turretory': 'Check out the fully-transparent points breakdown for Uncharted Turretory! Please note episodes with more than one round table may be broken down into multiple multiple entries (e.g. Ep. 4 and Ep. 4.5).',
-  'uncharted-turretory-demo': 'Check out the fully-transparent points breakdown for Uncharted Turretory! Please note episodes with more than one round table may be broken down into multiple multiple entries (e.g. Ep. 4 and Ep. 4.5).',
+  'secrets-on-the-beach': 'Check out fully-transparent point breakdowns for Secrets on the Beach! Please note episodes with more than one tribal council (e.g. premiere or finale) may be broken down into multiple entries (e.g. Ep. 4 and 4.5).',
+  'sotb-demo': 'Check out fully-transparent point breakdowns for Secrets on the Beach! Please note episodes with more than one tribal council (e.g. premiere or finale) may be broken down into multiple multiple entries (e.g. Ep. 4 and 4.5).',
+  'uncharted-turretory': 'Check out fully-transparent point breakdowns for Uncharted Turretory! Please note episodes with more than one round table may be broken down into multiple multiple entries (e.g. Ep. 4 and 4.5).',
+  'uncharted-turretory-demo': 'Check out fully-transparent point breakdowns for Uncharted Turretory! Please note episodes with more than one round table may be broken down into multiple multiple entries (e.g. Ep. 4 and 4.5).',
 }
 
 type ScoreEntry = {
@@ -137,6 +137,7 @@ export default function ScoringLogPage() {
   const type = params.type as string
   const searchParams = useSearchParams()
   const fromInstance = searchParams.get('from') ?? (params.instance as string | undefined) ?? null
+  const inLeague = !!params.instance
   const [leagueName, setLeagueName] = useState<string | null>(null)
   const [episodes, setEpisodes] = useState<EpisodeGroup[]>([])
   const [pageLoading, setPageLoading] = useState(true)
@@ -263,6 +264,10 @@ if ((scores && scores.length > 0) || (customEntries && customEntries.length > 0)
    loadLog()
 }, [type, fromInstance, user, authLoading])
 
+  if (inLeague && pageLoading) {
+    return <p style={{ color: '#a0a0b0' }}>Loading...</p>
+  }
+
   if (pageLoading) {
     return (
       <main style={{
@@ -276,6 +281,14 @@ if ((scores && scores.length > 0) || (customEntries && customEntries.length > 0)
       }}>
         Loading...
       </main>
+    )
+  }
+
+    if (inLeague && isFrozen) {
+    return (
+      <p style={{ color: '#a0a0b0', textAlign: 'center', maxWidth: '400px', margin: '0 auto' }}>
+        Scores are paused while this league is frozen.
+      </p>
     )
   }
 
@@ -298,6 +311,26 @@ if ((scores && scores.length > 0) || (customEntries && customEntries.length > 0)
         </p>
         <a href={`/leagues/${type}/${fromInstance}`} style={{ color: '#f0b429' }}>← Back to League</a>
       </main>
+    )
+  }
+
+    if (inLeague && !authLoading && !user && type !== 'sotb-demo') {
+    return (
+      <div style={{ textAlign: 'center' }}>
+        <p style={{ color: '#ffffff', fontSize: '0.9rem', marginBottom: '16px' }}>
+          Sign up for free to see episode-by-episode scoring breakdowns for this league.
+        </p>
+        <a href="/signup" style={{
+          backgroundColor: '#f0b429',
+          color: '#0a0a0f',
+          padding: '10px 24px',
+          borderRadius: '8px',
+          textDecoration: 'none',
+          fontWeight: 'bold'
+        }}>
+          Create Free Account →
+        </a>
+      </div>
     )
   }
 
@@ -340,98 +373,112 @@ if ((scores && scores.length > 0) || (customEntries && customEntries.length > 0)
     )
   }
 
- return (
-  <main style={{
-    backgroundColor: '#0a0a0f',
-    minHeight: '100vh',
-    fontFamily: 'Georgia, serif',
-    color: '#ffffff',
-    padding: '60px 40px',
-    ...(backgroundsByType[type] && {
-      backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.6), rgba(10, 10, 15, 0.7)), url(${backgroundsByType[type]})`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundAttachment: 'fixed',
-    }),
-  }}>
+  const body = (
+    <>
+      <p style={{ color: inLeague ? '#ffffff' : '#a0a0b0', fontSize: '0.9rem', marginBottom: '20px' }}>
+        {scoringLogIntro[type] ?? `Check out the fully-transparent points breakdown for ${leagueTypeLabels[type] ?? 'this league'}!`}
+      </p>
+
+      {episodes.length === 0 ? (
+        <p style={{ color: '#555570', fontSize: 'clamp(.7rem, 5vw, .85rem)' }}>No episode scores have been submitted yet.</p>
+      ) : (
+        episodes.map((ep) => {
+          const castawayTotals: Record<string, number> = {}
+          ep.entries.forEach((entry) => {
+            const total = entry.points * entry.count
+            castawayTotals[entry.castaway_name] = (castawayTotals[entry.castaway_name] ?? 0) + total
+          })
+          const byCastaway: Record<string, ScoreEntry[]> = {}
+          ep.entries.forEach((entry) => {
+            if (!byCastaway[entry.castaway_name]) byCastaway[entry.castaway_name] = []
+            byCastaway[entry.castaway_name].push(entry)
+          })
+          return (
+            <div key={ep.episode_number} style={{ marginBottom: '40px' }}>
+              <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '12px' }}>
+                Episode {ep.episode_number}
+              </h2>
+              <div style={{
+                backgroundColor: '#1a1a2e',
+                border: '1px solid #2a2a3e',
+                borderRadius: '10px',
+                overflow: 'hidden'
+              }}>
+                {Object.keys(byCastaway).map((castawayName, i) => (
+                  <div key={castawayName} style={{
+                    padding: '14px 20px',
+                    borderBottom: i < Object.keys(byCastaway).length - 1 ? '1px solid #2a2a3e' : 'none'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                      <div style={{ fontWeight: 'bold', fontSize: '0.95rem' }}>{castawayName}</div>
+                      <div style={{
+                        color: castawayTotals[castawayName] < 0 ? '#ff6b6b' : '#f0b429',
+                        fontWeight: 'bold',
+                        fontSize: '1rem'
+                      }}>
+                        {castawayTotals[castawayName] > 0 ? '+' : ''}{castawayTotals[castawayName]} Pts.
+                      </div>
+                    </div>
+                    {byCastaway[castawayName].map((entry, idx) => (
+                      <div key={idx} style={{ color: '#a0a0b0', fontSize: '0.8rem', marginTop: '2px' }}>
+                        {entry.is_custom && (
+                          <span style={{ color: '#f0b429', fontWeight: 'bold' }}>Custom: </span>
+                        )}
+                        {categoryLabels[entry.category] ?? entry.category}
+                        {entry.count > 1 ? `\u00A0\u00A0(×${entry.count})` : ''}
+                        {' | '}
+                        {entry.points > 0 ? '+' : ''}{entry.points}{entry.count > 1 ? ` Each` : ''}
+                        {entry.notes ? ` | ${entry.notes}` : ''}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )
+        })
+      )}
+    </>
+  )
+
+  // Inside a league: the shared header/tray is already above this
+  if (inLeague) {
+    return <div>{body}</div>
+  }
+
+  // Standalone version (e.g. links from admin scoring emails)
+  return (
+    <main style={{
+      backgroundColor: '#0a0a0f',
+      minHeight: '100vh',
+      fontFamily: 'Georgia, serif',
+      color: '#ffffff',
+      padding: '60px 40px',
+      ...(backgroundsByType[type] && {
+        backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.6), rgba(10, 10, 15, 0.7)), url(${backgroundsByType[type]})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+      }),
+    }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         <a href={fromInstance ? `/leagues/${type}/${fromInstance}` : '/'} style={{
-  color: '#a0a0b0',
-  fontSize: '0.85rem',
-  textDecoration: 'none',
-  display: 'inline-block',
-  marginBottom: '24px'
-}}>
-{fromInstance ? `← Back to ${leagueName ?? 'League'}` : '← Back to Trekkon Fantasy Leagues'}        </a>
+          color: '#a0a0b0',
+          fontSize: '0.85rem',
+          textDecoration: 'none',
+          display: 'inline-block',
+          marginBottom: '24px'
+        }}>
+          {fromInstance ? `← Back to ${leagueName ?? 'League'}` : '← Back to Trekkon Fantasy Leagues'}
+        </a>
 
         <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-  <Calculator size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
-  <span style={{ color: '#f0b429' }}>Episode</span>{' '}
-  <span style={{ color: '#ffffff' }}>Scoring Log</span>
-</h1>
-        <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '20px' }}>
-  {scoringLogIntro[type] ?? `Check out the fully-transparent points breakdown for ${leagueTypeLabels[type] ?? 'this league'}!`}
-</p>
+          <Calculator size={36} strokeWidth={2} color="#f0b429" />
+          <span style={{ color: '#f0b429' }}>Episode</span>{' '}
+          <span style={{ color: '#ffffff' }}>Scoring Log</span>
+        </h1>
 
-        {episodes.length === 0 ? (
-          <p style={{ color: '#555570', fontSize: 'clamp(.7rem, 5vw, .85rem)' }}>No episode scores have been submitted yet.</p>
-        ) : (
-          episodes.map((ep) => {
-            const castawayTotals: Record<string, number> = {}
-            ep.entries.forEach((entry) => {
-              const total = entry.points * entry.count
-              castawayTotals[entry.castaway_name] = (castawayTotals[entry.castaway_name] ?? 0) + total
-            })
-            const byCastaway: Record<string, ScoreEntry[]> = {}
-            ep.entries.forEach((entry) => {
-              if (!byCastaway[entry.castaway_name]) byCastaway[entry.castaway_name] = []
-              byCastaway[entry.castaway_name].push(entry)
-            })
-            return (
-              <div key={ep.episode_number} style={{ marginBottom: '40px' }}>
-                <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '12px' }}>
-                  Episode {ep.episode_number}
-                </h2>
-                <div style={{
-                  backgroundColor: '#1a1a2e',
-                  border: '1px solid #2a2a3e',
-                  borderRadius: '10px',
-                  overflow: 'hidden'
-                }}>
-                  {Object.keys(byCastaway).map((castawayName, i) => (
-                    <div key={castawayName} style={{
-                      padding: '14px 20px',
-                      borderBottom: i < Object.keys(byCastaway).length - 1 ? '1px solid #2a2a3e' : 'none'
-                    }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                        <div style={{ fontWeight: 'bold', fontSize: '0.95rem' }}>{castawayName}</div>
-                        <div style={{
-                          color: castawayTotals[castawayName] < 0 ? '#ff6b6b' : '#f0b429',
-                          fontWeight: 'bold',
-                          fontSize: '1rem'
-                        }}>
-                          {castawayTotals[castawayName] > 0 ? '+' : ''}{castawayTotals[castawayName]} Pts.
-                        </div>
-                      </div>
-                     {byCastaway[castawayName].map((entry, idx) => (
-  <div key={idx} style={{ color: '#a0a0b0', fontSize: '0.8rem', marginTop: '2px' }}>
-    {entry.is_custom && (
-      <span style={{ color: '#f0b429', fontWeight: 'bold' }}>🎯 Custom: </span>
-    )}
-    {categoryLabels[entry.category] ?? entry.category}
-{entry.count > 1 ? `\u00A0\u00A0(×${entry.count})` : ''}
-    {' | '}
-    {entry.points > 0 ? '+' : ''}{entry.points}{entry.count > 1 ? ` Each` : ''}
-    {entry.notes ? ` | ${entry.notes}` : ''}
-  </div>
-))}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )
-          })
-        )}
+        {body}
       </div>
     </main>
   )

@@ -3,9 +3,8 @@ import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
-import { RefreshCw } from 'lucide-react'
 import { getFreeAgentPool, type FreeAgent } from '@/lib/freeAgents'
-import { castawayTermByLeague, backgroundsByType } from '@/lib/leagueConfig'
+import { castawayTermByLeague } from '@/lib/leagueConfig'
 
 type Castaway = {
   id: number
@@ -916,52 +915,14 @@ if (castawayIds.length > 0) {
   const myOfferedCastawayName = myCastaways.find((c) => c.id === selectedOfferedId)?.name
   const theirRequestedCastawayName = theirCastaways.find((c) => c.id === selectedRequestedId)?.name
 
-return (
-  <main style={{
-    backgroundColor: '#0a0a0f',
-    minHeight: '100vh',
-    fontFamily: 'Georgia, serif',
-    color: '#ffffff',
-    padding: '60px 40px',
-    ...(backgroundsByType[type] && {
-      backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.6), rgba(10, 10, 15, 0.7)), url(${backgroundsByType[type]})`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundAttachment: 'fixed',
-    }),
-  }}>
-      <div style={{ maxWidth: '800px', margin: '0 auto', paddingLeft: '20px' }}>
-        <a href={`/leagues/${type}/${instance}`} style={{
-          color: '#a0a0b0',
-          fontSize: '0.85rem',
-          textDecoration: 'none',
-          display: 'inline-block',
-          marginBottom: '24px'
-        }}>
-          ← Back to {leagueName || 'League'}
-        </a>
-
-        <div style={{ textAlign: 'left', marginBottom: '12px' }}>
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            marginBottom: '8px'
-          }}>
-            
-      <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', margin: 0, marginBottom: '4px', display: 'flex', alignItems: 'center', flexWrap: 'wrap', rowGap: '0px', columnGap: '10px' }}>
-  <RefreshCw size={36} strokeWidth={2} color="#f0b429" style={{ position: 'relative', top: '0px' }} />
-  <span style={{ color: '#f0b429' }}>League</span>{' '}
-  <span className="mobile-full-width-break" style={{ color: '#ffffff' }}>Trade Portal</span>
-</h1>
-
-              <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '32px' }}>
-            Didn&apos;t get your dream team in the draft? There&apos;s still time to secure your favorite players as long as they&apos;re in the game. Full trade policies can be found{' '}
-            <a href={`/leagues/${type}/draft`} style={{ color: '#f0b429', textDecoration: 'underline' }}>
-              here
-            </a>.
-          </p>
-          </div>
-        </div>
+  return (
+    <div>
+      <p style={{ color: '#ffffff', fontSize: '0.9rem', marginBottom: '24px' }}>
+        Didn&apos;t get your dream team in the draft? There&apos;s still time to secure your favorite players as long as they&apos;re in the game. Full trade policies can be found{' '}
+        <a href={`/leagues/${type}/draft`} style={{ color: '#f0b429', textDecoration: 'underline' }}>
+          here
+        </a>.
+      </p>
 
 <div style={{
   backgroundColor: '#1a1a2e',
@@ -1428,8 +1389,7 @@ return (
               )}
             </>
           )}
-        </div>
-      </div>
-    </main>
+                </div>
+    </div>
   )
 }

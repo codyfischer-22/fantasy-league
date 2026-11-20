@@ -306,11 +306,7 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
   }
 
   if (loading || pageLoading) {
-    return (
-      <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0a0b0', fontFamily: 'Georgia, serif' }}>
-        Loading...
-      </main>
-    )
+    return <p style={{ color: '#a0a0b0' }}>Loading...</p>
   }
 
   if (!isHost) {
@@ -320,15 +316,11 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
   const draftLocked = league?.draft_status === 'in_progress' || league?.draft_status === 'completed'
 
   return (
-    <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '40px 20px' }}>
-      <div style={{ backgroundColor: '#1a1a2e', border: '1px solid #f0b429', borderRadius: '12px', padding: '40px', width: '100%', maxWidth: '480px' }}>
-        <a href={`/leagues/${type}/${instance}`} style={{ color: '#a0a0b0', fontSize: '0.85rem', textDecoration: 'none', display: 'inline-block', marginBottom: '16px' }}>
-          ← Back to {league?.name}
-        </a>
-
-        <h1 style={{ color: '#f0b429', fontSize: '1.8rem', marginBottom: '24px', textAlign: 'center' }}>
+    <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <div style={{ backgroundColor: '#1a1a2e', border: '1px solid #f0b429', borderRadius: '12px', padding: '32px', width: '100%', maxWidth: '480px' }}>
+        <h2 style={{ color: '#f0b429', fontSize: '1.6rem', marginTop: 0, marginBottom: '24px', textAlign: 'center' }}>
           League Settings
-        </h1>
+        </h2>
 
                <label style={labelStyle}>Draft Style</label>
         <select value={draftMode} onChange={(e) => setDraftMode(e.target.value)} disabled={draftLocked} style={{ ...selectStyle, opacity: draftLocked ? 0.5 : 1 }}>          <option value="live">Live Draft (Pick-by-Pick)</option>
@@ -576,6 +568,6 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
 />
 
       </div>
-    </main>
+    </div>
   )
 }
