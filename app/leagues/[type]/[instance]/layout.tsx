@@ -893,7 +893,7 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
                   textAlign: 'center',
                   textDecoration: 'none',
                   color: '#ffffff',
-                  flex: isMobileWidth ? '0 0 16%' : '1 0 72px',
+                  flex: isMobileWidth ? '0 0 21%' : '1 0 72px',
                   minWidth: 0,
                 }
 
@@ -935,7 +935,7 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
               </div>
             )}
 
-            {isMobileWidth && toolItems.length > 5 && !toolsAtEnd && (
+            {isMobileWidth && toolItems.length > 4 && !toolsAtEnd && (
               <div style={{
                 position: 'absolute',
                 top: 0,
