@@ -6,7 +6,7 @@ import { useParams, usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import ConfirmModal from '@/components/ConfirmModal'
-import { Cog, Palette, Trophy, Calculator, TrendingUp, Shuffle, Dices, ChevronRight, ChevronLeft, Play, ClipboardList, RefreshCw, Puzzle, Microscope, Lock, ArrowUpDown } from 'lucide-react'
+import { Cog, Palette, Trophy, ChevronDown, Calculator, TrendingUp, Shuffle, Dices, ChevronRight, ChevronLeft, Play, ClipboardList, RefreshCw, Puzzle, Microscope, Lock, ArrowUpDown } from 'lucide-react'
 import ResourcesModal from '@/components/ResourcesModal'
 import { getFreeAgentPool, type FreeAgent } from '@/lib/freeAgents'
 import FreeAgentClaimModal from '@/components/FreeAgentClaimModal'
@@ -138,6 +138,8 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
   const [replaceCount, setReplaceCount] = useState<number | null>(null)
   const [showWelcomeToast, setShowWelcomeToast] = useState(false)
   const [toolsAtEnd, setToolsAtEnd] = useState(false)
+  const [myLeagues, setMyLeagues] = useState<{ name: string; slug: string }[]>([])
+  const [switcherOpen, setSwitcherOpen] = useState(false)
   const [toolsAtStart, setToolsAtStart] = useState(true)
   const champRef = useRef<HTMLDivElement>(null)
   const [burstOrigin, setBurstOrigin] = useState<{ x: number; y: number } | null>(null)
@@ -269,6 +271,23 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
               .eq('user_id', user.id)
             setIsReturning((oldPicks ?? 0) > 0)
           }
+        }
+      }
+            if (user) {
+        const { data: myMemberships } = await supabase
+          .from('league_members')
+          .select('league_id')
+          .eq('user_id', user.id)
+        const myLeagueIds = (myMemberships ?? []).map((m) => m.league_id)
+        if (myLeagueIds.length > 0) {
+          const { data: sameType } = await supabase
+            .from('leagues')
+            .select('name, slug')
+            .in('id', myLeagueIds)
+            .eq('league_type', type)
+            .eq('is_archived', false)
+            .order('name')
+          setMyLeagues(sameType ?? [])
         }
       }
       setPageLoading(false)
@@ -660,17 +679,64 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
             marginBottom: '8px'
           }}>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', margin: 0, lineHeight: '1.2' }}>
-                <Link href={basePath} className={isHome ? undefined : 'league-title-link'} style={{ textDecoration: 'none' }}>                                                  {type === 'sotb-demo' && league.name.includes('Demo!') ? (
-                    <>
-                      <span style={{ color: '#f0b429' }}>{league.name.replace('Demo!', '').trim()}</span>{' '}
-                      <span style={{ color: '#ffffff' }}>Demo!</span>
-                    </>
-                  ) : (
-                    <span style={{ color: '#f0b429' }}>{league.name}</span>
-                  )}
-                </Link>
-              </h1>
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>                <h1 style={{ fontSize: 'clamp(1.75rem, 6vw, 2.25rem)', margin: 0, lineHeight: '1.2' }}>
+                  <Link href={basePath} className={isHome ? undefined : 'league-title-link'} style={{ textDecoration: 'none' }}>
+                    {type === 'sotb-demo' && league.name.includes('Demo!') ? (
+                      <>
+                        <span style={{ color: '#f0b429' }}>{league.name.replace('Demo!', '').trim()}</span>{' '}
+                        <span style={{ color: '#ffffff' }}>Demo!</span>
+                      </>
+                    ) : (
+                      <span style={{ color: '#f0b429' }}>{league.name}</span>
+                    )}
+                  </Link>
+                </h1>
+
+                {myLeagues.length > 1 && (
+                  <>
+                    <button
+                      onClick={() => setSwitcherOpen(!switcherOpen)}
+                      aria-label="Switch league"
+                      style={{ background: 'none', border: 'none', padding: '4px', cursor: 'pointer', display: 'flex' }}
+                    >
+                      <ChevronDown
+                        size={26}
+                        color="#f0b429"
+                        strokeWidth={2.5}
+                        style={{ transition: 'transform 0.2s ease', transform: switcherOpen ? 'rotate(180deg)' : 'none' }}
+                      />
+                    </button>
+
+                                {switcherOpen && (
+                      <div style={{ flexBasis: '100%', display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '6px', marginBottom: '16px' }}>
+                        {myLeagues.map((l) => {
+                          const isCurrent = l.slug === instance
+                          return (
+                            <button
+                              key={l.slug}
+                              onClick={() => {
+                                setSwitcherOpen(false)
+                                if (!isCurrent) {
+                                  window.location.href = pathname.replace(basePath, `/leagues/${type}/${l.slug}`)
+                                }
+                              }}
+                              style={{
+                                ...pillButton(isCurrent ? '#f0b429' : '#a0a0b0'),
+                                backgroundColor: isCurrent ? 'rgba(240, 180, 41, 0.12)' : 'transparent',
+                                fontWeight: isCurrent ? 'bold' : 'normal',
+                                fontFamily: 'inherit',
+                                cursor: isCurrent ? 'default' : 'pointer'
+                              }}
+                            >
+                              {l.name}
+                            </button>
+                          )
+                                            })}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
               <p style={{ color: '#a0a0b0', fontSize: '1.1rem', margin: '0px 0 0px' }}>
                 {league.is_private && maxMembers
                   ? `${memberCount ?? '...'}/${maxMembers} Players`

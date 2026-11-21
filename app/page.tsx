@@ -5,7 +5,7 @@ import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { Rat, Anchor, Drill, Rocket, Earth, Lock, TestTubeDiagonal, Hammer, CornerLeftUp, Mail, Hourglass, TreePalm, ChessRook, CarFront, Engine, MessageCirclePlus } from 'lucide-react'
+import { Rat, Anchor, Drill, Rocket, Earth, Lock, TestTubeDiagonal, Hammer, CornerLeftUp, Mail, Hourglass, TreePalm, ChessRook, CarFront, Engine, MessageCirclePlus, Crown } from 'lucide-react'
 
 type MyLeague = {
   name: string
@@ -14,6 +14,7 @@ type MyLeague = {
   host_user_id?: string | null
   is_private?: boolean
   draft_status?: string | null
+  champion_names?: string[] | null
 }
 
 const leagueCircleBackgrounds: Record<string, React.CSSProperties> = {
@@ -84,8 +85,8 @@ useEffect(() => {
 
      const { data: leagues } = await supabase
   .from('leagues')
-  .select('name, league_type, slug, host_user_id, is_show_chat, is_private, draft_status')
-  .in('id', leagueIds)
+  .select('name, league_type, slug, host_user_id, is_show_chat, is_private, draft_status, champion_names')
+    .in('id', leagueIds)
   .eq('is_archived', false)
 
 const realLeagues = (leagues ?? []).filter((l) => !l.is_show_chat && l.league_type !== 'social_game')
@@ -96,6 +97,7 @@ const realLeagues = (leagues ?? []).filter((l) => !l.is_show_chat && l.league_ty
   host_user_id: l.host_user_id,
   is_private: l.is_private,
   draft_status: l.draft_status,
+  champion_names: l.champion_names,
 }))
 
       setHostedLeagues(mapped.filter((l) => l.host_user_id === user.id))
@@ -216,6 +218,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
 {[...hostedLeagues, ...joinedLeagues].map((league) => {
   const isHosted = hostedLeagues.some((h) => h.slug === league.slug && h.type === league.type)
   const isLive = league.draft_status === 'in_progress'
+  const isCrowned = !!league.champion_names?.length
   return (
     <a
       key={`${league.type}-${league.slug}`}
@@ -227,6 +230,49 @@ This is your arena to compete with friends, family, and on-screen stars on beach
         ...(leagueCircleBackgrounds[league.type] ?? {}),
       } as React.CSSProperties}
     >
+            {isCrowned && (
+        <>
+          <span style={{
+            position: 'absolute',
+            inset: 0,
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, #f0b42933 0%, transparent 70%)',
+            pointerEvents: 'none',
+            animation: 'circleGlow 3s ease-in-out infinite'
+          }} />
+          {[...Array(8)].map((_, i) => (
+            <span
+              key={i}
+              style={{
+                position: 'absolute',
+                top: `${55 + ((i * 23) % 35)}%`,
+                left: `${15 + ((i * 41) % 70)}%`,
+                width: i % 3 === 0 ? '4px' : '3px',
+                height: i % 3 === 0 ? '4px' : '3px',
+                borderRadius: '50%',
+                backgroundColor: i % 3 === 0 ? '#f5ff9c' : '#f0b429',
+                boxShadow: '0 0 6px rgba(240, 180, 41, 0.8)',
+                pointerEvents: 'none',
+                opacity: 0,
+                animation: `circleFloat ${2.5 + (i % 4) * 0.5}s ease-in-out ${(i % 5) * 0.45}s infinite`
+              }}
+            />
+          ))}
+  
+        {isCrowned && (
+        <span style={{
+          position: 'absolute',
+          top: '11%',
+          left: '42%',
+          display: 'flex',
+          zIndex: 2,
+          pointerEvents: 'none'
+        }}>
+          <Crown size={30} color="#f0b429" strokeWidth={2} />
+        </span>
+      )}
+        </>
+      )}
       <span className={`league-circle-text ${isLive ? 'draft-room-emoji' : ''}`}>
         {league.name}
       </span>
@@ -1139,6 +1185,19 @@ Got an idea for a league we should build next? Send us your concept and help sha
     </div>
   </div>
 )}
+
+<style>{`
+  @keyframes circleGlow {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+  @keyframes circleFloat {
+    0% { transform: translateY(0); opacity: 0; }
+    25% { opacity: 0.9; }
+    80% { opacity: 0.9; }
+    100% { transform: translateY(-50px); opacity: 0; }
+  }
+`}</style>
 
     </main>
   )
