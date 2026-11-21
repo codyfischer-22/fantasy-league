@@ -756,11 +756,11 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
               textAlign: 'center',
                             backgroundColor: '#1a1a2e',
               ...(welcomeTextureByType[type] && {
-                backgroundImage: `linear-gradient(rgba(26, 26, 46, 0.65), rgba(26, 26, 46, 0.8)), url('${welcomeTextureByType[type]}')`,
+                backgroundImage: `linear-gradient(rgba(26, 26, 46, 0.35), rgba(26, 26, 46, 0.4)), url('${welcomeTextureByType[type]}')`,
                 backgroundSize: '400px',
                 backgroundPosition: 'center',
               }),
-              border: '1.5px solid #ca29ca',
+              border: '1.5px solid #f0b429',
               borderRadius: '12px',
               padding: '20px 24px',
               marginTop: '16px',
@@ -801,7 +801,7 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
 
               <p style={{
                 position: 'relative',
-                color: '#ca29ca',
+                color: '#f0b429',
                 fontSize: '0.75rem',
                 fontWeight: 'bold',
                 letterSpacing: '4px',
@@ -819,7 +819,7 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
                 </span>
               </div>
               <p style={{ position: 'relative', color: '#a0a0b0', fontSize: '0.9rem', margin: '6px 0 0 0' }}>
-                <Link href={`${basePath}/leaderboard`} style={{ color: '#ca29ca', textDecoration: 'underline' }}>
+                <Link href={`${basePath}/leaderboard`} style={{ color: '#f0b429', textDecoration: 'underline' }}>
                   Final Standings
                 </Link>
               </p>

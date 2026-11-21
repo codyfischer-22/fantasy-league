@@ -325,7 +325,7 @@ const handleAwardSeasonBonus = async () => {
       ? `🏆 It's official! ${championNames.join(' & ')} share the crown in ${league.name} with ${championPoints} points!`
       : `🏆 It's official! Congrats to ${championNames[0]}, champion of ${league.name} with ${championPoints} points!`
     const predictionLine = predictionNames.length > 0
-      ? ` And shoutout to ${predictionNames.join(', ')} for winning the +50 weekly prediction bonus with (${predictionTopScore}) correct picks.`
+      ? ` And shoutout to ${predictionNames.join(', ')} for winning the +50 weekly prediction bonus with ${predictionTopScore} correct picks.`
       : ''
     const announcementMessage = `${championLine}${predictionLine} Thanks for playing, and come back soon for another fantasy league!`
     const leaderboardLink = `/leagues/${league.league_type}/${league.slug}/leaderboard`
