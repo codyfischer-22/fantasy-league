@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { Rat, Anchor, Drill, Rocket, Earth, Lock, TestTubeDiagonal, Hammer, CornerLeftUp, Mail, Hourglass, TreePalm, ChessRook, CarFront, Engine, MessageCirclePlus, Crown } from 'lucide-react'
+import { Rat, Anchor, Drill, Rocket, Earth, Lock, TestTubeDiagonal, Hammer, CornerLeftUp, Mail, Hourglass, TreePalm, ChessRook, CarFront, Engine, MessageCirclePlus, Crown, ChevronLeft, ChevronRight } from 'lucide-react'
 
 type MyLeague = {
   name: string
@@ -46,7 +46,12 @@ export default function Home() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [userTier, setUserTier] = useState<string | null>(null)
   const [showPrivateLeaguesModal, setShowPrivateLeaguesModal] = useState<string | null>(null)
-const relevantLeagues = [...hostedLeagues, ...joinedLeagues].filter(
+  const circleRowRef = useRef<HTMLDivElement>(null)
+  const [circlesOverflow, setCirclesOverflow] = useState(false)
+  const [circlesAtStart, setCirclesAtStart] = useState(true)
+  const [circlesAtEnd, setCirclesAtEnd] = useState(false)
+
+  const relevantLeagues = [...hostedLeagues, ...joinedLeagues].filter(
   (l) => l.type === showPrivateLeaguesModal && l.is_private === true
 )
 
@@ -110,6 +115,19 @@ const realLeagues = (leagues ?? []).filter((l) => !l.is_show_chat && l.league_ty
       loadMyLeagues()
     }
   }, [user, loading])
+
+        useEffect(() => {
+    const check = () => {
+      const el = circleRowRef.current
+      if (!el) return
+      setCirclesOverflow(el.scrollWidth > el.clientWidth + 4)
+      setCirclesAtStart(el.scrollLeft <= 4)
+      setCirclesAtEnd(el.scrollLeft + el.clientWidth >= el.scrollWidth - 4)
+    }
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [hostedLeagues, joinedLeagues, leaguesLoading])
 
   const hasRealLeagues = hostedLeagues.length > 0 || joinedLeagues.length > 0
   const showPersonalizedView = !loading && !leaguesLoading && user && hasRealLeagues
@@ -194,92 +212,125 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     {showPersonalizedView && (
   <section id="my-leagues" style={{ padding: '50px 40px 20px 40px' }}>
     <div style={{ maxWidth: '1100px', margin: '0 auto', marginTop: '8px' }}>
-<div className="league-circle-row" style={{
-  display: 'flex',
-  flexWrap: 'nowrap',
-  justifyContent: 'center',
-  gap: '16px',
-  overflowX: 'auto',
-  overflowY: 'visible',
-  padding: '24px 12px',
-}}>  
-<a
-  href="/social-game"
-  className="league-circle"
-  style={{
-    '--circle-color': '#068e38',
-    position: 'relative',
-    backgroundImage: `url('/images/social-game/backgrounds/game-lobby-background.png')`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-  } as React.CSSProperties}
->
-</a>
-{[...hostedLeagues, ...joinedLeagues].map((league) => {
-  const isHosted = hostedLeagues.some((h) => h.slug === league.slug && h.type === league.type)
-  const isLive = league.draft_status === 'in_progress'
-  const isCrowned = !!league.champion_names?.length
-  return (
-    <a
-      key={`${league.type}-${league.slug}`}
-      href={`/leagues/${league.type}/${league.slug}`}
-      className={`league-circle ${isLive ? 'draft-pulse' : ''}`}
-      style={{
-        '--circle-color': isHosted ? '#ca29ca' : '#f0b429',
-        position: 'relative',
-        ...(leagueCircleBackgrounds[league.type] ?? {}),
-      } as React.CSSProperties}
-    >
+<div style={{ position: 'relative' }}>
+  <div
+    ref={circleRowRef}
+    className="league-circle-row tool-scroll"
+    onScroll={(e) => {
+      const el = e.currentTarget
+      setCirclesAtStart(el.scrollLeft <= 4)
+      setCirclesAtEnd(el.scrollLeft + el.clientWidth >= el.scrollWidth - 4)
+    }}
+    style={{
+      overflowX: 'auto',
+      overflowY: 'visible',
+      scrollbarWidth: 'none',
+      padding: '24px 12px',
+    }}
+  >
+    {/* Inner row centers when it fits, scrolls (without clipping the first circle) when it doesn't */}
+    <div style={{ display: 'flex', flexWrap: 'nowrap', gap: '16px', width: 'max-content', margin: '0 auto' }}>
+      {[...hostedLeagues, ...joinedLeagues].map((league) => {
+        const isHosted = hostedLeagues.some((h) => h.slug === league.slug && h.type === league.type)
+        const isLive = league.draft_status === 'in_progress'
+        const isCrowned = !!league.champion_names?.length
+        return (
+          <a
+            key={`${league.type}-${league.slug}`}
+            href={`/leagues/${league.type}/${league.slug}`}
+            className={`league-circle ${isLive ? 'draft-pulse' : ''}`}
+            style={{
+              '--circle-color': isHosted ? '#ca29ca' : '#f0b429',
+              position: 'relative',
+              flexShrink: 0,
+              ...(leagueCircleBackgrounds[league.type] ?? {}),
+            } as React.CSSProperties}
+          >
             {isCrowned && (
-        <>
-          <span style={{
-            position: 'absolute',
-            inset: 0,
-            borderRadius: '50%',
-            background: 'radial-gradient(circle, #f0b42933 0%, transparent 70%)',
-            pointerEvents: 'none',
-            animation: 'circleGlow 3s ease-in-out infinite'
-          }} />
-          {[...Array(8)].map((_, i) => (
-            <span
-              key={i}
-              style={{
-                position: 'absolute',
-                top: `${55 + ((i * 23) % 35)}%`,
-                left: `${15 + ((i * 41) % 70)}%`,
-                width: i % 3 === 0 ? '4px' : '3px',
-                height: i % 3 === 0 ? '4px' : '3px',
-                borderRadius: '50%',
-                backgroundColor: i % 3 === 0 ? '#f5ff9c' : '#f0b429',
-                boxShadow: '0 0 6px rgba(240, 180, 41, 0.8)',
-                pointerEvents: 'none',
-                opacity: 0,
-                animation: `circleFloat ${2.5 + (i % 4) * 0.5}s ease-in-out ${(i % 5) * 0.45}s infinite`
-              }}
-            />
-          ))}
-  
-        {isCrowned && (
-        <span style={{
-          position: 'absolute',
-          top: '11%',
-          left: '42%',
-          display: 'flex',
-          zIndex: 2,
-          pointerEvents: 'none'
-        }}>
-          <Crown size={30} color="#f0b429" strokeWidth={2} />
-        </span>
-      )}
-        </>
-      )}
-      <span className={`league-circle-text ${isLive ? 'draft-room-emoji' : ''}`}>
-        {league.name}
-      </span>
-    </a>
-  )
-})}
-   </div>
+              <>
+                <span style={{
+                  position: 'absolute',
+                  inset: 0,
+                  borderRadius: '50%',
+                  background: 'radial-gradient(circle, #f0b42933 0%, transparent 70%)',
+                  pointerEvents: 'none',
+                  animation: 'circleGlow 3s ease-in-out infinite'
+                }} />
+                {[...Array(8)].map((_, i) => (
+                  <span
+                    key={i}
+                    style={{
+                      position: 'absolute',
+                      top: `${55 + ((i * 23) % 35)}%`,
+                      left: `${15 + ((i * 41) % 70)}%`,
+                      width: i % 3 === 0 ? '4px' : '3px',
+                      height: i % 3 === 0 ? '4px' : '3px',
+                      borderRadius: '50%',
+                      backgroundColor: i % 3 === 0 ? '#f5ff9c' : '#f0b429',
+                      boxShadow: '0 0 6px rgba(240, 180, 41, 0.8)',
+                      pointerEvents: 'none',
+                      opacity: 0,
+                      animation: `circleFloat ${2.5 + (i % 4) * 0.5}s ease-in-out ${(i % 5) * 0.45}s infinite`
+                    }}
+                  />
+                ))}
+                <span style={{
+                  position: 'absolute',
+                  top: '11%',
+                  left: '42%',
+                  display: 'flex',
+                  zIndex: 2,
+                  pointerEvents: 'none'
+                }}>
+                  <Crown size={30} color="#f0b429" strokeWidth={2} />
+                </span>
+              </>
+            )}
+            <span className={`league-circle-text ${isLive ? 'draft-room-emoji' : ''}`}>
+              {league.name}
+            </span>
+          </a>
+        )
+      })}
+
+      {/* Game Lobby: always last */}
+      <a
+        href="/social-game"
+        className="league-circle"
+        style={{
+          '--circle-color': '#068e38',
+          position: 'relative',
+          flexShrink: 0,
+          backgroundImage: `url('/images/social-game/backgrounds/game-lobby-background.png')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        } as React.CSSProperties}
+      />
+    </div>
+  </div>
+
+  {circlesOverflow && !circlesAtStart && (
+    <div style={{
+      position: 'absolute', top: 0, left: 0, bottom: 0, width: '48px',
+      display: 'flex', alignItems: 'center', justifyContent: 'flex-start',
+      background: 'linear-gradient(to left, transparent, rgba(10, 10, 15, 0.9))',
+      pointerEvents: 'none', zIndex: 3
+    }}>
+      <ChevronLeft size={26} color="#f0b429" strokeWidth={2.5} className="draft-room-emoji" />
+    </div>
+  )}
+
+  {circlesOverflow && !circlesAtEnd && (
+    <div style={{
+      position: 'absolute', top: 0, right: 0, bottom: 0, width: '48px',
+      display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
+      background: 'linear-gradient(to right, transparent, rgba(10, 10, 15, 0.9))',
+      pointerEvents: 'none', zIndex: 3
+    }}>
+      <ChevronRight size={26} color="#f0b429" strokeWidth={2.5} className="draft-room-emoji" />
+    </div>
+  )}
+</div>
   <p style={{
     display: 'flex',
     alignItems: 'center',
