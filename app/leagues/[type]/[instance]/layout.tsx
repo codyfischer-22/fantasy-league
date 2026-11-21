@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
@@ -31,6 +31,8 @@ type League = {
   allow_custom_scoring: boolean
   draft_mode?: string | null
   draft_rounds?: number | null
+  champion_names?: string[] | null
+  champion_points?: number | null
 }
 
 const draftWindowByLeague: Record<string, { name: string; window: string }> = {
@@ -137,6 +139,8 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
   const [showWelcomeToast, setShowWelcomeToast] = useState(false)
   const [toolsAtEnd, setToolsAtEnd] = useState(false)
   const [toolsAtStart, setToolsAtStart] = useState(true)
+  const champRef = useRef<HTMLDivElement>(null)
+  const [burstOrigin, setBurstOrigin] = useState<{ x: number; y: number } | null>(null)
 
   const castawayTerm = castawayTermByLeague[type] ?? 'Contestant'
   const minFreeAgents = ['paddock-politicks', 'the-oval-offset'].includes(type) ? 5 : 3
@@ -149,6 +153,22 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
     window.addEventListener('resize', checkWidth)
     return () => window.removeEventListener('resize', checkWidth)
   }, [])
+
+  // Champion fireworks: continuous, launched from the banner
+  useEffect(() => {
+    if (pageLoading || !league?.champion_names?.length) return
+    const updateOrigin = () => {
+      const rect = champRef.current?.getBoundingClientRect()
+      if (rect) setBurstOrigin({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 })
+    }
+    updateOrigin()
+    window.addEventListener('scroll', updateOrigin, { passive: true })
+    window.addEventListener('resize', updateOrigin)
+    return () => {
+      window.removeEventListener('scroll', updateOrigin)
+      window.removeEventListener('resize', updateOrigin)
+    }
+  }, [pageLoading, league?.champion_names?.length])
 
   useEffect(() => {
     async function loadLeague() {
@@ -728,6 +748,137 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
             </div>
           )}
 
+                   {league.champion_names && league.champion_names.length > 0 && (
+                     <div ref={champRef} style={{
+              position: 'relative',
+              zIndex: 61,
+              overflow: 'hidden',
+              textAlign: 'center',
+                            backgroundColor: '#1a1a2e',
+              ...(welcomeTextureByType[type] && {
+                backgroundImage: `linear-gradient(rgba(26, 26, 46, 0.65), rgba(26, 26, 46, 0.8)), url('${welcomeTextureByType[type]}')`,
+                backgroundSize: '400px',
+                backgroundPosition: 'center',
+              }),
+              border: '1.5px solid #ca29ca',
+              borderRadius: '12px',
+              padding: '20px 24px',
+              marginTop: '16px',
+              marginBottom: '48px',
+              boxShadow: '0 0 30px rgba(240, 180, 41, 0.3)'
+            }}>
+              {/* Pulsing glow */}
+              <div style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                width: '400px',
+                height: '400px',
+                borderRadius: '50%',
+                background: 'radial-gradient(circle, #f0b4292e 0%, transparent 70%)',
+                pointerEvents: 'none',
+                animation: 'champGlow 3s ease-in-out infinite'
+              }} />
+
+              {/* Floating sparkles (fixed spots so they don't jump around on re-render) */}
+              {[...Array(16)].map((_, i) => (
+                <span
+                  key={i}
+                  style={{
+                    position: 'absolute',
+                    top: `${40 + ((i * 37) % 55)}%`,
+                    left: `${4 + ((i * 61) % 92)}%`,
+                    width: i % 4 === 0 ? '5px' : '3px',
+                    height: i % 4 === 0 ? '5px' : '3px',
+                    borderRadius: '50%',
+                    backgroundColor: i % 3 === 0 ? '#f5ff9c' : '#f0b429',
+                    pointerEvents: 'none',
+                    opacity: 0,
+                    animation: `champFloat ${3 + (i % 4) * 0.7}s ease-in-out ${(i % 6) * 0.5}s infinite`
+                  }}
+                />
+              ))}
+
+              <p style={{
+                position: 'relative',
+                color: '#ca29ca',
+                fontSize: '0.75rem',
+                fontWeight: 'bold',
+                letterSpacing: '4px',
+                textTransform: 'uppercase',
+                margin: '0 0 6px 0'
+              }}>
+                In the Record Books
+              </p>
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: 'clamp(1.1rem, 4.5vw, 1.4rem)', fontWeight: 'bold' }}>
+                  Congrats to our league champion,{' '}
+                  <span style={{ color: '#f0b429', animation: 'champTitle 2.5s ease-in-out infinite' }}>
+                    {league.champion_names.join(' & ')}
+                  </span>!
+                </span>
+              </div>
+              <p style={{ position: 'relative', color: '#a0a0b0', fontSize: '0.9rem', margin: '6px 0 0 0' }}>
+                <Link href={`${basePath}/leaderboard`} style={{ color: '#ca29ca', textDecoration: 'underline' }}>
+                  Final Standings
+                </Link>
+              </p>
+
+              <style>{`
+                @keyframes champGlow {
+                  0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+                  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.12); }
+                }
+                @keyframes champFloat {
+                  0% { transform: translateY(0); opacity: 0; }
+                  20% { opacity: 0.8; }
+                  80% { opacity: 0.8; }
+                  100% { transform: translateY(-90px); opacity: 0; }
+                }
+                @keyframes champTitle {
+                  0%, 100% { text-shadow: 0 0 20px #f0b42988, 0 0 40px #f0b42944; }
+                  50% { text-shadow: 0 0 30px #f0b429cc, 0 0 60px #f0b42966; }
+                }
+              `}</style>
+            </div>
+          )}
+
+                    {burstOrigin && (
+            <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', overflow: 'hidden', zIndex: 60 }}>
+              {[...Array(40)].map((_, i) => {
+                const angle = (i / 40) * Math.PI * 2 + (i % 3) * 0.15
+                const distance = 25 + (i % 5) * 9 // 25–61 (% of screen)
+                const size = i % 5 === 0 ? 7 : i % 2 === 0 ? 5 : 3
+                return (
+                  <span
+                    key={i}
+                    style={{
+                      position: 'absolute',
+                      left: burstOrigin.x,
+                      top: burstOrigin.y,
+                      width: `${size}px`,
+                      height: `${size}px`,
+                      borderRadius: '50%',
+                      backgroundColor: i % 3 === 0 ? '#f5ff9c' : i % 7 === 0 ? '#ffffff' : '#f0b429',
+                      boxShadow: '0 0 8px rgba(240, 180, 41, 0.8)',
+                      ['--dx' as string]: `${Math.cos(angle) * distance}vw`,
+                      ['--dy' as string]: `${Math.sin(angle) * distance}vh`,
+                      animation: `champBurst ${2.2 + (i % 4) * 0.4}s cubic-bezier(0.15, 0.7, 0.3, 1) ${(i % 5) * 0.08}s forwards`,
+                      opacity: 0
+                    } as React.CSSProperties}
+                  />
+                )
+              })}
+              <style>{`
+                @keyframes champBurst {
+                  0% { transform: translate(0, 0) scale(1.4); opacity: 1; }
+                  70% { opacity: 0.9; }
+                  100% { transform: translate(var(--dx), var(--dy)) scale(0.3); opacity: 0; }
+                }
+              `}</style>
+            </div>
+          )}
+
           {isHome && (isHost || isGlobalAdmin) && league.is_private && (
             <div style={{
               backgroundColor: '#1a1a2e',
@@ -958,7 +1109,7 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
         {children}
       </div>
 
-      {isHome && isGlobalAdmin && !league.is_private && (
+    {isGlobalAdmin && !league.is_private && (
         <div style={{
           maxWidth: '800px',
           margin: '48px auto 0',

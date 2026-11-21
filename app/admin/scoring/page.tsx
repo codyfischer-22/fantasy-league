@@ -5,6 +5,7 @@ import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { Calculator } from 'lucide-react'
+import { getFinalStandings, getChampions } from '@/lib/finalStandings'
 
 type Castaway = {
   id: number
@@ -206,14 +207,19 @@ const { data: leagues } = await supabase
 const handleAwardSeasonBonus = async () => {
   if (!isGlobalAdmin) return
 
+  const ok = window.confirm(
+    'This officially ends the season for every league of this type. It awards the +50 prediction bonus, crowns each league champion, and notifies/emails every player. Only do this after FINALE scores are in. Continue?'
+  )
+  if (!ok) return
+
   setAwardingBonus(true)
   setBonusMessage('')
 
-    const { data: leagues } = await supabase
-  .from('leagues')
-  .select('id, name, league_type, slug')
-  .eq('league_type', selectedLeagueType)
-  .eq('is_archived', false)
+  const { data: leagues } = await supabase
+    .from('leagues')
+    .select('id, name, league_type, slug, season_completed_at')
+    .eq('league_type', selectedLeagueType)
+    .eq('is_archived', false)
 
   if (!leagues || leagues.length === 0) {
     setBonusMessage('No leagues found for this league type.')
@@ -224,19 +230,12 @@ const handleAwardSeasonBonus = async () => {
   const { data: { session } } = await supabase.auth.getSession()
   const accessToken = session?.access_token
 
-  let awardedCount = 0
+  let crownedCount = 0
   let skippedAlready = 0
-  let skippedNoWinner = 0
+  let skippedEmpty = 0
 
   for (const league of leagues) {
-    const { data: existingBonus } = await supabase
-      .from('player_bonus_points')
-      .select('id')
-      .eq('league_id', league.id)
-      .eq('reason', 'Weekly Prediction Mini-Game | Season Winner')
-      .limit(1)
-
-    if (existingBonus && existingBonus.length > 0) {
+    if (league.season_completed_at) {
       skippedAlready++
       continue
     }
@@ -246,10 +245,15 @@ const handleAwardSeasonBonus = async () => {
       .select('user_id')
       .eq('league_id', league.id)
 
-    if (!members || members.length === 0) continue
+    if (!members || members.length === 0) {
+      skippedEmpty++
+      continue
+    }
+    const memberIds = members.map((m) => m.user_id)
 
+        // ---- 1. +50 Weekly Prediction bonus (skipped if already given) ----
     const correctCounts = new Map<string, number>()
-    members.forEach((m) => correctCounts.set(m.user_id, 0))
+    memberIds.forEach((uid) => correctCounts.set(uid, 0))
 
     const { data: predictions } = await supabase
       .from('predictions')
@@ -258,47 +262,74 @@ const handleAwardSeasonBonus = async () => {
       .not('is_correct', 'is', null)
 
     ;(predictions ?? []).forEach((p) => {
-      if (p.is_correct) {
+      if (p.is_correct && correctCounts.has(p.user_id)) {
         correctCounts.set(p.user_id, (correctCounts.get(p.user_id) ?? 0) + 1)
       }
     })
 
-    const topScore = Math.max(...Array.from(correctCounts.values()))
-    if (topScore <= 0) {
-      skippedNoWinner++
+    const predictionTopScore = Math.max(0, ...Array.from(correctCounts.values()))
+    const predictionWinnerIds = predictionTopScore > 0
+      ? Array.from(correctCounts.entries())
+          .filter(([, count]) => count === predictionTopScore)
+          .map(([uid]) => uid)
+      : []
+
+    const { data: existingBonus } = await supabase
+      .from('player_bonus_points')
+      .select('id')
+      .eq('league_id', league.id)
+      .eq('reason', 'Weekly Prediction Mini-Game | Season Winner')
+      .limit(1)
+
+    if ((!existingBonus || existingBonus.length === 0) && predictionWinnerIds.length > 0) {
+      const splitAmount = Math.ceil(50 / predictionWinnerIds.length)
+      await supabase.from('player_bonus_points').insert(
+        predictionWinnerIds.map((uid) => ({
+          league_id: league.id,
+          user_id: uid,
+          points: splitAmount,
+          reason: 'Weekly Prediction Mini-Game | Season Winner',
+        }))
+      )
+    }
+
+    // ---- 2. Final standings (includes the bonus just added) + champion ----
+    const standings = await getFinalStandings(league.id, league.league_type)
+    const champions = getChampions(standings)
+    if (champions.length === 0) {
+      skippedEmpty++
+      continue
+    }
+    const championNames = champions.map((c) => c.display_name)
+    const championPoints = champions[0].total
+
+    const { error: crownError } = await supabase
+      .from('leagues')
+      .update({
+        season_completed_at: new Date().toISOString(),
+        champion_names: championNames,
+        champion_points: championPoints,
+      })
+      .eq('id', league.id)
+
+    if (crownError) {
+      console.error(`Could not crown ${league.name}:`, crownError.message)
       continue
     }
 
-    const winners = Array.from(correctCounts.entries())
-      .filter(([, count]) => count === topScore)
-      .map(([uid]) => uid)
-    const splitAmount = Math.ceil(50 / winners.length)
+    // ---- 3. One combined announcement (bell + ONE email per player) ----
+    const nameById = new Map(standings.map((s) => [s.user_id, s.display_name]))
+    const predictionNames = predictionWinnerIds.map((uid) => nameById.get(uid) ?? 'Unnamed Player')
 
-    await supabase.from('player_bonus_points').insert(
-      winners.map((uid) => ({
-        league_id: league.id,
-        user_id: uid,
-        points: splitAmount,
-        reason: 'Weekly Prediction Mini-Game | Season Winner',
-      }))
-    )
+    const championLine = championNames.length > 1
+      ? `🏆 It's official! ${championNames.join(' & ')} share the crown in ${league.name} with ${championPoints} points!`
+      : `🏆 It's official! Congrats to ${championNames[0]}, champion of ${league.name} with ${championPoints} points!`
+    const predictionLine = predictionNames.length > 0
+      ? ` And shoutout to ${predictionNames.join(', ')} for winning the +50 weekly prediction bonus with (${predictionTopScore}) correct picks.`
+      : ''
+    const announcementMessage = `${championLine}${predictionLine} Thanks for playing, and come back soon for another fantasy league!`
+    const leaderboardLink = `/leagues/${league.league_type}/${league.slug}/leaderboard`
 
-    // Fetch names/emails for this league's members
-    const memberIds = members.map((m) => m.user_id)
-    const { data: profiles } = await supabase
-      .from('profiles')
-      .select('user_id, display_name, email, email_opt_in')
-      .in('user_id', memberIds)
-
-    const winnerNames = winners.map((uid) => {
-      const p = profiles?.find((prof) => prof.user_id === uid)
-      return p?.display_name || 'Unnamed Player'
-    })
-
-const announcementMessage = `🏆 Congrats to ${winnerNames.join(', ')} on winning the +50 bonus for the most correct weekly elimination predictions (${topScore})!`
-const leaderboardLink = `/leagues/${league.league_type}/${league.slug}/predictions`
-
-    // In-app notification to all league members
     await supabase.from('notifications').insert(
       memberIds.map((uid) => ({
         user_id: uid,
@@ -307,33 +338,33 @@ const leaderboardLink = `/leagues/${league.league_type}/${league.slug}/predictio
       }))
     )
 
-    const optedInProfiles = (profiles ?? []).filter((p) => p.email_opt_in)
-  if (optedInProfiles.length > 0) {
-    await fetch('/api/send-notification-email', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify({
-        recipients: optedInProfiles.map((p) => ({
-          email: p.email,
-          playerName: p.display_name || 'Player',
-        })),
-        subject: `Weekly Prediction Bonus | ${league.name}`,
-        message: announcementMessage,
-        linkUrl: `https://trekkonleagues.com${leaderboardLink}`,
-        linkText: 'View Prediction Standings →',
-      }),
-    })
+    const optedIn = standings.filter((s) => s.email_opt_in && s.email)
+    if (optedIn.length > 0) {
+      await fetch('/api/send-notification-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          recipients: optedIn.map((s) => ({
+            email: s.email,
+            playerName: s.display_name || 'Player',
+          })),
+          subject: `🏆 ${league.name} has a champion!`,
+          message: announcementMessage,
+          linkUrl: `https://trekkonleagues.com${leaderboardLink}`,
+          linkText: 'View Final Standings →',
+        }),
+      })
+    }
+
+    crownedCount++
   }
 
-    awardedCount++
-  }
-
-    setAwardingBonus(false)
+  setAwardingBonus(false)
   setBonusMessage(
-    `Awarded bonuses in ${awardedCount} league(s). Skipped ${skippedAlready} (Already Awarded), ${skippedNoWinner} (None Correct).`
+    `Season complete! Crowned ${crownedCount} league(s). Skipped ${skippedAlready} (Already Crowned), ${skippedEmpty} (No Players/Picks).`
   )
 }
 
@@ -949,7 +980,7 @@ const isEliminatedThisEpisode =
         cursor: awardingBonus ? 'not-allowed' : 'pointer'
       }}
     >
-      {awardingBonus ? 'Awarding...' : 'Award Bonus (+50)'}
+      {awardingBonus ? 'Crowning...' : 'Award Bonus (+50) & Crown Champion'}
     </button>
   )} </div>
 
