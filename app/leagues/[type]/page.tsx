@@ -127,6 +127,7 @@ export default function FandomHubPage() {
   const [toolsAtStart, setToolsAtStart] = useState(true)
   const [toolsAtEnd, setToolsAtEnd] = useState(false)
   const toolRowRef = useRef<HTMLDivElement>(null)
+  const tierRowRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const check = () => setIsMobileWidth(window.innerWidth <= 600)
@@ -134,6 +135,25 @@ export default function FandomHubPage() {
     window.addEventListener('resize', check)
     return () => window.removeEventListener('resize', check)
   }, [])
+
+    useEffect(() => {
+    const grid = tierRowRef.current
+    if (!grid || !isMobileWidth) return
+    const update = () => {
+      const cards = Array.from(grid.querySelectorAll<HTMLElement>('.tier-card'))
+      const center = grid.scrollLeft + grid.clientWidth / 2
+      let best = 0
+      let bestDist = Infinity
+      cards.forEach((c, i) => {
+        const d = Math.abs(c.offsetLeft + c.offsetWidth / 2 - center)
+        if (d < bestDist) { bestDist = d; best = i }
+      })
+      cards.forEach((c, i) => c.classList.toggle('is-active', i === best))
+    }
+    update()
+    grid.addEventListener('scroll', update, { passive: true })
+    return () => grid.removeEventListener('scroll', update)
+  }, [isMobileWidth, pageLoading])
 
   useEffect(() => {
     async function load() {
@@ -246,11 +266,11 @@ export default function FandomHubPage() {
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
             {publicLeagues.length > 0 && !myLeagues.some((m) => !m.is_private) && (
               publicLeagues.length === 1 ? (
-                <a href={`/leagues/${type}/${publicLeagues[0].slug}`} style={pillButton('#2bda25')}>
+                <a href={`/leagues/${type}/${publicLeagues[0].slug}`} style={{ ...pillButton('#068e38'), backgroundColor: 'rgba(6, 142, 56, 0.35)', color: '#ffffff' }}>
                   Join Public League
                 </a>
               ) : (
-                <a href="#find-a-league" style={pillButton('#2bda25')}>
+                <a href="#find-a-league" style={{ ...pillButton('#068e38'), backgroundColor: 'rgba(6, 142, 56, 0.35)', color: '#ffffff' }}>
                   Join a Public League
                 </a>
               )
@@ -327,7 +347,7 @@ export default function FandomHubPage() {
         </div>
               <p style={{ color: '#a0a0b0', fontSize: '0.8rem', opacity: '.55', textAlign: 'center', margin: '10px 0 32px 0' }}>
           <Lock size={12} color="#a0a0b0" strokeWidth={2.5} style={{ display: 'inline-block', verticalAlign: '-1px', opacity: '.55', marginRight: '4px' }} />
-          To see grayed-out tools in action, join a league or check out demo!
+          Join a league or explore demo to see all tools!
         </p>
 
         {/* ─── CONTENT ─── */}
@@ -352,7 +372,7 @@ export default function FandomHubPage() {
                     .map((l) => (
                       <a key={l.id} href={`/leagues/${type}/${l.slug}`} style={leagueRowStyle}>
                         <span>{l.name}</span>
-                        <span style={{ color: '#2bda25', fontSize: '0.8rem', fontWeight: 'bold' }}>Join →</span>
+                        <span style={{ color: '#068e38', fontSize: '0.8rem', fontWeight: 'bold' }}>Join →</span>
                       </a>
                     ))}
                 </>
@@ -393,8 +413,8 @@ export default function FandomHubPage() {
                 dangerouslySetInnerHTML={{ __html: paragraph }}
               />
             ))}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', margin: '4px 0 12px 0' }}>
-              {content.keyDates.map((d) => (
+            <div style={{ display: 'flex', flexWrap: 'wrap', rowGap: '12px', columnGap: '8px', margin: '4px 0 12px 0' }}>
+                            {content.keyDates.map((d) => (
                 <span key={d} style={{ backgroundColor: 'rgba(240, 180, 41, 0.12)', border: '1px solid #f0b429', color: '#f0b429', borderRadius: '20px', padding: '4px 12px', fontSize: '0.8rem', fontWeight: 'bold' }}>
                   {d}
                 </span>
@@ -404,9 +424,13 @@ export default function FandomHubPage() {
           </div>
 
           {/* Membership tiers (full width, compact) */}
-          <div style={{ ...cardStyle, gridColumn: '1 / -1' }}>
+                   <div className={isMobileWidth ? 'perks-carousel hub-tiers' : undefined} style={{ ...cardStyle, gridColumn: '1 / -1' }}>
             <p style={kickerStyle}>Membership Tiers</p>
-            <div style={{ display: 'grid', gridTemplateColumns: isMobileWidth ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '10px' }}>
+            <div
+              ref={tierRowRef}
+              className={isMobileWidth ? 'tier-grid' : undefined}
+              style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}
+                          >
               {[
                 { key: 'stowaway', name: 'Stowaway', price: '$0.00', color: '#a0a0b0', Icon: Rat, perks: ['1 Public League', 'Private Access', 'Basic Leaderboards', 'Trade Portal'] },
                 { key: 'castaway', name: 'Castaway', price: '$1.99', color: '#ffffff', Icon: Anchor, perks: ['All Previous Perks', '3 Public Leagues', 'Public League Chat', 'Tracking Analytics'] },
@@ -420,7 +444,7 @@ export default function FandomHubPage() {
                   style={{ backgroundColor: '#12121a', border: `1px solid ${t.key === 'stowaway' ? '#2a2a3e' : t.color}`, borderRadius: '8px', padding: '12px', cursor: 'pointer' }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '6px' }}>
-                                        <span style={{ color: t.color, fontWeight: 'bold', fontSize: '0.9rem' }}>{isMobileWidth && t.key === 'teamprincipal' ? 'Principal' : t.name}</span>
+                                        <span style={{ color: t.color, fontWeight: 'bold', fontSize: '0.9rem' }}>{t.name}</span>
                     <span style={{ color: t.color, fontWeight: 'bold', fontSize: '0.85rem' }}>{t.price}</span>
                   </div>
                   {t.perks.map((p) => (
@@ -432,7 +456,7 @@ export default function FandomHubPage() {
               ))}
             </div>
             <p style={{ color: '#555570', fontSize: '0.8rem', textAlign: 'center', margin: '12px 0 0 0' }}>
-              Prices per month. Tap a tier for the full breakdown.
+              See homepage for full membership tiers breakdowns.
             </p>
           </div>
         </div>

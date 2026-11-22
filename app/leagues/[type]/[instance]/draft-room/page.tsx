@@ -460,7 +460,7 @@ if (
 </button>
 
         {league.draft_status === 'in_progress' && (
-                 <p style={{ color: isMyTurn ? '#2bda25' : '#f0b429', fontSize: 'clamp(.9rem, 6vw, 1.6rem)', fontWeight: isMyTurn ? 'bold' : 'normal', marginBottom: '24px' }}>
+                 <p style={{ color: isMyTurn ? '#068e38' : '#f0b429', fontSize: 'clamp(.9rem, 6vw, 1.6rem)', fontWeight: isMyTurn ? 'bold' : 'normal', marginBottom: '24px' }}>
             {isMyTurn ? "You're up for pick" : `${currentPicker?.display_name ?? 'The next Player'} is up for pick`}
             {' '}{league.current_pick_number} of {draftOrder.length}:
           </p>

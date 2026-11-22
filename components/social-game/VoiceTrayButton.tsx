@@ -67,7 +67,7 @@ export default function VoiceTrayButton({ roomCode, displayName, userId, onSpeak
     setShowPopover(false)
   }
 
-  const color = !isConnected ? '#ff6b6b' : isAudioOn ? '#2bda25' : '#f0b429'
+  const color = !isConnected ? '#ff6b6b' : isAudioOn ? '#068e38' : '#f0b429'
   const label = !isConnected ? 'Voice Off' : isAudioOn ? 'Voice Live' : 'Voice Muted'
 
   return (

@@ -382,9 +382,13 @@ useEffect(() => {
     flexDirection: 'column',
     gap: '-4px'
   }}>
-    {user && (
+      {user ? (
       <a href="/#my-leagues" style={{ padding: '10px 12px', textDecoration: 'none', color: '#f0b429', fontSize: '0.95rem', borderRadius: '6px', fontWeight: 'bold', borderBottom: '1px solid #2a2a3e', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
         <Swords size={18} strokeWidth={1.5} /> My Leagues
+      </a>
+    ) : (
+      <a href="/" style={{ padding: '10px 12px', textDecoration: 'none', color: '#f0b429', fontSize: '0.95rem', borderRadius: '6px', fontWeight: 'bold', borderBottom: '1px solid #2a2a3e', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <Home size={18} strokeWidth={1.5} /> Home
       </a>
     )}
     <a href="/leagues/secrets-on-the-beach" style={hamburgerLinkStyle}>

@@ -794,17 +794,17 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
                 </div>
               ) : league.draft_status === 'in_progress' ? null
                 : isReturning ? (
-                <button onClick={handleClimbAboard} style={pillButton('#2bda25')}>
+                <button onClick={handleClimbAboard} style={{ ...pillButton('#068e38'), backgroundColor: 'rgba(6, 142, 56, 0.35)', color: '#ffffff' }}>
                   Rejoin League
                 </button>
               ) : hasDrafted ? (
                 freeAgentPool.length >= minFreeAgents ? (
-                  <button onClick={handleClimbAboard} style={pillButton('#2bda25')}>
+                  <button onClick={handleClimbAboard} style={{ ...pillButton('#068e38'), backgroundColor: 'rgba(6, 142, 56, 0.35)', color: '#ffffff' }}>
                     Claim Players
                   </button>
                 ) : null
               ) : (
-                <button onClick={handleClimbAboard} style={pillButton('#2bda25')}>
+                <button onClick={handleClimbAboard} style={{ ...pillButton('#068e38'), backgroundColor: 'rgba(6, 142, 56, 0.35)', color: '#ffffff' }}>
                   Join League
                 </button>
               )}
@@ -994,7 +994,7 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
                     setTimeout(() => setCopied(false), 2000)
                   }}
                   style={{
-                    backgroundColor: copied ? '#2bda25' : '#f0b429',
+                    backgroundColor: copied ? '#068e38' : '#f0b429',
                     color: copied ? '#ffffff' : '#0a0a0f',
                     border: 'none',
                     padding: '8px 16px',
@@ -1053,7 +1053,7 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
                 onClick={() => setShowStartDraftConfirm(true)}
                 className="league-card"
                 style={{
-                  backgroundColor: '#2bda25',
+                  backgroundColor: '#068e38',
                   color: '#ffffff',
                   border: '2px solid #ffff',
                   padding: '10px 20px',
@@ -1213,7 +1213,7 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
           {!hasDrafted && league.draft_status !== 'in_progress' && league.draft_status !== 'completed' && (
             <button
               onClick={() => setShowStartDraftConfirm(true)}
-              style={{ background: 'none', border: 'none', padding: 0, marginLeft: isMobileWidth ? '0' : '12px', color: '#2bda25', fontSize: 'inherit', cursor: 'pointer', fontFamily: 'inherit', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+              style={{ background: 'none', border: 'none', padding: 0, marginLeft: isMobileWidth ? '0' : '12px', color: '#068e38', fontSize: 'inherit', cursor: 'pointer', fontFamily: 'inherit', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
             >
               {league.draft_mode === 'auto'
                 ? <><Shuffle size={14} color="#ffffff" strokeWidth={2} /> Run Offline Draft</>

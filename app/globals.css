@@ -886,3 +886,53 @@ body.hide-site-footer footer {
     box-shadow: 0 10px 28px rgba(240, 180, 41, 0.35);
   }
 }
+
+.hub-tiers .tier-grid > .tier-card {
+  flex: 0 0 60%;
+}
+.hub-tiers .tier-grid::before,
+.hub-tiers .tier-grid::after {
+  content: '';
+  flex: 0 0 calc(18% - 12px);
+}
+
+.hub-tiers .tier-grid {
+  padding: 2px 0 !important;
+}
+
+@media (max-width: 768px) {
+  .fandom-carousel {
+    display: flex !important;
+    position: relative;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 14px;
+    padding: 8px 0 !important;
+    margin: 0 -40px !important;
+    max-width: none !important;
+    scrollbar-width: none;
+  }
+  .fandom-carousel::-webkit-scrollbar {
+    display: none;
+  }
+  .fandom-row {
+    display: contents !important;
+  }
+  .fandom-carousel::before,
+  .fandom-carousel::after {
+    content: '';
+    flex: 0 0 calc(11% - 14px);
+  }
+  .fandom-carousel .fandom-card {
+    flex: 0 0 78% !important;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    opacity: 0.35;
+    transform: scale(0.88) !important;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .fandom-carousel .fandom-card.is-active {
+    opacity: 1;
+    transform: scale(1) !important;
+  }
+}

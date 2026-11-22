@@ -48,6 +48,8 @@ export default function Home() {
   const [showPrivateLeaguesModal, setShowPrivateLeaguesModal] = useState<string | null>(null)
   const circleRowRef = useRef<HTMLDivElement>(null)
   const tierGridRef = useRef<HTMLDivElement | null>(null)
+  const fandomRef = useRef<HTMLDivElement | null>(null)
+  const [fandomLoop, setFandomLoop] = useState(false)
   const [circlesOverflow, setCirclesOverflow] = useState(false)
   const [circlesAtStart, setCirclesAtStart] = useState(true)
   const [circlesAtEnd, setCirclesAtEnd] = useState(false)
@@ -171,7 +173,110 @@ const realLeagues = (leagues ?? []).filter((l) => !l.is_show_chat && l.league_ty
     }
   }, [])
 
-        useEffect(() => {
+  // Mobile: turn on the looping carousel (renders clone cards on each side)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 768px)')
+    const sync = () => setFandomLoop(mq.matches)
+    sync()
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [])
+
+  useEffect(() => {
+    const el = fandomRef.current
+    if (!el) return
+    const getCards = () => Array.from(el.querySelectorAll<HTMLElement>('.fandom-card'))
+    const COUNT = 5 // number of real fandom cards
+
+    const activeIdx = () => {
+      const cards = getCards()
+      const center = el.scrollLeft + el.clientWidth / 2
+      let best = 0
+      let bestDist = Infinity
+      cards.forEach((c, i) => {
+        const d = Math.abs(c.offsetLeft + c.offsetWidth / 2 - center)
+        if (d < bestDist) { bestDist = d; best = i }
+      })
+      return best
+    }
+
+    const update = () => {
+      const best = activeIdx()
+      getCards().forEach((c, i) => c.classList.toggle('is-active', i === best))
+    }
+
+    // Instantly move the scroll position without any visible animation
+    const silentMove = (fn: () => void) => {
+      const cards = getCards()
+      cards.forEach((c) => { c.style.transition = 'none' })
+      el.style.scrollSnapType = 'none'
+      fn()
+      update()
+      requestAnimationFrame(() => {
+        el.style.scrollSnapType = ''
+        requestAnimationFrame(() => { cards.forEach((c) => { c.style.transition = '' }) })
+      })
+    }
+
+    // Start centered on the first real card (after the left-side clones)
+    if (fandomLoop) {
+      silentMove(() => {
+        const first = getCards()[COUNT]
+        if (first) el.scrollLeft = first.offsetLeft + first.offsetWidth / 2 - el.clientWidth / 2
+      })
+    } else {
+      update()
+    }
+
+    // When scrolling stops on a clone, jump to the matching real card
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const onScroll = () => {
+      update()
+      if (!fandomLoop) return
+      clearTimeout(timer)
+      timer = setTimeout(() => {
+        const i = activeIdx()
+        const target = i < COUNT ? i + COUNT : i >= COUNT * 2 ? i - COUNT : -1
+        if (target === -1) return
+        const cards = getCards()
+        silentMove(() => { el.scrollLeft += cards[target].offsetLeft - cards[i].offsetLeft })
+      }, 120)
+    }
+
+        // One card per swipe: we handle sideways swipes ourselves
+    let swipeStartX = 0
+    let swipeStartY = 0
+    const onTouchStart = (e: TouchEvent) => {
+      swipeStartX = e.touches[0].clientX
+      swipeStartY = e.touches[0].clientY
+    }
+    const onTouchEnd = (e: TouchEvent) => {
+      if (!fandomLoop) return
+      const dx = e.changedTouches[0].clientX - swipeStartX
+      const dy = e.changedTouches[0].clientY - swipeStartY
+      if (Math.abs(dx) < 30 || Math.abs(dx) < Math.abs(dy)) return // tap or vertical scroll
+      const cards = getCards()
+      const i = activeIdx()
+      const t = dx < 0 ? Math.min(i + 1, cards.length - 1) : Math.max(i - 1, 0)
+      el.scrollTo({ left: cards[t].offsetLeft + cards[t].offsetWidth / 2 - el.clientWidth / 2, behavior: 'smooth' })
+    }
+    if (fandomLoop) el.style.touchAction = 'pan-y' // phone handles up/down only; we handle sideways
+    el.addEventListener('touchstart', onTouchStart, { passive: true })
+    el.addEventListener('touchend', onTouchEnd, { passive: true })
+
+    el.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', update)
+    return () => {
+      clearTimeout(timer)
+      el.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', update)
+      el.removeEventListener('touchstart', onTouchStart)
+      el.removeEventListener('touchend', onTouchEnd)
+      el.style.touchAction = ''
+    }
+  }, [fandomLoop])
+
+  useEffect(() => {
     const check = () => {
       const el = circleRowRef.current
       if (!el) return
@@ -191,6 +296,404 @@ const realLeagues = (leagues ?? []).filter((l) => !l.is_show_chat && l.league_ty
     'secrets-on-the-beach': 'secrets-on-the-beach',
     'uncharted-turretory': 'uncharted-turretory',
   }
+
+  // Fandom cards, as functions so mobile can render looping copies
+  // ('main' = the real cards with anchor ids; 'pre'/'post' = clones for the loop)
+  const fandomRowA = (copy: string) => (
+    <>
+            {/* Secrets on the Beach */}
+<div
+  id={copy === 'main' ? 'secrets-on-the-beach' : undefined}
+  className="league-card fandom-card"
+  onClick={() => router.push('/leagues/secrets-on-the-beach')}
+  style={{
+    backgroundImage: `linear-gradient(rgba(26,26,46,.5), rgba(26,26,46,0.5)), url('/textures/sand.jpg')`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    border: '3px solid #f0b429',
+    borderTop: '3px solid #f0b429',
+    borderRadius: '12px',
+    padding: '28px',
+    flex: '0 1 350px',
+    cursor: 'pointer'
+  }}
+>
+ <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.2rem, 5.2vw, 1.65rem)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap' }}>
+  <TreePalm size={30} color='#ffffff' strokeWidth={1.5} style={{ flexShrink: 0 }} /> Secrets on the Beach
+</h3>
+  <p style={{ color: '#ffffff', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
+    Set sail for this island adventure, going 25+ years strong, by drafting your tribe, winning challenges, and surviving the vote.
+  </p>
+
+  <button
+  onClick={(e) => {
+    e.stopPropagation()
+    openPublicLeagues('secrets-on-the-beach', 'sotb-public')  }}
+  style={{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    width: '100%',
+    textAlign: 'center',
+    backgroundColor: '#f0b429',
+    color: '#0a0a0f',
+    padding: '10px',
+    borderRadius: '6px',
+    border: '1px solid #0a0a0f',
+    fontWeight: 'bold',
+    fontSize: '0.9rem',
+    cursor: 'pointer',
+    marginBottom: '10px'
+  }}
+>
+  <Earth size={18} strokeWidth={2} /> View Public League →
+</button>
+
+<button
+  onClick={(e) => {
+    e.stopPropagation()
+    setShowPrivateLeaguesModal('secrets-on-the-beach')
+  }}
+  style={{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    width: '100%',
+    textAlign: 'center',
+    backgroundColor: 'rgb(245, 255, 156)',
+    color: '#0a0a0f',
+    padding: '10px',
+    borderRadius: '6px',
+    border: '1px solid #0a0a0f',
+    fontWeight: 'bold',
+    fontSize: '0.9rem',
+    cursor: 'pointer',
+    marginBottom: '10px'
+  }}
+>
+  <Lock size={18} strokeWidth={2} /> My Private Leagues →
+</button>
+
+<button
+  onClick={(e) => {
+    e.stopPropagation()
+    if (userTier === 'crewchief' || userTier === 'teamprincipal') {
+      router.push('/leagues/secrets-on-the-beach/create')
+    } else {
+      setShowUpgradeModal(true)
+    }
+  }}
+ style={{
+  display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    width: '100%',
+    textAlign: 'center',
+    backgroundColor: '#ffffff',
+    color: '#0a0a0f',
+    padding: '10px',
+    borderRadius: '6px',
+    border: '1px solid #0a0a0f',
+    fontWeight: 'bold',
+    fontSize: '0.9rem',
+    cursor: 'pointer',
+    marginBottom: '10px'
+  }}
+>
+  <Hammer size={18} strokeWidth={2} /> Host Private League →
+</button>
+
+<button
+  onClick={(e) => {
+    e.stopPropagation()
+    router.push('/leagues/sotb-demo/sample-league')
+  }}
+  style={{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    width: '100%',
+    textAlign: 'center',
+    backgroundColor: 'transparent',
+    color: '#a0a0b0',
+    padding: '10px',
+    borderRadius: '6px',
+    border: '1px solid #a0a0b0',
+    fontWeight: 'bold',
+    fontSize: '0.9rem',
+    cursor: 'pointer'
+  }}
+>
+  <TestTubeDiagonal size={18} strokeWidth={2} /> Explore Demo League →
+</button>
+
+</div>
+
+        {/* Uncharted Turretory */}
+<div
+  id={copy === 'main' ? 'uncharted-turretory' : undefined}
+  className="league-card fandom-card"
+  onClick={() => router.push('/leagues/uncharted-turretory')}
+  style={{
+    backgroundImage: `linear-gradient(rgba(26,26,46,.5), rgba(26,26,46,0.75)), url('/textures/traitors.jpg')`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    border: '3px solid #f0b429',
+    borderTop: '3px solid #f0b429',
+    borderRadius: '12px',
+    padding: '28px',
+    flex: '0 1 350px',
+    cursor: 'pointer'
+  }}
+>
+   <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.2rem, 5.2vw, 1.65rem)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap' }}>
+  <ChessRook size={30} color='#ffffff' strokeWidth={1.5} style={{ flexShrink: 0 }} /> Uncharted Turretory
+</h3>
+  <p style={{ color: '#ffffff', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
+    Scale the turret steps of Alan's Castle and decide who you'll back in this game of murder, banishment, and deception.
+  </p>
+
+  <button
+  onClick={(e) => {
+    e.stopPropagation()
+    openPublicLeagues('uncharted-turretory', 'uncharted-turretory-public')  }}
+  style={{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    width: '100%',
+    textAlign: 'center',
+    backgroundColor: '#f0b429',
+    color: '#0a0a0f',
+    padding: '10px',
+    borderRadius: '6px',
+    border: '1px solid #0a0a0f',
+    fontWeight: 'bold',
+    fontSize: '0.9rem',
+    cursor: 'pointer',
+    marginBottom: '10px'
+  }}
+>
+  <Earth size={16} strokeWidth={2} /> View Public League →
+</button>
+
+<button
+  onClick={(e) => {
+    e.stopPropagation()
+    setShowPrivateLeaguesModal('uncharted-turretory')
+  }}
+  style={{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    width: '100%',
+    textAlign: 'center',
+    backgroundColor: 'rgb(245, 255, 156)',
+    color: '#0a0a0f',
+    padding: '10px',
+    borderRadius: '6px',
+    border: '1px solid #0a0a0f',
+    fontWeight: 'bold',
+    fontSize: '0.9rem',
+    cursor: 'pointer',
+    marginBottom: '10px'
+  }}
+>
+  <Lock size={16} strokeWidth={2} /> My Private Leagues →
+</button>
+
+<button
+  onClick={(e) => {
+    e.stopPropagation()
+    if (userTier === 'crewchief' || userTier === 'teamprincipal') {
+      router.push('/leagues/uncharted-turretory/create')
+    } else {
+      setShowUpgradeModal(true)
+    }
+  }}
+  style={{
+  display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    width: '100%',
+    textAlign: 'center',
+    backgroundColor: '#ffffff',
+    color: '#0a0a0f',
+    padding: '10px',
+    borderRadius: '6px',
+    border: '1px solid #0a0a0f',
+    fontWeight: 'bold',
+    fontSize: '0.9rem',
+    cursor: 'pointer',
+    marginBottom: '10px'
+  }}
+>
+  <Hammer size={16} strokeWidth={2} /> Host Private League →
+</button>
+
+<button
+  onClick={(e) => {
+    e.stopPropagation()
+    router.push('/leagues/uncharted-turretory-demo/sample-league')
+  }}
+  style={{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    width: '100%',
+    textAlign: 'center',
+    backgroundColor: 'transparent',
+    color: '#a0a0b0',
+    padding: '10px',
+    borderRadius: '6px',
+    border: '1px solid #a0a0b0',
+    fontWeight: 'bold',
+    fontSize: '0.9rem',
+    cursor: 'pointer'
+  }}
+>
+  <TestTubeDiagonal size={16} strokeWidth={2} /> Explore Demo League →
+</button>
+</div>
+    </>
+  )
+
+  const fandomRowB = (copy: string) => (
+    <>
+{/* Paddock Politicks */}
+<div id={copy === 'main' ? 'paddock-politicks' : undefined} className="fandom-card" style={{
+  backgroundImage: `linear-gradient(rgba(26,26,46,.5), rgba(26,26,46,0.75)), url('/textures/paddock.jpg')`,
+backgroundSize: 'cover',
+backgroundPosition: 'center',
+    border: '3px solid #f0b429',
+    borderTop: '3px solid #f0b429',
+    borderRadius: '12px',
+    padding: '28px',
+  flex: '0 1 350px'
+}}>
+<h3 style={{
+  color: '#f0b429',
+  fontSize: 'clamp(1.5rem, 6vw, 1.7rem)',
+  marginBottom: '8px',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '6px'
+}}>
+  <Engine size={30} color='#ffffff' strokeWidth={1.5} /> Paddock Politicks
+</h3>
+  <p style={{ color: '#ffffff', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
+    Coming in 2027, travel the globe with world-class drivers up and down the grid over 24 weeks of high octane racing.
+  </p>
+
+  <button onClick={() => setShowComingSoon(true)} style={{
+  display: 'flex',
+  alignItems: 'center', 
+  justifyContent: 'center',
+   gap: '8px',
+  width: '100%', 
+  textAlign: 'center',
+  backgroundColor: 'transparent',
+   color: '#a0a0b0', padding: '10px',
+  borderRadius: '6px', border: '1px solid #a0a0b0', fontWeight: 'bold',
+  fontSize: '0.9rem', cursor: 'pointer', marginBottom: '10px'
+}}>
+  <Hourglass size={16} strokeWidth={2} /> On Formation Lap →
+</button>
+</div>
+
+{/* The Oval Offset */}
+<div id={copy === 'main' ? 'the-oval-offset' : undefined} className="fandom-card" style={{
+   backgroundImage: `linear-gradient(rgba(26,26,46,.5), rgba(26,26,46,0.75)), url('/textures/oval.jpg')`,
+backgroundSize: 'cover',
+backgroundPosition: 'center',
+    border: '3px solid #f0b429',
+    borderTop: '3px solid #f0b429',
+    borderRadius: '12px',
+    padding: '28px',
+  flex: '0 1 350px'
+}}>
+   <h3 style={{
+  color: '#f0b429',
+  fontSize: 'clamp(1.4rem, 6vw, 1.7rem)',
+  marginBottom: '8px',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '8px'
+}}>
+  <CarFront size={30} strokeWidth={1.5} color="#ffffff" /> <span>The Oval Offset</span>
+</h3>
+  <p style={{ color: '#ffffff', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
+    Coming in 2027, climb through the cargo net for 36 weeks of American Thunder and race to the checkered flag.
+  </p>
+
+  <button onClick={() => setShowComingSoon(true)} style={{
+  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+  width: '100%', textAlign: 'center',
+  backgroundColor: 'transparent', color: '#a0a0b0', padding: '10px',
+  borderRadius: '6px', border: '1px solid #a0a0b0', fontWeight: 'bold',
+  fontSize: '0.9rem', cursor: 'pointer', marginBottom: '10px'
+}}>
+  <Hourglass size={16} strokeWidth={2} /> Stuck in Pit Lane →
+</button>
+
+</div>
+
+{/* Suggest a New League */}
+ <div
+  className="league-card fandom-card"
+  onClick={() => router.push('/contact')}
+  style={{
+    backgroundImage: `linear-gradient(rgba(26,26,46,.5), rgba(26,26,46,0.95)), url('/textures/suggest.jpg')`,
+backgroundSize: 'cover',
+backgroundPosition: 'center',
+    border: '3px solid #f0b429',
+    borderTop: '3px solid #f0b429',
+    borderRadius: '12px',
+    padding: '28px',
+  flex: '0 1 350px'
+  }}
+  >
+            <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.5rem, 6vw, 1.7rem)', marginBottom: '11px', marginTop: '0px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+  <MessageCirclePlus size={30} strokeWidth={1.5} color="#ffffff" /> Suggest a Fandom
+</h3>
+            <p style={{ color: '#ffffff', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '21.5px' }}>
+Got an idea for a league we should build next? Send us your concept and help shape the future of Trekkon Fantasy Leagues. 
+</p>
+  <button
+  onClick={(e) => {
+    e.stopPropagation()
+    router.push('/contact')
+  }}
+  style={{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    width: '100%',
+    textAlign: 'center',
+    backgroundColor: '#f0b429',
+    color: '#0a0a0f',
+    padding: '10px',
+    borderRadius: '6px',
+    border: '1px solid #0a0a0f',
+    fontWeight: 'bold',
+    fontSize: '0.9rem',
+    cursor: 'pointer'
+  }}
+>
+  <Mail size={16} strokeWidth={2} /> Contact Our Team →
+</button>
+</div>
+    </>
+  )
 
   return (
 <main style={{
@@ -417,15 +920,15 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     textAlign: 'center',
     color: '#f0b429',
     fontSize: 'clamp(1.75rem, 8vw, 2.25rem)',
-    marginBottom: '16px',
+    marginBottom: '12px',
     marginTop: '-36px',
     letterSpacing: '2px'
   }}> 
   Explore Fandoms
   </h2>
 
-       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-        <div style={{
+       <div ref={fandomRef} className="fandom-carousel" style={{ maxWidth: '1100px', margin: '0 auto' }}>
+        <div className="fandom-row" style={{
   display: 'flex',
   flexWrap: 'wrap',
   justifyContent: 'center',
@@ -433,400 +936,18 @@ This is your arena to compete with friends, family, and on-screen stars on beach
   marginBottom: '16px'
 }}>
 
-            {/* Secrets on the Beach */}
-<div
-  id="secrets-on-the-beach"
-  className="league-card"
-  onClick={() => router.push('/leagues/secrets-on-the-beach')}
-  style={{
-    backgroundImage: `linear-gradient(rgba(26,26,46,.5), rgba(26,26,46,0.5)), url('/textures/sand.jpg')`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    border: '3px solid #f0b429',
-    borderTop: '3px solid #f0b429',
-    borderRadius: '12px',
-    padding: '28px',
-    flex: '0 1 350px',
-    cursor: 'pointer'
-  }}
->
- <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.2rem, 5.2vw, 1.65rem)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap' }}>
-  <TreePalm size={30} color='#ffffff' strokeWidth={1.5} style={{ flexShrink: 0 }} /> Secrets on the Beach
-</h3>
-  <p style={{ color: '#ffffff', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
-    Set sail for this island adventure, going 25+ years strong, by drafting your tribe, winning challenges, and surviving the vote.
-  </p>
-
-  <button
-  onClick={(e) => {
-    e.stopPropagation()
-    openPublicLeagues('secrets-on-the-beach', 'sotb-public')  }}
-  style={{
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '8px',
-    width: '100%',
-    textAlign: 'center',
-    backgroundColor: '#f0b429',
-    color: '#0a0a0f',
-    padding: '10px',
-    borderRadius: '6px',
-    border: '1px solid #0a0a0f',
-    fontWeight: 'bold',
-    fontSize: '0.9rem',
-    cursor: 'pointer',
-    marginBottom: '10px'
-  }}
->
-  <Earth size={18} strokeWidth={2} /> View Public League →
-</button>
-
-<button
-  onClick={(e) => {
-    e.stopPropagation()
-    setShowPrivateLeaguesModal('secrets-on-the-beach')
-  }}
-  style={{
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '8px',
-    width: '100%',
-    textAlign: 'center',
-    backgroundColor: 'rgb(245, 255, 156)',
-    color: '#0a0a0f',
-    padding: '10px',
-    borderRadius: '6px',
-    border: '1px solid #0a0a0f',
-    fontWeight: 'bold',
-    fontSize: '0.9rem',
-    cursor: 'pointer',
-    marginBottom: '10px'
-  }}
->
-  <Lock size={18} strokeWidth={2} /> My Private Leagues →
-</button>
-
-<button
-  onClick={(e) => {
-    e.stopPropagation()
-    if (userTier === 'crewchief' || userTier === 'teamprincipal') {
-      router.push('/leagues/secrets-on-the-beach/create')
-    } else {
-      setShowUpgradeModal(true)
-    }
-  }}
- style={{
-  display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '8px',
-    width: '100%',
-    textAlign: 'center',
-    backgroundColor: '#ffffff',
-    color: '#0a0a0f',
-    padding: '10px',
-    borderRadius: '6px',
-    border: '1px solid #0a0a0f',
-    fontWeight: 'bold',
-    fontSize: '0.9rem',
-    cursor: 'pointer',
-    marginBottom: '10px'
-  }}
->
-  <Hammer size={18} strokeWidth={2} /> Host Private League →
-</button>
-
-<button
-  onClick={(e) => {
-    e.stopPropagation()
-    router.push('/leagues/sotb-demo/sample-league')
-  }}
-  style={{
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '8px',
-    width: '100%',
-    textAlign: 'center',
-    backgroundColor: 'transparent',
-    color: '#a0a0b0',
-    padding: '10px',
-    borderRadius: '6px',
-    border: '1px solid #a0a0b0',
-    fontWeight: 'bold',
-    fontSize: '0.9rem',
-    cursor: 'pointer'
-  }}
->
-  <TestTubeDiagonal size={18} strokeWidth={2} /> Explore Demo League →
-</button>
+            {fandomLoop && <>{fandomRowA('pre')}{fandomRowB('pre')}</>}
+            {fandomRowA('main')}
 
 </div>
-
-        {/* Uncharted Turretory */}
-<div
-  id="uncharted-turretory"
-  className="league-card"
-  onClick={() => router.push('/leagues/uncharted-turretory')}
-  style={{
-    backgroundImage: `linear-gradient(rgba(26,26,46,.5), rgba(26,26,46,0.75)), url('/textures/traitors.jpg')`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    border: '3px solid #f0b429',
-    borderTop: '3px solid #f0b429',
-    borderRadius: '12px',
-    padding: '28px',
-    flex: '0 1 350px',
-    cursor: 'pointer'
-  }}
->
-   <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.2rem, 5.2vw, 1.65rem)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap' }}>
-  <ChessRook size={30} color='#ffffff' strokeWidth={1.5} style={{ flexShrink: 0 }} /> Uncharted Turretory
-</h3>
-  <p style={{ color: '#ffffff', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
-    Scale the turret steps of Alan's Castle and decide who you'll back in this game of murder, banishment, and deception.
-  </p>
-
-  <button
-  onClick={(e) => {
-    e.stopPropagation()
-    openPublicLeagues('uncharted-turretory', 'uncharted-turretory-public')  }}
-  style={{
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '8px',
-    width: '100%',
-    textAlign: 'center',
-    backgroundColor: '#f0b429',
-    color: '#0a0a0f',
-    padding: '10px',
-    borderRadius: '6px',
-    border: '1px solid #0a0a0f',
-    fontWeight: 'bold',
-    fontSize: '0.9rem',
-    cursor: 'pointer',
-    marginBottom: '10px'
-  }}
->
-  <Earth size={16} strokeWidth={2} /> View Public League →
-</button>
-
-<button
-  onClick={(e) => {
-    e.stopPropagation()
-    setShowPrivateLeaguesModal('uncharted-turretory')
-  }}
-  style={{
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '8px',
-    width: '100%',
-    textAlign: 'center',
-    backgroundColor: 'rgb(245, 255, 156)',
-    color: '#0a0a0f',
-    padding: '10px',
-    borderRadius: '6px',
-    border: '1px solid #0a0a0f',
-    fontWeight: 'bold',
-    fontSize: '0.9rem',
-    cursor: 'pointer',
-    marginBottom: '10px'
-  }}
->
-  <Lock size={16} strokeWidth={2} /> My Private Leagues →
-</button>
-
-<button
-  onClick={(e) => {
-    e.stopPropagation()
-    if (userTier === 'crewchief' || userTier === 'teamprincipal') {
-      router.push('/leagues/uncharted-turretory/create')
-    } else {
-      setShowUpgradeModal(true)
-    }
-  }}
-  style={{
-  display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '8px',
-    width: '100%',
-    textAlign: 'center',
-    backgroundColor: '#ffffff',
-    color: '#0a0a0f',
-    padding: '10px',
-    borderRadius: '6px',
-    border: '1px solid #0a0a0f',
-    fontWeight: 'bold',
-    fontSize: '0.9rem',
-    cursor: 'pointer',
-    marginBottom: '10px'
-  }}
->
-  <Hammer size={16} strokeWidth={2} /> Host Private League →
-</button>
-
-<button
-  onClick={(e) => {
-    e.stopPropagation()
-    router.push('/leagues/uncharted-turretory-demo/sample-league')
-  }}
-  style={{
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '8px',
-    width: '100%',
-    textAlign: 'center',
-    backgroundColor: 'transparent',
-    color: '#a0a0b0',
-    padding: '10px',
-    borderRadius: '6px',
-    border: '1px solid #a0a0b0',
-    fontWeight: 'bold',
-    fontSize: '0.9rem',
-    cursor: 'pointer'
-  }}
->
-  <TestTubeDiagonal size={16} strokeWidth={2} /> Explore Demo League →
-</button>
-</div>
-
-</div>
-<div style={{
+<div className="fandom-row" style={{
   display: 'flex',
   flexWrap: 'wrap',
   justifyContent: 'center',
   gap: '16px'
 }}>
-{/* Paddock Politicks */}
-<div id="paddock-politicks" style={{
-  backgroundImage: `linear-gradient(rgba(26,26,46,.5), rgba(26,26,46,0.75)), url('/textures/paddock.jpg')`,
-backgroundSize: 'cover',
-backgroundPosition: 'center',
-    border: '3px solid #f0b429',
-    borderTop: '3px solid #f0b429',
-    borderRadius: '12px',
-    padding: '28px',
-  flex: '0 1 350px'
-}}>
-<h3 style={{
-  color: '#f0b429',
-  fontSize: 'clamp(1.5rem, 6vw, 1.7rem)',
-  marginBottom: '8px',
-  display: 'flex',
-  alignItems: 'center',
-  gap: '6px'
-}}>
-  <Engine size={30} color='#ffffff' strokeWidth={1.5} /> Paddock Politicks
-</h3>
-  <p style={{ color: '#ffffff', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
-    Coming in 2027, travel the globe with world-class drivers up and down the grid over 24 weeks of high octane racing.
-  </p>
-
-  <button onClick={() => setShowComingSoon(true)} style={{
-  display: 'flex',
-  alignItems: 'center', 
-  justifyContent: 'center',
-   gap: '8px',
-  width: '100%', 
-  textAlign: 'center',
-  backgroundColor: 'transparent',
-   color: '#a0a0b0', padding: '10px',
-  borderRadius: '6px', border: '1px solid #a0a0b0', fontWeight: 'bold',
-  fontSize: '0.9rem', cursor: 'pointer', marginBottom: '10px'
-}}>
-  <Hourglass size={16} strokeWidth={2} /> On Formation Lap →
-</button>
-</div>
-
-{/* The Oval Offset */}
-<div id="the-oval-offset" style={{
-   backgroundImage: `linear-gradient(rgba(26,26,46,.5), rgba(26,26,46,0.75)), url('/textures/oval.jpg')`,
-backgroundSize: 'cover',
-backgroundPosition: 'center',
-    border: '3px solid #f0b429',
-    borderTop: '3px solid #f0b429',
-    borderRadius: '12px',
-    padding: '28px',
-  flex: '0 1 350px'
-}}>
-   <h3 style={{
-  color: '#f0b429',
-  fontSize: 'clamp(1.4rem, 6vw, 1.7rem)',
-  marginBottom: '8px',
-  display: 'flex',
-  alignItems: 'center',
-  gap: '8px'
-}}>
-  <CarFront size={30} strokeWidth={1.5} color="#ffffff" /> <span>The Oval Offset</span>
-</h3>
-  <p style={{ color: '#ffffff', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
-    Coming in 2027, climb through the cargo net for 36 weeks of American Thunder and race to the checkered flag.
-  </p>
-
-  <button onClick={() => setShowComingSoon(true)} style={{
-  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-  width: '100%', textAlign: 'center',
-  backgroundColor: 'transparent', color: '#a0a0b0', padding: '10px',
-  borderRadius: '6px', border: '1px solid #a0a0b0', fontWeight: 'bold',
-  fontSize: '0.9rem', cursor: 'pointer', marginBottom: '10px'
-}}>
-  <Hourglass size={16} strokeWidth={2} /> Stuck in Pit Lane →
-</button>
-
-</div>
-
-{/* Suggest a New League */}
- <div
-  className="league-card"
-  onClick={() => router.push('/contact')}
-  style={{
-    backgroundImage: `linear-gradient(rgba(26,26,46,.5), rgba(26,26,46,0.95)), url('/textures/suggest.jpg')`,
-backgroundSize: 'cover',
-backgroundPosition: 'center',
-    border: '3px solid #f0b429',
-    borderTop: '3px solid #f0b429',
-    borderRadius: '12px',
-    padding: '28px',
-  flex: '0 1 350px'
-  }}
-  >
-            <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.5rem, 6vw, 1.7rem)', marginBottom: '11px', marginTop: '0px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-  <MessageCirclePlus size={30} strokeWidth={1.5} color="#ffffff" /> Suggest a Fandom
-</h3>
-            <p style={{ color: '#ffffff', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '21.5px' }}>
-Got an idea for a league we should build next? Send us your concept and help shape the future of Trekkon Fantasy Leagues. 
-</p>
-  <button
-  onClick={(e) => {
-    e.stopPropagation()
-    router.push('/contact')
-  }}
-  style={{
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '8px',
-    width: '100%',
-    textAlign: 'center',
-    backgroundColor: '#f0b429',
-    color: '#0a0a0f',
-    padding: '10px',
-    borderRadius: '6px',
-    border: '1px solid #0a0a0f',
-    fontWeight: 'bold',
-    fontSize: '0.9rem',
-    cursor: 'pointer'
-  }}
->
-  <Mail size={16} strokeWidth={2} /> Contact Our Team →
-</button>
-</div>
+{fandomRowB('main')}
+{fandomLoop && <>{fandomRowA('post')}{fandomRowB('post')}</>}
 </div>
 </div>
 
@@ -843,7 +964,7 @@ Got an idea for a league we should build next? Send us your concept and help sha
           color: '#f0b429',
           fontSize: 'clamp(1.75rem, 8vw, 2.25rem)',
           marginBottom: '0px',
-          marginTop: '0px',
+          marginTop: '-16px',
           letterSpacing: '2px'
         }}>
         Membership Tiers
