@@ -4,7 +4,6 @@ import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import ChatPanel from '@/components/ChatPanel'
 import { Home, MessageCircle, Bell, KeyRound, Menu, UserPen, Mail, HandCoins, Settings, ScrollText, ClipboardList, Wallet, SquareLibrary, Swords, TreePalm, ChessRook, CarFront, Engine, PlayingCardsFan } from 'lucide-react'
-import Image from 'next/image'
 
 export default function MobileNav() {
   const { user } = useAuth()
@@ -388,11 +387,11 @@ useEffect(() => {
         <Swords size={18} strokeWidth={1.5} /> My Leagues
       </a>
     )}
-    <a href="/#secrets-on-the-beach" style={hamburgerLinkStyle}>
-      <TreePalm size={18} strokeWidth={1.5} /> Survivor
+    <a href="/leagues/secrets-on-the-beach" style={hamburgerLinkStyle}>
+          <TreePalm size={18} strokeWidth={1.5} /> Survivor
     </a>
-    <a href="/#uncharted-turretory" style={hamburgerLinkStyle}>
-      <ChessRook size={18} strokeWidth={1.5} /> The Traitors
+    <a href="/leagues/uncharted-turretory" style={hamburgerLinkStyle}>
+          <ChessRook size={18} strokeWidth={1.5} /> The Traitors
     </a>
     <a href="/#paddock-politicks" style={hamburgerLinkStyle}>
       <Engine size={18} strokeWidth={1.5} /> Formula 1

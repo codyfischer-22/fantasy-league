@@ -333,15 +333,28 @@ export default function RulesPage() {
     }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
 
-        <a href="/" style={{
-          color: '#a0a0b0',
-          fontSize: '0.85rem',
-          textDecoration: 'none',
-          display: 'inline-block',
-          marginBottom: '24px'
-        }}>
-          ← Back to Trekkon Fantasy Leagues
-        </a>
+        <button
+          onClick={() => {
+            if (window.history.length > 1) {
+              router.back()
+            } else {
+              router.push(`/leagues/${type}`)
+            }
+          }}
+          style={{
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            color: '#a0a0b0',
+            fontSize: '0.85rem',
+            fontFamily: 'inherit',
+            cursor: 'pointer',
+            display: 'inline-block',
+            marginBottom: '24px'
+          }}
+        >
+          ← Back to Previous Page
+        </button>
 
                 <h1 style={{
   fontSize: 'clamp(1.6rem, 8vw, 2.25rem)',

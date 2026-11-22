@@ -263,9 +263,13 @@ export default function LeagueDashboardPage() {
                   <div style={{ fontSize: '1.6rem', fontWeight: 'bold', color: '#f0b429' }}>{me?.total ?? 0}</div>
                 </div>
                 <div>
-                  <div style={{ color: '#a0a0b0', fontSize: '0.8rem' }}>Behind 1st</div>
+                                                    <div style={{ color: '#a0a0b0', fontSize: '0.8rem' }}>
+                    {myIndex === 0 ? 'Ahead of 2nd' : 'Behind 1st'}
+                  </div>
                   <div style={{ fontSize: '1.6rem', fontWeight: 'bold', color: '#ffffff' }}>
-                    {myIndex === 0 ? 'Leading!' : gapToFirst}
+                    {myIndex === 0
+                      ? (standings.length > 1 ? `${leader.total - standings[1].total}` : '—')
+                      : gapToFirst}
                   </div>
                 </div>
               </div>

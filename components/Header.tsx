@@ -256,10 +256,10 @@ useEffect(() => {
     <Swords size={18} strokeWidth={1.5} /> My Leagues
   </a>
 )}
-<a href="/#secrets-on-the-beach" style={{ padding: '10px 12px', textDecoration: 'none', color: '#ffffff', fontSize: '0.95rem', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+<a href="/leagues/secrets-on-the-beach" style={{ padding: '10px 12px', textDecoration: 'none', color: '#ffffff', fontSize: '0.95rem', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
   <TreePalm size={18} strokeWidth={1.5} /> Survivor
 </a>
-<a href="/#uncharted-turretory" style={{ padding: '10px 12px', textDecoration: 'none', color: '#ffffff', fontSize: '0.95rem', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+<a href="/leagues/uncharted-turretory" style={{ padding: '10px 12px', textDecoration: 'none', color: '#ffffff', fontSize: '0.95rem', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
   <ChessRook size={18} strokeWidth={1.5} /> The Traitors
 </a>
 <a href="/#paddock-politicks" style={{ padding: '10px 12px', textDecoration: 'none', color: '#ffffff', fontSize: '0.95rem', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>

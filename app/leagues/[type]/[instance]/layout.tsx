@@ -13,6 +13,7 @@ import FreeAgentClaimModal from '@/components/FreeAgentClaimModal'
 import { castawayTermByLeague, backgroundsByType } from '@/lib/leagueConfig'
 import { runLeagueDraft } from '@/lib/runDraft'
 import { emailHostAboutJoin } from '@/lib/emailHostAboutJoin'
+import { leagueTypeLabels } from '@/lib/leagueTypeLabels'
 
 type League = {
   id: number
@@ -645,6 +646,7 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
     { label: 'Analytics', icon: TrendingUp, href: `${basePath}/analytics` },
     { label: 'Draft Log', icon: ClipboardList, href: `${basePath}/draft-log` },
   ].filter((item) =>
+    !(item.label === 'Pre-Rank' && (type === 'sotb-demo' || type === 'uncharted-turretory-demo')) &&
     !(item.label === 'Draft Room' && (league.draft_mode !== 'live' || league.draft_status === 'completed' || type === 'sotb-demo' || type === 'uncharted-turretory-demo')) &&
     !(item.label === 'Research' && ((hasDrafted && league.draft_status !== 'in_progress') || type === 'sotb-demo' || type === 'uncharted-turretory-demo')) &&
     !(item.label === 'Predictions' && ['paddock-politicks', 'the-oval-offset'].includes(type))
@@ -653,15 +655,24 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
   return (
     <main className="mobile-shrink-main" style={mainStyle}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-        <a href="/" style={{
-          color: '#a0a0b0',
-          fontSize: '0.85rem',
-          textDecoration: 'none',
-          display: 'inline-block',
-          marginBottom: '24px'
-        }}>
-          ← Back to Trekkon Fantasy Leagues
-        </a>
+              {(() => {
+          // Demo leagues point to their real fandom's hub; sandbox has no hub
+          const hubType = type === 'sotb-demo' ? 'secrets-on-the-beach'
+            : type === 'uncharted-turretory-demo' ? 'uncharted-turretory'
+            : type
+          const hasHub = ['secrets-on-the-beach', 'uncharted-turretory'].includes(hubType)
+          return (
+            <a href={hasHub ? `/leagues/${hubType}` : '/'} style={{
+              color: '#a0a0b0',
+              fontSize: '0.85rem',
+              textDecoration: 'none',
+              display: 'inline-block',
+              marginBottom: '24px'
+            }}>
+              ← Back to {hasHub ? leagueTypeLabels[hubType] : 'Trekkon Fantasy Leagues'}
+            </a>
+          )
+        })()}
 
         {isHome && isGlobalAdmin && !isHost && league.is_private && (
           <div style={{ backgroundColor: '#1a1a2e', border: '1px solid #ff6b6b', borderRadius: '8px', padding: '10px 16px', marginBottom: '16px', color: '#ff6b6b', fontSize: '0.85rem' }}>

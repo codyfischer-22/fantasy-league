@@ -1,6 +1,6 @@
 'use client'
 
-import { MicSignal, NotebookPen, SquareLibrary } from 'lucide-react'
+import { MicSignal, SquareLibrary } from 'lucide-react'
 
 export default function ExtrasPage() {
   return (
@@ -39,50 +39,28 @@ export default function ExtrasPage() {
           Check out podcasts, blogs, and who knows what from Trekkon Fantasy Leagues!
         </p>
 
-{/* Podcast Section */}
-<div style={{ marginBottom: '32px' }}>
-  <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-    <MicSignal size={22} strokeWidth={2} color="#f0b429" />
-    Talkin' with Trekkon
-  </h2>
-  <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-    <iframe
-      style={{ borderRadius: '12px', flex: '1 1 320px', minWidth: '280px' }}
-      src="https://www.youtube.com/embed/videoseries?list=PLCN30DbBuhtI"
-      width="100%"
-      height="200"
-      frameBorder="0"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      loading="lazy"
-      allowFullScreen
-    />
-    <iframe
-      style={{ borderRadius: '12px', flex: '1 1 320px', minWidth: '280px' }}
-      src="https://www.youtube.com/embed/videoseries?list=PLW4pOTUl_apc"
-      width="100%"
-      height="200"
-      frameBorder="0"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      loading="lazy"
-      allowFullScreen
-    />
-  </div>
-</div>
-        {/* Blog Section */}
-        <div style={{ marginBottom: '0px' }}>
-          <h2 style={{ color: '#f0b429', fontSize: '1.3rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <NotebookPen size={22} strokeWidth={2} color="#f0b429" />
-            Blogs
-          </h2>
-          <div style={{
-            backgroundColor: '#1a1a2e',
-            border: '1px solid #2a2a3e',
-            borderRadius: '10px',
-            padding: '20px'
-          }}>
-            <p style={{ color: '#a0a0b0', fontSize: '0.9rem', lineHeight: '1.6' }}>
-              We might do this... someday... Let us know if interested!
-            </p>
+        {/* Podcast Section */}
+        <div style={{ marginBottom: '32px' }}>
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+            {[
+              { title: 'Secrets on the Beach', sub: 'A Survivor Podcast', list: 'PLH2t1c28BV7s' },
+              { title: 'Uncharted Turretory', sub: 'A Traitors Podcast', list: 'PLLQ_n7kjZ1iM' },
+            ].map((show) => (
+              <div key={show.list} style={{ flex: '1 1 320px', minWidth: '280px' }}>
+                <div style={{ fontSize: '1.2rem', marginBottom: '8px' }}>
+                  <MicSignal size={20} strokeWidth={2} color="#f0b429" style={{ display: 'inline-block', verticalAlign: '-3px', marginRight: '6px' }} />
+                  <span style={{ color: '#f0b429' }}>{show.title}:</span>
+                  <span style={{ color: '#a0a0b0' }}> {show.sub}</span>
+                </div>
+                <iframe
+                  style={{ borderRadius: '12px', width: '100%', aspectRatio: '16 / 9', border: 'none', display: 'block' }}
+                  src={`https://www.youtube.com/embed/videoseries?list=${show.list}`}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  loading="lazy"
+                  allowFullScreen
+                />
+              </div>
+            ))}
           </div>
         </div>
 

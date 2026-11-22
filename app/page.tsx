@@ -47,9 +47,12 @@ export default function Home() {
   const [userTier, setUserTier] = useState<string | null>(null)
   const [showPrivateLeaguesModal, setShowPrivateLeaguesModal] = useState<string | null>(null)
   const circleRowRef = useRef<HTMLDivElement>(null)
+  const tierGridRef = useRef<HTMLDivElement | null>(null)
   const [circlesOverflow, setCirclesOverflow] = useState(false)
   const [circlesAtStart, setCirclesAtStart] = useState(true)
   const [circlesAtEnd, setCirclesAtEnd] = useState(false)
+  const [publicLeaguesByType, setPublicLeaguesByType] = useState<Record<string, { name: string; slug: string }[]>>({})
+  const [showPublicLeaguesModal, setShowPublicLeaguesModal] = useState<string | null>(null)
 
   const relevantLeagues = [...hostedLeagues, ...joinedLeagues].filter(
   (l) => l.type === showPrivateLeaguesModal && l.is_private === true
@@ -115,6 +118,58 @@ const realLeagues = (leagues ?? []).filter((l) => !l.is_show_chat && l.league_ty
       loadMyLeagues()
     }
   }, [user, loading])
+
+    useEffect(() => {
+    async function loadPublicLeagues() {
+      const { data } = await supabase
+        .from('leagues')
+        .select('name, slug, league_type')
+        .eq('is_private', false)
+        .eq('is_show_chat', false)
+        .eq('is_archived', false)
+        .in('league_type', ['secrets-on-the-beach', 'uncharted-turretory'])
+        .order('name')
+      const grouped: Record<string, { name: string; slug: string }[]> = {}
+      ;(data ?? []).forEach((l) => {
+        if (!grouped[l.league_type]) grouped[l.league_type] = []
+        grouped[l.league_type].push({ name: l.name, slug: l.slug })
+      })
+      setPublicLeaguesByType(grouped)
+    }
+    loadPublicLeagues()
+  }, [])
+
+  const openPublicLeagues = (type: string, fallbackSlug: string) => {
+    const list = publicLeaguesByType[type] ?? []
+    if (list.length > 1) {
+      setShowPublicLeaguesModal(type)
+    } else {
+      router.push(`/leagues/${type}/${list[0]?.slug ?? fallbackSlug}`)
+    }
+  }
+
+         useEffect(() => {
+    const grid = tierGridRef.current
+    if (!grid) return
+    const update = () => {
+      const cards = Array.from(grid.querySelectorAll<HTMLElement>('.tier-card'))
+      const center = grid.scrollLeft + grid.clientWidth / 2
+      let best = 0
+      let bestDist = Infinity
+      cards.forEach((c, i) => {
+        const d = Math.abs(c.offsetLeft + c.offsetWidth / 2 - center)
+        if (d < bestDist) { bestDist = d; best = i }
+      })
+      cards.forEach((c, i) => c.classList.toggle('is-active', i === best))
+    }
+    update()
+    grid.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update)
+    return () => {
+      grid.removeEventListener('scroll', update)
+      window.removeEventListener('resize', update)
+    }
+  }, [])
 
         useEffect(() => {
     const check = () => {
@@ -379,20 +434,24 @@ This is your arena to compete with friends, family, and on-screen stars on beach
 }}>
 
             {/* Secrets on the Beach */}
-<div id="secrets-on-the-beach" className="league-card" style=
-{{
+<div
+  id="secrets-on-the-beach"
+  className="league-card"
+  onClick={() => router.push('/leagues/secrets-on-the-beach')}
+  style={{
     backgroundImage: `linear-gradient(rgba(26,26,46,.5), rgba(26,26,46,0.5)), url('/textures/sand.jpg')`,
-backgroundSize: 'cover',
-backgroundPosition: 'center',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
     border: '3px solid #f0b429',
     borderTop: '3px solid #f0b429',
     borderRadius: '12px',
     padding: '28px',
-    flex: '0 1 350px'
+    flex: '0 1 350px',
+    cursor: 'pointer'
   }}
 >
-  <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.3rem, 6vw, 1.65rem)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-  <TreePalm size={30} color='#ffffff' strokeWidth={1.5} /> Secrets on the Beach
+ <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.2rem, 5.2vw, 1.65rem)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap' }}>
+  <TreePalm size={30} color='#ffffff' strokeWidth={1.5} style={{ flexShrink: 0 }} /> Secrets on the Beach
 </h3>
   <p style={{ color: '#ffffff', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
     Set sail for this island adventure, going 25+ years strong, by drafting your tribe, winning challenges, and surviving the vote.
@@ -401,8 +460,7 @@ backgroundPosition: 'center',
   <button
   onClick={(e) => {
     e.stopPropagation()
-    router.push('/leagues/secrets-on-the-beach/sotb-public')
-  }}
+    openPublicLeagues('secrets-on-the-beach', 'sotb-public')  }}
   style={{
     display: 'flex',
     alignItems: 'center',
@@ -508,20 +566,24 @@ backgroundPosition: 'center',
 </div>
 
         {/* Uncharted Turretory */}
-<div id="uncharted-turretory" className="league-card" style=
-{{
+<div
+  id="uncharted-turretory"
+  className="league-card"
+  onClick={() => router.push('/leagues/uncharted-turretory')}
+  style={{
     backgroundImage: `linear-gradient(rgba(26,26,46,.5), rgba(26,26,46,0.75)), url('/textures/traitors.jpg')`,
-backgroundSize: 'cover',
-backgroundPosition: 'center',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
     border: '3px solid #f0b429',
     borderTop: '3px solid #f0b429',
     borderRadius: '12px',
     padding: '28px',
-    flex: '0 1 350px'
+    flex: '0 1 350px',
+    cursor: 'pointer'
   }}
 >
-  <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.3rem, 6vw, 1.65rem)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-  <ChessRook size={30} color='#ffffff' strokeWidth={1.5} /> Uncharted Turretory
+   <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.2rem, 5.2vw, 1.65rem)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap' }}>
+  <ChessRook size={30} color='#ffffff' strokeWidth={1.5} style={{ flexShrink: 0 }} /> Uncharted Turretory
 </h3>
   <p style={{ color: '#ffffff', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
     Scale the turret steps of Alan's Castle and decide who you'll back in this game of murder, banishment, and deception.
@@ -530,8 +592,7 @@ backgroundPosition: 'center',
   <button
   onClick={(e) => {
     e.stopPropagation()
-    router.push('/leagues/uncharted-turretory/uncharted-turretory-public')
-  }}
+    openPublicLeagues('uncharted-turretory', 'uncharted-turretory-public')  }}
   style={{
     display: 'flex',
     alignItems: 'center',
@@ -796,7 +857,7 @@ Got an idea for a league we should build next? Send us your concept and help sha
   Prices shown <span style={{ fontWeight: 'bold' }}>per month</span> unless you opt for the yearlong All-Access Pass.
 </p>
 
-        <div className="home-tier-grid" style={{
+        <div ref={tierGridRef} className="home-tier-grid" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
           gap: '20px',
@@ -1199,6 +1260,71 @@ Got an idea for a league we should build next? Send us your concept and help sha
     </div>
   )
 })()}
+
+{showPublicLeaguesModal && (
+  <div
+    onClick={() => setShowPublicLeaguesModal(null)}
+    style={{
+      position: 'fixed',
+      top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.7)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 100
+    }}
+  >
+    <div
+      onClick={(e) => e.stopPropagation()}
+      style={{
+        backgroundColor: '#1a1a2e',
+        border: '1px solid #f0b429',
+        borderRadius: '12px',
+        padding: '24px',
+        maxWidth: '380px',
+        width: '90%',
+        textAlign: 'left'
+      }}
+    >
+      <h3 style={{ color: '#f0b429', fontWeight: 'bold', fontSize: '1.3rem', marginBottom: '16px' }}>
+        Public Leagues
+      </h3>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
+        {(publicLeaguesByType[showPublicLeaguesModal] ?? []).map((league) => (
+          <a
+            key={league.slug}
+            href={`/leagues/${showPublicLeaguesModal}/${league.slug}`}
+            style={{
+              backgroundColor: '#12121a',
+              borderRadius: '8px',
+              padding: '12px 16px',
+              textDecoration: 'none',
+              color: '#ffffff',
+              fontSize: '0.9rem',
+              fontWeight: 'bold'
+            }}
+          >
+            {league.name} →
+          </a>
+        ))}
+      </div>
+      <button
+        onClick={() => setShowPublicLeaguesModal(null)}
+        style={{
+          backgroundColor: 'transparent',
+          color: '#a0a0b0',
+          padding: '10px 20px',
+          borderRadius: '6px',
+          border: '1px solid #2a2a3e',
+          cursor: 'pointer',
+          width: '100%'
+        }}
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
 
 {showComingSoon && (
   <div style={{

@@ -813,3 +813,76 @@ body.hide-site-footer footer {
     text-shadow: 0 0 12px rgba(240, 180, 41, 0.5);
   }
 }
+
+@media (max-width: 768px) {
+  .home-tier-grid {
+    display: flex !important;
+    position: relative;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 14px !important;
+    padding: 18px 0 8px !important;
+    margin: 0 -20px !important;
+    scrollbar-width: none;
+  }
+  .home-tier-grid::-webkit-scrollbar {
+    display: none;
+  }
+  .home-tier-grid::before,
+  .home-tier-grid::after {
+    content: '';
+    flex: 0 0 calc(15% - 14px);
+  }
+  .home-tier-grid > .tier-card {
+    flex: 0 0 70%;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    opacity: 0.35;
+    transform: scale(0.85) !important;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .home-tier-grid > .tier-card.is-active {
+    opacity: 1;
+    transform: scale(1) !important;
+  }
+}
+
+.perks-carousel .tier-grid {
+  display: flex !important;
+  position: relative;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 12px !important;
+  padding: 12px 0 !important;
+  scrollbar-width: none;
+}
+.perks-carousel .tier-grid::-webkit-scrollbar {
+  display: none;
+}
+.perks-carousel .tier-grid::before,
+.perks-carousel .tier-grid::after {
+  content: '';
+  flex: 0 0 calc(15% - 12px);
+}
+.perks-carousel .tier-grid > .tier-card {
+  flex: 0 0 70%;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  opacity: 0.35;
+  transform: scale(0.85) !important;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.perks-carousel .tier-grid > .tier-card.is-active {
+  opacity: 1;
+  transform: scale(1) !important;
+}
+
+.league-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+@media (hover: hover) {
+  .league-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px rgba(240, 180, 41, 0.35);
+  }
+}

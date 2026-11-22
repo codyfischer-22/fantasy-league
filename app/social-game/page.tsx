@@ -72,6 +72,26 @@ useEffect(() => {
     return () => clearInterval(interval)
   }, [])
 
+    useEffect(() => {
+    if (!showMobilePerksModal) return
+    const grid = document.querySelector<HTMLElement>('.perks-carousel .tier-grid')
+    if (!grid) return
+    const update = () => {
+      const cards = Array.from(grid.querySelectorAll<HTMLElement>('.tier-card'))
+      const center = grid.scrollLeft + grid.clientWidth / 2
+      let best = 0
+      let bestDist = Infinity
+      cards.forEach((c, i) => {
+        const d = Math.abs(c.offsetLeft + c.offsetWidth / 2 - center)
+        if (d < bestDist) { bestDist = d; best = i }
+      })
+      cards.forEach((c, i) => c.classList.toggle('is-active', i === best))
+    }
+    update()
+    grid.addEventListener('scroll', update, { passive: true })
+    return () => grid.removeEventListener('scroll', update)
+  }, [showMobilePerksModal])
+
   const handleShowHostPicker = async () => {
     if (!user) {
       router.push('/login')
@@ -149,7 +169,6 @@ const handleCreate = async (skin: string, isPrivate: boolean) => {
    <div
   className="tier-grid"
 >
-  <p className="mobile-only-block" style={{ color: '#ffffff', fontSize: '1.45rem', marginBottom: '4px', gridColumn: '1 / -1', textAlign: 'center' }}>Click to Upgrade</p>
   <div
     className="tier-card"
     onClick={() => router.push('/account?tier=stowaway')}
@@ -689,21 +708,21 @@ const handleCreate = async (skin: string, isPrivate: boolean) => {
             padding: '20px'
           }}
         >
-          <div
+                    <div
             onClick={(e) => e.stopPropagation()}
+            className="perks-carousel"
             style={{
               backgroundColor: '#0a0a0f',
               border: '1px solid #f0b429',
               borderRadius: '12px',
-              padding: '20px',
-              maxWidth: '235px',
-              width: '100%',
-              maxHeight: '85vh',
-              overflowY: 'auto'
+              padding: '20px 0',
+              maxWidth: '360px',
+              width: '100%'
             }}
           >
+            <p style={{ color: '#ffffff', fontSize: '1.45rem', margin: '0 0 4px 0', textAlign: 'center' }}>Click to Upgrade</p>
             {tierGridContent}
-            <p style={{ color: '#555570', textAlign: 'center', fontSize: '0.85rem', marginTop: '16px', marginBottom: '0px' }}>
+            <p style={{ color: '#555570', textAlign: 'center', fontSize: '0.85rem', margin: '12px 20px 0 20px' }}>
               <em>* Yet to be built out; usable while active, after 3 consecutive paid months.</em>
             </p>
           </div>
