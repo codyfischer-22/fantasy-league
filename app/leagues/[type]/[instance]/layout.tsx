@@ -775,7 +775,7 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
                     <button
                       onClick={() => setShowLeaveConfirm(true)}
                       disabled={leaving}
-                      style={{ ...pillButton('#555570'), cursor: leaving ? 'not-allowed' : 'pointer' }}
+                      style={{ ...pillButton('#ff6b6b'), cursor: leaving ? 'not-allowed' : 'pointer' }}
                     >
                       {leaving ? 'Leaving...' : 'Leave League'}
                     </button>
