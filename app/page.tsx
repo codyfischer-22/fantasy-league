@@ -852,6 +852,7 @@ Got an idea for a league we should build next? Send us your concept and help sha
   textAlign: 'center',
   color: '#a0a0b0',
   marginBottom: '36px',
+  padding: '0 18px',
   fontSize: 'clamp(.85rem, 4.75vw, 1rem)',
 }}>
   Prices shown <span style={{ fontWeight: 'bold' }}>per month</span> unless you opt for the yearlong All-Access Pass.
