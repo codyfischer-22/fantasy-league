@@ -444,7 +444,7 @@ export default function FandomHubPage() {
                   style={{ backgroundColor: '#12121a', border: `1px solid ${t.key === 'stowaway' ? '#2a2a3e' : t.color}`, borderRadius: '8px', padding: '12px', cursor: 'pointer' }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '6px' }}>
-                                        <span style={{ color: t.color, fontWeight: 'bold', fontSize: '0.9rem' }}>{t.name}</span>
+                                        <span style={{ color: t.color, fontWeight: 'bold', fontSize: '0.9rem' }}>{isMobileWidth && t.key === 'teamprincipal' ? 'T. Principal' : t.name}</span>
                     <span style={{ color: t.color, fontWeight: 'bold', fontSize: '0.85rem' }}>{t.price}</span>
                   </div>
                   {t.perks.map((p) => (
