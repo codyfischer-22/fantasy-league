@@ -183,7 +183,7 @@ Choose gift amount to support your favorite league-hosting platform:        </p>
               type="text"
               placeholder="Display Name (Leave Blank for Anonymous)"
               value={publicName}
-              maxLength={24}
+              maxLength={16}
               onChange={(e) => setPublicName(e.target.value)}
               style={{
                 width: '100%', padding: '10px 12px', marginBottom: '16px', borderRadius: '6px',

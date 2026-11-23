@@ -7,7 +7,7 @@ function cleanName(raw: unknown): string {
     .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
     .replace(/[<>]/g, '')
     .trim()
-    .slice(0, 24)
+    .slice(0, 16)
   return name || 'Anonymous Trekker'
 }
 

@@ -55,6 +55,8 @@ export default function Home() {
   const [circlesAtEnd, setCirclesAtEnd] = useState(false)
   const [publicLeaguesByType, setPublicLeaguesByType] = useState<Record<string, { name: string; slug: string }[]>>({})
   const [showPublicLeaguesModal, setShowPublicLeaguesModal] = useState<string | null>(null)
+  const [recentSupporters, setRecentSupporters] = useState<{ public_name: string; amount_cents: number }[]>([])
+  const [supporterIdx, setSupporterIdx] = useState(0)
 
   const relevantLeagues = [...hostedLeagues, ...joinedLeagues].filter(
   (l) => l.type === showPrivateLeaguesModal && l.is_private === true
@@ -140,6 +142,24 @@ const realLeagues = (leagues ?? []).filter((l) => !l.is_show_chat && l.league_ty
     }
     loadPublicLeagues()
   }, [])
+
+    useEffect(() => {
+    async function loadSupporters() {
+      const { data } = await supabase
+        .from('supporters')
+        .select('public_name, amount_cents')
+        .order('created_at', { ascending: false })
+        .limit(10)
+      setRecentSupporters(data ?? [])
+    }
+    loadSupporters()
+  }, [])
+
+  useEffect(() => {
+    if (recentSupporters.length < 2) return
+    const t = setInterval(() => setSupporterIdx((i) => (i + 1) % recentSupporters.length), 3500)
+    return () => clearInterval(t)
+  }, [recentSupporters])
 
   const openPublicLeagues = (type: string, fallbackSlug: string) => {
     const list = publicLeaguesByType[type] ?? []
@@ -728,6 +748,74 @@ Got an idea for a league we should build next? Send us your concept and help sha
       Choose Fandoms. Draft Teams. Beat Buddies.
     </p>
   </div>
+
+  
+      {recentSupporters.length > 0 && (() => {
+        const s = recentSupporters[supporterIdx % recentSupporters.length]
+        const amt = `$${(s.amount_cents / 100).toFixed(s.amount_cents % 100 === 0 ? 0 : 2)}`
+        return (
+          <div>
+                                    <a href="/tip-jar" style={{
+              position: 'relative',
+              overflow: 'hidden',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '10px',
+              flexWrap: 'wrap',
+              margin: 0,
+              padding: '8px 20px',
+              backgroundColor: '#1a1a2e',
+              borderTop: 'none',
+              borderLeft: 'none',
+              borderRight: 'none',
+              borderBottom: '1px solid #f0b429',
+              borderRadius: 0,
+              textDecoration: 'none',
+              animation: 'wallGlow 3.5s ease-in-out infinite'
+            }}>
+              {[...Array(6)].map((_, i) => (
+                <span key={i} style={{
+                  position: 'absolute',
+                  left: `${8 + (i * 17) % 84}%`,
+                  bottom: '-4px',
+                  width: i % 2 === 0 ? '4px' : '3px',
+                  height: i % 2 === 0 ? '4px' : '3px',
+                  borderRadius: '50%',
+                  backgroundColor: i % 2 === 0 ? '#f0b429' : '#f5ff9c',
+                  boxShadow: '0 0 6px rgba(240, 180, 41, 0.9)',
+                  pointerEvents: 'none',
+                  opacity: 0,
+                  animation: `tickerFloat ${2.2 + (i % 3) * 0.5}s ease-in-out ${i * 0.4}s infinite`
+                }} />
+              ))}
+              <span style={{
+                position: 'relative',
+                fontSize: '0.7rem',
+                fontWeight: 'bold',
+                letterSpacing: '3px',
+                textTransform: 'uppercase',
+                background: 'linear-gradient(90deg, #f0b429 0%, #f5ff9c 50%, #f0b429 100%)',
+                backgroundSize: '200% auto',
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text',
+                color: 'transparent',
+                animation: 'wallShimmer 3s linear infinite'
+              }}>
+                Thanks for the Gift:
+              </span>
+              <span key={supporterIdx} style={{
+                position: 'relative',
+                color: '#ffffff',
+                fontSize: '0.9rem',
+                animation: 'tickerFade 3.5s ease-in-out'
+              }}>
+                <strong style={{ color: '#f0b429' }}>{s.public_name}</strong> · {amt}
+              </span>
+            </a>
+          </div>
+        )
+      })()}
 
       {!showPersonalizedView && (
         <section style={{
@@ -1490,6 +1578,23 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     25% { opacity: 0.9; }
     80% { opacity: 0.9; }
     100% { transform: translateY(-50px); opacity: 0; }
+  }
+  @keyframes wallGlow {
+    0%, 100% { box-shadow: 0 0 8px rgba(240, 180, 41, 0.25); }
+    50% { box-shadow: 0 0 20px rgba(240, 180, 41, 0.5); }
+  }
+  @keyframes wallShimmer {
+    to { background-position: 200% center; }
+  }
+  @keyframes tickerFloat {
+    0% { transform: translateY(0); opacity: 0; }
+    30% { opacity: 0.9; }
+    100% { transform: translateY(-30px); opacity: 0; }
+  }
+  @keyframes tickerFade {
+    0% { opacity: 0; transform: translateY(6px); }
+    12%, 88% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-6px); }
   }
 `}</style>
 
