@@ -527,23 +527,24 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
           )}
         </div>
 
-          <button
-            onClick={() => setShowScrapConfirm(true)}
-            style={{
-              width: '100%',
-              backgroundColor: 'transparent',
-              color: '#ff6b6b',
-              border: '2px solid #ff6b6b',
-              padding: '10px',
-              borderRadius: '6px',
-              fontSize: '0.9rem',
-              fontWeight: 'bold',
-              cursor: 'pointer'
-            }}
-          >
-            Scrap League
-          </button>
-
+          {!league.season_completed_at && !league.champion_names?.length && (
+            <button
+              onClick={() => setShowScrapConfirm(true)}
+              style={{
+                width: '100%',
+                backgroundColor: 'transparent',
+                color: '#ff6b6b',
+                border: '2px solid #ff6b6b',
+                padding: '10px',
+                borderRadius: '6px',
+                fontSize: '0.9rem',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }}
+            >
+              Scrap League
+            </button>
+          )}
 <ConfirmModal
   open={ejectingPlayer !== null}
   title="Eject Player?"

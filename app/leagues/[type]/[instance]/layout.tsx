@@ -798,7 +798,7 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
                     </button>
                   )}
                 </div>
-              ) : league.draft_status === 'in_progress' ? null
+) : league.draft_status === 'in_progress' || league.champion_names?.length ? null
                 : isReturning ? (
                 <button onClick={handleClimbAboard} style={{ ...pillButton('#068e38'), backgroundColor: 'rgba(6, 142, 56, 0.35)', color: '#ffffff' }}>
                   Rejoin League

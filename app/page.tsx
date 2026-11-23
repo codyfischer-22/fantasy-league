@@ -5,7 +5,7 @@ import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { Rat, Anchor, Drill, Rocket, Earth, Lock, TestTubeDiagonal, Hammer, CornerLeftUp, Mail, Hourglass, TreePalm, ChessRook, CarFront, Engine, MessageCirclePlus, Crown, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Rat, Anchor, Drill, Rocket, HandCoins, Earth, Lock, TestTubeDiagonal, Hammer, CornerLeftUp, Mail, Hourglass, TreePalm, ChessRook, CarFront, Engine, MessageCirclePlus, Crown, ChevronLeft, ChevronRight } from 'lucide-react'
 
 type MyLeague = {
   name: string
@@ -168,8 +168,8 @@ const realLeagues = (leagues ?? []).filter((l) => !l.is_show_chat && l.league_ty
       const champs = (crowned ?? []).map((l: { name: string; champion_names: string[] | null }) => ({
         kind: 'champ' as const,
         name: (l.champion_names ?? []).join(' & '),
-        detail: l.name,
-      }))
+        detail: l.name.replace(/\p{Extended_Pictographic}\uFE0F?/gu, '').replace(/\s+/g, ' ').trim(),
+            }))
 
       // Rotate through champions, gifts and members in turn
       const mixed: { kind: 'gift' | 'champ'; name: string; detail: string }[] = []
@@ -850,8 +850,14 @@ Got an idea for a league we should build next? Send us your concept and help sha
                   </>
                 ) : (
                   <>
-                    <span className="desktop-only-text" style={label}>Your gifts keep these leagues going:</span>
-                    <span className="mobile-only-block" style={label}>Thank you:</span>
+                                       <span className="desktop-only-text" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                      <HandCoins size={18} color="#f0b429" strokeWidth={2} style={{ flexShrink: 0 }} />
+                      <span style={label}>Your gifts keep these leagues going:</span>
+                    </span>
+                    <span className="mobile-only-block" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                      <HandCoins size={16} color="#f0b429" strokeWidth={2} style={{ flexShrink: 0 }} />
+                      <span style={label}>Thank you:</span>
+                    </span>
                     <span style={name}><strong style={gold}>{s.name}</strong> · {s.detail}</span>
                   </>
                 )}
