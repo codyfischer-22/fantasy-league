@@ -34,6 +34,8 @@ type League = {
   draft_rounds?: number | null
   champion_names?: string[] | null
   champion_points?: number | null
+  season_completed_at?: string | null
+  is_archived?: boolean | null
 }
 
 const draftWindowByLeague: Record<string, { name: string; window: string }> = {
@@ -522,6 +524,10 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
 
   const handleLeave = async () => {
     if (!user || !league) return
+    if (league.season_completed_at || league.champion_names?.length || league.is_archived) {
+              alert('This season is complete, and final standings are locked in.')
+      return
+    }
     if (isHost) {
       alert('As the host, use "Scrap League" in your League Settings to remove this league.')
       return
@@ -782,7 +788,7 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
                       Upgrade Tier
                     </a>
                   )}
-                  {!isHost && league.draft_status !== 'in_progress' && (
+                  {!isHost && !league.season_completed_at && !league.champion_names?.length && !league.is_archived && league.draft_status !== 'in_progress' && (
                     <button
                       onClick={() => setShowLeaveConfirm(true)}
                       disabled={leaving}

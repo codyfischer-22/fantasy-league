@@ -55,7 +55,7 @@ export default function Home() {
   const [circlesAtEnd, setCirclesAtEnd] = useState(false)
   const [publicLeaguesByType, setPublicLeaguesByType] = useState<Record<string, { name: string; slug: string }[]>>({})
   const [showPublicLeaguesModal, setShowPublicLeaguesModal] = useState<string | null>(null)
-  const [recentSupporters, setRecentSupporters] = useState<{ public_name: string; detail: string }[]>([])
+  const [recentSupporters, setRecentSupporters] = useState<{ kind: 'gift' | 'champ'; name: string; detail: string }[]>([])
   const [supporterIdx, setSupporterIdx] = useState(0)
 
   const relevantLeagues = [...hostedLeagues, ...joinedLeagues].filter(
@@ -144,31 +144,43 @@ const realLeagues = (leagues ?? []).filter((l) => !l.is_show_chat && l.league_ty
   }, [])
 
   useEffect(() => {
-    async function loadSupporters() {
+    async function loadBanner() {
       const tierNames: Record<string, string> = { castaway: 'Castaway', crewchief: 'Crew Chief', teamprincipal: 'Team Principal' }
+
       const { data: tips } = await supabase
         .from('supporters')
         .select('public_name, amount_cents')
         .order('created_at', { ascending: false })
         .limit(10)
       const { data: members } = await supabase.rpc('public_member_supporters')
-      const tipItems = (tips ?? []).map((t) => ({
-        public_name: t.public_name,
+      const { data: crowned } = await supabase.rpc('crowned_champions')
+
+      const gifts = (tips ?? []).map((t) => ({
+        kind: 'gift' as const,
+        name: t.public_name,
         detail: `$${(t.amount_cents / 100).toFixed(t.amount_cents % 100 === 0 ? 0 : 2)}`,
       }))
-      const memberItems = (members ?? []).map((m: { display_name: string; tier: string }) => ({
-        public_name: m.display_name,
+      const subs = (members ?? []).map((m: { display_name: string; tier: string }) => ({
+        kind: 'gift' as const,
+        name: m.display_name,
         detail: tierNames[m.tier] ?? 'Member',
       }))
-      // Alternate gift / member so both groups get regular airtime
-      const mixed: { public_name: string; detail: string }[] = []
-      for (let i = 0; i < Math.max(tipItems.length, memberItems.length); i++) {
-        if (tipItems[i]) mixed.push(tipItems[i])
-        if (memberItems[i]) mixed.push(memberItems[i])
+      const champs = (crowned ?? []).map((l: { name: string; champion_names: string[] | null }) => ({
+        kind: 'champ' as const,
+        name: (l.champion_names ?? []).join(' & '),
+        detail: l.name,
+      }))
+
+      // Rotate through champions, gifts and members in turn
+      const mixed: { kind: 'gift' | 'champ'; name: string; detail: string }[] = []
+      const lists = [champs, gifts, subs]
+      for (let i = 0; i < Math.max(...lists.map((l) => l.length)); i++) {
+        lists.forEach((l) => { if (l[i]) mixed.push(l[i]) })
       }
       setRecentSupporters(mixed)
+      setSupporterIdx(0)
     }
-    loadSupporters()
+    loadBanner()
   }, [])
 
   useEffect(() => {
@@ -766,11 +778,25 @@ Got an idea for a league we should build next? Send us your concept and help sha
   </div>
 
   
-      {recentSupporters.length > 0 && (() => {
+            {recentSupporters.length > 0 && (() => {
         const s = recentSupporters[supporterIdx % recentSupporters.length]
+        const label: React.CSSProperties = {
+          fontSize: '0.7rem',
+          fontWeight: 'bold',
+          letterSpacing: '3px',
+          textTransform: 'uppercase',
+          background: 'linear-gradient(90deg, #f0b429 0%, #f5ff9c 50%, #f0b429 100%)',
+          backgroundSize: '200% auto',
+          WebkitBackgroundClip: 'text',
+          backgroundClip: 'text',
+          color: 'transparent',
+          animation: 'wallShimmer 3s linear infinite'
+        }
+        const name: React.CSSProperties = { color: '#ffffff', fontSize: '0.9rem' }
+        const gold: React.CSSProperties = { color: '#f0b429' }
         return (
           <div>
-                                    <a href="/tip-jar" style={{
+            <a href="/tip-jar" style={{
               position: 'relative',
               overflow: 'hidden',
               display: 'flex',
@@ -804,30 +830,31 @@ Got an idea for a league we should build next? Send us your concept and help sha
                   animation: `tickerFloat ${2.2 + (i % 3) * 0.5}s ease-in-out ${i * 0.4}s infinite`
                 }} />
               ))}
-              <span style={{
-                position: 'relative',
-                fontSize: '0.7rem',
-                fontWeight: 'bold',
-                letterSpacing: '3px',
-                textTransform: 'uppercase',
-                background: 'linear-gradient(90deg, #f0b429 0%, #f5ff9c 50%, #f0b429 100%)',
-                backgroundSize: '200% auto',
-                WebkitBackgroundClip: 'text',
-                backgroundClip: 'text',
-                color: 'transparent',
-                animation: 'wallShimmer 3s linear infinite'
-              }}>
-                                <span className="desktop-only-text">Thank you for supporting the league:</span>
-                <span className="mobile-only-block">Thanks:</span>
-              </span>
               <span key={supporterIdx} style={{
                 position: 'relative',
-                color: '#ffffff',
-                fontSize: '0.9rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '10px',
+                flexWrap: 'wrap',
                 animation: 'tickerFade 3.5s ease-in-out'
               }}>
-                <strong style={{ color: '#f0b429' }}>{s.public_name}</strong> · {s.detail}
-                              </span>
+                {s.kind === 'champ' ? (
+                  <>
+                    <span className="desktop-only-text" style={label}>🏆 Congratulations to the {s.detail} champion:</span>
+                    <span className="desktop-only-text" style={name}><strong style={gold}>{s.name}</strong></span>
+                    <span className="mobile-only-block" style={name}>
+                      <span style={label}>🏆</span> <strong style={gold}>{s.name}</strong> <span style={label}>wins {s.detail}!</span>
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="desktop-only-text" style={label}>Your gifts keep these leagues going! Thanks:</span>
+                    <span className="mobile-only-block" style={label}>Thanks:</span>
+                    <span style={name}><strong style={gold}>{s.name}</strong> · {s.detail}</span>
+                  </>
+                )}
+              </span>
             </a>
           </div>
         )
