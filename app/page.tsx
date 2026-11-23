@@ -849,8 +849,8 @@ Got an idea for a league we should build next? Send us your concept and help sha
                   </>
                 ) : (
                   <>
-                    <span className="desktop-only-text" style={label}>Your gifts keep these leagues going! Thanks:</span>
-                    <span className="mobile-only-block" style={label}>Thanks:</span>
+                    <span className="desktop-only-text" style={label}>Your gifts keep these leagues going:</span>
+                    <span className="mobile-only-block" style={label}>Thank you:</span>
                     <span style={name}><strong style={gold}>{s.name}</strong> · {s.detail}</span>
                   </>
                 )}
