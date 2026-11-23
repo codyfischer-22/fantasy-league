@@ -1,9 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 
+// Keep public names short and plain: no emojis, no odd symbols
+function cleanName(raw: unknown): string {
+  const name = String(raw ?? '')
+    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
+    .replace(/[<>]/g, '')
+    .trim()
+    .slice(0, 24)
+  return name || 'Anonymous Trekker'
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const { amount, email } = await req.json()
+    const { amount, email, showName, publicName } = await req.json()
 
     if (!amount || amount < 1) {
       return NextResponse.json({ error: 'Invalid amount' }, { status: 400 })
@@ -26,8 +36,14 @@ export async function POST(req: NextRequest) {
         },
       ],
       customer_email: email || undefined,
-      success_url: `${req.headers.get('origin')}/extras?tipped=true`,
-      cancel_url: `${req.headers.get('origin')}/extras`,
+      // Read by the webhook once Stripe confirms payment
+      metadata: {
+        kind: 'tip',
+        show_publicly: showName ? 'true' : 'false',
+        public_name: cleanName(publicName),
+      },
+      success_url: `${req.headers.get('origin')}/tip-jar?tipped=true`,
+      cancel_url: `${req.headers.get('origin')}/tip-jar`,
     })
 
     return NextResponse.json({ url: session.url })

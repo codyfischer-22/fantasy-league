@@ -1,9 +1,10 @@
 'use client'
 import { useAuth } from '@/lib/AuthContext'
 import { useSearchParams } from 'next/navigation'
-import { Suspense, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { HandCoins } from 'lucide-react'
 import Image from 'next/image'
+import { supabase } from '@/lib/supabase'
 
 function ExtrasContent() {
   const { user } = useAuth()
@@ -12,6 +13,26 @@ function ExtrasContent() {
   const [selectedAmount, setSelectedAmount] = useState<number | null>(5)
   const [customAmount, setCustomAmount] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [showName, setShowName] = useState(true)
+  const [publicName, setPublicName] = useState('')
+  const [supporters, setSupporters] = useState<{ public_name: string; created_at: string; amount_cents: number }[]>([])
+
+  useEffect(() => {
+    async function load() {
+      if (user) {
+        const { data } = await supabase.from('profiles').select('display_name').eq('user_id', user.id).single()
+        if (data?.display_name) setPublicName((prev) => prev || data.display_name)
+      }
+      const { data: rows } = await supabase
+        .from('supporters')
+        .select('public_name, created_at, amount_cents')
+        .order('created_at', { ascending: false })
+        .limit(50)
+      setSupporters(rows ?? [])
+    }
+    load()
+  }, [user])
+
 
   const presetAmounts = [5, 10, 25]
 
@@ -22,8 +43,8 @@ function ExtrasContent() {
     const res = await fetch('/api/tip-checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount, email: user?.email }),
-    })
+      body: JSON.stringify({ amount, email: user?.email, showName, publicName }),
+        })
     const data = await res.json()
     setSubmitting(false)
     if (data.url) {
@@ -85,7 +106,7 @@ function ExtrasContent() {
         Trekkon Fantasy Leagues could not continue without the patronage of league members like you! Now get out there and trek on!
       </p>
       <button
-        onClick={() => window.history.replaceState(null, '', '/extras')}
+        onClick={() => window.history.replaceState(null, '', '/tip-jar')}
         style={{
           backgroundColor: '#f0b429',
           color: '#0a0a0f',
@@ -153,6 +174,25 @@ Choose gift amount to support your favorite league-hosting platform:        </p>
             />
           </div>
 
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '10px', cursor: 'pointer' }}>
+            <input type="checkbox" checked={showName} onChange={(e) => setShowName(e.target.checked)} />
+            Show my name and gift amount on the Wall of Supporters?
+          </label>
+          {showName && (
+            <input
+              type="text"
+              placeholder="Display Name (Leave Blank for Anonymous)"
+              value={publicName}
+              maxLength={24}
+              onChange={(e) => setPublicName(e.target.value)}
+              style={{
+                width: '100%', padding: '10px 12px', marginBottom: '16px', borderRadius: '6px',
+                border: '1px solid #2a2a3e', backgroundColor: '#12121a', color: '#ffffff',
+                fontSize: '0.9rem', boxSizing: 'border-box'
+              }}
+            />
+          )}
+
           <button
             onClick={handleTip}
             disabled={submitting || (!selectedAmount && !customAmount)}
@@ -175,6 +215,99 @@ Choose gift amount to support your favorite league-hosting platform:        </p>
           </p>
         </div>
 
+              {supporters.length > 0 && (
+          <div style={{
+            position: 'relative',
+            overflow: 'hidden',
+            backgroundColor: '#1a1a2e',
+            border: '1px solid #f0b429',
+            borderRadius: '12px',
+            padding: '24px 28px',
+            maxWidth: '575px',
+            boxSizing: 'border-box',
+            animation: 'wallGlow 3.5s ease-in-out infinite'
+          }}>
+            {/* Floating sparkles */}
+            {[...Array(14)].map((_, i) => (
+              <span key={`spark-${i}`} style={{
+                position: 'absolute',
+                left: `${(i * 37) % 100}%`,
+                bottom: '-6px',
+                width: i % 3 === 0 ? '5px' : '3px',
+                height: i % 3 === 0 ? '5px' : '3px',
+                borderRadius: '50%',
+                backgroundColor: i % 2 === 0 ? '#f0b429' : '#f5ff9c',
+                boxShadow: '0 0 8px rgba(240, 180, 41, 0.9)',
+                pointerEvents: 'none',
+                opacity: 0,
+                animation: `wallFloat ${3 + (i % 4) * 0.7}s ease-in-out ${(i % 7) * 0.5}s infinite`
+              }} />
+            ))}
+
+            <p style={{
+              position: 'relative',
+              zIndex: 1,
+              textAlign: 'center',
+              fontSize: '1.5rem',
+              fontWeight: 'bold',
+              letterSpacing: '4px',
+              textTransform: 'uppercase',
+              margin: '0 0 16px 0',
+              background: 'linear-gradient(90deg, #f0b429 0%, #f5ff9c 50%, #f0b429 100%)',
+              backgroundSize: '200% auto',
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+              color: 'transparent',
+              animation: 'wallShimmer 3s linear infinite'
+            }}>
+              ✦ Wall of Supporters ✦
+            </p>
+
+            <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', rowGap: '16px', columnGap: '8px' }}>
+              {supporters.map((s, i) => (
+                <span key={i} style={{
+                  backgroundColor: 'rgba(240, 180, 41, 0.12)',
+                  border: '1px solid #f0b429',
+                  color: '#f0b429',
+                  borderRadius: '20px',
+                  padding: '4px 12px',
+                  fontSize: '0.85rem',
+                  opacity: 0,
+                  boxShadow: i === 0 ? '0 0 12px rgba(240, 180, 41, 0.6)' : 'none',
+                  animation: `wallPop 0.5s ease-out ${0.6 + i * 0.08}s forwards`
+                }}>
+                  {s.public_name} · ${(s.amount_cents / 100).toFixed(s.amount_cents % 100 === 0 ? 0 : 2)}
+                </span>
+              ))}
+            </div>
+
+            <style>{`
+              @keyframes wallGlow {
+                0%, 100% { box-shadow: 0 0 10px rgba(240, 180, 41, 0.25); }
+                50% { box-shadow: 0 0 26px rgba(240, 180, 41, 0.55); }
+              }
+              @keyframes wallFloat {
+                0% { transform: translateY(0); opacity: 0; }
+                20% { opacity: 0.9; }
+                80% { opacity: 0.7; }
+                100% { transform: translateY(-180px); opacity: 0; }
+              }
+              @keyframes wallBurst {
+                0% { transform: translate(0, 0) scale(1); opacity: 1; }
+                100% { transform: translate(var(--dx), var(--dy)) scale(0.4); opacity: 0; }
+              }
+              @keyframes wallShimmer {
+                to { background-position: 200% center; }
+              }
+              @keyframes wallPop {
+                0% { transform: scale(0.6); opacity: 0; }
+                70% { transform: scale(1.08); opacity: 1; }
+                100% { transform: scale(1); opacity: 1; }
+              }
+            `}</style>
+          </div>
+        )}
+
       </div>
     </main>
   )
@@ -182,8 +315,8 @@ Choose gift amount to support your favorite league-hosting platform:        </p>
 
 export default function Extras() {
   return (
-    <Suspense fallback={<div style={{ backgroundColor: '#0a0a0f', minHeight: '100vh' }} />}>
-      <ExtrasContent />
+    <Suspense fallback={<div className="trekkon-bg" style={{ minHeight: '100vh' }} />}>
+            <ExtrasContent />
     </Suspense>
   )
 }

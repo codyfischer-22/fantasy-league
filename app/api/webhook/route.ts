@@ -35,6 +35,22 @@ if (event.type === 'checkout.session.completed') {
   const tier = session.metadata?.tier
   const customerId = session.customer as string
 
+    // Tip jar: save the supporter once Stripe confirms the payment
+  if (session.metadata?.kind === 'tip' && session.payment_status === 'paid') {
+    const { error: tipError } = await supabaseAdmin
+      .from('supporters')
+      .upsert(
+        {
+          stripe_session_id: session.id,
+          public_name: session.metadata.public_name || 'Anonymous Trekker',
+          amount_cents: session.amount_total ?? 0,
+          show_publicly: session.metadata.show_publicly === 'true',
+        },
+        { onConflict: 'stripe_session_id', ignoreDuplicates: true }
+      )
+    if (tipError) console.error('Error saving supporter:', tipError)
+  }
+
   if (userId && tier) {
     await supabaseAdmin
       .from('profiles')

@@ -292,6 +292,18 @@ const handleCreate = async (skin: string, isPrivate: boolean) => {
   5-10 players are randomly assigned factions, where they compete in up to 5 missions. Evil players know their teammates and win by failing 3 missions. Good players win by passing 3 missions... if evil cannot guess their leader, that is. The good leader holds all the cards, knowing everyone's intentions, but say too much and they're a goner!
 </p>
 
+        <img
+          src="/images/social-game/social-game-screen.png"
+          alt="Trust Issue5 game room"
+          style={{
+            width: '100%',
+            borderRadius: '12px',
+            border: '2px solid #f0b429',
+            display: 'block',
+            marginBottom: '32px'
+          }}
+        />
+
         <section id="hub-tiers" className="desktop-only-text" style={{ backgroundColor: '#0a0a0f', marginBottom: '8px' }}>
           {tierGridContent}
         </section>
