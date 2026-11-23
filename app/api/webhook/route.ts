@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
     )
   } catch (err: any) {
     console.error('Webhook signature verification failed:', err.message)
+    
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
 
@@ -202,6 +203,19 @@ if (event.type === 'customer.subscription.deleted') {
       }
     }
   }
+}
+
+// Keep each member's subscription status current (used by the Wall of Supporters)
+if (
+  event.type === 'customer.subscription.created' ||
+  event.type === 'customer.subscription.updated' ||
+  event.type === 'customer.subscription.deleted'
+) {
+  const sub = event.data.object as Stripe.Subscription
+  await supabaseAdmin
+    .from('profiles')
+    .update({ subscription_status: event.type === 'customer.subscription.deleted' ? 'canceled' : sub.status })
+    .eq('stripe_customer_id', sub.customer as string)
 }
 
 return NextResponse.json({ received: true })

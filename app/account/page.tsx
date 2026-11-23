@@ -49,6 +49,7 @@ const [uploadingAvatar, setUploadingAvatar] = useState(false)
 const [avatarMessage, setAvatarMessage] = useState('')
   const [chatDigestOptIn, setChatDigestOptIn] = useState(false);
 const [chatDigestSaving, setChatDigestSaving] = useState(false);
+const [showAsSupporter, setShowAsSupporter] = useState(false)
 
 const handleAvatarSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
   const file = e.target.files?.[0]
@@ -112,6 +113,16 @@ const handleToggleChatDigest = async (checked: boolean) => {
     setProfile((prev) => prev ? { ...prev, chat_digest_opt_in: checked } : prev);
   }
 };
+
+const handleToggleSupporter = async (checked: boolean) => {
+  if (!user) return
+  setShowAsSupporter(checked)
+  const { error } = await supabase
+    .from('profiles')
+    .update({ show_as_supporter: checked })
+    .eq('user_id', user.id)
+  if (error) setShowAsSupporter(!checked)
+}
 
 const handleToggleEmailOptIn = async (checked: boolean) => {
   if (!user) return
@@ -342,7 +353,7 @@ const handleUpgrade = async (tier: string) => {
     if (user) {
    supabase
   .from('profiles')
-  .select('email, tier, display_name, is_global_admin, email_opt_in, chat_digest_opt_in, avatar_url')
+  .select('email, tier, display_name, is_global_admin, email_opt_in, chat_digest_opt_in, avatar_url, show_as_supporter')
   .eq('user_id', user.id)
   .single()
   .then(({ data, error }) => {
@@ -355,6 +366,7 @@ const handleUpgrade = async (tier: string) => {
       setIsGlobalAdmin(data.is_global_admin ?? false)
       setEmailOptIn(data.email_opt_in ?? true)
       setChatDigestOptIn(data.chat_digest_opt_in ?? false)
+      setShowAsSupporter(data.show_as_supporter ?? false)
     }
     setProfileLoading(false)
   })
@@ -764,6 +776,20 @@ Email me with league notifications and deadlines, new seasons, and website devel
   <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
     Email me with weekly updates on community and league chats. </span>
 </label>
+
+{profile.tier !== 'stowaway' && (
+  <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginTop: '8px', cursor: 'pointer' }}>
+    <input
+      type="checkbox"
+      checked={showAsSupporter}
+      onChange={(e) => handleToggleSupporter(e.target.checked)}
+      style={{ marginTop: '3px' }}
+    />
+    <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>
+      Show my display name and tier on the Wall of Supporters.
+    </span>
+  </label>
+)}
 
         <button
   onClick={handleSignOut}

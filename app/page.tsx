@@ -55,7 +55,7 @@ export default function Home() {
   const [circlesAtEnd, setCirclesAtEnd] = useState(false)
   const [publicLeaguesByType, setPublicLeaguesByType] = useState<Record<string, { name: string; slug: string }[]>>({})
   const [showPublicLeaguesModal, setShowPublicLeaguesModal] = useState<string | null>(null)
-  const [recentSupporters, setRecentSupporters] = useState<{ public_name: string; amount_cents: number }[]>([])
+  const [recentSupporters, setRecentSupporters] = useState<{ public_name: string; detail: string }[]>([])
   const [supporterIdx, setSupporterIdx] = useState(0)
 
   const relevantLeagues = [...hostedLeagues, ...joinedLeagues].filter(
@@ -143,14 +143,30 @@ const realLeagues = (leagues ?? []).filter((l) => !l.is_show_chat && l.league_ty
     loadPublicLeagues()
   }, [])
 
-    useEffect(() => {
+  useEffect(() => {
     async function loadSupporters() {
-      const { data } = await supabase
+      const tierNames: Record<string, string> = { castaway: 'Castaway', crewchief: 'Crew Chief', teamprincipal: 'Team Principal' }
+      const { data: tips } = await supabase
         .from('supporters')
         .select('public_name, amount_cents')
         .order('created_at', { ascending: false })
         .limit(10)
-      setRecentSupporters(data ?? [])
+      const { data: members } = await supabase.rpc('public_member_supporters')
+      const tipItems = (tips ?? []).map((t) => ({
+        public_name: t.public_name,
+        detail: `$${(t.amount_cents / 100).toFixed(t.amount_cents % 100 === 0 ? 0 : 2)}`,
+      }))
+      const memberItems = (members ?? []).map((m: { display_name: string; tier: string }) => ({
+        public_name: m.display_name,
+        detail: tierNames[m.tier] ?? 'Member',
+      }))
+      // Alternate gift / member so both groups get regular airtime
+      const mixed: { public_name: string; detail: string }[] = []
+      for (let i = 0; i < Math.max(tipItems.length, memberItems.length); i++) {
+        if (tipItems[i]) mixed.push(tipItems[i])
+        if (memberItems[i]) mixed.push(memberItems[i])
+      }
+      setRecentSupporters(mixed)
     }
     loadSupporters()
   }, [])
@@ -752,7 +768,6 @@ Got an idea for a league we should build next? Send us your concept and help sha
   
       {recentSupporters.length > 0 && (() => {
         const s = recentSupporters[supporterIdx % recentSupporters.length]
-        const amt = `$${(s.amount_cents / 100).toFixed(s.amount_cents % 100 === 0 ? 0 : 2)}`
         return (
           <div>
                                     <a href="/tip-jar" style={{
@@ -802,7 +817,8 @@ Got an idea for a league we should build next? Send us your concept and help sha
                 color: 'transparent',
                 animation: 'wallShimmer 3s linear infinite'
               }}>
-                Thanks for the Gift:
+                                <span className="desktop-only-text">Thank you for supporting the league:</span>
+                <span className="mobile-only-block">Thanks for Support:</span>
               </span>
               <span key={supporterIdx} style={{
                 position: 'relative',
@@ -810,8 +826,8 @@ Got an idea for a league we should build next? Send us your concept and help sha
                 fontSize: '0.9rem',
                 animation: 'tickerFade 3.5s ease-in-out'
               }}>
-                <strong style={{ color: '#f0b429' }}>{s.public_name}</strong> · {amt}
-              </span>
+                <strong style={{ color: '#f0b429' }}>{s.public_name}</strong> · {s.detail}
+                              </span>
             </a>
           </div>
         )

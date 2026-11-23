@@ -16,6 +16,7 @@ function ExtrasContent() {
   const [showName, setShowName] = useState(true)
   const [publicName, setPublicName] = useState('')
   const [supporters, setSupporters] = useState<{ public_name: string; created_at: string; amount_cents: number }[]>([])
+  const [members, setMembers] = useState<{ display_name: string; tier: string }[]>([])
 
   useEffect(() => {
     async function load() {
@@ -29,6 +30,8 @@ function ExtrasContent() {
         .order('created_at', { ascending: false })
         .limit(50)
       setSupporters(rows ?? [])
+            const { data: memberRows } = await supabase.rpc('public_member_supporters')
+      setMembers(memberRows ?? [])
     }
     load()
   }, [user])
@@ -215,7 +218,7 @@ Choose gift amount to support your favorite league-hosting platform:        </p>
           </p>
         </div>
 
-              {supporters.length > 0 && (
+                    {(supporters.length > 0 || members.length > 0) && (
           <div style={{
             position: 'relative',
             overflow: 'hidden',
@@ -263,23 +266,64 @@ Choose gift amount to support your favorite league-hosting platform:        </p>
               ✦ Wall of Supporters ✦
             </p>
 
-            <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', rowGap: '16px', columnGap: '8px' }}>
-              {supporters.map((s, i) => (
-                <span key={i} style={{
-                  backgroundColor: 'rgba(240, 180, 41, 0.12)',
-                  border: '1px solid #f0b429',
-                  color: '#f0b429',
-                  borderRadius: '20px',
-                  padding: '4px 12px',
-                  fontSize: '0.85rem',
-                  opacity: 0,
-                  boxShadow: i === 0 ? '0 0 12px rgba(240, 180, 41, 0.6)' : 'none',
-                  animation: `wallPop 0.5s ease-out ${0.6 + i * 0.08}s forwards`
+                    {/* Monthly Members (gold) */}
+            {members.length > 0 && (
+              <>
+                <p style={{
+                  position: 'relative', zIndex: 1, textAlign: 'center', color: '#a0a0b0',
+                  fontSize: '0.72rem', fontWeight: 'bold', letterSpacing: '3px', textTransform: 'uppercase',
+                  margin: '0 0 12px 0'
                 }}>
-                  {s.public_name} · ${(s.amount_cents / 100).toFixed(s.amount_cents % 100 === 0 ? 0 : 2)}
-                </span>
-              ))}
-            </div>
+                  Monthly Members
+                </p>
+                <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', rowGap: '16px', columnGap: '8px' }}>
+                  {members.map((m, i) => (
+                    <span key={i} style={{
+                      backgroundColor: 'rgba(240, 180, 41, 0.12)',
+                      border: '1px solid #f0b429',
+                      color: '#f0b429',
+                      borderRadius: '20px',
+                      padding: '4px 12px',
+                      fontSize: '0.85rem',
+                      opacity: 0,
+                      animation: `wallPop 0.5s ease-out ${0.6 + i * 0.08}s forwards`
+                    }}>
+                      {m.display_name} · {({ castaway: 'Castaway', crewchief: 'Crew Chief', teamprincipal: 'Team Principal' } as Record<string, string>)[m.tier] ?? 'Member'}
+                    </span>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {/* One-Time Gifts (buttercup) */}
+            {supporters.length > 0 && (
+              <>
+                <p style={{
+                  position: 'relative', zIndex: 1, textAlign: 'center', color: '#a0a0b0',
+                  fontSize: '0.72rem', fontWeight: 'bold', letterSpacing: '3px', textTransform: 'uppercase',
+                  margin: members.length > 0 ? '24px 0 12px 0' : '0 0 12px 0'
+                }}>
+                  One-Time Gifts
+                </p>
+                <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', rowGap: '16px', columnGap: '8px' }}>
+                  {supporters.map((s, i) => (
+                    <span key={i} style={{
+                      backgroundColor: 'rgba(245, 255, 156, 0.08)',
+                      border: '1px solid rgb(245, 255, 156)',
+                      color: 'rgb(245, 255, 156)',
+                      borderRadius: '20px',
+                      padding: '4px 12px',
+                      fontSize: '0.85rem',
+                      opacity: 0,
+                      boxShadow: i === 0 ? '0 0 12px rgba(245, 255, 156, 0.5)' : 'none',
+                      animation: `wallPop 0.5s ease-out ${0.6 + (members.length + i) * 0.08}s forwards`
+                    }}>
+                      {s.public_name} · ${(s.amount_cents / 100).toFixed(s.amount_cents % 100 === 0 ? 0 : 2)}
+                    </span>
+                  ))}
+                </div>
+              </>
+            )}
 
             <style>{`
               @keyframes wallGlow {
