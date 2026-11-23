@@ -843,8 +843,8 @@ Got an idea for a league we should build next? Send us your concept and help sha
                   <>
                     <span className="desktop-only-text" style={label}>🏆 Congratulations to the {s.detail} champion:</span>
                     <span className="desktop-only-text" style={name}><strong style={gold}>{s.name}</strong></span>
-                    <span className="mobile-only-block" style={name}>
-                      <span style={label}>🏆</span> <strong style={gold}>{s.name}</strong> <span style={label}>wins {s.detail}!</span>
+                                       <span className="mobile-only-block" style={label}>
+                      🏆 {s.name} wins {s.detail}!
                     </span>
                   </>
                 ) : (
