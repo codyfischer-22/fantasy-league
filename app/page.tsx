@@ -818,7 +818,7 @@ Got an idea for a league we should build next? Send us your concept and help sha
                 animation: 'wallShimmer 3s linear infinite'
               }}>
                                 <span className="desktop-only-text">Thank you for supporting the league:</span>
-                <span className="mobile-only-block">Thanks for Support:</span>
+                <span className="mobile-only-block">Thanks:</span>
               </span>
               <span key={supporterIdx} style={{
                 position: 'relative',
