@@ -5,7 +5,7 @@ import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { Rat, Anchor, Drill, Rocket, HandCoins, Earth, Lock, TestTubeDiagonal, Hammer, CornerLeftUp, Mail, Hourglass, TreePalm, ChessRook, CarFront, Engine, MessageCirclePlus, Crown, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Rat, Anchor, Drill, Rocket, HandCoins, Earth, Lock, TestTubeDiagonal, Hammer, CornerLeftUp, Mail, Hourglass, TreePalm, ChessRook, CarFront, Engine, MessageCirclePlus, Crown, ChevronLeft, ChevronRight, Trophy } from 'lucide-react'
 
 type MyLeague = {
   name: string
@@ -780,11 +780,12 @@ Got an idea for a league we should build next? Send us your concept and help sha
   
             {recentSupporters.length > 0 && (() => {
         const s = recentSupporters[supporterIdx % recentSupporters.length]
-        const label: React.CSSProperties = {
+           const label: React.CSSProperties = {
           fontSize: '0.7rem',
           fontWeight: 'bold',
           letterSpacing: '3px',
           textTransform: 'uppercase',
+          lineHeight: 1,
           background: 'linear-gradient(90deg, #f0b429 0%, #f5ff9c 50%, #f0b429 100%)',
           backgroundSize: '200% auto',
           WebkitBackgroundClip: 'text',
@@ -792,7 +793,7 @@ Got an idea for a league we should build next? Send us your concept and help sha
           color: 'transparent',
           animation: 'wallShimmer 3s linear infinite'
         }
-        const name: React.CSSProperties = { color: '#ffffff', fontSize: '0.9rem' }
+        const name: React.CSSProperties = { color: '#ffffff', fontSize: '0.9rem', lineHeight: 1 }
         const gold: React.CSSProperties = { color: '#f0b429' }
         return (
           <div>
@@ -815,6 +816,16 @@ Got an idea for a league we should build next? Send us your concept and help sha
               textDecoration: 'none',
               animation: 'wallGlow 3.5s ease-in-out infinite'
             }}>
+                            <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden="true">
+                <defs>
+                  <linearGradient id="bannerShimmer" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="24" y2="0" spreadMethod="reflect">
+                    <stop offset="0" stopColor="#f0b429" />
+                    <stop offset="0.5" stopColor="#f5ff9c" />
+                    <stop offset="1" stopColor="#f0b429" />
+                    <animateTransform attributeName="gradientTransform" type="translate" from="-24 0" to="24 0" dur="3s" repeatCount="indefinite" />
+                  </linearGradient>
+                </defs>
+              </svg>
               {[...Array(6)].map((_, i) => (
                 <span key={i} style={{
                   position: 'absolute',
@@ -833,7 +844,7 @@ Got an idea for a league we should build next? Send us your concept and help sha
               <span key={supporterIdx} style={{
                 position: 'relative',
                 display: 'flex',
-                alignItems: 'center',
+                alignItems: 'baseline',
                 justifyContent: 'center',
                 gap: '10px',
                 flexWrap: 'wrap',
@@ -841,22 +852,30 @@ Got an idea for a league we should build next? Send us your concept and help sha
               }}>
                 {s.kind === 'champ' ? (
                   <>
-                                        <span className="desktop-only-text" style={label}>
-                      🏆 Congrats to {s.name}, {s.detail} Champion!
+                                           <span className="desktop-only-text">
+                      <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: '8px' }}>
+                        <Trophy size={18} color="url(#bannerShimmer)" strokeWidth={1.5} style={{ flexShrink: 0, position: 'relative', top: '3px' }} />
+                        <span style={label}>Congrats to {s.name}, {s.detail} Champion!</span>
+                      </span>
                     </span>
-                                       <span className="mobile-only-block" style={label}>
-                      🏆 {s.name} wins {s.detail}!
+                    <span className="mobile-only-block">
+                      <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: '8px' }}>
+                        <Trophy size={18} color="url(#bannerShimmer)" strokeWidth={1.5} style={{ flexShrink: 0, position: 'relative', top: '3px' }} />
+                        <span style={label}>{s.name} wins {s.detail}!</span>
+                      </span>
                     </span>
                   </>
                 ) : (
                   <>
-                                       <span className="desktop-only-text" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                      <HandCoins size={18} color="#f0b429" strokeWidth={2} style={{ flexShrink: 0 }} />
-                      <span style={label}>Your gifts keep these leagues going:</span>
+                                                                               <span className="desktop-only-text">
+                      <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: '8px' }}>
+                        <HandCoins size={18} color="url(#bannerShimmer)" strokeWidth={1.5} style={{ flexShrink: 0, position: 'relative', top: '3px' }} />
+                        <span style={label}>Your gifts keep these leagues going:</span>
+                      </span>
                     </span>
-                                     <span className="mobile-only-block">
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                        <HandCoins size={16} color="#f0b429" strokeWidth={2} style={{ flexShrink: 0 }} />
+                                                                            <span className="mobile-only-block">
+                      <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: '8px' }}>
+                        <HandCoins size={18} color="url(#bannerShimmer)" strokeWidth={1.5} style={{ flexShrink: 0, position: 'relative', top: '3px' }} />
                         <span style={label}>Thank you:</span>
                       </span>
                     </span>
