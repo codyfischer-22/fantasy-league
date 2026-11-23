@@ -89,8 +89,7 @@ const handleLogin = async (e: React.FormEvent) => {
 }}
 
 return (
-    <main className="auth-page" style={{
-      backgroundColor: '#0a0a0f',
+        <main className="auth-page mobile-shrink-main trekkon-bg" style={{
       minHeight: '100vh',
       display: 'flex',
       alignItems: 'center',

@@ -341,6 +341,14 @@ if (!isDemoLeague) {
           .from('draft_rankings')
           .select('user_id, castaway_id, rank_position')
           .eq('league_id', league.id)
+        const { data: bonusRows } = await supabase
+          .from('player_bonus_points')
+          .select('user_id, points')
+          .eq('league_id', league.id)
+        const bonusByUser = new Map<string, number>()
+        ;(bonusRows ?? []).forEach((b) => {
+          bonusByUser.set(b.user_id, (bonusByUser.get(b.user_id) ?? 0) + Number(b.points))
+        })
    if (picks && picks.length > 0) {
   const castawayPointsMap = new Map<number, number>()
   scores.forEach((s) => {
@@ -427,8 +435,10 @@ episodeNumbers.forEach((ep) => {
     if (!playerName) return
     const totals = castawayIdsForPlayer.map((cid) => castawayRunningTotals[cid] ?? 0)
     const top3 = [...totals].sort((a, b) => b - a).slice(0, 3)
-    playerTotalsThisEpisode[playerName] = top3.reduce((sum, t) => sum + t, 0)
-  })
+    const isFinalEpisode = ep === episodeNumbers[episodeNumbers.length - 1]
+    const bonus = isFinalEpisode ? (bonusByUser.get(userId) ?? 0) : 0
+    playerTotalsThisEpisode[playerName] = top3.reduce((sum, t) => sum + t, 0) + bonus
+    })
 
   const ranked = [...pNames].sort(
     (a, b) => playerTotalsThisEpisode[b] - playerTotalsThisEpisode[a]
