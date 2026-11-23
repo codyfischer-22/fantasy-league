@@ -4,8 +4,8 @@ import { MicSignal, SquareLibrary } from 'lucide-react'
 
 export default function ExtrasPage() {
   return (
-    <main style={{
-      backgroundColor: '#0a0a0f',
+    <main className="mobile-shrink-main trekkon-bg" style={{
+      minHeight: '100vh',
       fontFamily: 'Georgia, serif',
       color: '#ffffff',
       padding: '60px 40px'

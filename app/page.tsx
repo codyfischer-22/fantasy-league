@@ -661,10 +661,10 @@ backgroundPosition: 'center',
   flex: '0 1 350px'
   }}
   >
-            <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.5rem, 6vw, 1.7rem)', marginBottom: '11px', marginTop: '0px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h3 style={{ color: '#f0b429', fontSize: 'clamp(1.5rem, 6vw, 1.7rem)', marginBottom: '8px', marginTop: '0px', display: 'flex', alignItems: 'center', gap: '8px' }}>
   <MessageCirclePlus size={30} strokeWidth={1.5} color="#ffffff" /> Suggest a Fandom
 </h3>
-            <p style={{ color: '#ffffff', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '21.5px' }}>
+            <p style={{ color: '#ffffff', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px' }}>
 Got an idea for a league we should build next? Send us your concept and help shape the future of Trekkon Fantasy Leagues. 
 </p>
   <button
@@ -696,8 +696,7 @@ Got an idea for a league we should build next? Send us your concept and help sha
   )
 
   return (
-<main style={{
-  backgroundColor: '#0a0a0f',
+<main className="trekkon-bg" style={{
   minHeight: '100vh',
   fontFamily: 'Georgia, serif',
   color: '#ffffff'
@@ -733,13 +732,12 @@ Got an idea for a league we should build next? Send us your concept and help sha
       {!showPersonalizedView && (
         <section style={{
           textAlign: 'center',
-          padding: '60px 40px',
-          background: 'linear-gradient(180deg, #12121a 0%, #0a0a0f 100%)'
-        }}>
+          padding: '48px 40px',
+                  }}>
           <h2 style={{
             fontSize: 'clamp(1.75rem, 8vw, 3rem)',
             color: '#ffffff',
-            marginBottom: '14px',
+            marginBottom: '16px',
             letterSpacing: '1px'
           }}>
             Fantasy without the Football, <span style={{ color: '#f0b429' }}>Finally</span>
@@ -768,7 +766,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
           
 
     {showPersonalizedView && (
-  <section id="my-leagues" style={{ padding: '50px 40px 20px 40px' }}>
+  <section id="my-leagues" style={{ padding: '48px 40px 24px 40px' }}>
     <div style={{ maxWidth: '1100px', margin: '0 auto', marginTop: '8px' }}>
 <div style={{ position: 'relative' }}>
   <div
@@ -897,7 +895,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
     color: '#555570',
     fontSize: 'clamp(0.85rem, 3.5vw, 1rem)',
     textAlign: 'center',
-    marginTop: '4.5px',
+    marginTop: '4px',
     marginBottom: '0px'
   }}>
    <span style={{ 
@@ -915,13 +913,13 @@ This is your arena to compete with friends, family, and on-screen stars on beach
 )}
 
       {/* ─── LEAGUES ─── */}
-<section id="leagues" className="scroll-offset" style={{ padding: '50px 40px' }}>
+<section id="leagues" className="scroll-offset" style={{ padding: '24px 40px' }}>
   <h2 style={{
     textAlign: 'center',
     color: '#f0b429',
     fontSize: 'clamp(1.75rem, 8vw, 2.25rem)',
-    marginBottom: '12px',
-    marginTop: '-36px',
+    marginBottom: '16px',
+    marginTop: '0px',
     letterSpacing: '2px'
   }}> 
   Explore Fandoms
@@ -956,15 +954,14 @@ This is your arena to compete with friends, family, and on-screen stars on beach
 
 {/* ─── PRICING TIERS ─── */}
       <section id="tiers" style={{
-        padding: '20px 20px',
-        backgroundColor: '#0a0a0f',
+        padding: '24px 20px',
       }}>
         <h2 style={{
           textAlign: 'center',
           color: '#f0b429',
           fontSize: 'clamp(1.75rem, 8vw, 2.25rem)',
-          marginBottom: '0px',
-          marginTop: '-16px',
+          marginBottom: '-4px',
+          marginTop: '0px',
           letterSpacing: '2px'
         }}>
         Membership Tiers
@@ -972,7 +969,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
        <p className="mobile-left-text" style={{
   textAlign: 'center',
   color: '#a0a0b0',
-  marginBottom: '36px',
+  margin: '0 0 24px 0',
   padding: '0 18px',
   fontSize: 'clamp(.85rem, 4.75vw, 1rem)',
 }}>
@@ -982,7 +979,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
         <div ref={tierGridRef} className="home-tier-grid" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: '20px',
+          gap: '16px',
           maxWidth: '1000px',
           margin: '0 auto'
         }}>
@@ -1132,7 +1129,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
 {/* All-Access Teaser */}
       <div className="all-access-teaser" style={{
   maxWidth: '600px',
-  margin: '40px auto 0 auto',
+  margin: '48px auto 0 auto',
   position: 'relative'
 }}>
 
@@ -1160,7 +1157,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
             backgroundColor: '#1a1a2e',
             border: '2px dashed #ca29ca',
             borderRadius: '12px',
-            padding: '24px',
+            padding: '28px',
             marginBottom: '12px',
             textAlign: 'center'
           }}>
@@ -1183,13 +1180,13 @@ This is your arena to compete with friends, family, and on-screen stars on beach
 
   
      {/* ─── GAME ─── */}
-<section id="leagues" className="scroll-offset" style={{ padding: '50px 40px' }}>
+<section id="get-in-the-game" className="scroll-offset" style={{ padding: '24px 40px' }}>
   <h2 id="play-social-game" style={{
     textAlign: 'center',
     color: '#f0b429',
     fontSize: 'clamp(1.75rem, 8vw, 2.25rem)',
-    marginBottom: '6px',
-    marginTop: '-24px',
+    marginBottom: '12px',
+    marginTop: '0px',
     letterSpacing: '2px'
   }}> 
   Get in the Game
@@ -1200,20 +1197,19 @@ This is your arena to compete with friends, family, and on-screen stars on beach
   fontSize: 'clamp(.85rem, 4.5vw, 1rem)',
   maxWidth: '800px',
   textAlign: 'center',
-  margin: '0 auto 16px auto',
-  marginBottom: '4px',
+  margin: '0 auto 8px auto',
   lineHeight: '1.7'
 }}>
   Watching is fun, but have you ever wondered if you have what it takes to <em>play</em> the game? 
   </p>
 
-<p className="mobile-left-text" style={{ color: '#a0a0b0', fontSize: 'clamp(.85rem, 4.5vw, 1rem)', marginBottom: '12px', textAlign: 'center', maxWidth: '800px', margin: '0 auto 12px auto' }}>
+<p className="mobile-left-text" style={{ color: '#a0a0b0', fontSize: 'clamp(.85rem, 4.5vw, 1rem)', textAlign: 'center', maxWidth: '800px', margin: '0 auto' }}>
   <em>Trust Issue<span style={{ fontSize: '0.75em', position: 'relative', top: '-0.1em' }}>5</span></em> is an entry-level, social deduction game featuring live voice chats, easy-to-follow game mechanics,{' '}
   <br className="desktop-only-break" />
   and lots of bickering. Five short rounds present infinite possibilities for a new game experience each time!
 </p>
 
-<div style={{ maxWidth: '900px', margin: '20px auto' }}>
+<div style={{ maxWidth: '900px', margin: '24px auto' }}>
   <a
     href="/social-game"
     style={{ display: 'block', transition: 'transform 0.2s, box-shadow 0.2s' }}
@@ -1245,8 +1241,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
   fontSize: 'clamp(.85rem, 4.5vw, 1rem)',
   maxWidth: '800px',
   textAlign: 'center',
-  margin: '0 auto 16px auto',
-  marginBottom: '24px'
+  margin: '0 auto 24px auto'
 }}>
   Though we certainly recommend honesty, kindness, and integrity in the real world, <em>Trust Issue<span style={{ fontSize: '0.75em', position: 'relative', top: '-0.1em' }}>5</span></em> is a great place to test your lying, deceiving, and backstabbing accumen.
 </p>

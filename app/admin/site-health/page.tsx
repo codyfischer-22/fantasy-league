@@ -99,7 +99,7 @@ export default function SiteHealthPage() {
   }, [user, loading])
 
   const shell = (child: React.ReactNode) => (
-    <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0a0b0', fontFamily: 'Georgia, serif' }}>
+    <main className="mobile-shrink-main trekkon-bg" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0a0b0', fontFamily: 'Georgia, serif' }}>
       {child}
     </main>
   )
@@ -108,7 +108,7 @@ export default function SiteHealthPage() {
   if (!allowed) return shell(<p>Access denied. Site Health is for Global Admins.</p>)
 
   return (
-    <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
+    <main className="mobile-shrink-main trekkon-bg" style={{ minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
       <div className="mobile-page-content" style={{ maxWidth: '1100px', margin: '0 auto' }}>
         <a href="/admin/dashboard" style={{ color: '#a0a0b0', fontSize: '0.85rem', textDecoration: 'none', display: 'inline-block', marginBottom: '24px' }}>
           ← Back to Admin Dashboard

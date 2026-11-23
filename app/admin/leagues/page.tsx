@@ -249,7 +249,7 @@ const handleDeleteLeague = async (league: LeagueRow) => {
 
   if (loading || checking) {
     return (
-      <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0a0b0', fontFamily: 'Georgia, serif' }}>
+      <main className="mobile-shrink-main trekkon-bg" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0a0b0', fontFamily: 'Georgia, serif' }}>
         Loading...
       </main>
     )
@@ -257,7 +257,7 @@ const handleDeleteLeague = async (league: LeagueRow) => {
 
   if (!user || !isGlobalAdmin) {
     return (
-      <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0a0b0', fontFamily: 'Georgia, serif' }}>
+      <main className="mobile-shrink-main trekkon-bg" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0a0b0', fontFamily: 'Georgia, serif' }}>
         <p>Access denied.</p>
       </main>
     )
@@ -284,7 +284,7 @@ const filteredLeagues = leagues.filter((l) => {
   }
 
   return (
-    <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
+    <main className="mobile-shrink-main trekkon-bg" style={{ minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
         <a href="/admin/dashboard" style={{ color: '#a0a0b0', fontSize: '0.85rem', textDecoration: 'none', display: 'inline-block', marginBottom: '24px' }}>
           ← Back to Admin Dashboard

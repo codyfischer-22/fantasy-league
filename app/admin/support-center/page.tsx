@@ -47,7 +47,7 @@ type GameReport = {
 export default function InboxPage() {
   return (
     <Suspense fallback={
-      <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0a0b0', fontFamily: 'Georgia, serif' }}>
+      <main className="mobile-shrink-main trekkon-bg" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0a0b0', fontFamily: 'Georgia, serif' }}>
         Loading...
       </main>
     }>
@@ -208,7 +208,7 @@ const handleGameReportAction = async (id: number, resolved: boolean) => {
 
   if (loading || checking) {
     return (
-      <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0a0b0', fontFamily: 'Georgia, serif' }}>
+      <main className="mobile-shrink-main trekkon-bg" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0a0b0', fontFamily: 'Georgia, serif' }}>
         Loading...
       </main>
     )
@@ -216,7 +216,7 @@ const handleGameReportAction = async (id: number, resolved: boolean) => {
 
   if (!user || !isAdmin) {
     return (
-      <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0a0b0', fontFamily: 'Georgia, serif' }}>
+      <main className="mobile-shrink-main trekkon-bg" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0a0b0', fontFamily: 'Georgia, serif' }}>
         <p>Access denied.</p>
       </main>
     )
@@ -230,7 +230,7 @@ const handleGameReportAction = async (id: number, resolved: boolean) => {
 const handledGameReports = gameReports.filter((r) => r.resolved)
 
   return (
-    <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
+    <main className="mobile-shrink-main trekkon-bg" style={{ minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         <a href="/admin/dashboard" style={{ color: '#a0a0b0', fontSize: '0.85rem', textDecoration: 'none', display: 'inline-block', marginBottom: '24px' }}>
           ← Back to Admin Dashboard

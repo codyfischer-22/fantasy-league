@@ -936,3 +936,20 @@ body.hide-site-footer footer {
     transform: scale(1) !important;
   }
 }
+
+@media (max-width: 768px) {
+  #tiers h2 {
+    margin-bottom: 4px !important;
+    line-height: 1.15;
+  }
+  #tiers > p.mobile-left-text {
+    margin-bottom: 8px !important;
+  }
+}
+
+.trekkon-bg {
+  background-color: #0a0a0f;
+  background-image: url('/textures/topo-tracks.svg');
+  background-size: 960px 960px;
+  background-repeat: repeat;
+}

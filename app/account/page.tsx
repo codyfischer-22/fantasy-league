@@ -398,8 +398,7 @@ const handleSave = async () => {
 
   if (loading || profileLoading) {
     return (
-      <main style={{
-        backgroundColor: '#0a0a0f',
+      <main className="mobile-shrink-main trekkon-bg" style={{
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
@@ -414,8 +413,7 @@ const handleSave = async () => {
 
   if (!profile) {
     return (
-      <main style={{
-        backgroundColor: '#0a0a0f',
+        <main className="mobile-shrink-main trekkon-bg" style={{
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
@@ -436,8 +434,7 @@ const handleSave = async () => {
   }
 
   return (
-    <main style={{
-      backgroundColor: '#0a0a0f',
+     <main className="mobile-shrink-main trekkon-bg" style={{
       minHeight: '100vh',
       padding: '60px 40px',
       fontFamily: 'Georgia, serif',
@@ -803,7 +800,7 @@ Email me with league notifications and deadlines, new seasons, and website devel
 
 export default function Account() {
   return (
-    <Suspense fallback={<div style={{ backgroundColor: '#0a0a0f', minHeight: '100vh' }} />}>
+      <Suspense fallback={<div className="trekkon-bg" style={{ minHeight: '100vh' }} />}>
       <AccountContent />
     </Suspense>
   )

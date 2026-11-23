@@ -262,7 +262,7 @@ useEffect(() => {
 
   if (authLoading || loading) {
     return (
-      <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0a0b0', fontFamily: 'Georgia, serif' }}>
+      <main className="mobile-shrink-main trekkon-bg" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0a0b0', fontFamily: 'Georgia, serif' }}>
         Loading...
       </main>
     )
@@ -270,7 +270,7 @@ useEffect(() => {
 
   if (!game) {
     return (
-      <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0a0b0', fontFamily: 'Georgia, serif' }}>
+      <main className="mobile-shrink-main trekkon-bg" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0a0b0', fontFamily: 'Georgia, serif' }}>
         Game not found.
       </main>
     )
@@ -347,7 +347,7 @@ useEffect(() => {
 
 return (
   <HMSRoomProvider>
-  <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
+  <main className="mobile-shrink-main trekkon-bg" style={{ minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
       {game.status === 'lobby' ? (
         <GameLobby
           gameId={game.id}

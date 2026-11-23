@@ -97,7 +97,7 @@ export default function MessageHistoryPage() {
 
   if (loading || checking) {
     return (
-      <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0a0b0', fontFamily: 'Georgia, serif' }}>
+      <main className="mobile-shrink-main trekkon-bg" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0a0b0', fontFamily: 'Georgia, serif' }}>
         Loading...
       </main>
     )
@@ -105,7 +105,7 @@ export default function MessageHistoryPage() {
 
   if (!user || !isAdmin) {
     return (
-      <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0a0b0', fontFamily: 'Georgia, serif' }}>
+      <main className="mobile-shrink-main trekkon-bg" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0a0b0', fontFamily: 'Georgia, serif' }}>
         <p>Access denied.</p>
       </main>
     )
@@ -121,7 +121,7 @@ export default function MessageHistoryPage() {
     s === 'sent' ? '#068e38' : s === 'scheduled' ? '#f0b429' : s === 'failed' ? '#ff6b6b' : '#555570'
 
   return (
-    <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
+    <main className="mobile-shrink-main trekkon-bg" style={{ minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         <a href="/admin/message-players" style={{ color: '#a0a0b0', fontSize: '0.85rem', textDecoration: 'none', display: 'inline-block', marginBottom: '24px' }}>
           ← Back to Message Players

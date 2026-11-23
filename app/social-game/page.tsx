@@ -268,7 +268,7 @@ const handleCreate = async (skin: string, isPrivate: boolean) => {
   )
 
   return (
-    <main style={{ backgroundColor: '#0a0a0f', minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
+    <main className="mobile-shrink-main trekkon-bg" style={{ minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         <a href="/" style={{ color: '#a0a0b0', fontSize: '0.85rem', textDecoration: 'none', display: 'inline-block', marginBottom: '24px' }}>
           ← Back to Trekkon Fantasy Leagues
