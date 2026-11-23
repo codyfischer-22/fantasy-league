@@ -26,8 +26,7 @@ export default function Login() {
 
   if (authLoading || user) {
     return (
-      <main style={{
-        backgroundColor: '#0a0a0f',
+      <main className="mobile-shrink-main trekkon-bg" style={{
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',

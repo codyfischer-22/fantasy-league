@@ -56,8 +56,7 @@ useEffect(() => {
 
 if (!leagueTypeLabels[type]) {
   return (
-    <main style={{
-      backgroundColor: '#0a0a0f',
+      <main className="mobile-shrink-main trekkon-bg" style={{
       minHeight: '100vh',
       display: 'flex',
       flexDirection: 'column',
@@ -192,8 +191,7 @@ if (!isAdmin) {
 }
 
   return (
-    <main style={{
-      backgroundColor: '#0a0a0f',
+      <main className="mobile-shrink-main trekkon-bg" style={{
       minHeight: '100vh',
       display: 'flex',
       alignItems: 'center',
