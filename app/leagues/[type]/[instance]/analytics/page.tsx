@@ -91,7 +91,7 @@ type EventDetail = {
 }
 type CastawayChartRow = {
   episode: string
-  [castawayName: string]: number | string
+  [castawayName: string]: number | string | null
 }
 type PlayerChartRow = {
   episode: string
@@ -148,8 +148,8 @@ function RankTooltip({ active, payload, label }: any) {
 
 function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload || payload.length === 0) return null
-  const sorted = [...payload].sort((a, b) => b.value - a.value)
-  return (
+  const sorted = [...payload].filter((e) => e.value != null).sort((a, b) => b.value - a.value)
+    return (
     <div style={{
       backgroundColor: '#12121a',
       border: '1px solid #f0b429',
@@ -265,12 +265,13 @@ if (!isDemoLeague) {
         .eq('league_id', league.id)
       const castawayIds = [...new Set((picks ?? []).map((p) => p.castaway_id))]
       if (castawayIds.length === 0) return
-      const { data: castawayList } = await supabase
+           const { data: castawayList } = await supabase
         .from('castaways')
-        .select('id, name')
+        .select('id, name, eliminated_episode')
         .in('id', castawayIds)
       const nameMap = new Map((castawayList ?? []).map((c) => [c.id, c.name]))
-      const names = (castawayList ?? []).map((c) => c.name)
+      const elimByName = new Map((castawayList ?? []).map((c) => [c.name, c.eliminated_episode as number | null]))
+            const names = (castawayList ?? []).map((c) => c.name)
       setCastawayNames(names)
       const { data: rawScores } = await supabase
         .from('episode_scores')
@@ -315,8 +316,9 @@ if (!isDemoLeague) {
           })
         })
         const row: CastawayChartRow = { episode: `Ep. ${ep}` }
-        names.forEach((n) => {
-          row[n] = runningTotals[n]
+             names.forEach((n) => {
+          const outAt = elimByName.get(n)
+          row[n] = outAt != null && ep > outAt ? null : runningTotals[n]
         })
         rows.push(row)
       })
