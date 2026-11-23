@@ -793,8 +793,8 @@ Got an idea for a league we should build next? Send us your concept and help sha
           color: 'transparent',
           animation: 'wallShimmer 3s linear infinite'
         }
-        const name: React.CSSProperties = { color: '#ffffff', fontSize: '0.9rem', lineHeight: 1 }
-        const gold: React.CSSProperties = { color: '#f0b429' }
+        const name: React.CSSProperties = { color: '#ffffff', fontSize: '0.9rem', lineHeight: 1, position: 'relative', top: '.15px' }
+                const gold: React.CSSProperties = { color: '#f0b429' }
         return (
           <div>
             <a href="/tip-jar" style={{
