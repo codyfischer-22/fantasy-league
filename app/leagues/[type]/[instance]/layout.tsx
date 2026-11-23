@@ -641,6 +641,8 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
     return null
   }
 
+    const isFinished = !!(league.season_completed_at || league.champion_names?.length)
+
   const toolItems = [
     { label: 'Pre-Rank', icon: ArrowUpDown, href: `${basePath}/rankings` },
     { label: 'Research', icon: Microscope, href: null },
@@ -764,7 +766,14 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
                   <span style={{ color: '#a0a0b0' }}>
                     {' '}· You&apos;re in!
                   </span>
-                ) : league.draft_status === 'in_progress' ? (
+                                ) : isFinished ? (
+                  <span style={{ color: '#a0a0b0' }}>
+                    {' '}·{' '}
+                    <Lock size={18} strokeWidth={2} color="#a0a0b0" style={{ display: 'inline-block', verticalAlign: '-1.5px' }} />
+                    {' '}Season Complete
+                  </span>
+            
+            ) : league.draft_status === 'in_progress' ? (
                   <span style={{ color: '#a0a0b0' }}>
                     {' '}·{' '}
                     <Lock size={18} strokeWidth={2} color="#a0a0b0" style={{ display: 'inline-block', verticalAlign: '-1.5px' }} />
@@ -798,8 +807,8 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
                     </button>
                   )}
                 </div>
-) : league.draft_status === 'in_progress' || league.champion_names?.length ? null
-                : isReturning ? (
+              ) : league.draft_status === 'in_progress' || league.season_completed_at || league.champion_names?.length ? null
+                              : isReturning ? (
                 <button onClick={handleClimbAboard} style={{ ...pillButton('#068e38'), backgroundColor: 'rgba(6, 142, 56, 0.35)', color: '#ffffff' }}>
                   Rejoin League
                 </button>
@@ -962,7 +971,7 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
             </div>
           )}
 
-          {isHome && (isHost || isGlobalAdmin) && league.is_private && (
+                 {isHome && (isHost || isGlobalAdmin) && league.is_private && !isFinished && (
             <div style={{
               backgroundColor: '#1a1a2e',
               border: '1px solid #f0b429',

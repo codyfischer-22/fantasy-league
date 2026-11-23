@@ -144,6 +144,12 @@ setCustomOrder([...stillValidOrder, ...missingFromOrder])
 
     const locked = league.draft_status === 'in_progress' || league.draft_status === 'completed'
 
+       if (league.season_completed_at || league.champion_names?.length) {
+      setMessage('This season is complete, and league settings are locked.')
+      setSaving(false)
+      return
+    }
+
     const { data: savedRows, error } = await supabase
       .from('leagues')
       .update({
@@ -172,6 +178,7 @@ setCustomOrder([...stillValidOrder, ...missingFromOrder])
 
 const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
   if (!league) return
+  if (league.season_completed_at || league.champion_names?.length) return
 
   await supabase.from('notifications').insert({
     user_id: playerUserId,
@@ -225,6 +232,7 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
 
   const handleCancelLeague = async () => {
   if (!user || !league) return
+  if (league.season_completed_at || league.champion_names?.length) return
 
   const { data: allMembers } = await supabase
     .from('league_members')
@@ -507,8 +515,7 @@ const handleEjectPlayer = async (playerUserId: string, playerName: string) => {
               {members.map((m) => (
                 <div key={m.user_id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: '1px solid #2a2a3e' }}>
                   <span style={{ fontSize: '0.85rem' }}>{m.display_name}</span>
-                  {m.user_id !== user?.id && league?.draft_status !== 'in_progress' && (
-                                        <button
+                  {m.user_id !== user?.id && league?.draft_status !== 'in_progress' && !league?.season_completed_at && !league?.champion_names?.length && (                                        <button
                      onClick={() => setEjectingPlayer({ id: m.user_id, name: m.display_name })}
                       style={{
                         background: 'none',

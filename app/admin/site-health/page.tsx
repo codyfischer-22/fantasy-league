@@ -107,6 +107,14 @@ export default function SiteHealthPage() {
   if (loading || allowed === null) return shell('Loading...')
   if (!allowed) return shell(<p>Access denied. Site Health is for Global Admins.</p>)
 
+    const formatUpdated = (iso: string) => {
+  const d = new Date(iso)
+  const month = d.toLocaleString('en-US', { month: 'long' })
+  const shortMonth = ['May', 'June', 'July'].includes(month) ? month : `${month.slice(0, 3)}.`
+  const time = d.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit' })
+  return `${shortMonth} ${d.getDate()}, ${d.getFullYear()}, ${time}`
+}
+
   return (
     <main className="mobile-shrink-main trekkon-bg" style={{ minHeight: '100vh', fontFamily: 'Georgia, serif', color: '#ffffff', padding: '60px 40px' }}>
       <div className="mobile-page-content" style={{ maxWidth: '1100px', margin: '0 auto' }}>
@@ -122,8 +130,8 @@ export default function SiteHealthPage() {
 
         <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'nowrap', gap: '10px', marginBottom: '28px' }}>
           <p style={{ color: '#a0a0b0', fontSize: '0.9rem', margin: 0 }}>
-            {health ? `Updated ${new Date(health.generatedAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}` : 'Loading Stats...'}
-          </p>
+            {health ? `Updated ${formatUpdated(health.generatedAt)}` : 'Loading Stats...'}
+                      </p>
           <button
             onClick={load}
             disabled={refreshing}

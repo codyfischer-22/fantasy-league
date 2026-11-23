@@ -46,6 +46,8 @@ export default function CustomScoringPage() {
   const savedCategories = [...new Set(entries.map((e) => e.category_label))].slice(0, 3)
   const [showCategorySuggestions, setShowCategorySuggestions] = useState(false)
   const castawayTerm = castawayTermByLeague[type] ?? 'Castaway'
+  // Once a league is crowned, final points are locked
+  const isFinished = !!(league?.season_completed_at || league?.champion_names?.length)
 
   useEffect(() => {
     async function loadData() {
@@ -110,6 +112,10 @@ setIsHost(true)
   }, [user, loading, type, instance, router])
 
 const handleAddEntry = async () => {
+  if (isFinished) {
+    setMessage('This season is complete, and custom scoring is locked.')
+    return
+  }
   const finalCategory = selectedCategory ?? newSlotText.trim()
   if (!league || !selectedCastawayId || !episodeNumber || !finalCategory || !points) {
     setMessage('Please fill out all fields, including selecting or entering a category.')
@@ -153,6 +159,7 @@ setNotes('')
 }
 
   const handleDeleteEntry = async (entryId: string) => {
+    if (isFinished) return
     const { error } = await supabase
       .from('custom_scoring_entries')
       .delete()
@@ -204,7 +211,19 @@ setNotes('')
         Here&apos;s your chance to create up to 3 custom scoring categories for your league! Episodes with multiple elimination events (e.g. tribal council or round table) may be broken down into multiple entries (e.g. Ep. 4 and 4.5). Players can see these entries in the Scoring Log, alongside standard categories.
       </p>
 
-
+      {isFinished ? (
+        <div style={{
+          backgroundColor: '#1a1a2e',
+          border: '1px solid #2a2a3e',
+          borderRadius: '10px',
+          padding: '16px 20px',
+          marginBottom: '32px',
+          color: '#a0a0b0',
+          fontSize: '0.9rem'
+        }}>
+          This season is complete, and final points are locked. Your entries below stay visible in the Scoring Log.
+        </div>
+      ) : (
         <div style={{
           backgroundColor: '#1a1a2e',
           border: '1px solid #f0b429',
@@ -314,6 +333,7 @@ setNotes('')
   </p>
 )}
         </div>
+      )}
 
         <h2 style={{ color: '#f0b429', fontSize: '1.2rem', marginBottom: '12px' }}>Existing Entries</h2>
         {entries.length === 0 ? (
@@ -335,6 +355,7 @@ setNotes('')
                 {' | '}Episode {entry.episode_number} | {entry.category_label}: {entry.points > 0 ? '+' : ''}{entry.points}
                 {entry.notes && <div style={{ color: '#a0a0b0', marginTop: '2px' }}>{entry.notes}</div>}
               </div>
+             {!isFinished && (
              <button
   onClick={() => setDeletingEntryId(entry.id)}
   style={{
@@ -349,6 +370,7 @@ setNotes('')
 >
   Remove
 </button>
+             )}
             </div>
           ))
         )}
