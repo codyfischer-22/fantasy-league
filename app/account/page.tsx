@@ -537,7 +537,7 @@ const handleSave = async () => {
       marginTop: '8px',
       backgroundColor: 'rgba(202, 41, 202, 0.12)',
       color: '#ffffff',
-      border: '1px dashed #ca29ca',
+      border: '1px solid #ca29ca',
       padding: '8px 14px',
       borderRadius: '6px',
       fontSize: '0.85rem',
