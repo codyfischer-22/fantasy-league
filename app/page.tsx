@@ -1163,14 +1163,19 @@ This is your arena to compete with friends, family, and on-screen stars on beach
               $0.00
             </div>
             <ul style={{ color: '#a0a0b0', fontSize: '0.85rem', textAlign: 'left', lineHeight: '2', listStyle: 'none', padding: 0 }}>
-              <li>✅ Join 1 Public League</li>
-              <li>✅ Private League Access</li>
+              <li>✅ Join Public Leagues</li>
+              <li>✅ Join Private Leagues</li>
               <li>✅ Basic Leaderboards</li>
-      <li>✅ Trade Portal Access</li>
- <li>❌ No Analytics</li>
+              <li>✅ Trade Portal Access</li>
               <li>❌ Public League Chat</li>
-              <li>❌ No League Hosting</li>
-              <li>❌ No Settings Controls</li>
+              <li>❌ Move League Tools</li>
+              <li>❌ Tracking Analytics</li>
+              <li>❌ Featured Supporter</li>
+              <li>❌ Add Profile Picture</li>
+              <li>❌ See Player Statistics</li>
+              <li>❌ Host Private League</li>
+              <li>❌ Custom League Settings</li>
+            
             </ul>
           </div>
 
@@ -1193,14 +1198,18 @@ This is your arena to compete with friends, family, and on-screen stars on beach
               $1.99
             </div>
             <ul style={{ color: '#a0a0b0', fontSize: '0.85rem', textAlign: 'left', lineHeight: '2', listStyle: 'none', padding: 0 }}>
-              <li>✅ Multiple Public Leagues</li>
-              <li>✅ Private League Access</li>
+              <li>✅ Join Public Leagues</li>
+              <li>✅ Join Private Leagues</li>
               <li>✅ Basic Leaderboards</li>
               <li>✅ Trade Portal Access</li>
-              <li>✅ Tracking Analytics</li>
               <li>✅ Public League Chat</li>
-              <li>❌ No League Hosting</li>
-              <li>❌ No Settings Controls</li>
+              <li>✅ Move League Tools</li>
+              <li>✅ Tracking Analytics</li>
+              <li>✅ Featured Supporter</li>
+              <li>✅ Add Profile Picture</li>
+              <li>✅ See Player Statistics</li>
+              <li>❌ Host Private League</li>
+              <li>❌ Custom League Settings</li>
             </ul>
           </div>
 
@@ -1222,12 +1231,16 @@ This is your arena to compete with friends, family, and on-screen stars on beach
               $3.99
             </div>
             <ul style={{ color: '#a0a0b0', fontSize: '0.85rem', textAlign: 'left', lineHeight: '2', listStyle: 'none', padding: 0 }}>
-              <li>✅ Multiple Public Leagues</li>
-              <li>✅ Private League Access</li>
+              <li>✅ Join Public Leagues</li>
+              <li>✅ Join Private Leagues</li>
               <li>✅ Basic Leaderboards</li>
-                 <li>✅ Trade Portal Access</li>
-                <li>✅ Tracking Analytics</li> 
-                <li>✅ Public League Chat</li>
+              <li>✅ Trade Portal Access</li>
+              <li>✅ Public League Chat</li>
+              <li>✅ Move League Tools</li>
+              <li>✅ Tracking Analytics</li> 
+              <li>✅ Featured Supporter</li>
+              <li>✅ Add Profile Picture</li>
+              <li>✅ See Player Statistics</li>
               <li>✅ Host 8-Player League</li>
               <li>✅ Custom League Settings</li>
               
@@ -1261,7 +1274,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
             }}>
               BEST VALUE
             </div>
-<div style={{ marginBottom: '4px', marginTop: '12px', display: 'flex', justifyContent: 'center' }}>
+<div style={{ marginBottom: '12px', marginTop: '12px', display: 'flex', justifyContent: 'center' }}>
   <Rocket size={40} strokeWidth={2} color="#f0b429" />
 </div>
 <h3 style={{ fontSize: '1.1rem', color: '#f0b429', marginBottom: '8px' }}>
@@ -1271,12 +1284,16 @@ This is your arena to compete with friends, family, and on-screen stars on beach
               $6.99
             </div>
             <ul style={{ color: '#a0a0b0', fontSize: '0.85rem', textAlign: 'left', lineHeight: '2', listStyle: 'none', padding: 0 }}>
-           <li>✅ Multiple Public Leagues</li>
-              <li>✅ Private League Access</li>
+              <li>✅ Join Public Leagues</li>
+              <li>✅ Join Private Leagues</li>
               <li>✅ Basic Leaderboards</li>
-                 <li>✅ Trade Portal Access</li>
-                 <li>✅ Tracking Analytics</li>
-                 <li>⭐ Highlighted in Chat</li>
+              <li>✅ Trade Portal Access</li>
+              <li>⭐ Highlighted in Chat</li>
+              <li>✅ Move League Tools</li>
+              <li>✅ Tracking Analytics</li>
+              <li>✅ Featured Supporter</li>
+              <li>✅ Add Profile Picture</li>
+              <li>✅ See Player Statistics</li>
               <li>⭐ Host 3 18-Player Leagues</li>
               <li>⭐ Custom Scoring Inputs</li>
               
@@ -1284,6 +1301,11 @@ This is your arena to compete with friends, family, and on-screen stars on beach
           </div>
 
         </div>
+
+        <p className="hosting-note" style={{ color: '#555570', textAlign: 'center', fontSize: '0.9rem', marginTop: '12px', marginBottom: '0px' }}>
+  <span>Hosting limits above are per fandom.</span>
+</p>
+  
 
 {/* All-Access Teaser */}
       <div className="all-access-teaser" style={{
@@ -1463,7 +1485,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
         Crew Chief+ Required
       </h3>
       <p style={{ color: '#a0a0b0', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '24px' }}>
-        You must be a Crew Chief or Team Principal to host private leagues. Upgrade your membership to start your own league!
+        Want to run your own league? Upgrade to Crew Chief+ to host your friends, pick your draft style, and set league's rules.
       </p>
       <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-start' }}>
         <button

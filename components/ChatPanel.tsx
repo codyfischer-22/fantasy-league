@@ -184,7 +184,7 @@ useEffect(() => {
 }
      const { data, error } = await supabase
   .from('leagues')
-  .select('is_private, league_type, is_show_chat')
+  .select('is_private, league_type, is_show_chat, season')
   .eq('id', selectedLeagueId)
   .single();
 if (error) {
@@ -195,11 +195,12 @@ setSelectedLeagueIsPrivate(data?.is_private ?? true);
 setSelectedIsShowChat(data?.is_show_chat ?? false);
 
       if (data && data.is_private === false) {
-        const { data: scoreRows, error: scoreError } = await supabase
+               const { data: scoreRows, error: scoreError } = await supabase
           .from('episode_scores')
           .select('id')
           .eq('league_type', data.league_type)
-          .eq('episode_number', 7)
+          .eq('episode_number', 4)
+          .eq('season', data.season)
           .limit(1);
         if (scoreError) {
           console.error('Error checking episode 1 scores:', JSON.stringify(scoreError, null, 2));
@@ -650,7 +651,7 @@ async function toggleReaction(messageId: string, emoji: string) {
 }
 
   const isStowaway = userTier === 'stowaway';
-  const isGatedPublicLeague = isStowaway && !selectedLeagueIsPrivate;
+  const isGatedPublicLeague = isStowaway && !selectedLeagueIsPrivate && !selectedIsShowChat;
   const chatLocked = isGatedPublicLeague && episode1Scored;
   const readOnly = isGatedPublicLeague && !episode1Scored;
 
@@ -909,7 +910,7 @@ async function toggleReaction(messageId: string, emoji: string) {
             )}
             {readOnly ? (
               <p style={{ textAlign: 'center', color: '#555570', fontSize: '0.75rem', margin: 0 }}>
-                We are gifting read-only chat access until Episode 7 scores drop. To participate or continue viewing after Week 7, please upgrade to Castaway+!
+                We are gifting read-only chat access until Episode 4 scores drop. To participate or continue viewing after Week 4, please upgrade to Castaway+!
               </p>
             ) : (
               <div style={{ display: 'flex', gap: '6px' }}>

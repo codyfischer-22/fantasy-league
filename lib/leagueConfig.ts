@@ -30,3 +30,11 @@ export const rosterTermByLeague: Record<string, string> = {
   'paddock-politicks-demo': 'Driver Lineup',
   'the-oval-offset-demo': 'Driver Lineup',
 }
+
+export const currentSeasonByType: Record<string, string> = {
+  'secrets-on-the-beach': 'Survivor 51',
+  'sotb-demo': 'Demo Season',
+  'uncharted-turretory': 'The Traitors: New Blood',
+  'uncharted-turretory-demo': 'The Traitors Season 4',
+  'sandbox': 'Sand Box Season',
+}

@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase'
 import { containsEmoji } from '@/lib/validation'
 import { useState, useEffect } from 'react'
 import { leagueTypeLabels } from '@/lib/leagueTypeLabels'
+import { currentSeasonByType } from '@/lib/leagueConfig'
 
 const leagueTypeEmojis: Record<string, string> = {
   'secrets-on-the-beach': '🏝️',
@@ -116,6 +117,7 @@ if (!isAdmin) {
     .eq('host_user_id', user.id)
     .eq('league_type', type)
     .eq('is_private', true)
+    .eq('is_archived', false)
 
   const maxConcurrent = tier === 'teamprincipal' ? 3 : 1
 
@@ -147,6 +149,7 @@ if (!isAdmin) {
     draft_mode: draftMode,
     allow_custom_scoring: (userTier === 'teamprincipal' || profile?.is_global_admin) ? allowCustomScoring : false,
     require_host_trade_approval: requireHostTradeApproval,
+    season: currentSeasonByType[type] ?? null,
   })
       .select()
       .single()

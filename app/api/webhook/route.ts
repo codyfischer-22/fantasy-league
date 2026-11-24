@@ -55,7 +55,7 @@ if (event.type === 'checkout.session.completed') {
   if (userId && tier) {
     await supabaseAdmin
       .from('profiles')
-      .update({ tier, stripe_customer_id: customerId })
+      .update({ tier, stripe_customer_id: customerId, subscription_status: 'active' })
       .eq('user_id', userId)
 
     if (tier === 'crewchief' || tier === 'teamprincipal') {

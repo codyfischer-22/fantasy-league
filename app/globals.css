@@ -953,3 +953,9 @@ body.hide-site-footer footer {
   background-size: 960px 960px;
   background-repeat: repeat;
 }
+
+@media (max-width: 768px) {
+  .hosting-note {
+    margin-top: -6px !important;
+  }
+}

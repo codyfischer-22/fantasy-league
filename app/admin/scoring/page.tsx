@@ -124,6 +124,7 @@ export default function ScoringAdminPage() {
   const [isAdmin, setIsAdmin] = useState(false)
   const [checking, setChecking] = useState(true)
   const [selectedLeagueType, setSelectedLeagueType] = useState('secrets-on-the-beach')
+  const [selectedSeason, setSelectedSeason] = useState('Survivor 51')
   const categories = categoriesByLeague[selectedLeagueType] ?? []
   const [castaways, setCastaways] = useState<Castaway[]>([])
   const [episodeNumber, setEpisodeNumber] = useState('')
@@ -371,19 +372,27 @@ const handleAwardSeasonBonus = async () => {
 useEffect(() => {
   if (!isGlobalAdmin && allowedLeagueTypes.length > 0 && !allowedLeagueTypes.includes(selectedLeagueType)) {
     const firstAllowed = allowedLeagueTypes[0]
+    const firstSeason = latestSeasonFor(firstAllowed)
     setSelectedLeagueType(firstAllowed)
-    loadCastaways(firstAllowed)
-    loadExistingScores(firstAllowed, episodeNumber)
+    setSelectedSeason(firstSeason)
+    loadCastaways(firstAllowed, firstSeason)
+    loadExistingScores(firstAllowed, firstSeason, episodeNumber)
   }
 }, [isGlobalAdmin, allowedLeagueTypes])
 
+// Each new season: add one line at the TOP of its fandom (newest first).
+// "season" must match exactly what castaways and episode_scores use.
 const allLeagueTypeOptions = [
-  { value: 'secrets-on-the-beach', label: 'Secrets on the Beach (Season 51)' },
-  { value: 'sotb-demo', label: 'Secrets on the Beach (Demo)' },
-  { value: 'uncharted-turretory', label: 'Uncharted Turretory (New Blood)' },
-  { value: 'uncharted-turretory-demo', label: 'Uncharted Turretory (Demo)' },
-  { value: 'sandbox', label: 'Sand Box League (Testing)' },
+  { value: 'secrets-on-the-beach', season: 'Survivor 51', label: 'Secrets on the Beach (Season 51)' },
+   { value: 'uncharted-turretory', season: 'The Traitors: New Blood', label: 'Uncharted Turretory (New Blood)' },
+   { value: 'sotb-demo', season: 'Demo Season', label: 'Secrets on the Beach (Demo)' },
+  { value: 'uncharted-turretory-demo', season: 'The Traitors Season 4', label: 'Uncharted Turretory (Demo)' },
+  { value: 'sandbox', season: 'Sand Box Season', label: 'Sand Box League (Testing)' },
 ]
+
+// Newest season listed for a fandom
+const latestSeasonFor = (leagueType: string) =>
+  allLeagueTypeOptions.find((o) => o.value === leagueType)?.season ?? ''
 
 const nonAdminExcludedTypes = ['sotb-demo', 'uncharted-turretory-demo', 'sandbox']
 
@@ -394,7 +403,7 @@ const visibleLeagueTypeOptions = isGlobalAdmin
     )
 
 
-const loadExistingScores = async (leagueType: string, episode: string) => {
+const loadExistingScores = async (leagueType: string, season: string, episode: string) => {
   if (!episode) {
     setRows({})
     setManualAdjust({})
@@ -404,6 +413,7 @@ const loadExistingScores = async (leagueType: string, episode: string) => {
     .from('episode_scores')
     .select('castaway_id, category, points, count, notes')
     .eq('league_type', leagueType)
+    .eq('season', season)
     .eq('episode_number', parseFloat(episode))
 
   const newRows: Record<number, RowState> = {}
@@ -435,7 +445,7 @@ const toggleEliminated = async (castaway: Castaway) => {
     if (error) {
       setMessage('Something went wrong toggling vote-out status.')
     } else {
-      await loadCastaways(selectedLeagueType)
+      await loadCastaways(selectedLeagueType, selectedSeason)
       setMessage('Castaway status toggled successfully.')
     }
   } else {
@@ -455,17 +465,18 @@ const toggleEliminated = async (castaway: Castaway) => {
   if (error) {
     setMessage('Something went wrong marking them eliminated.')
   } else {
-    await loadCastaways(selectedLeagueType)
+    await loadCastaways(selectedLeagueType, selectedSeason)
     setMessage('Marked as eliminated.')
   }
 }
 }
 
-const loadCastaways = async (leagueType: string) => {
+const loadCastaways = async (leagueType: string, season: string) => {
   const { data: castawayList } = await supabase
     .from('castaways')
     .select('id, name, status, eliminated_episode')
     .eq('league_type', leagueType)
+    .eq('season', season)
     .order('id')
 
   setCastaways(castawayList ?? [])
@@ -488,7 +499,7 @@ if (profile?.is_global_admin || profile?.is_league_admin) {
   setIsAdmin(true)
   setIsGlobalAdmin(profile.is_global_admin ?? false)
   setAllowedLeagueTypes(profile.admin_league_types ?? [])
-  await loadCastaways(selectedLeagueType)
+  await loadCastaways(selectedLeagueType, selectedSeason)
 }
 
       setChecking(false)
@@ -546,7 +557,7 @@ if (profile?.is_global_admin || profile?.is_league_admin) {
         if (count > 0) {
           entries.push({
   league_type: selectedLeagueType,
-  season: selectedLeagueType === 'secrets-on-the-beach' ? 'Survivor 51' : selectedLeagueType === 'uncharted-turretory' ? 'The Traitors: New Blood' : selectedLeagueType === 'uncharted-turretory-demo' ? 'The Traitors Season 4' : selectedLeagueType === 'sandbox' ? 'Sand Box Season' : 'Demo Season',
+  season: selectedSeason,
   episode_number: parseFloat(episodeNumber),
   castaway_id: castaway.id,
   category: cat.key,
@@ -561,7 +572,7 @@ if (profile?.is_global_admin || profile?.is_league_admin) {
 if (manual && manual.points && parseInt(manual.points) !== 0) {
   entries.push({
  league_type: selectedLeagueType,
-  season: selectedLeagueType === 'secrets-on-the-beach' ? 'Survivor 51' : selectedLeagueType === 'uncharted-turretory' ? 'The Traitors: New Blood' : selectedLeagueType === 'uncharted-turretory-demo' ? 'The Traitors Season 4' : selectedLeagueType === 'sandbox' ? 'Sand Box Season' : 'Demo Season',
+  season: selectedSeason,
     episode_number: parseFloat(episodeNumber),
     castaway_id: castaway.id,
     category: 'manual_adjustment',
@@ -582,6 +593,7 @@ await supabase
   .from('episode_scores')
   .delete()
   .eq('league_type', selectedLeagueType)
+  .eq('season', selectedSeason)
   .eq('episode_number', parseFloat(episodeNumber))
 
     const { error } = await supabase.from('episode_scores').insert(entries)
@@ -597,6 +609,7 @@ await supabase
   .select('id')
   .eq('league_type', selectedLeagueType)
   .eq('is_archived', false)
+  .eq('is_show_chat', false)
 
     const leagueIds = (allLeagues ?? []).map((l) => l.id)
 
@@ -699,11 +712,13 @@ setMessage(`Saved ${entries.length} scoring events for Episode ${episodeNumber}!
     League
   </label>
   <select
-    value={selectedLeagueType}
+    value={`${selectedLeagueType}|${selectedSeason}`}
     onChange={(e) => {
-      setSelectedLeagueType(e.target.value)
-      loadCastaways(e.target.value)
-      loadExistingScores(e.target.value, episodeNumber)
+      const [leagueType, season] = e.target.value.split('|')
+      setSelectedLeagueType(leagueType)
+      setSelectedSeason(season)
+      loadCastaways(leagueType, season)
+      loadExistingScores(leagueType, season, episodeNumber)
     }}
     style={{
       padding: '8px 12px',
@@ -714,7 +729,7 @@ setMessage(`Saved ${entries.length} scoring events for Episode ${episodeNumber}!
     }}
   >
     {visibleLeagueTypeOptions.map((opt) => (
-      <option key={opt.value} value={opt.value}>{opt.label}</option>
+      <option key={`${opt.value}|${opt.season}`} value={`${opt.value}|${opt.season}`}>{opt.label}</option>
     ))}
   </select>
 </div>
@@ -731,7 +746,7 @@ setMessage(`Saved ${entries.length} scoring events for Episode ${episodeNumber}!
   onChange={(e) => {
     const newEpisode = e.target.value
     setEpisodeNumber(newEpisode)
-    loadExistingScores(selectedLeagueType, newEpisode)
+    loadExistingScores(selectedLeagueType, selectedSeason, newEpisode)
   }}
   style={{
     padding: '8px 12px',

@@ -380,11 +380,11 @@ export default function FandomHubPage() {
 
               <div style={{ color: '#a0a0b0', fontSize: '0.75rem', marginTop: '8px' }}>Private</div>
               <p style={{ color: '#555570', fontSize: '0.8rem', margin: 0, lineHeight: 1.5 }}>
-                Private leagues are invite-only. Ask your host for their custom link or{' '}
+                Private leagues are invite-only. Ask host for custom link or{' '}
                 {canHost ? (
-                  <a href={`/leagues/${type}/create`} style={{ color: '#f0b429', textDecoration: 'underline' }}>host your own</a>
+                  <a href={`/leagues/${type}/create`} style={{ color: '#f0b429', textDecoration: 'underline' }}>host friends and family</a>
                 ) : (
-                  <a href="/account" style={{ color: '#f0b429', textDecoration: 'underline' }}>upgrade to host your own</a>
+                  <a href="/account" style={{ color: '#f0b429', textDecoration: 'underline' }}>upgrade to host friends and family</a>
                 )}.
               </p>
             </div>

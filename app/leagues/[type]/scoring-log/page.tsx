@@ -7,7 +7,7 @@ import { useAuth } from '@/lib/AuthContext'
 import { leagueTypeLabels } from '@/lib/leagueTypeLabels'
 import { Calculator } from 'lucide-react'
 import { Lock } from 'lucide-react'
-   import { castawayTermByLeague, backgroundsByType } from '@/lib/leagueConfig'
+import { castawayTermByLeague, backgroundsByType, currentSeasonByType } from '@/lib/leagueConfig'
 
 const categoryLabelsByLeague: Record<string, Record<string, string>> = {
   'secrets-on-the-beach': {
@@ -171,10 +171,11 @@ async function loadLog() {
     setPageLoading(false)
     return
   }
+         let leagueSeason: string | null = null
       if (fromInstance) {
         const { data: league } = await supabase
           .from('leagues')
-          .select('name, is_frozen, is_archived')
+          .select('name, is_frozen, is_archived, season')
           .eq('league_type', type)
           .eq('slug', fromInstance)
           .single()
@@ -185,6 +186,7 @@ async function loadLog() {
 }
         setLeagueName(league?.name ?? null)
         setIsFrozen(league?.is_frozen ?? false)
+                leagueSeason = league?.season ?? null
       }
 
      let leagueId: number | null = null
@@ -198,10 +200,12 @@ if (fromInstance) {
   leagueId = leagueRow?.id ?? null
 }
 
+const season = leagueSeason ?? currentSeasonByType[type] ?? ''
 const { data: scores } = await supabase
   .from('episode_scores')
   .select('episode_number, castaway_id, category, points, count, notes')
   .eq('league_type', type)
+  .eq('season', season)
   .order('episode_number', { ascending: false })
 
 const { data: customEntries } = leagueId

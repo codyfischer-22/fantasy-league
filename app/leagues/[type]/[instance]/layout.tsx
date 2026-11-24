@@ -365,7 +365,6 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
       .select('tier, display_name')
       .eq('user_id', user.id)
       .single()
-    const currentTier = profile?.tier ?? 'stowaway'
     const { data: memberships } = await supabase
       .from('league_members')
       .select('league_id')
@@ -378,15 +377,13 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
         .select('*', { count: 'exact', head: true })
         .in('id', memberLeagueIds)
         .eq('is_private', false)
+        .eq('is_archived', false)
+        .eq('is_show_chat', false)
+        .eq('league_type', league.league_type)
       publicLeagueCount = count ?? 0
     }
-    const maxAllowed = currentTier === 'stowaway' ? 1 : 3
-    if (!league.is_private && publicLeagueCount >= maxAllowed) {
-      setJoinMessage(
-        currentTier === 'stowaway'
-          ? 'Stowaways can only join 1 public league. Upgrade to Castaway+ to join up to 3!'
-          : "You've reached the max of 3 public leagues for your tier."
-      )
+    if (!league.is_private && publicLeagueCount >= 1) {
+      setJoinMessage("You're already in a public league for this fandom. Private leagues are always open to join!")
       setJoining(false)
       return
     }
