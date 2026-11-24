@@ -1287,11 +1287,33 @@ This is your arena to compete with friends, family, and on-screen stars on beach
 
 {/* All-Access Teaser */}
       <div className="all-access-teaser" style={{
-  maxWidth: '600px',
-  margin: '48px auto 0 auto',
-  position: 'relative'
-}}>
+        maxWidth: '600px',
+        margin: '48px auto 0 auto',
+        position: 'relative'
+      }}>
 
+        <div
+          onClick={() => router.push('/account?tier=teamprincipal')}
+                    onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-4px)'
+            e.currentTarget.style.boxShadow = '0 0 24px rgba(202, 41, 202, 0.45)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)'
+            e.currentTarget.style.boxShadow = 'none'
+          }}
+          className="all-access-card"
+          style={{
+            position: 'relative',
+            backgroundColor: '#1a1a2e',
+            border: '2px solid #ca29ca',
+            borderRadius: '12px',
+            padding: '28px',
+            marginBottom: '12px',
+            textAlign: 'center',
+            cursor: 'pointer'
+          }}
+        >
           {/* Best Value Badge */}
           <div style={{
             position: 'absolute',
@@ -1299,7 +1321,7 @@ This is your arena to compete with friends, family, and on-screen stars on beach
             left: '50%',
             transform: 'translateX(-50%)',
             backgroundColor: '#ca29ca',
-            color: '#0a0a0f',
+            color: '#ffffff',
             fontWeight: 'bold',
             fontSize: '0.75rem',
             padding: '4px 14px',
@@ -1308,31 +1330,40 @@ This is your arena to compete with friends, family, and on-screen stars on beach
             whiteSpace: 'nowrap',
             zIndex: 1
           }}>
-            TOP-TIER VALUE
+            40% OFF MONTHLY
           </div>
 
-          {/* Card */}
-          <div style={{
-            backgroundColor: '#1a1a2e',
-            border: '2px dashed #ca29ca',
-            borderRadius: '12px',
-            padding: '28px',
-            marginBottom: '12px',
-            textAlign: 'center'
-          }}>
-         <h3 style={{ color: '#ca29ca', fontSize: 'clamp(1.0rem, 8vw, 1.5rem)', marginBottom: '8px' }}>
-  <span className="all-access-line1" style={{ color: '#ca29ca', fontWeight: 'bold' }}>Coming in 2027:</span>
-  {' '}
-  <span className="all-access-line2" style={{ color: '#ffffff', fontWeight: 'bold' }}>All-Access Pass</span>
-</h3>
-<p style={{ color: '#a0a0b0', fontSize: 'clamp(.7rem, 4.75vw, 1.1rem)', lineHeight: '1.7' }}>
-  Annual price for every league, every season, and every perk!
-</p>
-        </div>   
-          <p style={{ color: '#555570', textAlign: 'center', fontSize: '0.9rem', marginBottom: '0px' }}>
-  <span className="desktop-only-text">Additional membership perks found in game page below.</span>
-  <span className="mobile-only-block">Additional perks found in game page below.</span>
-</p>
+          <h3 style={{ color: '#ca29ca', fontSize: 'clamp(1.0rem, 8vw, 1.5rem)', marginBottom: '8px' }}>
+            <span className="all-access-line1" style={{ color: '#ca29ca', fontWeight: 'bold' }}>All-Access Pass:</span>
+            {' '}
+            <span className="all-access-line2" style={{ color: '#ffffff', fontWeight: 'bold' }}>$49.99/Year</span>
+          </h3>
+
+          <p style={{ color: '#a0a0b0', fontSize: 'clamp(.7rem, 4.75vw, 1.1rem)', lineHeight: '1.7', marginBottom: '12px' }}>
+            Team Principal for every season, league, and perk over the year!
+          </p>
+
+          <button
+            onClick={(e) => { e.stopPropagation(); router.push('/account?tier=teamprincipal') }}
+            style={{
+              backgroundColor: '#ca29ca',
+              color: '#ffffff',
+              border: 'none',
+              padding: '10px 24px',
+              borderRadius: '6px',
+              fontWeight: 'bold',
+              fontSize: '0.9rem',
+              cursor: 'pointer'
+            }}
+          >
+            Go All-In →
+          </button>
+        </div>
+
+        <p style={{ color: '#555570', textAlign: 'center', fontSize: '0.9rem', marginBottom: '0px' }}>
+          <span className="desktop-only-text">Additional membership perks found in game page below.</span>
+          <span className="mobile-only-block">Additional perks found in game page below.</span>
+        </p>
         </div>
 
 </section>
