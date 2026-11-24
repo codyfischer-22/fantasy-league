@@ -10,9 +10,11 @@ const priceMap: Record<string, string> = {
 
 export async function POST(req: NextRequest) {
   try {
-    const { tier, userId, email } = await req.json()
+    const { tier, userId, email, billing } = await req.json()
 
-    const priceId = priceMap[tier]
+       const priceId = tier === 'teamprincipal' && billing === 'yearly'
+      ? 'price_1UfASE1iDc94BxsyYMBq2GQf'
+      : priceMap[tier]
     if (!priceId) {
       return NextResponse.json({ error: 'Invalid tier' }, { status: 400 })
     }
@@ -23,7 +25,7 @@ export async function POST(req: NextRequest) {
       line_items: [{ price: priceId, quantity: 1 }],
       customer_email: email,
       client_reference_id: userId,
-      metadata: { userId, tier },
+      metadata: { userId, tier, billing: billing ?? 'monthly' },
       success_url: `${req.headers.get('origin')}/account?upgraded=true`,
       cancel_url: `${req.headers.get('origin')}/account`,
     })

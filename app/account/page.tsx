@@ -168,13 +168,13 @@ const handleSignOut = async () => {
   router.push('/')
 }
 
-  const handleStripeCheckout = async (tier: string) => {
-    if (!user) return
+  const handleStripeCheckout = async (tier: string, billing: 'monthly' | 'yearly' = 'monthly') => {
+        if (!user) return
     const res = await fetch('/api/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tier, userId: user.id, email: user.email }),
-    })
+      body: JSON.stringify({ tier, userId: user.id, email: user.email, billing }),
+        })
     const data = await res.json()
     if (data.url) {
       window.location.href = data.url
@@ -527,6 +527,27 @@ const handleSave = async () => {
     </button>
   ))}
 </div>
+
+{!isGlobalAdmin && profile.tier !== 'teamprincipal' && (
+  <button
+    onClick={() => handleStripeCheckout('teamprincipal', 'yearly')}
+    disabled={upgrading !== null}
+    style={{
+      width: '100%',
+      marginTop: '8px',
+      backgroundColor: 'rgba(202, 41, 202, 0.12)',
+      color: '#ffffff',
+      border: '1px dashed #ca29ca',
+      padding: '8px 14px',
+      borderRadius: '6px',
+      fontSize: '0.85rem',
+      fontWeight: 'bold',
+      cursor: upgrading !== null ? 'not-allowed' : 'pointer'
+    }}
+  >
+    All-Access Pass ($49.99/Year)
+  </button>
+)}
 
 {profile.tier !== 'stowaway' && (
   <div style={{ marginBottom: '16px' }}>
