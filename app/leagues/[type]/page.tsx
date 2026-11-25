@@ -60,7 +60,7 @@ const hubContent: Record<string, {
     ],
     keyDates: [
       'Register by January 10 (11:59 PM CT)',
-      'Draft Window: January 11–13 (7:00 PM CT)',
+      'Draft Window: January 11–13 (8:00 PM CT)',
     ],
     closer: 'As it turns out, Nessie isn’t the scariest thing in Scotland! Can you survive the castle?!',
     demoHref: '/leagues/uncharted-turretory-demo/sample-league',

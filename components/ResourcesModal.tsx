@@ -33,12 +33,12 @@ const resourcesByLeague: Record<string, { title: string; url: string }[]> = {
   ],
   'uncharted-turretory': [
     {
-      title: '3-Minute Snapshot (Cami Twomey)',
-      url: 'https://youtube.com/shorts/QkLIOPvkSYU?si=x6-rYZA186CiqOng',
+      title: '2-Minute Promo (Cami Peacock)',
+      url: 'https://www.youtube.com/watch?v=Ic0Gy3aXuVQ',
     },
     {
-      title: 'Breakdown Article (EW)',
-      url: 'https://ew.com/the-traitors-new-blood-first-ever-all-civilian-cast-revealed-exclusive-12056293',
+      title: 'Breakdown Article (Peacock)',
+      url: 'https://www.peacocktv.com/blog/the-traitors-season-5-cast',
     },   
   ],
     'uncharted-turretory-demo': [
