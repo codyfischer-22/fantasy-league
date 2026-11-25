@@ -377,7 +377,7 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
         .select('*', { count: 'exact', head: true })
         .in('id', memberLeagueIds)
         .eq('is_private', false)
-        .eq('is_archived', false)
+        .is('season_completed_at', null)
         .eq('is_show_chat', false)
         .eq('league_type', league.league_type)
       publicLeagueCount = count ?? 0

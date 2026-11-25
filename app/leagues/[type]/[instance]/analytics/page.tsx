@@ -252,11 +252,11 @@ if (!isDemoLeague) {
           .maybeSingle()
         const { data: profile } = await supabase
           .from('profiles')
-          .select('tier')
+          .select('tier, is_global_admin')
           .eq('user_id', user.id)
           .single()
         const tier = profile?.tier ?? membership?.tier_at_join ?? 'stowaway'
-        if (!membership || tier === 'stowaway') {
+        if (!profile?.is_global_admin && (!membership || tier === 'stowaway')) {
           setAccess('denied')
           return
         }
