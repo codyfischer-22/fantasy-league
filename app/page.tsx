@@ -58,10 +58,6 @@ export default function Home() {
   const [recentSupporters, setRecentSupporters] = useState<{ kind: 'gift' | 'champ'; name: string; detail: string }[]>([])
   const [supporterIdx, setSupporterIdx] = useState(0)
 
-  const relevantLeagues = [...hostedLeagues, ...joinedLeagues].filter(
-  (l) => l.type === showPrivateLeaguesModal && l.is_private === true
-)
-
 useEffect(() => {
   async function loadUserTier() {
     if (!user) {
@@ -114,7 +110,6 @@ const realLeagues = (leagues ?? []).filter((l) => !l.is_show_chat && l.league_ty
 
       setHostedLeagues(mapped.filter((l) => l.host_user_id === user.id))
       setJoinedLeagues(mapped.filter((l) => l.host_user_id !== user.id))
-      console.log('Mapped leagues:', mapped)
       setMyLeagueTypes(new Set(mapped.map((l) => l.type)))
       setLeaguesLoading(false)
     }
@@ -339,11 +334,6 @@ const realLeagues = (leagues ?? []).filter((l) => !l.is_show_chat && l.league_ty
 
   const hasRealLeagues = hostedLeagues.length > 0 || joinedLeagues.length > 0
   const showPersonalizedView = !loading && !leaguesLoading && user && hasRealLeagues
-
-  const leagueTypeMeta: Record<string, string> = {
-    'secrets-on-the-beach': 'secrets-on-the-beach',
-    'uncharted-turretory': 'uncharted-turretory',
-  }
 
   // Fandom cards, as functions so mobile can render looping copies
   // ('main' = the real cards with anchor ids; 'pre'/'post' = clones for the loop)

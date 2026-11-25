@@ -4,7 +4,9 @@ export const castawayTermByLeague: Record<string, string> = {
   'uncharted-turretory': 'Castle-Goer',
   'uncharted-turretory-demo': 'Castle-Goer',
   'paddock-politicks': 'Driver',
+  'paddock-politicks-demo': 'Driver',
   'the-oval-offset': 'Driver',
+  'the-oval-offset-demo': 'Driver',
   'sandbox': 'Contestant',
 }
 
@@ -34,7 +36,9 @@ export const rosterTermByLeague: Record<string, string> = {
 export const currentSeasonByType: Record<string, string> = {
   'secrets-on-the-beach': 'Survivor 51',
   'sotb-demo': 'Demo Season',
-  'uncharted-turretory': 'The Traitors: New Blood',
+  'uncharted-turretory': 'The Traitors Season 5',
   'uncharted-turretory-demo': 'The Traitors Season 4',
+  'paddock-politicks-demo': 'F1 Demo Season',
+  'the-oval-offset-demo': 'NASCAR Demo Season',
   'sandbox': 'Sand Box Season',
 }

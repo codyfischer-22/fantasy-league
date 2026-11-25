@@ -1,5 +1,6 @@
 'use client'
 import { Search, Play, X } from 'lucide-react'
+import { castawayTermByLeague } from '@/lib/leagueConfig'
 
 const resourcesByLeague: Record<string, { title: string; url: string }[]> = {
   'secrets-on-the-beach': [
@@ -56,7 +57,7 @@ export default function ResourcesModal({ open, onClose, type }: { open: boolean;
   if (!open) return null
 
   const resources = resourcesByLeague[type] ?? []
-  const castawayTerm = type === 'uncharted-turretory' ? 'Castle-Goers' : 'Castaways'
+  const castawayTerm = (castawayTermByLeague[type] ?? 'Contestant') + 's'
 
   return (
     <div
@@ -102,7 +103,7 @@ export default function ResourcesModal({ open, onClose, type }: { open: boolean;
           </button>
         </div>
         <p style={{ color: '#a0a0b0', fontSize: '0.85rem', marginBottom: '16px', lineHeight: '1.5' }}>
-          A few resources to help you get to know this season&apos;s {castawayTerm} before drafting or ranking:
+          A few resources to help you get to know this season&apos;s {castawayTerm.toLowerCase()} before drafting or ranking:
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {resources.map((r) => (

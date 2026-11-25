@@ -44,7 +44,7 @@ const hubContent: Record<string, {
     ],
     keyDates: [
       'Register by September 15 (11:59 PM CT)',
-      'Draft window: September 16–20 (7:00 PM CT)',
+      'Draft Window: September 16–20 (7:00 PM CT)',
     ],
     closer: 'Island politics are dangerous business! Can you survive?!',
     demoHref: '/leagues/sotb-demo/sample-league',
@@ -59,8 +59,8 @@ const hubContent: Record<string, {
       'Each player drafts 4 castle-goers, with the top 3 point-scorers counted toward season totals.',
     ],
     keyDates: [
-      'Register by September 15 (11:59 PM CT)',
-      'Draft window: September 16–17 (7:00 PM CT)',
+      'Register by January 10 (11:59 PM CT)',
+      'Draft Window: January 11–13 (7:00 PM CT)',
     ],
     closer: 'As it turns out, Nessie isn’t the scariest thing in Scotland! Can you survive the castle?!',
     demoHref: '/leagues/uncharted-turretory-demo/sample-league',

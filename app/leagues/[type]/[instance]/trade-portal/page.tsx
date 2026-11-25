@@ -29,7 +29,7 @@ type Trade = {
 
 const episodeAirTimeByLeague: Record<string, { dayOfWeek: number; hour: number }> = {
   'secrets-on-the-beach': { dayOfWeek: 3, hour: 19 }, // Wednesday, 7 PM CT
-  'uncharted-turretory': { dayOfWeek: 4, hour: 19 }, // Thursday, 7 PM CT
+  'uncharted-turretory': { dayOfWeek: 4, hour: 19 }, // Thursday, 8 PM CT
 }
 
 function isTradeFrozen(leagueType: string): boolean {

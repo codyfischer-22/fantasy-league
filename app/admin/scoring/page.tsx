@@ -384,6 +384,7 @@ useEffect(() => {
 // "season" must match exactly what castaways and episode_scores use.
 const allLeagueTypeOptions = [
   { value: 'secrets-on-the-beach', season: 'Survivor 51', label: 'Secrets on the Beach (Season 51)' },
+    { value: 'uncharted-turretory', season: 'The Traitors Season 5', label: 'Uncharted Turretory (Season 5)' },
    { value: 'uncharted-turretory', season: 'The Traitors: New Blood', label: 'Uncharted Turretory (New Blood)' },
    { value: 'sotb-demo', season: 'Demo Season', label: 'Secrets on the Beach (Demo)' },
   { value: 'uncharted-turretory-demo', season: 'The Traitors Season 4', label: 'Uncharted Turretory (Demo)' },

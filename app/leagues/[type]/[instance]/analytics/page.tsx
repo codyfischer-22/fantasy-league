@@ -112,6 +112,9 @@ type PlayerValue = {
   best_pick: ValuePick | null
 }
 
+// Racing leagues (F1 + NASCAR, including demos) score by race, not by episode
+const isRacingType = (t: string) => t.startsWith('paddock-politicks') || t.startsWith('the-oval-offset')
+
 function gradeForPercent(p: number): string {
   if (p >= 140) return 'A+'
   if (p >= 125) return 'A'
@@ -189,6 +192,7 @@ export default function AnalyticsPage() {
   const [isPrivateLeague, setIsPrivateLeague] = useState(false)
   const categoryLabels = categoryLabelsByLeague[type] ?? {}
   const castawayTerm = castawayTermByLeague[type] ?? 'Contestant'
+  const isRacing = isRacingType(type)
 
 const [isMobileWidth, setIsMobileWidth] = useState(false)
 
@@ -234,7 +238,7 @@ if (league.league_type === 'sandbox') {
 }
 setIsFrozen(league.is_frozen ?? false)
       setIsPrivateLeague(league.is_private ?? false)
-      const isDemoLeague = type === 'sotb-demo' || type === 'uncharted-turretory-demo'
+      const isDemoLeague = type.endsWith('-demo')
 if (!isDemoLeague) {
   if (!user) {
     setAccess('denied')
@@ -259,6 +263,53 @@ if (!isDemoLeague) {
       }
       setAccess('granted')
       setLeagueName(league.name)
+
+      // Racing: Player Standings only, ranked by cumulative race points
+      if (isRacingType(league.league_type)) {
+        const { data: members } = await supabase
+          .from('league_members')
+          .select('user_id')
+          .eq('league_id', league.id)
+        const memberIds = (members ?? []).map((m) => m.user_id)
+        if (memberIds.length === 0) return
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('user_id, display_name')
+          .in('user_id', memberIds)
+        const nameByUser = new Map((profiles ?? []).map((p) => [p.user_id, p.display_name || 'Unnamed Player']))
+        const pNames = [...nameByUser.values()]
+        setPlayerNames(pNames)
+
+        const { data: raceScores } = await supabase
+          .from('league_race_scores')
+          .select('user_id, race_id, slot_points, bonus_points')
+          .eq('league_id', league.id)
+        const raceIds = [...new Set((raceScores ?? []).map((s) => s.race_id))]
+        if (raceIds.length === 0) return
+        const { data: raceRows } = await supabase
+          .from('races')
+          .select('id, round_number')
+          .in('id', raceIds)
+          .order('round_number')
+
+        const running: Record<string, number> = {}
+        pNames.forEach((n) => (running[n] = 0))
+        const rows: PlayerChartRow[] = []
+        ;(raceRows ?? []).forEach((race) => {
+          ;(raceScores ?? [])
+            .filter((s) => s.race_id === race.id)
+            .forEach((s) => {
+              const n = nameByUser.get(s.user_id)
+              if (n) running[n] += Number(s.slot_points) + Number(s.bonus_points)
+            })
+          const ranked = [...pNames].sort((a, b) => running[b] - running[a])
+          const row: PlayerChartRow = { episode: `R${race.round_number}` }
+          ranked.forEach((n, idx) => { row[n] = idx + 1 })
+          rows.push(row)
+        })
+        setPlayerChartData(rows)
+        return
+      }
       const { data: picks } = await supabase
         .from('draft_picks')
         .select('user_id, castaway_id, round')
@@ -517,10 +568,12 @@ episodeNumbers.forEach((ep) => {
   return (
     <div>
       <p style={{ color: '#ffffff', fontSize: '0.9rem', marginBottom: '36px' }}>
-        Paid members get exclusive access to league analytics to visualize progress along the way! Please note episodes with more than one elimination event (e.g. tribal council) may be broken down into multiple entries (e.g. Ep. 4 and 4.5).
+        {isRacing
+          ? 'Paid members get exclusive access to league analytics to visualize progress along the way! Standings update after each race is scored.'
+          : 'Paid members get exclusive access to league analytics to visualize progress along the way! Please note episodes with more than one elimination event (e.g. tribal council) may be broken down into multiple entries (e.g. Ep. 4 and 4.5).'}
       </p>
 
-          <>
+          {!isRacing && (<>
             <h2 style={{ color: '#f0b429', fontSize: '1.5rem', marginBottom: '4px', textAlign: 'left' }}>
               Draft Value Report
             </h2>
@@ -632,13 +685,13 @@ episodeNumbers.forEach((ep) => {
                 )}
               </>
             )}
-          </>
+          </>)}
 
         <h2 style={{ color: '#f0b429', fontSize: '1.5rem', marginBottom: '2px', textAlign: 'left' }}>
           Player Standings
         </h2>
         <p style={{ color: '#a0a0b0', fontSize: '0.9rem', marginBottom: '20px', textAlign: 'left' }}>
-          Tracking week-to-week player&apos; rankings, with the pack leader topping the chart!
+          {isRacing ? 'Tracking race-by-race player rankings, with the pack leader topping the chart!' : <>Tracking week-to-week player&apos; rankings, with the pack leader topping the chart!</>}
         </p>
         <input
           className="search-input-glow"
@@ -670,7 +723,7 @@ episodeNumbers.forEach((ep) => {
           Rotate 📱 for a better view!
         </p>
         {playerChartData.length === 0 ? (
-  <p style={{ color: '#555570' }}>No scoring data on record yet. Check back once episodes have been scored!</p>
+  <p style={{ color: '#555570' }}>{isRacing ? 'No races scored yet. Check back after the first race!' : 'No scoring data on record yet. Check back once episodes have been scored!'}</p>
 ) : (
   <>
     <div style={{
@@ -767,7 +820,7 @@ episodeNumbers.forEach((ep) => {
           Rotate 📱 for a better view!
         </p>
         {chartData.length === 0 ? (
-          <p style={{ color: '#555570' }}>No scoring data on record yet. Check back once episodes have been scored!</p>
+          <p style={{ color: '#555570' }}>{isRacing ? 'Driver standings are coming soon!' : 'No scoring data on record yet. Check back once episodes have been scored!'}</p>
         ) : (
           <>
             <div style={{

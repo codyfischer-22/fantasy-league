@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { Dices } from 'lucide-react'
-import { castawayTermByLeague } from '@/lib/leagueConfig'
+import { castawayTermByLeague, currentSeasonByType } from '@/lib/leagueConfig'
 
 type Castaway = {
   id: number
@@ -68,6 +68,7 @@ export default function PredictionCard({ leagueId, leagueType, instanceSlug, ope
   const [submitting, setSubmitting] = useState(false)
   const [message, setMessage] = useState('')
   const castawayTerm = castawayTermByLeague[leagueType] ?? 'Contestant'
+  const season = currentSeasonByType[leagueType] ?? ''
 
   const locked = isLocked(leagueType)
 
@@ -82,6 +83,7 @@ export default function PredictionCard({ leagueId, leagueType, instanceSlug, ope
         .from('episode_scores')
         .select('episode_number')
         .eq('league_type', leagueType)
+        .eq('season', season)
         .order('episode_number', { ascending: false })
         .limit(1)
 
@@ -93,6 +95,7 @@ export default function PredictionCard({ leagueId, leagueType, instanceSlug, ope
         .from('castaways')
         .select('id, name, status')
         .eq('league_type', leagueType)
+        .eq('season', season)
         .eq('status', 'active')
         .order('name')
       setActiveCastaways(castawayList ?? [])
@@ -107,6 +110,7 @@ export default function PredictionCard({ leagueId, leagueType, instanceSlug, ope
         .from('predictions')
         .select('predicted_castaway_id, is_correct, actual_eliminated_castaway_id')
         .eq('league_id', leagueId)
+        .eq('season', season)
         .eq('user_id', user.id)
         .eq('episode_number', nextEpisode)
         .maybeSingle()

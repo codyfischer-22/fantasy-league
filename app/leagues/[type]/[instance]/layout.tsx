@@ -40,7 +40,7 @@ type League = {
 
 const draftWindowByLeague: Record<string, { name: string; window: string }> = {
   'secrets-on-the-beach': { name: 'Secrets on the Beach', window: 'September 16-20 (7 PM CT)' },
-  'uncharted-turretory': { name: 'Uncharted Turretory', window: 'September 16-17 (7 PM CT)' },
+  'uncharted-turretory': { name: 'Uncharted Turretory', window: 'January 11-13 (7 PM CT)' },
 }
 
 const pillButton = (color: string): React.CSSProperties => ({
@@ -148,7 +148,7 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
   const [burstOrigin, setBurstOrigin] = useState<{ x: number; y: number } | null>(null)
 
   const castawayTerm = castawayTermByLeague[type] ?? 'Contestant'
-  const minFreeAgents = ['paddock-politicks', 'the-oval-offset'].includes(type) ? 5 : 3
+  const minFreeAgents = (type.startsWith('paddock-politicks') || type.startsWith('the-oval-offset')) ? 5 : 3
 
   useEffect(() => {
     function checkWidth() {
@@ -653,9 +653,9 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
   ].filter((item) =>
     !(item.label === 'Pre-Rank' && (type === 'sotb-demo' || type === 'uncharted-turretory-demo')) &&
     !(item.label === 'Draft Room' && (league.draft_mode !== 'live' || league.draft_status === 'completed' || type === 'sotb-demo' || type === 'uncharted-turretory-demo')) &&
-    !(item.label === 'Research' && ((hasDrafted && league.draft_status !== 'in_progress') || type === 'sotb-demo' || type === 'uncharted-turretory-demo')) &&
-    !(item.label === 'Predictions' && ['paddock-politicks', 'the-oval-offset'].includes(type))
-  )
+      !(item.label === 'Research' && ((hasDrafted && league.draft_status !== 'in_progress') || type.endsWith('-demo'))) &&    
+      !(item.label === 'Predictions' && (!isMember || type.startsWith('paddock-politicks') || type.startsWith('the-oval-offset')))
+      )
 
   return (
     <main className="mobile-shrink-main" style={mainStyle}>

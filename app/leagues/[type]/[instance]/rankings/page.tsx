@@ -350,6 +350,7 @@ const handleTouchEnd = () => {
 <p style={{ color: '#ffffff', fontSize: '0.9rem', marginBottom: '16px', lineHeight: '1.6' }}>
 In the event of a live draft, players without saved auto-draft rankings default to host settings (randomly generated or bumped to back).</p> 
 
+{!type.endsWith('-demo') && (
 <button
   onClick={() => setShowResources(true)}
   style={{
@@ -373,6 +374,7 @@ In the event of a live draft, players without saved auto-draft rankings default 
 >
   <Search size={16} strokeWidth={2} /> Research {castawayTerm}s
 </button>
+)}
 <ResourcesModal open={showResources} onClose={() => setShowResources(false)} type={type} />            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '28px' }}>
             {castaways.map((castaway, index) => (
  <div

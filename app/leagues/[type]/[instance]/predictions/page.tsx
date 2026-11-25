@@ -25,6 +25,12 @@ export default function PredictionsPage() {
   const [isMember, setIsMember] = useState(false)
   const router = useRouter()
 
+    useEffect(() => {
+    if (type.startsWith('paddock-politicks') || type.startsWith('the-oval-offset')) {
+      router.replace(`/leagues/${type}/${instance}`)
+    }
+  }, [type, instance, router])
+
   useEffect(() => {
     async function loadStandings() {
       if (authLoading) return
@@ -120,8 +126,8 @@ export default function PredictionsPage() {
         Correctly predict who&apos;s going home each week for a chance to split +50 bonus points! You can still play even if your entire roster is eliminated.
       </p>
 
-      {isMember && leagueId !== null && (
-        <div style={{ marginBottom: '32px' }}>
+{isMember && !(type.startsWith('paddock-politicks') || type.startsWith('the-oval-offset')) && (
+          <div style={{ marginBottom: '32px' }}>
           <PredictionCard leagueId={leagueId} leagueType={type} instanceSlug={instance} inline />
         </div>
       )}

@@ -186,10 +186,10 @@ const rulesContent: Record<string, {
     intro: [],
 
     draftWindow: [
-  { label: 'Signup Deadline', detail: 'Tuesday, September 15, 11:59 PM' },
-  { label: 'Draft Rankings Due (Public)', detail: 'Wednesday, September 16, 5 PM' },
-  { label: 'Draft Window', detail: 'Wednesday, September 16, 7 PM \n\u2013 Thursday, September 17, 5 PM' },
-  { label: 'Episode 1 Airs', detail: 'Thursday, September 17, 7 PM' },
+  { label: 'Signup Deadline (Season 5)', detail: 'Sunday, January 10, 11:59 PM' },
+  { label: 'Draft Rankings Due (Offline)', detail: 'Monday, January 11, 12:00 PM' },
+  { label: 'Draft Window', detail: 'Monday, January 11, 7 PM \n\u2013 Wednesday, January 13, 7 PM' },
+  { label: 'Episode 1 Airs', detail: 'Thursday, January 14, 7 PM' },
 ],
 
     sections: [

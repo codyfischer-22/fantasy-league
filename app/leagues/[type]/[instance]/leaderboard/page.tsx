@@ -11,6 +11,13 @@ type CastawayScore = {
   castaway_name: string
   total: number
 }
+type RaceScore = {
+  race_id: number
+  round: number
+  name: string
+  slotPoints: number
+  bonusPoints: number
+}
 type PlayerStanding = {
   user_id: string
   display_name: string
@@ -18,7 +25,12 @@ type PlayerStanding = {
   total: number
   bonusPoints: number
   castaways: CastawayScore[]
+  races?: RaceScore[]
 }
+
+// Racing leagues (F1 + NASCAR, including demos) score race-by-race, not by episode
+const isRacingType = (t: string) => t.startsWith('paddock-politicks') || t.startsWith('the-oval-offset')
+const fmt = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(1))
 
 type DepartedMember = {
   user_id: string
@@ -41,6 +53,7 @@ export default function LeaderboardPage() {
   const [departed, setDeparted] = useState<DepartedMember[]>([])
   const router = useRouter()
   const rosterTerm = rosterTermByLeague[type] ?? 'Roster'
+  const isRacing = isRacingType(type)
   const [rosterSize, setRosterSize] = useState(4)
 
   useEffect(() => {
@@ -102,6 +115,49 @@ export default function LeaderboardPage() {
         ? await supabase.from('castaways').select('id, name').in('id', castawayIds)
         : { data: [] }
       const castawayNameMap = new Map((castawayList ?? []).map((c) => [c.id, c.name]))
+
+      if (isRacingType(league.league_type)) {
+        const { data: raceScores } = await supabase
+          .from('league_race_scores')
+          .select('user_id, race_id, slot_points, bonus_points')
+          .eq('league_id', league.id)
+        const raceIds = [...new Set((raceScores ?? []).map((s) => s.race_id))]
+        const { data: raceRows } = raceIds.length > 0
+          ? await supabase.from('races').select('id, round_number, name').in('id', raceIds)
+          : { data: [] }
+        const raceMap = new Map((raceRows ?? []).map((r) => [r.id, r]))
+
+        const racingStandings: PlayerStanding[] = (profiles ?? []).map((profile) => {
+          const myScores = (raceScores ?? []).filter((s) => s.user_id === profile.user_id)
+          const races: RaceScore[] = myScores
+            .map((s) => ({
+              race_id: s.race_id,
+              round: raceMap.get(s.race_id)?.round_number ?? 0,
+              name: raceMap.get(s.race_id)?.name ?? 'Race',
+              slotPoints: Number(s.slot_points),
+              bonusPoints: Number(s.bonus_points),
+            }))
+            .sort((a, b) => b.round - a.round)
+          const bonusPoints = races.reduce((sum, r) => sum + r.bonusPoints, 0)
+          const total = races.reduce((sum, r) => sum + r.slotPoints + r.bonusPoints, 0)
+          return {
+            user_id: profile.user_id,
+            display_name: profile.display_name || 'Unnamed Player',
+            tier: profile.tier ?? 'stowaway',
+            total,
+            bonusPoints,
+            castaways: (picks ?? [])
+              .filter((p) => p.user_id === profile.user_id)
+              .map((p) => ({ castaway_id: p.castaway_id, castaway_name: castawayNameMap.get(p.castaway_id) ?? 'Unknown', total: 0 })),
+            races,
+          }
+        })
+        racingStandings.sort((a, b) => b.total - a.total)
+        setStandings(racingStandings)
+        setDeparted([])
+        setPageLoading(false)
+        return
+      }
       const { data: scores } = castawayIds.length > 0
         ? await supabase
             .from('episode_scores')
@@ -219,7 +275,9 @@ export default function LeaderboardPage() {
       <h2 style={{ fontSize: 'clamp(1.4rem, 5vw, 1.6rem)', margin: '0 0 4px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
       </h2>
       <p style={{ color: '#ffffff', fontSize: '0.9rem', marginBottom: '24px' }}>
-        Where do you stack up on the leaderboard? Expand a player to see their {rosterTerm.toLowerCase()} of {rosterSize}. Standings and {rosterTerm.toLowerCase()}s update automatically as episode scores, trades, and waiver wire moves occur!
+        {isRacing
+          ? <>Where do you stack up on the leaderboard? Expand a player to see their drivers and race-by-race points. Standings update automatically as race results are scored!</>
+          : <>Where do you stack up on the leaderboard? Expand a player to see their {rosterTerm.toLowerCase()} of {rosterSize}. Standings and {rosterTerm.toLowerCase()}s update automatically as episode scores, trades, and waiver wire moves occur!</>}
       </p>
 
       {standings.length === 0 ? (
@@ -268,7 +326,7 @@ export default function LeaderboardPage() {
                     fontWeight: 'bold',
                     fontSize: '1.1rem'
                   }}>
-                    {player.total > 0 ? '+' : ''}{player.total} Pts.
+                    {player.total > 0 ? '+' : ''}{fmt(player.total)} Pts.
                   </span>
                   <span style={{ color: '#555570', fontSize: '0.8rem' }}>
                     {expanded.has(player.user_id) ? '▲' : '▼'}
@@ -280,7 +338,36 @@ export default function LeaderboardPage() {
                   padding: '0 20px 16px 20px',
                   borderTop: '1px solid #2a2a3e'
                 }}>
-                  {player.castaways.length === 0 ? (
+                  {isRacing ? (
+                    <>
+                      <p style={{ color: '#a0a0b0', fontSize: '0.8rem', margin: '12px 0 6px 0' }}>
+                        <strong style={{ color: '#ffffff' }}>Drivers:</strong>{' '}
+                        {player.castaways.length > 0 ? player.castaways.map((c) => c.castaway_name).join(', ') : 'Pending the draft!'}
+                      </p>
+                      {(player.races ?? []).length === 0 ? (
+                        <p style={{ color: '#555570', fontSize: '0.85rem' }}>No races scored yet.</p>
+                      ) : (
+                        (player.races ?? []).map((r) => (
+                          <div key={r.race_id} style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            padding: '6px 0',
+                            fontSize: '0.85rem',
+                            color: '#a0a0b0',
+                            borderTop: '1px solid #22223a'
+                          }}>
+                            <span>R{r.round} · {r.name}</span>
+                            <span style={{ color: '#f0b429', fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+                              +{fmt(r.slotPoints + r.bonusPoints)} Pts.
+                              {r.bonusPoints > 0 && (
+                                <span style={{ color: '#555570', fontWeight: 'normal', fontSize: '0.75rem' }}> (incl. +{fmt(r.bonusPoints)} bonus)</span>
+                              )}
+                            </span>
+                          </div>
+                        ))
+                      )}
+                    </>
+                  ) : player.castaways.length === 0 ? (
                     <p style={{ color: '#555570', fontSize: '0.85rem', marginTop: '12px' }}>
                       {rosterTerm}: Pending the draft!
                     </p>
@@ -312,7 +399,7 @@ export default function LeaderboardPage() {
                     })()
                   )}
 
-                  {player.bonusPoints > 0 && (
+                  {!isRacing && player.bonusPoints > 0 && (
                     <div style={{
                       display: 'flex',
                       justifyContent: 'space-between',

@@ -65,6 +65,7 @@ export default function LeagueDashboardPage() {
 
   const rosterTerm = rosterTermByLeague[type] ?? 'Roster'
   const playlistId = podcastPlaylistByType[type] ?? ''
+  const isRacing = type.startsWith('paddock-politicks') || type.startsWith('the-oval-offset')
 
   const [loading, setLoading] = useState(true)
   const [standings, setStandings] = useState<Standing[]>([])
@@ -158,6 +159,14 @@ export default function LeagueDashboardPage() {
       ;(customEntries ?? []).forEach((c) => castawayTotal.set(c.castaway_id, (castawayTotal.get(c.castaway_id) ?? 0) + c.points))
       const bonusByUser = new Map<string, number>()
       ;(bonusRows ?? []).forEach((b) => bonusByUser.set(b.user_id, (bonusByUser.get(b.user_id) ?? 0) + Number(b.points)))
+      const raceTotalByUser = new Map<string, number>()
+      if (isRacing) {
+        const { data: raceScores } = await supabase
+          .from('league_race_scores')
+          .select('user_id, slot_points, bonus_points')
+          .eq('league_id', league.id)
+        ;(raceScores ?? []).forEach((r) => raceTotalByUser.set(r.user_id, (raceTotalByUser.get(r.user_id) ?? 0) + Number(r.slot_points) + Number(r.bonus_points)))
+      }
 
       const table: Standing[] = memberIds.map((uid) => {
         const totals = (picks ?? [])
@@ -167,7 +176,7 @@ export default function LeagueDashboardPage() {
         return {
           user_id: uid,
           display_name: nameById.get(uid) ?? 'Unnamed Player',
-          total: totals.slice(0, 3).reduce((sum, t) => sum + t, 0) + (bonusByUser.get(uid) ?? 0),
+          total: isRacing ? (raceTotalByUser.get(uid) ?? 0) : totals.slice(0, 3).reduce((sum, t) => sum + t, 0) + (bonusByUser.get(uid) ?? 0),
           sortedTotals: totals,
         }
       })
@@ -243,11 +252,11 @@ export default function LeagueDashboardPage() {
               <div style={{ ...cardStyle, padding: '14px 16px' }}>
           <p style={kickerStyle}>Your Season</p>
           {!hasDrafted ? (
-            <p style={{ color: '#ffffff', fontSize: '0.95rem', margin: 0 }}>
-              Your {rosterTerm.toLowerCase()} is pending the draft.{' '}
-              <Link href={`${basePath}/rankings`} style={{ color: '#f0b429', textDecoration: 'underline' }}>
-                Set your Pre-Rankings →
-              </Link>
+            <p style={{ color: '#ffffff', fontSize: '0.8rem', margin: 0 }}>
+              If you haven't <Link href={`${basePath}/rankings`} style={{ color: '#f0b429', textDecoration: 'underline' }}>
+                pre-ranked players
+              </Link>, do so before the draft to optimize your {rosterTerm.toLowerCase()}! 
+              
             </p>
           ) : (
             <>
@@ -286,11 +295,11 @@ export default function LeagueDashboardPage() {
                     <span>
                       {c.name}
                       {c.eliminated && <span style={{ fontSize: '0.75rem', marginLeft: '6px' }}>(Out)</span>}
-                      {i === 3 && <span style={{ fontSize: '0.75rem', marginLeft: '6px', color: '#555570' }}>(Bench)</span>}
+                      {!isRacing && i === 3 && <span style={{ fontSize: '0.75rem', marginLeft: '6px', color: '#555570' }}>(Bench)</span>}
                     </span>
-                    <span style={{ fontWeight: 'bold', color: c.eliminated ? '#555570' : c.total < 0 ? '#ff6b6b' : '#f0b429' }}>
+                    {!isRacing && <span style={{ fontWeight: 'bold', color: c.eliminated ? '#555570' : c.total < 0 ? '#ff6b6b' : '#f0b429' }}>
                       {c.total > 0 ? '+' : ''}{c.total}
-                    </span>
+                    </span>}
                   </div>
                 ))}
               </div>
