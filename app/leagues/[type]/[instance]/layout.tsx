@@ -457,7 +457,7 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
     } else {
       setShowJoinModal(false)
       setShowWelcomeToast(true)
-      setTimeout(() => setShowWelcomeToast(false), 4500)
+      setTimeout(() => setShowWelcomeToast(false), 10000)
       setIsMember(true)
       setMemberTier(profile?.tier ?? 'stowaway')
       setMemberCount((prev) => (prev ?? 0) + 1)
