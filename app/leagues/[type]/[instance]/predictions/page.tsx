@@ -126,12 +126,11 @@ export default function PredictionsPage() {
         Correctly predict who&apos;s going home each week for a chance to split +50 bonus points! You can still play even if your entire roster is eliminated.
       </p>
 
-{isMember && !(type.startsWith('paddock-politicks') || type.startsWith('the-oval-offset')) && (
-          <div style={{ marginBottom: '32px' }}>
+        {isMember && leagueId !== null && (
+        <div style={{ marginBottom: '32px' }}>
           <PredictionCard leagueId={leagueId} leagueType={type} instanceSlug={instance} inline />
         </div>
       )}
-
       <h3 style={{ color: '#f0b429', fontSize: '1.2rem', marginBottom: '12px' }}>
         Mini-Game Standings
       </h3>
