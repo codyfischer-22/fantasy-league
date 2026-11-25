@@ -382,8 +382,8 @@ export default function LeagueLayout({ children }: { children: React.ReactNode }
         .eq('league_type', league.league_type)
       publicLeagueCount = count ?? 0
     }
-    if (!league.is_private && publicLeagueCount >= 1) {
-      setJoinMessage("You're already in a public league for this fandom. Private leagues are always open to join!")
+    if (!league.is_private && publicLeagueCount >= 1 && !isGlobalAdmin) {
+              setJoinMessage("You're already in a public league for this fandom. Private leagues are always open to join!")
       setJoining(false)
       return
     }
