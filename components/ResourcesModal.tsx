@@ -33,7 +33,7 @@ const resourcesByLeague: Record<string, { title: string; url: string }[]> = {
   ],
   'uncharted-turretory': [
     {
-      title: '2-Minute Promo (Cami Peacock)',
+      title: '2-Minute Promo (Peacock)',
       url: 'https://www.youtube.com/watch?v=Ic0Gy3aXuVQ',
     },
     {
